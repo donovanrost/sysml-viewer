@@ -230,8 +230,13 @@ impl Engine {
         // this uncertainty over declared inheritance dependencies before exposing
         // a completeness result. Ownership alone is not an inheritance edge.
         let incomplete_members = incomplete_member_dependencies(&references);
+        let syntax_invalid = diagnostics
+            .iter()
+            .any(|d| matches!(d.stage, Stage::Syntax) && d.severity == Severity::Error);
         let mut member_queries = HashMap::new();
         let mut membership_queries = HashMap::new();
+        let mut import_queries = HashMap::new();
+        let mut visibility_budget = crate::imports::VISIBILITY_QUERY_LIMIT;
         let mut membership_order = Vec::new();
         let mut membership_seen = HashSet::new();
         let mut connections = Vec::new();
@@ -262,11 +267,36 @@ impl Engine {
                 .filter(|m| check::metaclass_conforms(graph.element_type(*m), "Membership"))
                 .collect();
             let inherited = graph.inherited_memberships(e, true);
-            for &m in owned.iter().chain(&inherited) {
+            let imported = if syntax_invalid {
+                Err(ImportIssue::InvalidSyntax)
+            } else {
+                crate::imports::imported_memberships(&mut graph, e, &mut visibility_budget)
+            };
+            for m in owned
+                .iter()
+                .chain(&inherited)
+                .copied()
+                .chain(imported.as_ref().into_iter().flatten().map(|&(m, _)| m))
+            {
                 if membership_seen.insert(m) {
                     membership_order.push(m);
                 }
             }
+            import_queries.insert(
+                e,
+                match imported {
+                    Ok(bindings) => ImportClosure::Complete {
+                        memberships: bindings
+                            .into_iter()
+                            .map(|(m, visibility)| ImportedMembership {
+                                membership_id: registry.id(m),
+                                visibility,
+                            })
+                            .collect(),
+                    },
+                    Err(reason) => ImportClosure::Unknown { reason },
+                },
+            );
             membership_queries.insert(e, (owned, inherited));
             if check::metaclass_conforms(graph.element_type(e), "Connector") {
                 let (unit, extent) = graph.member_extent(e).unwrap();
@@ -367,9 +397,6 @@ impl Engine {
             }
             cursor += 1;
         }
-        let syntax_invalid = diagnostics
-            .iter()
-            .any(|d| matches!(d.stage, Stage::Syntax) && d.severity == Severity::Error);
         let mut elements = Vec::new();
         let mut used_units: HashSet<usize> = (user_start..sources.len()).collect();
         for e in registry.included.clone() {
@@ -439,6 +466,9 @@ impl Engine {
                     .into_iter()
                     .map(|m| registry.id(m))
                     .collect(),
+                imported_memberships: import_queries.remove(&e).unwrap_or(ImportClosure::Unknown {
+                    reason: ImportIssue::Unavailable,
+                }),
                 inheritance_complete: complete,
             });
         }

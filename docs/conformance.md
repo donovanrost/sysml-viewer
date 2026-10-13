@@ -65,7 +65,7 @@ Clause references identify the source of a test, not complete coverage of that c
 | MULT-007 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Fractional and reversed cardinality bounds are invalid and never evaluated results. |
 | MULT-008 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Unresolved subset targets prevent a default cardinality result. |
 | MULT-009 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Syntax recovery cannot erase a malformed bound and claim an implicit singleton. |
-| IMP-020 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Planned | Expose complete imported membership closure with completeness guarantees. |
+| IMP-020 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Expose checked import closure with alias identity, short names, contextual visibility, re-exports, library targets and proven empty results. |
 | IMP-021 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Distinct inherited memberships of the same Feature are removed by Type::removeRedefinedFeatures; non-Feature aliases use IMP-014. |
 | NAME-001 | Lexical names and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3 | positive | Covered | Quoted names preserve spaces, escaped quotes, Unicode and reserved words through resolution. |
 | NAME-002 | Lexical names and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3 | negative | Covered | Unquoted SysML reserved words are rejected as identifiers and later declarations recover. |
@@ -82,10 +82,14 @@ Clause references identify the source of a test, not complete coverage of that c
 | MULT-017 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Conditional providers select true/false and nested branches, preserve exact integers and skip execution of unselected unbound or undefined values. |
 | MULT-018 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Conditional bounds reject unavailable/non-Boolean conditions, invalid selected values and ineligible recursive branches. |
 | MULT-019 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | A shadowed ControlFunctions package cannot certify the designated conditional operator. |
+| IMP-024 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | robustness | Covered | Recursive namespace/member imports retain ordered binding identities, omit private branches, bound cycles and honor import-all. |
+| IMP-025 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Prune indistinguishable imported aliases and imports colliding with an owned member, preserving unrelated bindings. |
+| IMP-026 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Incomplete import endpoints, inherited providers and inline filters remain unknown; a proved false package filter yields a complete empty closure. |
+| IMP-027 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Recovered import syntax cannot be certified as a complete empty closure. |
 
 ## Coverage limits
 
-- **Imports and visibility:** Filtered imports, imported membership enumeration, alias collisions through imports, and all contextual name-resolution rules remain unqualified.
+- **Imports and visibility:** General metadata predicates and filtered imports, all contextual resolution rules, and complete implicit membership construction remain unqualified. Checked enumeration covers the bounded cases below; unknown results are not complete language conformance.
 - **Typing:** Multiple and implicit typing, chained types and all type-kind constraints need further cases.
 - **Specialization and inheritance:** Diamond coverage is limited to a common ancestor; conflicts, cycles and all inherited memberships require broader qualification.
 - **Subsetting:** These cases check target identity, not instance-value containment or every conformance constraint.
@@ -99,7 +103,6 @@ Clause references identify the source of a test, not complete coverage of that c
 
 ## Known failures and planned work
 
-- **IMP-020:** Owned and inherited bindings are public; complete imported membership enumeration is not yet exposed.
 
 The authored fixtures are in `tests/conformance/fixtures`. Official examples are
 copied unchanged from the pinned release; see `tests/conformance/upstream/provenance.json`

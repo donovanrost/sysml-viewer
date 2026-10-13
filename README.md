@@ -137,7 +137,7 @@ check the viewer projection, source slicing and bundled example. This is the ini
 acceptance suite, not a substitute for an official semantic conformance matrix or
 continuous fuzzing.
 
-The coverage matrix has 64 executable cases and one explicitly planned case. The matrix
+The coverage matrix has 69 executable cases. The matrix
 checks standards-linked expectations, including two unchanged official examples,
 with a fresh process and deadline per case. Its harness rejects new failures and
 unexpected passes of known gaps. Reports are saved to `target/conformance/` and
@@ -145,7 +145,7 @@ uploaded by CI. The matrix document is generated from its JSON catalogue and che
 for drift. This is bounded coverage, not full standards certification.
 
 Native/WASM benchmarks use three fresh processes for the bundled example, literal,
-arithmetic and conditional provider fixtures, and two synthetic sizes. They record
+arithmetic and conditional providers, imported membership closure, and two synthetic sizes. They record
 whole-process time and peak RSS where available;
 these are observations rather than production-model performance promises. Results
 are in `target/benchmarks/latest.json`. See [qualification evidence](docs/foundation-qualification.md)
@@ -174,5 +174,5 @@ are also included in the built web/app assets at `third-party-notices.txt`.
 See the evaluation document and `tools/vendor-kernel.py` for the update procedure.
 
 The [foundation qualification record](docs/foundation-qualification.md) describes
-schema 2 membership/cardinality queries, namespace validation and the remaining
+schema 3 membership/import/cardinality queries, namespace validation and the remaining
 checked-evaluator gap. Full language conformance remains unestablished.

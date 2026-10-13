@@ -276,7 +276,7 @@ export function validateExecution(report, matrix, matrixBytes, pins, read, expec
   assert.equal(report.buildPerformed, true, 'Qualification evidence must build the native CLI');
   assert(/^[0-9a-f]{64}$/.test(report.binarySha256), 'Missing tested binary fingerprint');
   assert.equal(report.matrixSha256, hash(matrixBytes), 'Stale conformance matrix report');
-  assert.equal(report.schemaVersion, 2);
+  assert.equal(report.schemaVersion, 3);
   assert(report.engineVersion.includes(pins.toolkit.revision.slice(0, 12)), 'Engine pin mismatch');
   assert(
     report.libraryVersion.includes(pins.library.revision.slice(0, 12)),

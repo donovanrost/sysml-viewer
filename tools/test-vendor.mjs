@@ -37,6 +37,7 @@ try {
     'dynamic_graph',
     'owned_results',
     'end_constancy',
+    'operations::namespaces',
   ]) {
     cargo(
       [

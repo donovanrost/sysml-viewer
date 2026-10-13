@@ -6,7 +6,7 @@ the facade. Status: implemented, reviewed against the qualification suite.
 
 The stable seam is source text → analysis → explicit query results. The current
 facade is a **declaration projection**, not a complete metamodel API. In particular,
-complete imported-membership enumeration, arbitrary scoped-name resolution, AST editing,
+arbitrary scoped-name resolution, AST editing,
 expression evaluation and simulation are not public operations. Consumers requiring
 raw syntax can use the pinned syntax crate directly, accepting its upstream API;
 we do not disguise that coupling by re-exporting its types from `sysml-kernel`.
@@ -23,7 +23,8 @@ we do not disguise that coupling by re-exporting its types from `sysml-kernel`.
 | `query.owned_members(id)` | Declaration records or explicit failure | Includes projected owned declarations. Does not promise every metamodel membership. A known empty scope returns an empty collection. |
 | `query.effective_members(id)` | Records plus `inheritance_complete` | Retains library and inherited records. The viewer alone chooses which to display. Partial computation stays explicit. |
 | `query.owned_memberships(id)` | Explicit owned binding records | Includes aliases with their own identity, long/short names, target status and visibility. |
-| `query.inherited_memberships(id)` | Binding records plus `inheritance_complete` | Preserves the original declaring namespace; does not enumerate the full imported closure. |
+| `query.inherited_memberships(id)` | Binding records plus `inheritance_complete` | Preserves the original declaring namespace; imports have their own checked query. |
+| `query.imported_memberships(id)` | Complete ordered bindings with contextual visibility, or an unknown reason | Uses checked Namespace/Package operations; incomplete evidence never becomes an empty set. Navigation stubs return unknown/unavailable. |
 | `query.membership(id)` | Binding or explicit failure | Membership identity is separate from member-element identity. |
 | `query.cardinality(id)` | Evaluated interval, unknown reason, or not applicable | Integer bounds are decimal strings; a null upper bound means infinity only within an evaluated result. |
 | `query.references_from/at(...)` | Written references with `Resolution` | User sources only. Library reference enumeration reports `ReferencesUnavailable`. Multiple source sites can overlap. |
@@ -95,7 +96,9 @@ nested and unary expressions. Conditional providers support static Boolean tests
 aliases and nested conditionals, evaluating only the selected branch after proving
 argument eligibility. Unselected unbound values or arithmetic errors are not
 executed. Unsupported featuring, variation, predicates and other control operators
-remain unknown. See KERNEL-003 in [foundation qualification](foundation-qualification.md).
+remain unknown. Unresolved heritage elsewhere in the workspace can also make
+otherwise independent expression providers unknown; dependency-local proof isolation
+is not yet established. See KERNEL-003/004 in [foundation qualification](foundation-qualification.md).
 
 `membersAvailable: false` describes a navigation record. It must not be read as an
 empty namespace. `inheritanceComplete` is meaningful when member results are
@@ -103,9 +106,28 @@ available. It combines the upstream effective-member result with conservative
 propagation of unresolved written typing, specialization, subsetting and redefinition
 dependencies. This includes definitions/usages that depend transitively on a
 missing parent. Ownership alone does not propagate inheritance uncertainty.
-The snapshot is not a serialization of every relationship, annotation, import membership or
-implied element in the semantic graph. The remaining imported-membership closure case in
-the coverage matrix makes this gap visible.
+`importedMemberships` is a tagged result: `complete` carries ordered membership
+IDs and each binding's visibility in the importing namespace; `unknown` carries
+an explicit reason (`invalidSyntax`, `incompleteProvider`, `unsupported`,
+`workLimit`, or `unavailable`). Resolve IDs against `Snapshot.memberships` to read
+the original namespace, alias names, target and declared visibility. Re-exporting
+a binding does not change its owner or identity. A complete empty set is meaningful.
+
+The facade invokes checked `Namespace::importedMemberships` with an empty exclusion
+set and `Namespace::visibilityOf` for each resulting membership. The kernel dispatches
+Package overrides, bounds recursive imports, excludes indistinguishable imported
+bindings, and determines visibility from the first applicable import. Syntax errors
+anywhere make import queries unknown because recovery can remove necessary evidence.
+Navigation records remain unavailable. There is a snapshot-wide allowance of 4,096
+contextual visibility calls in declaration order, in addition to upstream operation
+budgets. A closure exceeding its remaining allowance returns `unknown/workLimit`;
+no partial closure is exported. This is a resource bound, not a latency guarantee.
+General metadata/filter predicates and some Type providers remain incomplete.
+
+Snapshot validation checks import handles, uniqueness and resolved member targets,
+and rejects query results attached to unavailable navigation records. It does not
+re-prove the semantic evidence of deserialized snapshots. The snapshot is not a
+serialization of every relationship, annotation or implied element in the graph.
 
 ## Failure policy
 
@@ -125,11 +147,11 @@ the coverage matrix makes this gap visible.
 
 ## Compatibility and release policy
 
-The current Rust packages are experimental `0.2.x`, unpublished and consumed as
+The current Rust packages are experimental `0.3.x`, unpublished and consumed as
 workspace/path dependencies. This milestone does not freeze a 1.0 API.
 
-The JSON wire contract remains schema version 1. Generated TypeScript describes
-that contract; adding native query methods does not change it. Incompatible field
+The JSON wire contract is schema version 3. Generated TypeScript describes
+that contract; native query methods borrow the same results. Incompatible field
 changes, meaning changes, removals or enum variants require a schema version bump
 and coordinated consumer changes. Additive optional fields require compatibility
 tests and documented absence semantics. Avoid new fields until a consumer needs
@@ -154,7 +176,7 @@ with all newly passing gaps and regressions reviewed. See
 | Public syntax checking required invoking semantic analysis | Added a library-free syntax/structure operation. An editable AST API remains deferred. |
 | Worker accepted a mismatched snapshot inside a matching reply envelope | Added a snapshot revision check and lifecycle/deadline regression tests. |
 | Missing general types could leave inherited members marked complete | The facade propagates unresolved heritage through dependent definitions/usages; SPEC-002/003 retain the regression. Upstream source is unchanged. |
-| Membership/alias enumeration and multiplicity completeness exceed this projection | Recorded planned cases; no synthetic completeness claim or UI-side semantic fallback. |
+| Membership/alias enumeration and multiplicity completeness exceed this projection | Schema 3 exposes checked imports and cardinality with explicit unknown results; complete metamodel traversal remains open. |
 
 Implementation tests are in `crates/sysml-kernel/tests/contracts.rs`, supplemented
 by the original acceptance tests, the matrix and `tests/kernel-client.test.ts`.
@@ -164,7 +186,16 @@ by the original acceptance tests, the matrix and `tests/kernel-client.test.ts`.
 Schema 2 adds `Snapshot.memberships`, each element's `ownedMemberships`,
 `inheritedMemberships`, and `cardinality`. Consumers must regenerate/recompile their
 types and reject schema 1; there is no lossy migration that invents these results
-from an old snapshot. The bundled worker and viewer now require schema 2. Element
+from an old snapshot. This was the schema 2 migration. Element
 IDs and membership IDs use the same snapshot identity domain; navigation records
 may describe a relationship that also has a membership record. Neither changes
 the owning namespace of an aliased element.
+
+## Schema 3 migration
+
+Schema 3 requires `Element.importedMemberships`. Schema 2 cannot establish this
+result, so consumers must reanalyze and regenerate/recompile their types. The
+worker and viewer reject older schemas. Rust package and application versions
+advance to 0.3.0 for this pre-1.0 API change. Existing owned/inherited arrays and
+`Membership.visibility` retain their meanings; import visibility is contextual
+and lives on the imported binding. No UI-side resolution is introduced.

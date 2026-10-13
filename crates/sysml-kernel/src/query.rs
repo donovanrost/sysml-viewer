@@ -1,6 +1,6 @@
 use crate::{
-    Cardinality, Diagnostic, Element, Membership, Reference, Resolution, Snapshot, SourceDocument,
-    SourceIndex, SourceRange, SCHEMA_VERSION,
+    Cardinality, Diagnostic, Element, ImportClosure, ImportIssue, Membership, Reference,
+    Resolution, Snapshot, SourceDocument, SourceIndex, SourceRange, SCHEMA_VERSION,
 };
 use std::collections::HashMap;
 
@@ -139,6 +139,28 @@ impl<'a> SnapshotQuery<'a> {
             for id in &element.inherited_memberships {
                 query.membership(id)?;
             }
+            if !element.members_available
+                && element.imported_memberships
+                    != (ImportClosure::Unknown {
+                        reason: ImportIssue::Unavailable,
+                    })
+            {
+                return Err(invalid("Navigation stub contains an import query result"));
+            }
+            if let ImportClosure::Complete { memberships } = &element.imported_memberships {
+                let mut seen = std::collections::HashSet::new();
+                for binding in memberships {
+                    let membership = query.membership(&binding.membership_id)?;
+                    if !seen.insert(&binding.membership_id) {
+                        return Err(invalid("Duplicate imported membership identity"));
+                    }
+                    if !matches!(membership.member, Resolution::Resolved { .. }) {
+                        return Err(invalid(
+                            "Complete import closure contains an unresolved membership",
+                        ));
+                    }
+                }
+            }
             if let Cardinality::Evaluated { lower, upper } = &element.cardinality {
                 let number = |s: &str| -> Result<i128, QueryError> {
                     let n = s
@@ -227,8 +249,7 @@ impl<'a> SnapshotQuery<'a> {
             .collect()
     }
 
-    /// Retains membership identity, aliases and completeness. This is not a
-    /// complete namespace-membership closure (imports are not enumerated).
+    /// Retains membership identity, aliases and inheritance completeness.
     pub fn inherited_memberships(&self, id: &str) -> Result<InheritedMemberships<'a>, QueryError> {
         let element = self.member_owner(id)?;
         Ok(InheritedMemberships {
@@ -243,6 +264,12 @@ impl<'a> SnapshotQuery<'a> {
 
     pub fn cardinality(&self, id: &str) -> Result<&'a Cardinality, QueryError> {
         Ok(&self.element(id)?.cardinality)
+    }
+
+    /// Checked import closure and visibility in this namespace. Resolve each
+    /// binding's membership_id using membership(); unknown is not an empty set.
+    pub fn imported_memberships(&self, id: &str) -> Result<&'a ImportClosure, QueryError> {
+        Ok(&self.element(id)?.imported_memberships)
     }
 
     pub fn owned_members(&self, id: &str) -> Result<Vec<&'a Element>, QueryError> {

@@ -1331,11 +1331,13 @@
     },
     {
       "id": "MEMBERSHIP-ENUMERATION",
-      "obligation": "Expose owned and inherited membership identities, alias long/short names, visibility and target status without rewriting element ownership.",
+      "obligation": "Expose owned, inherited and checked imported membership identities, alias long/short names, declared/contextual visibility and target status without rewriting element ownership.",
       "category": "product",
       "sources": [
         "SYSML-CLAUSE-7.5.2",
-        "SYSML-CLAUSE-7.5.3"
+        "SYSML-CLAUSE-7.5.3",
+        "KERML-CLAUSE-8.3.2.4.5",
+        "KERML-CLAUSE-8.3.4.13.4"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1343,14 +1345,17 @@
         "status": "partial",
         "evidence": [
           "engine",
-          "graph"
+          "graph",
+          "import-api",
+          "checked-imports"
         ]
       },
       "api": {
         "status": "partial",
         "evidence": [
           "wire",
-          "query"
+          "query",
+          "import-tests"
         ]
       },
       "tests": [
@@ -1433,13 +1438,176 @@
         },
         {
           "case": "IMP-020",
-          "checks": [],
+          "checks": [
+            "clean",
+            "bindings",
+            "reexport",
+            "downstream",
+            "empty",
+            "library"
+          ],
           "polarity": "positive",
-          "status": "planned",
-          "results": []
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "bindings",
+              "status": "pass"
+            },
+            {
+              "id": "reexport",
+              "status": "pass"
+            },
+            {
+              "id": "downstream",
+              "status": "pass"
+            },
+            {
+              "id": "empty",
+              "status": "pass"
+            },
+            {
+              "id": "library",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-024",
+          "checks": [
+            "cycle",
+            "syntax",
+            "structure",
+            "recursive",
+            "member",
+            "all"
+          ],
+          "polarity": "robustness",
+          "status": "pass",
+          "results": [
+            {
+              "id": "cycle",
+              "status": "pass"
+            },
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "recursive",
+              "status": "pass"
+            },
+            {
+              "id": "member",
+              "status": "pass"
+            },
+            {
+              "id": "all",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-025",
+          "checks": [
+            "clean",
+            "imported",
+            "owned"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "imported",
+              "status": "pass"
+            },
+            {
+              "id": "owned",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-026",
+          "checks": [
+            "missing",
+            "base",
+            "syntax",
+            "structure",
+            "endpoint",
+            "provider",
+            "filter",
+            "false"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "missing",
+              "status": "pass"
+            },
+            {
+              "id": "base",
+              "status": "pass"
+            },
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "endpoint",
+              "status": "pass"
+            },
+            {
+              "id": "provider",
+              "status": "pass"
+            },
+            {
+              "id": "filter",
+              "status": "pass"
+            },
+            {
+              "id": "false",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-027",
+          "checks": [
+            "syntax",
+            "unknown"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "unknown",
+              "status": "pass"
+            }
+          ]
         }
       ],
-      "limits": "Schema 2 exposes explicit owned and inherited bindings; full imported membership closure, implicit construction and complete metamodel traversal remain open. Inheritance completeness accompanies the native query."
+      "limits": "Schema 3 exposes explicit owned/inherited bindings and checked imported closure with contextual visibility, ordered identities and explicit unknown results. Missing endpoints, incomplete Type providers, inline filters and syntax recovery do not certify empty closure. General metadata/filter predicates, all contextual resolution, implicit construction and complete metamodel traversal remain open. Complete results certify this bounded query, not whole-model validity."
     },
     {
       "id": "MULTIPLICITY-EXPRESSION",
@@ -1995,7 +2163,7 @@
           ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. An unresolved base elsewhere in the workspace can conservatively invalidate unrelated arithmetic/conditional certificates (KERNEL-004); native/WASM tests retain this pre-existing proof-isolation limit."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",
@@ -2548,26 +2716,26 @@
       "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
     }
   ],
-  "executableCases": 64,
-  "plannedCases": 1,
+  "executableCases": 69,
+  "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "32da2e3a79a756be316198d8f2ef2241f0771472eb2264a167e88e0f625eec71",
+  "assessmentsSha256": "9982fd616b643568791456c6a1a6f252d4f8aa947be2574802e6c29fbd8b7d85",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "0d28b7d6f1b0653f4969cadf9bd700955f7e3b08635cf8990aadbae2511c56ac",
-    "generatedAt": "2026-10-13T08:51:14.365Z",
-    "kernelInputSha256": "aa23b9433cc78844066ff417e76840226530bee1482215e445c97884f27ad637",
-    "binarySha256": "d3001f94fca05ccea73a03cd5d339c64b7f14a9621fe37aacf6bbc240d3729d2",
+    "sha256": "e3ed3b7508116e8e23f8ad747d93cfb08045b4ee6cbcebdb8bc271a097c02215",
+    "generatedAt": "2026-10-13T09:19:51.086Z",
+    "kernelInputSha256": "895ad1104916dd972823dc76b00698117f903e46b81a392e2fb53e01628ab65f",
+    "binarySha256": "518d588229fb1e209c619f8679326f7d7b846822c4e3c9794ded9eb296023666",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.4",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.5",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 64,
+      "pass": 69,
       "known-gap": 0,
-      "planned": 1,
+      "planned": 0,
       "fail": 0
     }
   }

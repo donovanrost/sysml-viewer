@@ -43,7 +43,7 @@ export class KernelClient {
           reject(new Error(data.error));
           return;
         }
-        if (data.snapshot?.schemaVersion !== 2) {
+        if (data.snapshot?.schemaVersion !== 3) {
           reject(new Error('Incompatible kernel protocol'));
           return;
         }

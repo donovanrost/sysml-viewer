@@ -6,8 +6,8 @@ use sysmlv2_model::check::metaclass_conforms;
 /// isDistinguishableFrom requires nonoverlapping long/short names when the
 /// member metaclasses conform in either direction. Check that side of each
 /// pair containing an alias. Specialized membership overrides cannot make a
-/// failing plain-Membership comparison true. Imported membership closure is
-/// not exposed by this projection and remains a separate qualification gap.
+/// failing plain-Membership comparison true. Checked import closure prunes
+/// colliding imports separately; this pass diagnoses owned/inherited aliases.
 pub(crate) fn alias_collisions(
     elements: &[Element],
     memberships: &[Membership],

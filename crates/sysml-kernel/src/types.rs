@@ -133,6 +133,41 @@ pub enum Visibility {
     Private,
 }
 
+/// The binding's visibility in the importing namespace. Its original owner,
+/// names and declared visibility remain on the referenced Membership record.
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
+#[serde(rename_all = "camelCase")]
+pub struct ImportedMembership {
+    pub membership_id: String,
+    pub visibility: Visibility,
+}
+
+/// A checked, ordered import closure. Unknown never carries a partial set that
+/// could be mistaken for a complete empty namespace.
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
+#[serde(tag = "status", rename_all = "camelCase")]
+pub enum ImportClosure {
+    Complete {
+        memberships: Vec<ImportedMembership>,
+    },
+    Unknown {
+        reason: ImportIssue,
+    },
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
+#[serde(rename_all = "camelCase")]
+pub enum ImportIssue {
+    InvalidSyntax,
+    IncompleteProvider,
+    Unsupported,
+    WorkLimit,
+    Unavailable,
+}
+
 /// Exact decimal integer strings avoid rounding through JSON/JavaScript numbers.
 /// An evaluated result proves supported bounds, not whole-model validity.
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
@@ -188,6 +223,7 @@ pub struct Element {
     pub owned_memberships: Vec<String>,
     /// Inherited bindings supplied by the engine; see inheritance_complete.
     pub inherited_memberships: Vec<String>,
+    pub imported_memberships: ImportClosure,
     pub inheritance_complete: bool,
 }
 

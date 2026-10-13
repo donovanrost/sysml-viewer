@@ -77,7 +77,7 @@ connections are rendered; other arities remain in the snapshot and receive a
 visible unsupported-view label. A resolved connection establishes endpoint lookup,
 not proof that every semantic rule applicable to it has been validated.
 
-## Snapshot contract v2
+## Snapshot contract v3
 
 Rust types in `crates/sysml-kernel/src/types.rs` are authoritative. `ts-rs` generates
 the checked-in TypeScript files. `npm run contract:check` detects drift.
@@ -97,7 +97,9 @@ the checked-in TypeScript files. `npm run contract:check` detects drift.
   upstream rule codes pass through; unnamed diagnostics use stable stage codes.
 - Library member-query stubs and incomplete inheritance are explicit. Validation
   coverage remains partial even when no diagnostics are reported.
-- Membership records retain binding identity, aliases, names and visibility.
+- Membership records retain binding identity, aliases, names and declared visibility.
+  Checked import closures add contextual visibility and explicit unknown reasons;
+  recursive imports and name-collision exclusion stay in the language kernel.
   Cardinality distinguishes exact decimal-string intervals from unknown results;
   its limits and supported provider families are documented in the public contract.
 - Unresolved declared heritage makes dependent member queries incomplete, including

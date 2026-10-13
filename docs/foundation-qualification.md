@@ -7,7 +7,8 @@ separate conformance obligations.
 
 ## Implemented behavior
 
-Snapshot schema 2 adds membership records and checked cardinality results. Native
+Snapshot schema 3 retains membership records and checked cardinality results,
+and adds checked imported-membership closure. Native
 queries preserve alias identity, long and short names, visibility, original owning
 namespace and unresolved/ambiguous target status. Inherited membership queries
 return their completeness flag alongside the records. Canonical element lookup
@@ -149,10 +150,45 @@ is unchanged. This qualifies static Boolean conditions within the existing bound
 expression domain; general predicates, contextual execution and other control
 operators remain broader work.
 
+## Checked import enumeration (schema 3)
+
+The facade exposes the pinned kernel's checked `Namespace::importedMemberships`
+and `Namespace::visibilityOf` operations. No additional vendor patch was required.
+KerML §8.3.2.4.5 defines collision exclusion and visibility relative to a namespace;
+§8.3.2.4.4/6 define membership/namespace imports, and §8.3.4.13.4 defines Package's
+filtered override. The operation dispatcher selects the applicable override.
+
+IMP-020 covers aliases, short names, duplicate import paths, contextual visibility,
+public re-export, library targets and complete empty results. IMP-024 covers
+recursive namespace/member imports, private branches, import-all and bounded cycles.
+IMP-025 retains unrelated bindings when colliding aliases or owned names exclude
+imports. IMP-026 keeps missing endpoints, incomplete inherited providers and inline
+filters unknown, while a proved false package filter returns a complete empty set.
+IMP-027 prevents syntax recovery from certifying an empty result.
+
+The new Rust suite checks round-trip identity, binding order, declared versus
+contextual visibility, stubs and malformed transport. A separate unit regression
+exhausts the visibility allowance and verifies that no partial closure escapes.
+The worker rejects schema 2, and native/WASM parity includes valid and unknown
+import results in the same workspace. Namespace dependency tests check stale and
+malformed graph evidence, recursion/work limits and serialization replay. These
+are bounded qualifications, not proof of all import/filter contexts.
+
+## KERNEL-004: expression proof isolation (open)
+
+The combined import-guard workspace revealed an existing conservative limit:
+`part def Base :> MissingBase` can make unrelated arithmetic and conditional bounds
+unknown. The same request was reproduced against the preceding commit `1adeadc`
+(engine suffix `.4`), confirming that import-query projection did not introduce it.
+The native/WASM suite now retains both the valid workspace's exact results and
+this incomplete workspace's unknown results, with parity checked for both requests.
+This is a limitation of proof availability, not evidence that the independent
+arithmetic is invalid. Dependency-local proof isolation remains work to do.
+
 ## Remaining foundation work
 
-Complete imported membership enumeration remains planned (IMP-020). Filtered imports,
-all contextual name-resolution rules, implicit metamodel construction and every
+Checked imported membership enumeration now has executable coverage (IMP-020 and
+IMP-024–027). General filtered imports, all contextual name-resolution rules, implicit metamodel construction and every
 membership override still need qualified queries and additional cases. Broader
 language families and the remaining standards inventory remain open. Full coverage
 cannot be inferred from the passing count in this matrix.
@@ -176,13 +212,13 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **64 passing conformance cases**, **no
-known-gap cases**, and **one planned case**. All **35 Rust facade tests**, **27 Node
-tests**, and **152 dependency proof tests** pass.
+On macOS arm64, the completed run has **69 passing conformance cases**, **no
+known-gap cases**, and **no planned cases in the current matrix**. All **40 Rust facade tests**,
+**30 Node tests**, and **193 dependency proof tests** pass.
 The dependency suites cover type relations (41), model-level evaluability (26),
 cardinality (22), invocation bindings (16), constructor bindings (16), dynamic graph
-(17), owned results (4) and end constancy (10). The corpus and the 32 import-rule
-partitions are included in the Rust suite, not additional independently qualified
+(17), owned results (4), end constancy (10) and checked namespace operations (41). The corpus and the 32
+import-rule partitions are included in the Rust suite, not additional independently qualified
 specification counts. Native and WebAssembly outputs match exactly.
 
 Rust formatting, Clippy with warnings denied, TypeScript checking, Prettier,
@@ -191,19 +227,29 @@ pass. The saved [matrix execution](evidence/conformance-macos-arm64.json) and
 [requirements execution](evidence/requirements-macos-arm64.json) record the current
 source, patch and fixture fingerprints. Windows/Linux execution remains pending CI.
 
-The latest [conditional benchmark](evidence/benchmark-conditionals-macos-arm64.json)
-records three fresh processes per native/WASM workload, for 36 samples. Median
-whole-process times were 2,166/2,606 ms for the viewer example, 2,537/2,751 ms for
-attribute providers, 2,651/3,106 ms for arithmetic providers, 3,519/3,374 ms for
-conditional providers, 2,618/2,653 ms for 100 usages and 2,590/2,917 ms for 1,000
-usages. Maximum peak RSS for the largest workload was 407.7/362.7 MiB. These include startup, bundled-library analysis and
-serialization; they are observations on this Mac, not cross-platform latency
-guarantees. Canonical preparation is a whole-model pass. Results vary in both
-directions compared with the retained [arithmetic run](evidence/benchmark-arithmetic-macos-arm64.json);
-these uncontrolled runs do not isolate the incremental cost or establish a regression budget.
-Performance remains an open engineering concern alongside semantic coverage.
+The latest [import-query benchmark](evidence/benchmark-imports-macos-arm64.json)
+records three fresh processes per native/WASM workload, for 42 samples. All
+repeated native and WASM snapshots agree exactly.
+
+| Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
+| --- | ---: | ---: | ---: |
+| Imported memberships | 2,187 | 2,570 | 394.3/340.0 |
+| Viewer example | 2,165 | 2,671 | 393.5/354.4 |
+| Attribute providers | 2,246 | 2,713 | 392.3/346.5 |
+| Arithmetic providers | 2,622 | 3,132 | 382.8/353.7 |
+| Conditional providers | 2,937 | 3,514 | 380.8/351.2 |
+| 100 usages | 2,104 | 2,549 | 397.0/353.2 |
+| 1,000 usages | 2,405 | 2,709 | 405.2/370.8 |
+
+Measurements include startup, bundled-library analysis and serialization. They are
+observations on this Mac, not cross-platform latency guarantees. Canonical
+preparation is a whole-model pass. Compared with the retained
+[conditional run](evidence/benchmark-conditionals-macos-arm64.json), these
+uncontrolled runs do not isolate incremental query cost or establish a regression
+budget. Large import-heavy production models and incremental performance remain
+open engineering work.
 
 The production web build and macOS arm64 bundle build pass. The new local bundle
-is `src-tauri/target/release/bundle/macos/SysML Viewer.app` (11.95 MiB). This run
+is `src-tauri/target/release/bundle/macos/SysML Viewer.app` (11.97 MiB). This run
 checks automated viewer integration and packaging; it does not repeat the earlier
 interactive file-picker/navigation checks or establish Windows/Linux packaging.

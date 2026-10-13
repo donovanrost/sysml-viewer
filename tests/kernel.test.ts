@@ -9,12 +9,21 @@ import { diagramEdges } from '../src/viewer/diagram.ts';
 import type { Snapshot } from '../src/kernel/generated/Snapshot';
 
 let snapshot: Snapshot;
+let importGuards: Snapshot;
 const documents = ['Definitions', 'Mission', 'Errors'].map((name) => ({
   id: name,
   name: `${name}.sysml`,
   text: readFileSync(new URL(`./fixtures/kernel/${name}.sysml`, import.meta.url), 'utf8'),
 }));
-for (const name of ['mult-011', 'mult-012', 'mult-013', 'mult-014', 'mult-017', 'mult-018']) {
+for (const name of [
+  'mult-011',
+  'mult-012',
+  'mult-013',
+  'mult-014',
+  'mult-017',
+  'mult-018',
+  'imp-020',
+]) {
   documents.push({
     id: name,
     name: `${name}.sysml`,
@@ -27,6 +36,17 @@ documents.push({
   text: "// 🚢\r\npackage '海' { part def 'Éngine'; part x : 'Éngine'; }",
 });
 const request = JSON.stringify({ revision: 11, documents });
+const guardRequest = JSON.stringify({
+  revision: 12,
+  documents: [
+    ...documents,
+    {
+      id: 'imp-026',
+      name: 'imp-026.sysml',
+      text: readFileSync(new URL('./conformance/fixtures/imp-026.sysml', import.meta.url), 'utf8'),
+    },
+  ],
+});
 
 before(async () => {
   await init({
@@ -35,6 +55,7 @@ before(async () => {
     ),
   });
   snapshot = JSON.parse(analyze(request));
+  importGuards = JSON.parse(analyze(guardRequest));
 });
 
 test('native CLI and WebAssembly emit identical snapshots', () => {
@@ -44,14 +65,56 @@ test('native CLI and WebAssembly emit identical snapshots', () => {
       import.meta.url,
     ),
   );
-  const native = JSON.parse(
-    execFileSync(executable, ['--request-json'], {
-      input: request,
-      encoding: 'utf8',
-      maxBuffer: 10_000_000,
-    }),
+  for (const [input, wasm] of [
+    [request, snapshot],
+    [guardRequest, importGuards],
+  ] as const) {
+    const native = JSON.parse(
+      execFileSync(executable, ['--request-json'], {
+        input,
+        encoding: 'utf8',
+        maxBuffer: 10_000_000,
+      }),
+    );
+    assert.deepEqual(wasm, native);
+  }
+});
+
+test('checked import closure preserves aliases, contextual visibility and unknown providers in WebAssembly', () => {
+  const source = snapshot.elements.find((e) => e.qualifiedName === 'ImportSource')!;
+  const alias = snapshot.memberships.find((m) => m.namespaceId === source.id && m.isAlias)!;
+  const consumer = snapshot.elements.find((e) => e.qualifiedName === 'ImportConsumer')!;
+  const closure = consumer.importedMemberships;
+  assert.equal(closure.status, 'complete');
+  if (closure.status !== 'complete') return;
+  assert.equal(closure.memberships.length, 2);
+  assert.deepEqual(closure.memberships[0], { membershipId: alias.id, visibility: 'protected' });
+  assert.equal(alias.visibility, 'public');
+  assert.equal(alias.shortName, 'E');
+  assert.deepEqual(
+    snapshot.elements.find((e) => e.qualifiedName === 'ImportEmpty')!.importedMemberships,
+    { status: 'complete', memberships: [] },
   );
-  assert.deepEqual(snapshot, native);
+  for (const name of ['MissingImport', 'IncompleteImport', 'FilterImport']) {
+    assert.deepEqual(
+      importGuards.elements.find((e) => e.qualifiedName === name)!.importedMemberships,
+      {
+        status: 'unknown',
+        reason: 'incompleteProvider',
+      },
+    );
+  }
+});
+
+test('unresolved heritage conservatively limits expression certificates across the workspace', () => {
+  // Reproduced on the preceding kernel version as well: this records a current
+  // proof-domain limit, not a claim that the independent arithmetic is invalid.
+  for (const name of ['ArithmeticBounds::add', 'ConditionalProviders::trueBranch']) {
+    assert.deepEqual(importGuards.elements.find((e) => e.qualifiedName === name)!.cardinality, {
+      status: 'unknown',
+      reason: 'unsupportedBound',
+    });
+  }
 });
 
 test('checked attribute bounds preserve exact values and unknown results in WebAssembly', () => {
@@ -231,7 +294,7 @@ test('schema 2 memberships and exact cardinalities agree across native and WebAs
     }),
   );
   assert.deepEqual(wasm, native);
-  assert.equal(wasm.schemaVersion, 2);
+  assert.equal(wasm.schemaVersion, 3);
   assert(wasm.memberships.some((m) => m.isAlias && m.shortName === 'OnlyShort' && m.name === null));
   assert.deepEqual(
     wasm.elements.find((e) => e.qualifiedName === 'ExactBounds::Assembly::large')!.cardinality,

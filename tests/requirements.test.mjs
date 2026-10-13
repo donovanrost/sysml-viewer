@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import {
   validateInventory,
   validateExecution,
@@ -91,13 +92,11 @@ test('stale implementation mappings and unsupported full-coverage claims require
 
 test('a mapped case is not counted as executed and planned cases never pass by implication', () => {
   const i = inputs();
+  i.matrix.cases.push({ id: 'TEST-PLANNED', planned: 'Synthetic future obligation' });
+  i.assessments.assessments[0].tests.push({ case: 'TEST-PLANNED', checks: [] });
   const rows = assessmentRows(i.assessments, i.matrix);
   assert.equal(rows.find((a) => a.id === 'RESOLUTION-PUBLIC').tests[0].status, 'not-run');
-  assert.equal(
-    rows.find((a) => a.id === 'MEMBERSHIP-ENUMERATION').tests.find((t) => t.case === 'IMP-020')
-      .status,
-    'planned',
-  );
+  assert.equal(rows[0].tests.find((t) => t.case === 'TEST-PLANNED').status, 'planned');
 });
 
 test('execution evidence rejects stale inputs, wrong pins and a planned case reported as passed', () => {
@@ -134,12 +133,24 @@ test('execution evidence rejects stale inputs, wrong pins and a planned case rep
     (r) => {
       r.results[0].files[Object.keys(r.results[0].files)[0]] = '0'.repeat(64);
     },
-    (r) => {
-      r.results.find((x) => x.status === 'planned').status = 'pass';
-    },
   ]) {
     const report = structuredClone(fixture);
     mutate(report);
     assert.throws(() => check(report));
   }
+  // Keep this boundary exercised even when the real matrix has no planned cases.
+  const planned = i.matrix.cases[0];
+  planned.planned = 'Synthetic future obligation';
+  delete planned.files;
+  delete planned.checks;
+  const matrixBytes = Buffer.from(JSON.stringify(i.matrix));
+  fixture.matrixSha256 = createHash('sha256').update(matrixBytes).digest('hex');
+  const validatePlanned = () =>
+    validateExecution(fixture, i.matrix, matrixBytes, json('dependencies.json'), read, inputHash);
+  fixture.results[0] = { id: planned.id, status: 'planned' };
+  fixture.counts.pass -= 1;
+  fixture.counts.planned += 1;
+  validatePlanned();
+  fixture.results[0].status = 'pass';
+  assert.throws(validatePlanned);
 });

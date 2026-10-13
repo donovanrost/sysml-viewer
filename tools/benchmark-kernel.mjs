@@ -26,6 +26,10 @@ if (process.argv.includes('--wasm-child')) {
   );
   const scenarios = [
     {
+      name: 'import-closures',
+      text: readFileSync(join(root, 'tests/conformance/fixtures/imp-020.sysml'), 'utf8'),
+    },
+    {
       name: 'viewer-example',
       text: readFileSync(join(root, 'examples/CoastalExplorer.sysml'), 'utf8'),
     },

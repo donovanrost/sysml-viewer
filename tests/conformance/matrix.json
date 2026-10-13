@@ -28,7 +28,7 @@
           "section": "7.2.5.4"
         }
       ],
-      "uncovered": "Filtered imports, imported membership enumeration, alias collisions through imports, and all contextual name-resolution rules remain unqualified."
+      "uncovered": "General metadata predicates and filtered imports, all contextual resolution rules, and complete implicit membership construction remain unqualified. Checked enumeration covers the bounded cases below; unknown results are not complete language conformance."
     },
     {
       "id": "typing",
@@ -1532,9 +1532,129 @@
     {
       "id": "IMP-020",
       "area": "imports",
-      "purpose": "Expose complete imported membership closure with completeness guarantees.",
+      "purpose": "Expose checked import closure with alias identity, short names, contextual visibility, re-exports, library targets and proven empty results.",
       "polarity": "positive",
-      "planned": "Owned and inherited bindings are public; complete imported membership enumeration is not yet exposed."
+      "files": ["tests/conformance/fixtures/imp-020.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "bindings",
+          "op": "memberships",
+          "owner": "ImportConsumer",
+          "mode": "imported",
+          "status": "complete",
+          "bindings": [
+            {
+              "name": "Alias",
+              "shortName": "E",
+              "namespace": "ImportSource",
+              "target": "ImportSource::Engine",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "protected",
+              "alias": true
+            },
+            {
+              "name": "Engine",
+              "shortName": null,
+              "namespace": "ImportSource",
+              "target": "ImportSource::Engine",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "private",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "reexport",
+          "op": "memberships",
+          "owner": "ImportReexport",
+          "mode": "imported",
+          "status": "complete",
+          "bindings": [
+            {
+              "name": "Engine",
+              "shortName": null,
+              "namespace": "ImportSource",
+              "target": "ImportSource::Engine",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "public",
+              "alias": false
+            },
+            {
+              "name": "Alias",
+              "shortName": "E",
+              "namespace": "ImportSource",
+              "target": "ImportSource::Engine",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "public",
+              "alias": true
+            }
+          ]
+        },
+        {
+          "id": "downstream",
+          "op": "memberships",
+          "owner": "ImportDownstream",
+          "mode": "imported",
+          "status": "complete",
+          "bindings": [
+            {
+              "name": "Engine",
+              "shortName": null,
+              "namespace": "ImportSource",
+              "target": "ImportSource::Engine",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "private",
+              "alias": false
+            },
+            {
+              "name": "Alias",
+              "shortName": "E",
+              "namespace": "ImportSource",
+              "target": "ImportSource::Engine",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "private",
+              "alias": true
+            }
+          ]
+        },
+        {
+          "id": "empty",
+          "op": "memberships",
+          "owner": "ImportEmpty",
+          "mode": "imported",
+          "status": "complete",
+          "bindings": []
+        },
+        {
+          "id": "library",
+          "op": "memberships",
+          "owner": "ImportLibrary",
+          "mode": "imported",
+          "status": "complete",
+          "bindings": [
+            {
+              "name": "Integer",
+              "shortName": null,
+              "namespace": "ScalarValues",
+              "target": "ScalarValues::Integer",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "public",
+              "alias": false
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "IMP-021",
@@ -2154,6 +2274,265 @@
           "op": "diagnostic",
           "stage": "resolution",
           "messageIncludes": "shadows the standard library"
+        }
+      ]
+    },
+    {
+      "id": "IMP-024",
+      "area": "imports",
+      "purpose": "Recursive namespace/member imports retain ordered binding identities, omit private branches, bound cycles and honor import-all.",
+      "polarity": "robustness",
+      "files": ["tests/conformance/fixtures/imp-024.sysml"],
+      "checks": [
+        {
+          "id": "cycle",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "messageIncludes": "circular namespace import"
+        },
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "recursive",
+          "op": "memberships",
+          "owner": "RecursiveConsumer",
+          "mode": "imported",
+          "status": "complete",
+          "bindings": [
+            {
+              "name": "Nested",
+              "shortName": null,
+              "namespace": "RecursiveSource",
+              "target": "RecursiveSource::Nested",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "public",
+              "alias": false
+            },
+            {
+              "name": "Leaf",
+              "shortName": null,
+              "namespace": "RecursiveSource::Nested",
+              "target": "RecursiveSource::Nested::Leaf",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "member",
+          "op": "memberships",
+          "owner": "MemberRecursive",
+          "mode": "imported",
+          "status": "complete",
+          "bindings": [
+            {
+              "name": "Nested",
+              "shortName": null,
+              "namespace": "RecursiveSource",
+              "target": "RecursiveSource::Nested",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "private",
+              "alias": false
+            },
+            {
+              "name": "Leaf",
+              "shortName": null,
+              "namespace": "RecursiveSource::Nested",
+              "target": "RecursiveSource::Nested::Leaf",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "private",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "all",
+          "op": "memberships",
+          "owner": "AllConsumer",
+          "mode": "imported",
+          "status": "complete",
+          "bindings": [
+            {
+              "name": "Nested",
+              "shortName": null,
+              "namespace": "RecursiveSource",
+              "target": "RecursiveSource::Nested",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "private",
+              "alias": false
+            },
+            {
+              "name": "Hidden",
+              "shortName": null,
+              "namespace": "RecursiveSource",
+              "target": "RecursiveSource::Hidden",
+              "status": "resolved",
+              "visibility": "private",
+              "contextVisibility": "private",
+              "alias": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IMP-025",
+      "area": "imports",
+      "purpose": "Prune indistinguishable imported aliases and imports colliding with an owned member, preserving unrelated bindings.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/imp-025.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "imported",
+          "op": "memberships",
+          "owner": "CollisionConsumer",
+          "mode": "imported",
+          "status": "complete",
+          "bindings": [
+            {
+              "name": "A",
+              "shortName": null,
+              "namespace": "CollisionFirst",
+              "target": "CollisionFirst::A",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "private",
+              "alias": false
+            },
+            {
+              "name": "B",
+              "shortName": null,
+              "namespace": "CollisionSecond",
+              "target": "CollisionSecond::B",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "private",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "owned",
+          "op": "memberships",
+          "owner": "CollisionOwned",
+          "mode": "imported",
+          "status": "complete",
+          "bindings": [
+            {
+              "name": "A",
+              "shortName": null,
+              "namespace": "CollisionFirst",
+              "target": "CollisionFirst::A",
+              "status": "resolved",
+              "visibility": "public",
+              "contextVisibility": "private",
+              "alias": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IMP-026",
+      "area": "imports",
+      "purpose": "Incomplete import endpoints, inherited providers and inline filters remain unknown; a proved false package filter yields a complete empty closure.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/imp-026.sysml"],
+      "checks": [
+        {
+          "id": "missing",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "messageIncludes": "MissingProvider"
+        },
+        {
+          "id": "base",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "messageIncludes": "MissingBase"
+        },
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "endpoint",
+          "op": "memberships",
+          "owner": "MissingImport",
+          "mode": "imported",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "provider",
+          "op": "memberships",
+          "owner": "IncompleteImport",
+          "mode": "imported",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "filter",
+          "op": "memberships",
+          "owner": "FilterImport",
+          "mode": "imported",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "false",
+          "op": "memberships",
+          "owner": "FilterFalse",
+          "mode": "imported",
+          "status": "complete",
+          "bindings": []
+        }
+      ]
+    },
+    {
+      "id": "IMP-027",
+      "area": "imports",
+      "purpose": "Recovered import syntax cannot be certified as a complete empty closure.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/imp-027.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error"
+        },
+        {
+          "id": "unknown",
+          "op": "memberships",
+          "owner": "RecoveredImport",
+          "mode": "imported",
+          "status": "unknown",
+          "reason": "invalidSyntax"
         }
       ]
     }

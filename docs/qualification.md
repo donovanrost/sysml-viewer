@@ -1,6 +1,6 @@
 # Initial kernel qualification
 
-This record describes the schema 1 baseline. See [foundation qualification](foundation-qualification.md) for the schema 2 changes and current evidence.
+This record describes the schema 1 baseline. See [foundation qualification](foundation-qualification.md) for subsequent schema changes and current evidence.
 
 Recorded on 2026-10-12 in Hawaii (2026-10-13 UTC). This milestone establishes a
 reviewed public contract and reproducible acceptance evidence. It does not certify

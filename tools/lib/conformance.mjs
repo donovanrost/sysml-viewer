@@ -6,7 +6,7 @@ const ops = {
   members: ['owner', 'mode', 'names', 'complete'],
   multiplicity: ['owner', 'value'],
   cardinality: ['owner', 'status', 'lower', 'upper', 'reason'],
-  memberships: ['owner', 'mode', 'bindings'],
+  memberships: ['owner', 'mode', 'bindings', 'status', 'reason'],
   diagnostic: ['stage', 'code', 'severity', 'messageIncludes'],
   noDiagnostics: ['stage'],
   source: ['owner', 'text'],
@@ -120,15 +120,44 @@ export function validateMatrix(matrix) {
         }
       }
       if (check.op === 'memberships') {
+        if (check.mode === 'imported') {
+          assert(['complete', 'unknown'].includes(check.status));
+          if (check.status === 'unknown') {
+            assert(
+              check.owner &&
+                [
+                  'invalidSyntax',
+                  'incompleteProvider',
+                  'unsupported',
+                  'workLimit',
+                  'unavailable',
+                ].includes(check.reason),
+            );
+            assert(!Object.hasOwn(check, 'bindings'));
+            continue;
+          }
+          assert(!Object.hasOwn(check, 'reason'));
+        } else {
+          assert(!Object.hasOwn(check, 'status') && !Object.hasOwn(check, 'reason'));
+        }
         assert(
           check.owner &&
-            ['owned', 'inherited'].includes(check.mode) &&
+            ['owned', 'inherited', 'imported'].includes(check.mode) &&
             Array.isArray(check.bindings),
         );
         for (const b of check.bindings) {
           keys(
             b,
-            ['name', 'shortName', 'namespace', 'target', 'status', 'visibility', 'alias'],
+            [
+              'name',
+              'shortName',
+              'namespace',
+              'target',
+              'status',
+              'visibility',
+              'alias',
+              ...(check.mode === 'imported' ? ['contextVisibility'] : []),
+            ],
             'membership binding',
           );
           for (const k of ['name', 'shortName', 'target'])
@@ -142,6 +171,10 @@ export function validateMatrix(matrix) {
               typeof b.alias === 'boolean',
           );
           assert(b.status === 'resolved' || b.target === null);
+          if (check.mode === 'imported') {
+            assert.equal(b.status, 'resolved');
+            assert(['public', 'protected', 'private'].includes(b.contextVisibility));
+          }
         }
       }
       if (check.op === 'source') assert(check.owner && typeof check.text === 'string');
@@ -217,10 +250,26 @@ export function checkSnapshot(snapshot, check) {
     }
     case 'memberships': {
       const owner = find(check.owner);
+      if (check.mode === 'imported') {
+        assert.equal(owner.importedMemberships.status, check.status);
+        if (check.status === 'unknown') {
+          assert.deepEqual(owner.importedMemberships, { status: 'unknown', reason: check.reason });
+          break;
+        }
+      }
       assert(owner.membersAvailable, 'Membership query unavailable');
       const membershipById = new Map(snapshot.memberships.map((m) => [m.id, m]));
+      const imports = new Map(
+        check.mode === 'imported'
+          ? owner.importedMemberships.memberships.map((b) => [b.membershipId, b.visibility])
+          : [],
+      );
       const bindings = (
-        check.mode === 'owned' ? owner.ownedMemberships : owner.inheritedMemberships
+        check.mode === 'owned'
+          ? owner.ownedMemberships
+          : check.mode === 'imported'
+            ? owner.importedMemberships.memberships.map((b) => b.membershipId)
+            : owner.inheritedMemberships
       )
         .map((id) => {
           const m = membershipById.get(id);
@@ -229,7 +278,7 @@ export function checkSnapshot(snapshot, check) {
           assert(namespace, 'Missing membership owner');
           return { m, namespace };
         })
-        .filter(({ namespace }) => !namespace.library)
+        .filter(({ namespace }) => check.mode === 'imported' || !namespace.library)
         .map(({ m, namespace }) => ({
           name: m.name,
           shortName: m.shortName,
@@ -239,6 +288,7 @@ export function checkSnapshot(snapshot, check) {
           status: m.member.status,
           visibility: m.visibility,
           alias: m.isAlias,
+          ...(check.mode === 'imported' ? { contextVisibility: imports.get(m.id) } : {}),
         }));
       const key = (b) =>
         JSON.stringify([
@@ -249,6 +299,7 @@ export function checkSnapshot(snapshot, check) {
           b.status,
           b.visibility,
           b.alias,
+          b.contextVisibility,
         ]);
       const sorted = (items) => [...items].sort((a, b) => key(a).localeCompare(key(b)));
       assert.deepEqual(sorted(bindings), sorted(check.bindings));

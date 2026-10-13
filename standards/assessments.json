@@ -27,19 +27,19 @@
       "path": "crates/sysml-kernel/src/engine.rs",
       "symbol": "pub fn analyze(",
       "role": "facade implementation",
-      "sha256": "496cef9181700a01886de401ebab6697ed0973e9343ccaa0741c5e1428a26527"
+      "sha256": "35fa7b4ae21d4e43755b1c5f717e624e528499ef7968f1565931009ac149c03c"
     },
     "query": {
       "path": "crates/sysml-kernel/src/query.rs",
       "symbol": "pub struct SnapshotQuery",
       "role": "public query boundary",
-      "sha256": "e038c4bf3dae79e3049b331f3cafcb6ed35ba6b82e7aa34f1909c9bd06ae7730"
+      "sha256": "3b577ba0440e63bc4f9fd35ffb5f87c4fd503b32e3d3867e7ea8c952e107dbb9"
     },
     "wire": {
       "path": "crates/sysml-kernel/src/types.rs",
       "symbol": "pub struct Snapshot",
       "role": "public wire fields",
-      "sha256": "0dd96ea1c09e6eaa298341e6c6b90fe523aab9ba9e23cbab0d89d46b132cc442"
+      "sha256": "caf41e8d3c0d50a1c30b6a121d08a36c8b2b95f8661a9aef295def7c5a0d5043"
     },
     "graph": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
@@ -105,7 +105,7 @@
       "path": "crates/sysml-kernel/src/namespaces.rs",
       "symbol": "pub(crate) fn alias_collisions",
       "role": "Plain alias distinguishability against owned and inherited memberships",
-      "sha256": "882492526af41bfb1f7362ef338b4ba46e1672610b036b68182f59877e3cf418"
+      "sha256": "7eedc4eaa7f95ea400cfc3a58e5eb73688358323ce033ddcb4660543021e6002"
     },
     "foundation-tests": {
       "path": "crates/sysml-kernel/tests/foundation.rs",
@@ -148,6 +148,24 @@
       "symbol": "fn certified_multiplicity_value(",
       "role": "Bounded exact execution over certified identities; conditional branches preserve Boolean typing and lazy evaluation.",
       "sha256": "f50ac0bc5e6ee35caaa46fe3a6280b66a9e8181bc78466c3e54b96be2f4b964b"
+    },
+    "import-api": {
+      "path": "crates/sysml-kernel/src/imports.rs",
+      "symbol": "pub(crate) fn imported_memberships",
+      "role": "Checked import closure and contextual visibility with bounded queries and explicit failures.",
+      "sha256": "68952926dbea9f8d36444be31189678b30bb3148aab9a44811ddf8aa342a6f2d"
+    },
+    "checked-imports": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/imports.rs",
+      "symbol": "pub(super) fn sequence",
+      "role": "Checked import closure, collision pruning and bounded Package filter proof.",
+      "sha256": "48fb86bae8e9e8b7f75c7aa0136105ef2c448dd190be5300525960b0b0425db1"
+    },
+    "import-tests": {
+      "path": "crates/sysml-kernel/tests/imports.rs",
+      "symbol": "fn imported_alias_identity_and_contextual_visibility_survive_round_trip",
+      "role": "Native import identity, visibility, unknown-provider and malformed-transport regressions.",
+      "sha256": "c0437ecdc5e3cd801a573660f78146880839a2bd181f5b96908954a326d91eba"
     }
   },
   "assessments": [
@@ -986,11 +1004,13 @@
     },
     {
       "id": "MEMBERSHIP-ENUMERATION",
-      "obligation": "Expose owned and inherited membership identities, alias long/short names, visibility and target status without rewriting element ownership.",
+      "obligation": "Expose owned, inherited and checked imported membership identities, alias long/short names, declared/contextual visibility and target status without rewriting element ownership.",
       "category": "product",
       "sources": [
         "SYSML-CLAUSE-7.5.2",
-        "SYSML-CLAUSE-7.5.3"
+        "SYSML-CLAUSE-7.5.3",
+        "KERML-CLAUSE-8.3.2.4.5",
+        "KERML-CLAUSE-8.3.4.13.4"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -998,14 +1018,17 @@
         "status": "partial",
         "evidence": [
           "engine",
-          "graph"
+          "graph",
+          "import-api",
+          "checked-imports"
         ]
       },
       "api": {
         "status": "partial",
         "evidence": [
           "wire",
-          "query"
+          "query",
+          "import-tests"
         ]
       },
       "tests": [
@@ -1036,10 +1059,56 @@
         },
         {
           "case": "IMP-020",
-          "checks": []
+          "checks": [
+            "clean",
+            "bindings",
+            "reexport",
+            "downstream",
+            "empty",
+            "library"
+          ]
+        },
+        {
+          "case": "IMP-024",
+          "checks": [
+            "cycle",
+            "syntax",
+            "structure",
+            "recursive",
+            "member",
+            "all"
+          ]
+        },
+        {
+          "case": "IMP-025",
+          "checks": [
+            "clean",
+            "imported",
+            "owned"
+          ]
+        },
+        {
+          "case": "IMP-026",
+          "checks": [
+            "missing",
+            "base",
+            "syntax",
+            "structure",
+            "endpoint",
+            "provider",
+            "filter",
+            "false"
+          ]
+        },
+        {
+          "case": "IMP-027",
+          "checks": [
+            "syntax",
+            "unknown"
+          ]
         }
       ],
-      "limits": "Schema 2 exposes explicit owned and inherited bindings; full imported membership closure, implicit construction and complete metamodel traversal remain open. Inheritance completeness accompanies the native query."
+      "limits": "Schema 3 exposes explicit owned/inherited bindings and checked imported closure with contextual visibility, ordered identities and explicit unknown results. Missing endpoints, incomplete Type providers, inline filters and syntax recovery do not certify empty closure. General metadata/filter predicates, all contextual resolution, implicit construction and complete metamodel traversal remain open. Complete results certify this bounded query, not whole-model validity."
     },
     {
       "id": "MULTIPLICITY-EXPRESSION",
@@ -1231,7 +1300,7 @@
           ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. An unresolved base elsewhere in the workspace can conservatively invalidate unrelated arithmetic/conditional certificates (KERNEL-004); native/WASM tests retain this pre-existing proof-isolation limit."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",

@@ -80,3 +80,37 @@ test('cardinality assertions retain exact integer strings and do not accept unkn
   check.lower = 9007199254740993;
   assert.throws(() => validateMatrix(m));
 });
+
+test('import assertions reject unknown as empty and require contextual visibility', () => {
+  const m = matrix();
+  const c = m.cases.find((c) => c.id === 'IMP-020');
+  const check = c.checks.find((c) => c.id === 'empty');
+  const s = {
+    ...snapshot,
+    elements: [
+      {
+        qualifiedName: check.owner,
+        membersAvailable: true,
+        importedMemberships: { status: 'unknown', reason: 'incompleteProvider' },
+      },
+    ],
+    memberships: [],
+  };
+  assert.equal(assessCase(s, { checks: [check] })[0].status, 'fail');
+  for (const mutate of [
+    (check) => {
+      check.status = 'unknown';
+      check.reason = 'incompleteProvider';
+    },
+    (check) => {
+      check.reason = 'workLimit';
+    },
+    (check) => {
+      delete check.bindings[0].contextVisibility;
+    },
+  ]) {
+    const value = matrix();
+    mutate(value.cases.find((c) => c.id === 'IMP-020').checks.find((c) => c.id === 'bindings'));
+    assert.throws(() => validateMatrix(value));
+  }
+});
