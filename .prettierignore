@@ -1,0 +1,9 @@
+vendor/
+src/kernel/generated/
+packages/
+node_modules/
+target/
+src-tauri/
+dist/
+release/
+tools/kernel-evaluation/target/

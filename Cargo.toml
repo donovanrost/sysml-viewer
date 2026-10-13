@@ -1,0 +1,19 @@
+[workspace]
+resolver = "2"
+members = ["crates/sysml-kernel", "crates/sysml-cli", "crates/sysml-wasm"]
+default-members = ["crates/sysml-kernel", "crates/sysml-cli"]
+exclude = ["src-tauri", "tools/kernel-evaluation", "vendor/sysml-toolkit"]
+
+[workspace.package]
+version = "0.2.0"
+edition = "2021"
+rust-version = "1.97"
+
+[workspace.dependencies]
+sysml-kernel = { path = "crates/sysml-kernel" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+lto = "thin"
+

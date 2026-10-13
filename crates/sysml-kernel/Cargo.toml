@@ -1,0 +1,24 @@
+[package]
+name = "sysml-kernel"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Headless SysML/KerML workspace analysis and versioned query snapshots"
+publish = false
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+sysmlv2-model = { path = "../../vendor/sysml-toolkit/crates/sysmlv2-model" }
+sysmlv2-syntax = { path = "../../vendor/sysml-toolkit/crates/sysmlv2-syntax" }
+ts-rs = { version = "12.0.1", optional = true }
+
+[features]
+bindings = ["dep:ts-rs"]
+
+[[bin]]
+name = "export-types"
+required-features = ["bindings"]
+
+[build-dependencies]
+serde_json.workspace = true

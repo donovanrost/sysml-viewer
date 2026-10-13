@@ -1,0 +1,43 @@
+{
+  "openMbee": {
+    "ambiguous": [
+      "Duplicate"
+    ],
+    "effectiveMembers": [
+      "Components::SpecialDevice::signal",
+      "Components::SpecialDevice::serial",
+      "Components::Device::mass"
+    ],
+    "endpoints": [
+      [
+        [
+          "Mission::vehicle::a",
+          "Components::SpecialDevice::signal"
+        ],
+        [
+          "Mission::vehicle::b",
+          "Components::Device::signal"
+        ]
+      ]
+    ],
+    "parseErrors": 0,
+    "types": [
+      "Components::SpecialDevice"
+    ],
+    "unresolved": [
+      "Absent"
+    ]
+  },
+  "syster": {
+    "ambiguous": false,
+    "importedType": "Components::SpecialDevice",
+    "membersByName": [
+      "Components::SpecialDevice::<:Signal#1@L11>",
+      "Components::Device::mass",
+      "Components::SpecialDevice::serial"
+    ],
+    "parseErrors": 0,
+    "standardType": "ScalarValues::Real",
+    "usage": "Mission::vehicle::a"
+  }
+}

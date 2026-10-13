@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Read models explicitly selected through the native file dialog. No write or network permissions.",
+  "windows": ["main"],
+  "permissions": ["core:default", "dialog:allow-open", "fs:allow-read-text-file", "fs:allow-stat"]
+}

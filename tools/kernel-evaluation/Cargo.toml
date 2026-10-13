@@ -1,0 +1,12 @@
+[package]
+name = "kernel-evaluation"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+sysmlv2-model = { path = "../../vendor/sysml-toolkit/crates/sysmlv2-model" }
+syster-base = { git = "https://github.com/jade-codes/syster-base", rev = "6a355413ee4ac6dcd8d2110c29646746e3e1e1e7" }
+serde_json = "1"

@@ -1,0 +1,5 @@
+[resolver]
+incompatible-rust-versions = "fallback"
+
+[target.wasm32-unknown-unknown]
+rustflags = ["-C", "link-arg=-zstack-size=16777216", "-C", "link-arg=--max-memory=1073741824"]

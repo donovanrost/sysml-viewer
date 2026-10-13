@@ -1,0 +1,34 @@
+{
+  "name": "sysml-viewer",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run kernel:build && vite --host 127.0.0.1 --port 1473 --strictPort",
+    "build": "npm run kernel:build && tsc --noEmit && vite build",
+    "kernel:build": "node tools/build-kernel.mjs",
+    "kernel:test": "node tools/rust.mjs test --locked --release --workspace",
+    "contract:generate": "node tools/generate-contract.mjs",
+    "contract:check": "node tools/generate-contract.mjs --check",
+    "pretest": "npm run kernel:build && node tools/rust.mjs build --locked --release -p sysml-cli",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "inspect": "node tools/rust.mjs run --locked --release -p sysml-cli --",
+    "desktop": "node tools/desktop.mjs dev",
+    "desktop:build": "node tools/desktop.mjs build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
+    "format": "prettier --write src tests tools/*.mjs",
+    "format:check": "prettier --check src tests tools/*.mjs"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "~2.11.0",
+    "@tauri-apps/plugin-dialog": "~2.7.0",
+    "@tauri-apps/plugin-fs": "~2.5.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0",
+    "@types/node": "^26.6.5",
+    "prettier": "^3.9.10",
+    "typescript": "~5.9.3",
+    "vite": "^7.0.0"
+  }
+}
