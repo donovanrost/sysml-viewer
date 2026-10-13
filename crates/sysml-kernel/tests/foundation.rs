@@ -560,3 +560,85 @@ fn compound_ranges_preserve_exact_values_and_unknown_endpoints_after_round_trip(
         }
     }
 }
+
+#[test]
+fn ordered_predicates_preserve_exact_values_and_guards_after_round_trip() {
+    let original = analyze(vec![
+        document(
+            "ordered.sysml",
+            include_str!("../../../tests/conformance/fixtures/mult-024.sysml"),
+        ),
+        document(
+            "guards.sysml",
+            include_str!("../../../tests/conformance/fixtures/mult-025.sysml"),
+        ),
+    ]);
+    assert!(!original
+        .diagnostics
+        .iter()
+        .any(|d| matches!(d.stage, Stage::Syntax)));
+    let restored: Snapshot =
+        serde_json::from_str(&serde_json::to_string(&original).unwrap()).unwrap();
+    let q = restored.queries().unwrap();
+    for (name, value) in [
+        ("ltLess", "7"),
+        ("ltEqual", "9"),
+        ("ltGreater", "9"),
+        ("leLess", "7"),
+        ("leEqual", "7"),
+        ("leGreater", "9"),
+        ("gtLess", "9"),
+        ("gtEqual", "9"),
+        ("gtGreater", "7"),
+        ("geLess", "9"),
+        ("geEqual", "7"),
+        ("geGreater", "7"),
+        ("large", "11"),
+        ("largeReverse", "12"),
+        ("limit", "13"),
+        ("negative", "14"),
+        ("rational", "15"),
+        ("rationalEqual", "16"),
+        ("rationalMixed", "17"),
+        ("rationalClose", "18"),
+        ("arithmetic", "19"),
+        ("viaAlias", "20"),
+        ("nested", "21"),
+        ("lazy", "22"),
+        ("wideArithmetic", "23"),
+    ] {
+        let e = q.find(&format!("OrderedComparisons::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Evaluated {
+                lower: value.into(),
+                upper: Some(value.into())
+            },
+            "{name}"
+        );
+    }
+    for name in [
+        "booleanLeft",
+        "booleanRight",
+        "real",
+        "infinity",
+        "division",
+        "excessive",
+        "booleanBound",
+        "missingOperand",
+        "selectedFraction",
+    ] {
+        let e = q.find(&format!("OrderedComparisonGuards::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Unknown {
+                reason: if name == "missingOperand" {
+                    CardinalityIssue::IncompleteProvider
+                } else {
+                    CardinalityIssue::UnsupportedBound
+                }
+            },
+            "{name}"
+        );
+    }
+}

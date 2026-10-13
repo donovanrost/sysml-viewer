@@ -27,6 +27,13 @@ if (process.argv.includes('--wasm-child')) {
   );
   const scenarios = [
     {
+      name: 'ordered-predicates',
+      text: readFileSync(join(root, 'tests/conformance/fixtures/mult-024.sysml'), 'utf8'),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'MULT-024').checks,
+    },
+    {
       name: 'compound-ranges',
       text: readFileSync(join(root, 'tests/conformance/fixtures/mult-022.sysml'), 'utf8'),
       checks: JSON.parse(

@@ -110,7 +110,18 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
          let operator = match r.b.elements[expression]
              .props
              .get("operator")
-@@ -916,10 +969,53 @@
+@@ -903,6 +956,10 @@
+             Some("/") => BinaryOp::Div,
+             Some("%") => BinaryOp::Rem,
+             Some("^" | "**") => BinaryOp::Pow,
++            Some("<") => BinaryOp::Lt,
++            Some("<=") => BinaryOp::LtEq,
++            Some(">") => BinaryOp::Gt,
++            Some(">=") => BinaryOp::GtEq,
+             _ => return Err(CardinalityIssue::UnsupportedBound),
+         };
+         charge(steps, arguments.bindings.len())?;
+@@ -916,10 +973,53 @@
          {
              return Err(CardinalityIssue::UnsupportedBound);
          }
@@ -165,7 +176,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
  }
  
  /// A contextual reference replaces only the model-level eligibility predicate,
-@@ -972,9 +1068,10 @@
+@@ -972,9 +1072,10 @@
  fn require_model_level_value(
      r: &mut ResolvedModel,
      expression: usize,
@@ -177,7 +188,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
      *steps = proof.steps;
      if proof.classification == super::ModelLevelEvaluability::Evaluable {
          Ok(())
-@@ -1003,6 +1100,83 @@
+@@ -1003,6 +1104,154 @@
      fn bounds(r: &mut ResolvedModel, name: &str) -> Result<CardinalityBounds, CardinalityIssue> {
          let e = r.resolve_qualified(name).unwrap();
          r.cardinality_report(e).bounds
@@ -198,6 +209,77 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
 +        r.implied_relationships(slots);
 +        assert_eq!(r.cardinality_report(slots).bounds.unwrap().size(), Some(3));
 +        (r, slots)
++    }
++    fn ordered_fixture() -> (ResolvedModel, ElementRef, ElementRef) {
++        let mut m = conditional_model();
++        m.add_library_source(
++            "ordering.kerml",
++            "standard library package DataFunctions {function '<' {in a; in b; return r;}}",
++        );
++        let unit = m.add_source(
++            "ordered.kerml",
++            "feature count = if 2 < 3 ? 7 else 9; feature orderedSlots[count];",
++        );
++        assert!(unit.diagnostics.is_empty(), "{:?}", unit.diagnostics);
++        let mut r = ResolvedModel::build(&m);
++        let slots = r.resolve_qualified("orderedSlots").unwrap();
++        let call = r
++            .user_elements()
++            .find(|e| {
++                r.b.elements[e.0]
++                    .props
++                    .get("operator")
++                    .and_then(|p| p.as_str())
++                    == Some("<")
++            })
++            .unwrap();
++        (r, slots, call)
++    }
++    #[test]
++    fn ordered_bounds_reject_stale_bindings_and_exhausted_work() {
++        for mutation in 0..3 {
++            let (mut r, slots, call) = ordered_fixture();
++            r.implied_relationships(slots);
++            assert_eq!(r.cardinality_report(slots).bounds.unwrap().size(), Some(7));
++            let report = r.cardinality_report_with_budget(slots, crate::eval::MAX_STEPS);
++            assert_eq!(report.bounds, Err(CardinalityIssue::WorkLimit));
++            assert!(report.multiplicities.is_empty());
++            let bindings = r
++                .invocation_binding_report(call)
++                .arguments
++                .unwrap()
++                .bindings;
++            match mutation {
++                0 => {
++                    r.b.elements[bindings[0].value.0]
++                        .props
++                        .insert("value", json!(4));
++                }
++                1 => r.b.elements[bindings[1].value.0].owning_relationship = None,
++                _ => {
++                    r.b.elements[call.0].props.insert("operator", json!(">"));
++                }
++            }
++            let report = r.cardinality_report(slots);
++            assert!(report.bounds.is_err(), "mutation {mutation}");
++            assert!(report.multiplicities.is_empty());
++        }
++    }
++    #[test]
++    fn ordered_bounds_use_current_operands_before_publication() {
++        let (mut r, slots, call) = ordered_fixture();
++        let left = r
++            .user_elements()
++            .find(|e| {
++                r.element_type(*e) == "LiteralInteger"
++                    && matches!(r.b.elements[e.0].props.get("value"),
++                        Some(crate::properties::Atom::Number(n)) if n.as_i64() == Some(2))
++            })
++            .unwrap();
++        r.b.elements[left.0].props.insert("value", json!(4));
++        assert!(r.invocation_binding_report(call).arguments.is_err());
++        r.implied_relationships(slots);
++        assert_eq!(r.cardinality_report(slots).bounds.unwrap().size(), Some(9));
 +    }
 +    #[test]
 +    fn conditional_bounds_require_reciprocal_wrappers_even_on_the_skipped_branch() {

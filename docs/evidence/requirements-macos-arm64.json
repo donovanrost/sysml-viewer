@@ -1621,7 +1621,10 @@
         "KERML-CLAUSE-8.4.4.9.6",
         "KERML-CLAUSE-9.4.17.2",
         "KERML-CLAUSE-8.3.3.1.8",
-        "KERML-CLAUSE-8.3.3.2.3"
+        "KERML-CLAUSE-8.3.3.2.3",
+        "KERML-CLAUSE-9.4.3.2",
+        "KERML-CLAUSE-9.4.10.2",
+        "KERML-CLAUSE-9.4.11.2"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1638,7 +1641,8 @@
           "checked-dynamic-isolation",
           "isolation-tests",
           "checked-eligibility-batch",
-          "cold-query-tests"
+          "cold-query-tests",
+          "ordered-predicate-tests"
         ]
       },
       "api": {
@@ -2403,9 +2407,207 @@
               "status": "pass"
             }
           ]
+        },
+        {
+          "case": "MULT-024",
+          "checks": [
+            "clean",
+            "ltLess",
+            "ltEqual",
+            "ltGreater",
+            "leLess",
+            "leEqual",
+            "leGreater",
+            "gtLess",
+            "gtEqual",
+            "gtGreater",
+            "geLess",
+            "geEqual",
+            "geGreater",
+            "large",
+            "largeReverse",
+            "limit",
+            "negative",
+            "rational",
+            "rationalEqual",
+            "rationalMixed",
+            "rationalClose",
+            "arithmetic",
+            "viaAlias",
+            "nested",
+            "lazy",
+            "wideArithmetic"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "ltLess",
+              "status": "pass"
+            },
+            {
+              "id": "ltEqual",
+              "status": "pass"
+            },
+            {
+              "id": "ltGreater",
+              "status": "pass"
+            },
+            {
+              "id": "leLess",
+              "status": "pass"
+            },
+            {
+              "id": "leEqual",
+              "status": "pass"
+            },
+            {
+              "id": "leGreater",
+              "status": "pass"
+            },
+            {
+              "id": "gtLess",
+              "status": "pass"
+            },
+            {
+              "id": "gtEqual",
+              "status": "pass"
+            },
+            {
+              "id": "gtGreater",
+              "status": "pass"
+            },
+            {
+              "id": "geLess",
+              "status": "pass"
+            },
+            {
+              "id": "geEqual",
+              "status": "pass"
+            },
+            {
+              "id": "geGreater",
+              "status": "pass"
+            },
+            {
+              "id": "large",
+              "status": "pass"
+            },
+            {
+              "id": "largeReverse",
+              "status": "pass"
+            },
+            {
+              "id": "limit",
+              "status": "pass"
+            },
+            {
+              "id": "negative",
+              "status": "pass"
+            },
+            {
+              "id": "rational",
+              "status": "pass"
+            },
+            {
+              "id": "rationalEqual",
+              "status": "pass"
+            },
+            {
+              "id": "rationalMixed",
+              "status": "pass"
+            },
+            {
+              "id": "rationalClose",
+              "status": "pass"
+            },
+            {
+              "id": "arithmetic",
+              "status": "pass"
+            },
+            {
+              "id": "viaAlias",
+              "status": "pass"
+            },
+            {
+              "id": "nested",
+              "status": "pass"
+            },
+            {
+              "id": "lazy",
+              "status": "pass"
+            },
+            {
+              "id": "wideArithmetic",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-025",
+          "checks": [
+            "natural-required",
+            "booleanLeft",
+            "booleanRight",
+            "real",
+            "infinity",
+            "division",
+            "excessive",
+            "booleanBound",
+            "missingOperand",
+            "selectedFraction"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "natural-required",
+              "status": "pass"
+            },
+            {
+              "id": "booleanLeft",
+              "status": "pass"
+            },
+            {
+              "id": "booleanRight",
+              "status": "pass"
+            },
+            {
+              "id": "real",
+              "status": "pass"
+            },
+            {
+              "id": "infinity",
+              "status": "pass"
+            },
+            {
+              "id": "division",
+              "status": "pass"
+            },
+            {
+              "id": "excessive",
+              "status": "pass"
+            },
+            {
+              "id": "booleanBound",
+              "status": "pass"
+            },
+            {
+              "id": "missingOperand",
+              "status": "pass"
+            },
+            {
+              "id": "selectedFraction",
+              "status": "pass"
+            }
+          ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. KERNEL-006 qualifies first direct range, alias and repeated-endpoint queries over the full pinned library after implied relationships are published, without preceding proof queries. Callee signatures share checked evidence; every supplied binding is rechecked. Other cold entry paths and more complex expressions can still exhaust the unchanged allowance; reuse does not qualify every composition or a global cache."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. Equality, logical predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. KERNEL-006 qualifies first direct range, alias and repeated-endpoint queries over the full pinned library after implied relationships are published, without preceding proof queries. Callee signatures share checked evidence; every supplied binding is rechecked. Other cold entry paths and more complex expressions can still exhaust the unchanged allowance; reuse does not qualify every composition or a global cache. KERNEL-007 adds finite exact numeric <, <=, > and >= predicates, with designated function identity and checked positional evidence. MULT-024/025 cover each relation, large integers, exact rationals, aliases, nested/lazy selection and refused operands/endpoints. Approximate real, infinity, quantity, string, sequence and general function comparisons remain unqualified. Arithmetic intermediates can exceed i128 through exact rationals; exported bounds retain the signed-128-bit limit."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",
@@ -2958,24 +3160,24 @@
       "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
     }
   ],
-  "executableCases": 73,
+  "executableCases": 75,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "d17ca980707b0e2dd2d2c06e51c340a34d2db1caad9788d395ed3546bff6a9ca",
+  "assessmentsSha256": "14a235effe97c7fc2acce7a6533f2437dac5b7fe8872e93ac5b91a0e5d2bcbf0",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "5511ad577b906c6f4833021e2fe057996a236db4a895cdcf890d3cda24ddae48",
-    "generatedAt": "2026-10-13T20:56:35.483Z",
-    "kernelInputSha256": "7c6f0cfa7573ccab9d3740aa99830863b59bf42098e416bbffe1fc1f1c7c9a23",
-    "binarySha256": "94db8ef9ef2bf6385183eee3be098eb67b2c5bf68e2003d7b593f963c4b115a1",
+    "sha256": "9b4a13178fb7ad3907da5260472096e40ba0f37504a8845d72545c7cecfd94dc",
+    "generatedAt": "2026-10-13T21:30:07.811Z",
+    "kernelInputSha256": "a155dd6305763c2143296b712e6d1431fb45a2bfd9602950d7317353217abddf",
+    "binarySha256": "8a66adffbcd74af0685412c951933bbddc5975ea645fed8140a96c088f6a556f",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.8",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.9",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 73,
+      "pass": 75,
       "known-gap": 0,
       "planned": 0,
       "fail": 0

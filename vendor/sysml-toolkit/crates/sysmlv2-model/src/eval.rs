@@ -2137,6 +2137,27 @@ impl Evaluator<'_> {
                 }
                 let second =
                     self.certified_multiplicity_value(operands[1], context, operators, depth + 1)?;
+                if matches!(
+                    operator,
+                    BinaryOp::Lt | BinaryOp::LtEq | BinaryOp::Gt | BinaryOp::GtEq
+                ) {
+                    // The checked domain admits finite exact numbers only.
+                    // Keep the general evaluator's approximate, quantity and
+                    // string comparisons outside this execution certificate.
+                    if !matches!(first, Value::Integer(_) | Value::Rational(_))
+                        || !matches!(second, Value::Integer(_) | Value::Rational(_))
+                    {
+                        return None;
+                    }
+                    let ordering = compare(&first, &second).ok()?;
+                    return Some(Value::Boolean(match operator {
+                        BinaryOp::Lt => ordering.is_lt(),
+                        BinaryOp::LtEq => !ordering.is_gt(),
+                        BinaryOp::Gt => ordering.is_gt(),
+                        BinaryOp::GtEq => !ordering.is_lt(),
+                        _ => unreachable!(),
+                    }));
+                }
                 arith(*operator, first, second).ok()
             }
             _ => None,

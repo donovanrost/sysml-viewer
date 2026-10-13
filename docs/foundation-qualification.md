@@ -268,6 +268,39 @@ recorded in the combined adapter patch against the original upstream bytes.
 The engine patch suffix is `.8`; snapshot schema 3 and package version 0.3.0 remain
 unchanged.
 
+## KERNEL-007: exact ordered predicates (qualified for the recorded cases)
+
+Before this change, a static attribute valued `if 2 < 3 ? 7 else 9` produced an
+unknown/unsupported bound when used as a multiplicity provider. KERNEL-007 admits
+`<`, `<=`, `>` and `>=` through the existing checked canonical invocation path.
+Operator resolution proves the designated DataFunctions identity and absence in
+BaseFunctions, following KerML 1.0 §8.3.4.8.17. The ordering signatures and numeric
+specializations are specified by §§9.4.3.2, 9.4.10.2 and 9.4.11.2 of the
+[pinned normative specification](https://www.omg.org/spec/KerML/1.0).
+
+The execution certificate restricts both operands to finite exact integers or
+rationals and reuses the existing exact comparator. It returns a Boolean for the
+conditional test; it does not coerce that Boolean into a numeric bound. This also
+preserves exact arithmetic intermediates beyond i128, while exported cardinality
+endpoints retain their existing i128 limit. No new cache, parser, public evaluator,
+wire field or resource allowance is introduced. Engine version advances to `.9`;
+snapshot schema 3 and package version 0.3.0 are unchanged.
+
+MULT-024 covers every less/equal/greater outcome for all four operators, adjacent
+integers above 2^53, signed and i128-edge values, close/equal/mixed rationals,
+arithmetic, aliases, nested conditionals and lazy branch selection. MULT-025 keeps
+Boolean operands and endpoints, real/infinite values, division by zero, excessive
+arithmetic, missing operands and selected fractional endpoints unknown. Dependency
+tests extend canonical-versus-legacy publication and namespace-shadowing checks to
+each operator, and exercise stale operand/owner/operator evidence, work exhaustion
+and graph operand edits before publication. The facade round-trip test and native/
+WASM parity suite retain the same values and guards.
+
+Three existing per-file patches carry KERNEL-007 and still reconstruct their
+original upstream bytes. Other predicates, equality, logical control, units,
+sequences, arbitrary user functions and general contextual execution remain open.
+This qualifies the bounded provider path, not complete expression semantics.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -295,11 +328,11 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **73 passing conformance cases**, **no
-known-gap cases**, and **no planned cases in the current matrix**. All **43 Rust kernel tests**,
-**31 Node tests**, and **225 dependency proof tests** pass.
+On macOS arm64, the completed run has **75 passing conformance cases**, **no
+known-gap cases**, and **no planned cases in the current matrix**. All **44 Rust kernel tests**,
+**32 Node tests**, and **227 dependency proof tests** pass.
 The dependency suites cover type relations (41), model-level evaluability (33),
-cardinality (22), invocation bindings (16), constructor bindings (16), dynamic graph
+cardinality (24), invocation bindings (16), constructor bindings (16), dynamic graph
 (17), dynamic invocations (25), owned results (4), end constancy (10) and checked
 namespace operations (41). The corpus and the 32 import-rule partitions are included
 in the Rust suite, not additional independently qualified specification counts.
@@ -311,34 +344,35 @@ pass. The saved [matrix execution](evidence/conformance-macos-arm64.json) and
 [requirements execution](evidence/requirements-macos-arm64.json) record the current
 source, patch and fixture fingerprints. Windows/Linux execution remains pending CI.
 
-The latest [signature-reuse benchmark](evidence/benchmark-signatures-macos-arm64.json)
-records three fresh processes per native/WASM workload, for 54 successful samples.
-All repeated native and WASM snapshots agree exactly. Every compound-range sample
-also passes all MULT-022 assertions, alongside the retained isolation assertions
-and seven other workloads.
+The latest [ordered-predicate benchmark](evidence/benchmark-comparisons-macos-arm64.json)
+records three fresh processes per native/WASM workload, for 60 successful samples.
+All repeated native and WASM snapshots agree exactly. Every ordered-predicate
+sample passes all 26 MULT-024 assertions, alongside the retained compound-range
+and isolation assertions and seven other workloads.
 
 | Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
 | --- | ---: | ---: | ---: |
-| Compound ranges | 2,831 | 2,773 | 404.2/350.7 |
-| Independent bounds with missing base | 2,430 | 2,761 | 391.0/346.0 |
-| Imported memberships | 2,045 | 2,604 | 389.8/335.4 |
-| Viewer example | 2,038 | 2,449 | 407.2/355.1 |
-| Attribute providers | 2,044 | 2,518 | 415.1/344.8 |
-| Arithmetic providers | 2,138 | 2,624 | 390.6/355.7 |
-| Conditional providers | 2,162 | 2,705 | 398.5/352.9 |
-| 100 usages | 2,006 | 2,477 | 415.5/352.6 |
-| 1,000 usages | 2,362 | 2,681 | 409.9/368.0 |
+| Ordered predicates | 2,988 | 3,394 | 431.1/371.9 |
+| Compound ranges | 2,326 | 3,354 | 420.1/357.1 |
+| Independent bounds with missing base | 2,051 | 2,505 | 424.0/351.8 |
+| Imported memberships | 1,977 | 2,415 | 424.7/341.7 |
+| Viewer example | 2,027 | 2,488 | 428.6/361.3 |
+| Attribute providers | 2,063 | 2,502 | 434.2/344.1 |
+| Arithmetic providers | 2,156 | 2,595 | 427.8/367.1 |
+| Conditional providers | 2,157 | 2,632 | 438.0/360.8 |
+| 100 usages | 2,036 | 2,466 | 416.3/351.9 |
+| 1,000 usages | 2,338 | 2,646 | 440.3/374.1 |
 
 The earlier `.6` isolation run had an initial native sample time out at 60
 seconds; a direct retry completed in 3.2 seconds, and its full 48-sample rerun
 passed. The cause of that earlier timeout remains unresolved. No timeout occurred
-in the recorded `.7` or `.8` runs.
+in the recorded `.7`, `.8` or `.9` runs.
 
 Measurements include startup, bundled-library analysis and serialization. They are
 observations on this Mac, not cross-platform latency guarantees. Canonical
 preparation is a whole-model pass. The facade runs its model scan before projecting
 cardinality; the separate direct-query regression exercises the first-query budget.
-Compared with the retained [compound-range run](evidence/benchmark-ranges-macos-arm64.json),
+Compared with the retained [signature-reuse run](evidence/benchmark-signatures-macos-arm64.json),
 these uncontrolled runs do not isolate incremental query cost or establish a
 regression budget. Large import-heavy production models and incremental performance
 remain open engineering work.

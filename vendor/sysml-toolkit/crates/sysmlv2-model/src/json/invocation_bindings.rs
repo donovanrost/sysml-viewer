@@ -403,6 +403,10 @@ pub(super) fn designated_operator_name(
         "/" => "/",
         "%" => "%",
         "^" => "^",
+        "<" => "<",
+        "<=" => "<=",
+        ">" => ">",
+        ">=" => ">=",
         "if" => "if",
         _ => return None,
     })
@@ -700,102 +704,109 @@ mod tests {
 
     #[test]
     fn numeric_operator_bindings_require_canonical_shared_publication() {
-        use crate::json::ModelLevelEvaluability::{Evaluable, Unknown};
-        for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
-            let mut m = Model::with_graph_format(format);
-            m.add_library_source("binding-library.kerml", LIB);
-            m.add_library_source(
+        for operator in ["+", "<", "<=", ">", ">="] {
+            use crate::json::ModelLevelEvaluability::{Evaluable, Unknown};
+            for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
+                let mut m = Model::with_graph_format(format);
+                m.add_library_source("binding-library.kerml", LIB);
+                m.add_library_source(
                 "numeric-functions.kerml",
-                "standard library package DataFunctions {function '+' {in a; in b; return r;}} ",
+                &"standard library package DataFunctions {function '+' {in a; in b; return r;}} ".replace("'+'", &format!("'{operator}'")),
             );
-            m.add_source("operator.kerml", "feature sum=1+2;");
-            let mut r = ResolvedModel::build(&m);
-            let call = r
-                .elements()
-                .find(|&e| r.element_type(e) == "OperatorExpression")
-                .unwrap();
-            assert!(r.invocation_binding_report(call).arguments.is_err());
-            assert!(matches!(
-                r.model_level_evaluability(call).classification,
-                Unknown(_)
-            ));
-            let _ = r.implied_relationships(call);
-            if format == GraphFormat::CanonicalV3 {
-                let report = r.invocation_binding_report(call).arguments.unwrap();
-                assert_eq!(report.bindings.len(), 2);
-                assert_eq!(r.model_level_evaluability(call).classification, Evaluable);
-                r.b.elements[call.0]
-                    .props
-                    .insert("operator", serde_json::json!("missing"));
+                m.add_source("operator.kerml", &format!("feature sum=1 {operator} 2;"));
+                let mut r = ResolvedModel::build(&m);
+                let call = r
+                    .elements()
+                    .find(|&e| r.element_type(e) == "OperatorExpression")
+                    .unwrap();
                 assert!(r.invocation_binding_report(call).arguments.is_err());
                 assert!(matches!(
                     r.model_level_evaluability(call).classification,
                     Unknown(_)
                 ));
-            } else {
-                assert!(r.invocation_binding_report(call).arguments.is_err());
+                let _ = r.implied_relationships(call);
+                if format == GraphFormat::CanonicalV3 {
+                    let report = r.invocation_binding_report(call).arguments.unwrap();
+                    assert_eq!(report.bindings.len(), 2);
+                    assert_eq!(r.model_level_evaluability(call).classification, Evaluable);
+                    r.b.elements[call.0]
+                        .props
+                        .insert("operator", serde_json::json!("missing"));
+                    assert!(r.invocation_binding_report(call).arguments.is_err());
+                    assert!(matches!(
+                        r.model_level_evaluability(call).classification,
+                        Unknown(_)
+                    ));
+                } else {
+                    assert!(r.invocation_binding_report(call).arguments.is_err());
+                }
             }
         }
     }
     #[test]
     fn numeric_operator_absence_requires_complete_earlier_package() {
-        for earlier in [
-            "standard library package BaseFunctions {public import Missing::*;}",
-            "standard library package BaseFunctions {function '+' {in a; in b; return r;}}",
-            "standard library package BaseFunctions {alias '+' for Missing::unknown;}",
-        ] {
+        for operator in ["+", "<", "<=", ">", ">="] {
+            for earlier in [
+                "standard library package BaseFunctions {public import Missing::*;}",
+                "standard library package BaseFunctions {function '+' {in a; in b; return r;}}",
+                "standard library package BaseFunctions {alias '+' for Missing::unknown;}",
+            ] {
+                let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
+                m.add_library_source("binding-library.kerml", LIB);
+                m.add_library_source(
+                    "earlier.kerml",
+                    &earlier.replace("'+'", &format!("'{operator}'")),
+                );
+                m.add_library_source(
+                "numeric.kerml",
+                &"standard library package DataFunctions {function '+' {in a; in b; return r;}}".replace("'+'", &format!("'{operator}'")),
+            );
+                m.add_source("operator.kerml", &format!("feature sum=1 {operator} 2;"));
+                let mut r = ResolvedModel::build(&m);
+                let call = r
+                    .elements()
+                    .find(|&e| r.element_type(e) == "OperatorExpression")
+                    .unwrap();
+                r.implied_relationships(call);
+                assert!(
+                    r.invocation_binding_report(call).arguments.is_err(),
+                    "{earlier}"
+                );
+            }
+            // The real designated packages use private imports. They cannot
+            // contribute an externally selected operator and do not block proof.
             let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
             m.add_library_source("binding-library.kerml", LIB);
-            m.add_library_source("earlier.kerml", earlier);
-            m.add_library_source(
-                "numeric.kerml",
-                "standard library package DataFunctions {function '+' {in a; in b; return r;}}",
-            );
-            m.add_source("operator.kerml", "feature sum=1+2;");
+            m.add_library_source("numeric.kerml", &"standard library package BaseFunctions {private import Base::*;} standard library package DataFunctions {private import Base::Anything; function '+' {in a; in b; return r;}}".replace("'+'", &format!("'{operator}'")));
+            m.add_source("operator.kerml", &format!("feature sum=1 {operator} 2;"));
             let mut r = ResolvedModel::build(&m);
+            // Serialized imports may omit the normative default-private flag.
+            for index in 0..r.b.elements.len() {
+                let row = &mut r.b.elements[index];
+                if conforms(row.ty, "Import") {
+                    let old = row.props.to_json();
+                    row.props = crate::properties::Properties::new();
+                    for (key, value) in old {
+                        if key != "visibility" {
+                            row.props.insert(&key, value);
+                        }
+                    }
+                }
+            }
             let call = r
                 .elements()
                 .find(|&e| r.element_type(e) == "OperatorExpression")
                 .unwrap();
             r.implied_relationships(call);
-            assert!(
-                r.invocation_binding_report(call).arguments.is_err(),
-                "{earlier}"
+            assert_eq!(
+                r.invocation_binding_report(call)
+                    .arguments
+                    .unwrap()
+                    .bindings
+                    .len(),
+                2
             );
         }
-        // The real designated packages use private imports. They cannot
-        // contribute an externally selected operator and do not block proof.
-        let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
-        m.add_library_source("binding-library.kerml", LIB);
-        m.add_library_source("numeric.kerml", "standard library package BaseFunctions {private import Base::*;} standard library package DataFunctions {private import Base::Anything; function '+' {in a; in b; return r;}}");
-        m.add_source("operator.kerml", "feature sum=1+2;");
-        let mut r = ResolvedModel::build(&m);
-        // Serialized imports may omit the normative default-private flag.
-        for index in 0..r.b.elements.len() {
-            let row = &mut r.b.elements[index];
-            if conforms(row.ty, "Import") {
-                let old = row.props.to_json();
-                row.props = crate::properties::Properties::new();
-                for (key, value) in old {
-                    if key != "visibility" {
-                        row.props.insert(&key, value);
-                    }
-                }
-            }
-        }
-        let call = r
-            .elements()
-            .find(|&e| r.element_type(e) == "OperatorExpression")
-            .unwrap();
-        r.implied_relationships(call);
-        assert_eq!(
-            r.invocation_binding_report(call)
-                .arguments
-                .unwrap()
-                .bindings
-                .len(),
-            2
-        );
     }
     #[test]
     fn unavailable_numeric_operator_does_not_poison_valid_invocations() {

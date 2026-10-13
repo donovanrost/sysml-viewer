@@ -90,6 +90,8 @@ Clause references identify the source of a test, not complete coverage of that c
 | MULT-021 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | robustness | Covered | Independent exact arithmetic, nested/lazy conditional bounds and unknown import results coexist across files with a missing base. |
 | MULT-022 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Compound range endpoints share checked topology and type evidence while preserving exact arithmetic, conditional, alias and repeated-provider values. |
 | MULT-023 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Checked range evidence cannot turn missing, fractional, non-Boolean or reversed endpoints into successful intervals. |
+| MULT-024 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Checked ordered predicates preserve integer and rational precision, all four ordering truth tables, alias identity and conditional branch selection. |
+| MULT-025 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Ordered predicate certificates refuse non-exact or nonnumeric operands, unavailable values, undefined arithmetic and Boolean or fractional endpoints. |
 
 ## Coverage limits
 

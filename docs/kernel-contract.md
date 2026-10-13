@@ -63,7 +63,7 @@ Analysis builds the upstream CanonicalV3 graph and requests shared implied
 relationship publication before validation and projection. Checked operator
 queries consume this published callee/input/argument evidence. Publication can
 decline a family; its checked query still returns unknown. The graph format is
-internal and distinct from snapshot schema 2; this is not an interchange API.
+internal and distinct from snapshot schema 3; this is not an interchange API.
 
 Ranges are half-open. Byte/UTF-16 offsets are zero-based; line and UTF-16 column
 numbers are one-based. Original encoding after UTF-8 decoding and line endings
@@ -93,10 +93,14 @@ exported. Null still does not establish absence or an effective default.
 Static package-owned attributes can supply checked bounds through aliases,
 reference chains and numeric operators (`+`, `-`, `*`, `/`, `%`, `^`), including
 nested and unary expressions. Conditional providers support static Boolean tests,
-aliases and nested conditionals, evaluating only the selected branch after proving
-argument eligibility. Unselected unbound values or arithmetic errors are not
-executed. Unsupported featuring, variation, predicates and other control operators
-remain unknown. Canonical unresolved classifier bases retain independent arithmetic
+aliases and nested conditionals, plus ordered comparisons (`<`, `<=`, `>`, `>=`)
+between finite exact integers and rationals. They evaluate only the selected branch
+after proving argument eligibility. Comparisons preserve exact arithmetic
+intermediates, including rationals whose numerator exceeds i128; exported endpoints
+still require a nonnegative signed-128-bit integer. Boolean results cannot become
+numeric endpoints. Unselected unbound values or arithmetic errors are not executed.
+Unsupported featuring, variation, equality/logical predicates, approximate numbers,
+quantities and other control operators remain unknown. Canonical unresolved classifier bases retain independent arithmetic
 and conditional proofs when source/target evidence is consistent. Direct and transitive
 dependents remain incomplete; malformed relationships and other unsupported dynamic
 families can still prevent publication. Within a single cardinality query, related
@@ -105,7 +109,7 @@ remain independently checked. Checked callee signatures also share evidence, whi
 every invocation and constructor argument list is validated separately. First range,
 alias and repeated-endpoint queries over the full pinned library are covered after
 implied relationships are published. Other entry paths and larger compositions can
-still reach `workLimit`. See KERNEL-003/004/005/006 in
+still reach `workLimit`. See KERNEL-003/004/005/006/007 in
 [foundation qualification](foundation-qualification.md).
 
 `membersAvailable: false` describes a navigation record. It must not be read as an

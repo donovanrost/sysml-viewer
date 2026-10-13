@@ -24,6 +24,8 @@ for (const name of [
   'mult-018',
   'mult-022',
   'mult-023',
+  'mult-024',
+  'mult-025',
   'imp-020',
 ]) {
   documents.push({
@@ -336,4 +338,60 @@ test('schema 2 memberships and exact cardinalities agree across native and WebAs
     wasm.elements.find((e) => e.qualifiedName === 'UnknownBounds::Assembly::unknown')!.cardinality,
     { status: 'unknown', reason: 'incompleteProvider' },
   );
+});
+
+test('ordered predicates retain exact comparisons and operand guards in both workspace contexts', () => {
+  for (const state of [snapshot, importGuards]) {
+    for (const [name, value] of [
+      ['ltLess', '7'],
+      ['ltEqual', '9'],
+      ['ltGreater', '9'],
+      ['leLess', '7'],
+      ['leEqual', '7'],
+      ['leGreater', '9'],
+      ['gtLess', '9'],
+      ['gtEqual', '9'],
+      ['gtGreater', '7'],
+      ['geLess', '9'],
+      ['geEqual', '7'],
+      ['geGreater', '7'],
+      ['large', '11'],
+      ['largeReverse', '12'],
+      ['limit', '13'],
+      ['negative', '14'],
+      ['rational', '15'],
+      ['rationalEqual', '16'],
+      ['rationalMixed', '17'],
+      ['rationalClose', '18'],
+      ['arithmetic', '19'],
+      ['viaAlias', '20'],
+      ['nested', '21'],
+      ['lazy', '22'],
+      ['wideArithmetic', '23'],
+    ]) {
+      const e = state.elements.find((e) => e.qualifiedName === `OrderedComparisons::${name}`)!;
+      assert.deepEqual(e.cardinality, { status: 'evaluated', lower: value, upper: value }, name);
+    }
+    for (const name of [
+      'booleanLeft',
+      'booleanRight',
+      'real',
+      'infinity',
+      'division',
+      'excessive',
+      'booleanBound',
+      'missingOperand',
+      'selectedFraction',
+    ]) {
+      const e = state.elements.find((e) => e.qualifiedName === `OrderedComparisonGuards::${name}`)!;
+      assert.deepEqual(
+        e.cardinality,
+        {
+          status: 'unknown',
+          reason: name === 'missingOperand' ? 'incompleteProvider' : 'unsupportedBound',
+        },
+        name,
+      );
+    }
+  }
 });

@@ -2874,6 +2874,298 @@
           "reason": "unsupportedBound"
         }
       ]
+    },
+    {
+      "id": "MULT-024",
+      "area": "multiplicity",
+      "purpose": "Checked ordered predicates preserve integer and rational precision, all four ordering truth tables, alias identity and conditional branch selection.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-024.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "ltLess",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::ltLess",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "ltEqual",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::ltEqual",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "ltGreater",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::ltGreater",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "leLess",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::leLess",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "leEqual",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::leEqual",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "leGreater",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::leGreater",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "gtLess",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::gtLess",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "gtEqual",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::gtEqual",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "gtGreater",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::gtGreater",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "geLess",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::geLess",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "geEqual",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::geEqual",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "geGreater",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::geGreater",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "large",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::large",
+          "status": "evaluated",
+          "lower": "11",
+          "upper": "11"
+        },
+        {
+          "id": "largeReverse",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::largeReverse",
+          "status": "evaluated",
+          "lower": "12",
+          "upper": "12"
+        },
+        {
+          "id": "limit",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::limit",
+          "status": "evaluated",
+          "lower": "13",
+          "upper": "13"
+        },
+        {
+          "id": "negative",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::negative",
+          "status": "evaluated",
+          "lower": "14",
+          "upper": "14"
+        },
+        {
+          "id": "rational",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::rational",
+          "status": "evaluated",
+          "lower": "15",
+          "upper": "15"
+        },
+        {
+          "id": "rationalEqual",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::rationalEqual",
+          "status": "evaluated",
+          "lower": "16",
+          "upper": "16"
+        },
+        {
+          "id": "rationalMixed",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::rationalMixed",
+          "status": "evaluated",
+          "lower": "17",
+          "upper": "17"
+        },
+        {
+          "id": "rationalClose",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::rationalClose",
+          "status": "evaluated",
+          "lower": "18",
+          "upper": "18"
+        },
+        {
+          "id": "arithmetic",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::arithmetic",
+          "status": "evaluated",
+          "lower": "19",
+          "upper": "19"
+        },
+        {
+          "id": "viaAlias",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::viaAlias",
+          "status": "evaluated",
+          "lower": "20",
+          "upper": "20"
+        },
+        {
+          "id": "nested",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::nested",
+          "status": "evaluated",
+          "lower": "21",
+          "upper": "21"
+        },
+        {
+          "id": "lazy",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::lazy",
+          "status": "evaluated",
+          "lower": "22",
+          "upper": "22"
+        },
+        {
+          "id": "wideArithmetic",
+          "op": "cardinality",
+          "owner": "OrderedComparisons::wideArithmetic",
+          "status": "evaluated",
+          "lower": "23",
+          "upper": "23"
+        }
+      ]
+    },
+    {
+      "id": "MULT-025",
+      "area": "multiplicity",
+      "purpose": "Ordered predicate certificates refuse non-exact or nonnumeric operands, unavailable values, undefined arithmetic and Boolean or fractional endpoints.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-025.sysml"],
+      "checks": [
+        {
+          "id": "natural-required",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "multiplicity bound must be a Natural number"
+        },
+        {
+          "id": "booleanLeft",
+          "op": "cardinality",
+          "owner": "OrderedComparisonGuards::booleanLeft",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "booleanRight",
+          "op": "cardinality",
+          "owner": "OrderedComparisonGuards::booleanRight",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "real",
+          "op": "cardinality",
+          "owner": "OrderedComparisonGuards::real",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "infinity",
+          "op": "cardinality",
+          "owner": "OrderedComparisonGuards::infinity",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "division",
+          "op": "cardinality",
+          "owner": "OrderedComparisonGuards::division",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "excessive",
+          "op": "cardinality",
+          "owner": "OrderedComparisonGuards::excessive",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "booleanBound",
+          "op": "cardinality",
+          "owner": "OrderedComparisonGuards::booleanBound",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "missingOperand",
+          "op": "cardinality",
+          "owner": "OrderedComparisonGuards::missingOperand",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "selectedFraction",
+          "op": "cardinality",
+          "owner": "OrderedComparisonGuards::selectedFraction",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        }
+      ]
     }
   ]
 }
