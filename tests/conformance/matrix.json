@@ -28,7 +28,7 @@
           "section": "7.2.5.4"
         }
       ],
-      "uncovered": "Recursive and filtered imports, protected visibility, import-all interactions and complete membership enumeration remain unqualified."
+      "uncovered": "Filtered imports, imported membership enumeration, alias collisions through imports, and all contextual name-resolution rules remain unqualified."
     },
     {
       "id": "typing",
@@ -156,6 +156,21 @@
         }
       ],
       "uncovered": "Termination is an operational guarantee, not a semantic verdict about every cycle. Continuous fuzzing remains separate work."
+    },
+    {
+      "id": "names",
+      "title": "Lexical names and dialect boundaries",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.1"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "8.2.2.3"
+        }
+      ],
+      "uncovered": "These cases exercise reserved, quoted and escaped names; all terminals, escape forms and grammar alternatives remain unqualified."
     }
   ],
   "cases": [
@@ -804,16 +819,16 @@
         {
           "id": "name",
           "op": "reference",
-          "owner": "'海'::x",
+          "owner": "'\u6d77'::x",
           "kind": "typing",
           "status": "resolved",
-          "target": "'海'::'Éngine'"
+          "target": "'\u6d77'::'\u00c9ngine'"
         },
         {
           "id": "bytes-and-utf16",
           "op": "source",
-          "owner": "'海'::x",
-          "text": "part x : 'Éngine';"
+          "owner": "'\u6d77'::x",
+          "text": "part x : '\u00c9ngine';"
         }
       ]
     },
@@ -889,16 +904,817 @@
     {
       "id": "IMP-008",
       "area": "imports",
-      "purpose": "Qualified membership enumeration includes imported aliases.",
+      "purpose": "Enumerate owned membership identity, alias names and short names separately from target ownership.",
       "polarity": "positive",
-      "planned": "The facade currently exposes owned declarations and effective features, not all namespace memberships. Design an explicit membership query before asserting this."
+      "files": ["tests/conformance/fixtures/imp-008.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "bindings",
+          "op": "memberships",
+          "owner": "Bindings",
+          "mode": "owned",
+          "bindings": [
+            {
+              "name": "Device",
+              "shortName": "D",
+              "namespace": "Bindings",
+              "target": "Bindings::Device",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "Copy",
+              "shortName": "C",
+              "namespace": "Bindings",
+              "target": "Bindings::Device",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": true
+            },
+            {
+              "name": "Local",
+              "shortName": null,
+              "namespace": "Bindings",
+              "target": "Bindings::Device",
+              "status": "resolved",
+              "visibility": "private",
+              "alias": true
+            },
+            {
+              "name": null,
+              "shortName": "OnlyShort",
+              "namespace": "Bindings",
+              "target": "Bindings::Device",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": true
+            },
+            {
+              "name": "initial",
+              "shortName": null,
+              "namespace": "Bindings",
+              "target": "Bindings::initial",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "second",
+              "shortName": null,
+              "namespace": "Bindings",
+              "target": "Bindings::second",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "third",
+              "shortName": null,
+              "namespace": "Bindings",
+              "target": "Bindings::third",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "fourth",
+              "shortName": null,
+              "namespace": "Bindings",
+              "target": "Bindings::fourth",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "initial",
+          "op": "reference",
+          "owner": "Bindings::initial",
+          "kind": "typing",
+          "spelling": "D",
+          "status": "resolved",
+          "target": "Bindings::Device"
+        },
+        {
+          "id": "second",
+          "op": "reference",
+          "owner": "Bindings::second",
+          "kind": "typing",
+          "spelling": "Copy",
+          "status": "resolved",
+          "target": "Bindings::Device"
+        },
+        {
+          "id": "third",
+          "op": "reference",
+          "owner": "Bindings::third",
+          "kind": "typing",
+          "spelling": "C",
+          "status": "resolved",
+          "target": "Bindings::Device"
+        },
+        {
+          "id": "fourth",
+          "op": "reference",
+          "owner": "Bindings::fourth",
+          "kind": "typing",
+          "spelling": "OnlyShort",
+          "status": "resolved",
+          "target": "Bindings::Device"
+        }
+      ]
+    },
+    {
+      "id": "IMP-009",
+      "area": "imports",
+      "purpose": "Resolve local, enclosing and explicitly global names with lexical shadowing.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/imp-009.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "local",
+          "op": "reference",
+          "owner": "ScopeFixture::Inner::local",
+          "kind": "typing",
+          "spelling": "Device",
+          "status": "resolved",
+          "target": "ScopeFixture::Inner::Device"
+        },
+        {
+          "id": "global",
+          "op": "reference",
+          "owner": "ScopeFixture::Inner::global",
+          "kind": "typing",
+          "spelling": "$::ScopeFixture::Device",
+          "status": "resolved",
+          "target": "ScopeFixture::Device"
+        },
+        {
+          "id": "enclosing",
+          "op": "reference",
+          "owner": "ScopeFixture::Inner::Deep::enclosing",
+          "kind": "typing",
+          "spelling": "Device",
+          "status": "resolved",
+          "target": "ScopeFixture::Inner::Device"
+        }
+      ]
+    },
+    {
+      "id": "IMP-010",
+      "area": "imports",
+      "purpose": "Protected members are inherited but not externally visible; private members are not inherited.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/imp-010.sysml"],
+      "checks": [
+        {
+          "id": "protected",
+          "op": "reference",
+          "owner": "ProtectedFixture::Child::good",
+          "kind": "typing",
+          "spelling": "HiddenType",
+          "status": "resolved",
+          "target": "ProtectedFixture::Parent::HiddenType"
+        },
+        {
+          "id": "outside",
+          "op": "reference",
+          "owner": "ProtectedFixture::outside",
+          "kind": "typing",
+          "spelling": "Parent::HiddenType",
+          "status": "unresolved"
+        },
+        {
+          "id": "private",
+          "op": "reference",
+          "owner": "ProtectedFixture::PrivateChild::bad",
+          "kind": "typing",
+          "spelling": "PrivateType",
+          "status": "unresolved"
+        },
+        {
+          "id": "blocked",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "messageIncludes": "is protected"
+        }
+      ]
+    },
+    {
+      "id": "IMP-011",
+      "area": "imports",
+      "purpose": "Recursive import reaches nested public members and excludes private members.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/imp-011.sysml"],
+      "checks": [
+        {
+          "id": "nested",
+          "op": "reference",
+          "owner": "RecursiveClient::good",
+          "kind": "typing",
+          "spelling": "Device",
+          "status": "resolved",
+          "target": "RecursiveSource::Nested::Device"
+        },
+        {
+          "id": "private",
+          "op": "reference",
+          "owner": "RecursiveClient::bad",
+          "kind": "typing",
+          "spelling": "Secret",
+          "status": "unresolved"
+        }
+      ]
+    },
+    {
+      "id": "IMP-012",
+      "area": "imports",
+      "purpose": "Forward aliases resolve transitively to the original element.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/imp-012.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "chain",
+          "op": "reference",
+          "owner": "AliasChain::instance",
+          "kind": "typing",
+          "spelling": "Last",
+          "status": "resolved",
+          "target": "AliasChain::Original"
+        }
+      ]
+    },
+    {
+      "id": "IMP-013",
+      "area": "imports",
+      "purpose": "Unresolved alias remains a binding with an explicit unresolved target.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/imp-013.sysml"],
+      "checks": [
+        {
+          "id": "unresolved",
+          "op": "reference",
+          "owner": "BrokenAlias::instance",
+          "kind": "typing",
+          "spelling": "Missing",
+          "status": "unresolved"
+        },
+        {
+          "id": "bindings",
+          "op": "memberships",
+          "owner": "BrokenAlias",
+          "mode": "owned",
+          "bindings": [
+            {
+              "name": "Missing",
+              "shortName": null,
+              "namespace": "BrokenAlias",
+              "target": null,
+              "status": "unresolved",
+              "visibility": "public",
+              "alias": true
+            },
+            {
+              "name": "instance",
+              "shortName": null,
+              "namespace": "BrokenAlias",
+              "target": "BrokenAlias::instance",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IMP-014",
+      "area": "imports",
+      "purpose": "Inherited memberships retain protected aliases of a nested definition and its declaring namespace; private aliases do not inherit.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/imp-014.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "inherited",
+          "op": "memberships",
+          "owner": "AliasHeritage::Child",
+          "mode": "inherited",
+          "bindings": [
+            {
+              "name": "Nested",
+              "shortName": null,
+              "namespace": "AliasHeritage::Parent",
+              "target": "AliasHeritage::Parent::Nested",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "renamed",
+              "shortName": null,
+              "namespace": "AliasHeritage::Parent",
+              "target": "AliasHeritage::Parent::Nested",
+              "status": "resolved",
+              "visibility": "protected",
+              "alias": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IMP-015",
+      "area": "imports",
+      "purpose": "Detect an owned alias colliding with an inherited member of a conforming metaclass.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/imp-015.sysml"],
+      "checks": [
+        {
+          "id": "collision",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "code": "validateNamespaceDistinguishibility",
+          "severity": "error"
+        }
+      ]
+    },
+    {
+      "id": "IMP-016",
+      "area": "imports",
+      "purpose": "Same names on unrelated metaclasses and anonymous members are distinguishable.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/imp-016.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        }
+      ]
+    },
+    {
+      "id": "IMP-017",
+      "area": "imports",
+      "purpose": "A short name colliding with a long name of the same metaclass is rejected.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/imp-017.sysml"],
+      "checks": [
+        {
+          "id": "collision",
+          "op": "diagnostic",
+          "stage": "structure",
+          "messageIncludes": "not distinguishable"
+        }
+      ]
+    },
+    {
+      "id": "IMP-018",
+      "area": "imports",
+      "purpose": "A root namespace import must have private visibility.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/imp-018.sysml"],
+      "checks": [
+        {
+          "id": "visibility",
+          "op": "diagnostic",
+          "stage": "structure",
+          "messageIncludes": "validateImportTopLevelVisibility",
+          "severity": "error"
+        }
+      ]
+    },
+    {
+      "id": "IMP-019",
+      "area": "imports",
+      "purpose": "A private root import is valid and visible to its nested package.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/imp-019.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "imported",
+          "op": "reference",
+          "owner": "RootImportSuccess::n",
+          "kind": "typing",
+          "spelling": "Real",
+          "status": "resolved",
+          "target": "ScalarValues::Real"
+        }
+      ]
     },
     {
       "id": "MULT-003",
       "area": "multiplicity",
-      "purpose": "Evaluate expression-valued bounds with an explicit completeness result.",
+      "purpose": "Evaluate multiplicity feature references backed by integer formulas, retaining exact bounds and unbounded/zero distinctions.",
       "polarity": "positive",
-      "planned": "The current declaredMultiplicity field is a normalized literal query; expression evaluation is outside the public contract."
+      "files": ["tests/conformance/fixtures/mult-003.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "exact",
+          "op": "cardinality",
+          "owner": "FormulaBounds::Assembly::exact",
+          "status": "evaluated",
+          "lower": "5",
+          "upper": "5"
+        },
+        {
+          "id": "range",
+          "op": "cardinality",
+          "owner": "FormulaBounds::Assembly::ranged",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "6"
+        },
+        {
+          "id": "open",
+          "op": "cardinality",
+          "owner": "FormulaBounds::Assembly::open",
+          "status": "evaluated",
+          "lower": "0",
+          "upper": null
+        },
+        {
+          "id": "zero",
+          "op": "cardinality",
+          "owner": "FormulaBounds::Assembly::zero",
+          "status": "evaluated",
+          "lower": "0",
+          "upper": "0"
+        }
+      ],
+      "knownFailures": [
+        {
+          "check": "exact",
+          "issue": "KERNEL-001",
+          "reason": "The upstream checked operator/callee proof is incomplete with the full pinned library; valid formula-valued providers return unsupportedBound. Preserve the expected exact result."
+        },
+        {
+          "check": "range",
+          "issue": "KERNEL-001",
+          "reason": "The upstream checked operator/callee proof is incomplete with the full pinned library; valid formula-valued providers return unsupportedBound. Preserve the expected exact result."
+        }
+      ]
+    },
+    {
+      "id": "MULT-004",
+      "area": "multiplicity",
+      "purpose": "An unvalued multiplicity provider yields unknown, not a default or an empty domain.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-004.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "unknown",
+          "op": "cardinality",
+          "owner": "UnknownBounds::Assembly::unknown",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        }
+      ]
+    },
+    {
+      "id": "MULT-005",
+      "area": "multiplicity",
+      "purpose": "Preserve integers beyond IEEE-754 exact range through the wire and display contracts.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-005.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "large",
+          "op": "cardinality",
+          "owner": "ExactBounds::Assembly::large",
+          "status": "evaluated",
+          "lower": "9007199254740993",
+          "upper": "9007199254740993"
+        },
+        {
+          "id": "maximum",
+          "op": "cardinality",
+          "owner": "ExactBounds::Assembly::maximum",
+          "status": "evaluated",
+          "lower": "170141183460469231731687303715884105727",
+          "upper": "170141183460469231731687303715884105727"
+        },
+        {
+          "id": "display",
+          "op": "multiplicity",
+          "owner": "ExactBounds::Assembly::large",
+          "value": "[9007199254740993]"
+        }
+      ]
+    },
+    {
+      "id": "MULT-006",
+      "area": "multiplicity",
+      "purpose": "Subset multiplicities inherit an interval and preserve an explicit narrower interval.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-006.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "inherited",
+          "op": "cardinality",
+          "owner": "InheritedBounds::Assembly::refined",
+          "status": "evaluated",
+          "lower": "2",
+          "upper": "5"
+        },
+        {
+          "id": "explicit",
+          "op": "cardinality",
+          "owner": "InheritedBounds::Assembly::fixed",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        }
+      ]
+    },
+    {
+      "id": "MULT-007",
+      "area": "multiplicity",
+      "purpose": "Fractional and reversed cardinality bounds are invalid and never evaluated results.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-007.sysml"],
+      "checks": [
+        {
+          "id": "fractional",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "messageIncludes": "Natural number"
+        },
+        {
+          "id": "reversed",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "messageIncludes": "exceeds upper bound"
+        },
+        {
+          "id": "fractional-unknown",
+          "op": "cardinality",
+          "owner": "BadBounds::Assembly::fractional",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "reversed-unknown",
+          "op": "cardinality",
+          "owner": "BadBounds::Assembly::reversed",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        }
+      ]
+    },
+    {
+      "id": "MULT-008",
+      "area": "multiplicity",
+      "purpose": "Unresolved subset targets prevent a default cardinality result.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-008.sysml"],
+      "checks": [
+        {
+          "id": "unknown",
+          "op": "cardinality",
+          "owner": "MissingBounds::Assembly::unknown",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "missing",
+          "op": "diagnostic",
+          "stage": "resolution"
+        }
+      ]
+    },
+    {
+      "id": "MULT-009",
+      "area": "multiplicity",
+      "purpose": "Syntax recovery cannot erase a malformed bound and claim an implicit singleton.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-009.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error"
+        },
+        {
+          "id": "unknown",
+          "op": "cardinality",
+          "owner": "RecoveredBounds::Assembly::malformed",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        }
+      ]
+    },
+    {
+      "id": "IMP-020",
+      "area": "imports",
+      "purpose": "Expose complete imported membership closure with completeness guarantees.",
+      "polarity": "positive",
+      "planned": "Owned and inherited bindings are public; complete imported membership enumeration is not yet exposed."
+    },
+    {
+      "id": "IMP-021",
+      "area": "imports",
+      "purpose": "Distinct inherited memberships of the same Feature are removed by Type::removeRedefinedFeatures; non-Feature aliases use IMP-014.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/imp-021.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "reduced",
+          "op": "memberships",
+          "owner": "FeatureAliases::Child",
+          "mode": "inherited",
+          "bindings": []
+        }
+      ]
+    },
+    {
+      "id": "NAME-001",
+      "area": "names",
+      "purpose": "Quoted names preserve spaces, escaped quotes, Unicode and reserved words through resolution.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/name-001.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "spaced",
+          "op": "reference",
+          "owner": "QuotedNames::spaced",
+          "kind": "typing",
+          "spelling": "'two words'",
+          "status": "resolved",
+          "target": "QuotedNames::'two words'"
+        },
+        {
+          "id": "escaped",
+          "op": "reference",
+          "owner": "QuotedNames::escaped",
+          "kind": "typing",
+          "spelling": "'a\\'b'",
+          "status": "resolved",
+          "target": "QuotedNames::'a\\'b'"
+        },
+        {
+          "id": "unicode",
+          "op": "reference",
+          "owner": "QuotedNames::unicode",
+          "kind": "typing",
+          "spelling": "'\u6d77'",
+          "status": "resolved",
+          "target": "QuotedNames::'\u6d77'"
+        },
+        {
+          "id": "reserved",
+          "op": "reference",
+          "owner": "QuotedNames::reserved",
+          "kind": "typing",
+          "spelling": "'action'",
+          "status": "resolved",
+          "target": "QuotedNames::action"
+        }
+      ]
+    },
+    {
+      "id": "NAME-002",
+      "area": "names",
+      "purpose": "Unquoted SysML reserved words are rejected as identifiers and later declarations recover.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/name-002.sysml"],
+      "checks": [
+        {
+          "id": "reserved",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error"
+        },
+        {
+          "id": "recovered",
+          "op": "element",
+          "name": "ReservedNames::After",
+          "metaclass": "PartDefinition"
+        }
+      ]
+    },
+    {
+      "id": "NAME-003",
+      "area": "names",
+      "purpose": "A SysML-only keyword remains a legal unquoted KerML identifier.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/name-003.kerml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "resolved",
+          "op": "reference",
+          "owner": "KermlNames::instance",
+          "kind": "typing",
+          "spelling": "action",
+          "status": "resolved",
+          "target": "KermlNames::action"
+        }
+      ]
+    },
+    {
+      "id": "IMP-022",
+      "area": "imports",
+      "purpose": "Aliases with equal names and unrelated target metaclasses remain distinguishable.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/imp-022.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        }
+      ]
+    },
+    {
+      "id": "IMP-023",
+      "area": "imports",
+      "purpose": "Alias short-name/long-name collisions of conforming target metaclasses are diagnosed.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/imp-023.sysml"],
+      "checks": [
+        {
+          "id": "collision",
+          "op": "diagnostic",
+          "code": "validateNamespaceDistinguishibility",
+          "severity": "error"
+        }
+      ]
+    },
+    {
+      "id": "MULT-010",
+      "area": "multiplicity",
+      "purpose": "A literal-valued scalar feature supplies exact multiplicity bounds.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-010.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "reference",
+          "op": "cardinality",
+          "owner": "ReferencedBounds::sized",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        }
+      ],
+      "knownFailures": [
+        {
+          "check": "reference",
+          "issue": "KERNEL-001",
+          "reason": "The full-library checked model-level reference proof reports IncompleteFeaturing even for a literal-valued provider; retain the expected exact interval."
+        }
+      ]
     }
   ]
 }

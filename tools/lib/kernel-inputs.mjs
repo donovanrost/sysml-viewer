@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
+import { verifyVendor } from './vendor.mjs';
 
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
@@ -20,6 +21,7 @@ export function kernelInputHash(root) {
     'tools/conformance.mjs',
     'tools/lib/conformance.mjs',
     'tools/lib/kernel-inputs.mjs',
+    'tools/lib/vendor.mjs',
   ];
   const walk = (path) => {
     for (const entry of readdirSync(join(root, path), { withFileTypes: true })) {
@@ -30,7 +32,8 @@ export function kernelInputHash(root) {
     }
   };
   walk('crates');
-  const vendor = JSON.parse(read('vendor/SHA256SUMS.json'));
+  const { hashes: vendor, inputs: patches } = verifyVendor(root);
+  files.push(...patches);
   const beforeVendor = files.length;
   walk('vendor');
   assert.deepEqual(

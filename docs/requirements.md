@@ -111,11 +111,11 @@ not a promise of reproducible binary builds. CI runs the offline inventory gate 
 uploads the execution report alongside its conformance report on each platform.
 
 The [recorded macOS execution](evidence/requirements-macos-arm64.json) maps the
-29 passing cases and two planned cases to the current assessments. The 19-test Node
-suite, including six inventory integrity tests, passes. Extraction reproduces
-exactly from all 17 pinned source artifacts. Browser checks exercised rule search,
-unassessed constraint details and the separate positive/negative port-test mapping.
-Windows/Linux execution still awaits their CI runners.
+current executable and planned cases without promoting known gaps to passing.
+The foundation update adds direct named-rule mappings; see the
+[qualification record](foundation-qualification.md) for its evidence and limits.
+Extraction reproduces exactly from all 17 pinned source artifacts. Windows/Linux
+execution still awaits their CI runners.
 
 The gate rejects missing source units, dangling test/assertion edges, unmapped new
 assertions, changed implementation evidence, stale execution evidence and generated

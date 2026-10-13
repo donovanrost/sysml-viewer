@@ -118,3 +118,39 @@ test('wire format rejects duplicate document identities and unknown fields', () 
   ])
     assert.throws(() => analyze(JSON.stringify(value)));
 });
+
+test('schema 2 memberships and exact cardinalities agree across native and WebAssembly', () => {
+  const input = JSON.stringify({
+    revision: 24,
+    documents: ['imp-008', 'imp-014', 'mult-004', 'mult-005'].map((name) => ({
+      id: name,
+      name: `${name}.sysml`,
+      text: readFileSync(new URL(`./conformance/fixtures/${name}.sysml`, import.meta.url), 'utf8'),
+    })),
+  });
+  const wasm: Snapshot = JSON.parse(analyze(input));
+  const executable = fileURLToPath(
+    new URL(
+      `../target/release/sysml-inspect${process.platform === 'win32' ? '.exe' : ''}`,
+      import.meta.url,
+    ),
+  );
+  const native = JSON.parse(
+    execFileSync(executable, ['--request-json'], {
+      input,
+      encoding: 'utf8',
+      maxBuffer: 10_000_000,
+    }),
+  );
+  assert.deepEqual(wasm, native);
+  assert.equal(wasm.schemaVersion, 2);
+  assert(wasm.memberships.some((m) => m.isAlias && m.shortName === 'OnlyShort' && m.name === null));
+  assert.deepEqual(
+    wasm.elements.find((e) => e.qualifiedName === 'ExactBounds::Assembly::large')!.cardinality,
+    { status: 'evaluated', lower: '9007199254740993', upper: '9007199254740993' },
+  );
+  assert.deepEqual(
+    wasm.elements.find((e) => e.qualifiedName === 'UnknownBounds::Assembly::unknown')!.cardinality,
+    { status: 'unknown', reason: 'incompleteProvider' },
+  );
+});

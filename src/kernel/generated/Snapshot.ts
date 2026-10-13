@@ -2,6 +2,7 @@
 import type { Connection } from "./Connection";
 import type { Diagnostic } from "./Diagnostic";
 import type { Element } from "./Element";
+import type { Membership } from "./Membership";
 import type { Reference } from "./Reference";
 import type { SourceDocument } from "./SourceDocument";
 
@@ -10,4 +11,4 @@ import type { SourceDocument } from "./SourceDocument";
  * to validate and borrow it. IDs require a unique caller revision per snapshot
  * in the caller's session; they are not globally unique across engines/sessions.
  */
-export type Snapshot = { schemaVersion: number, revision: number, engineVersion: string, libraryVersion: string, documents: Array<SourceDocument>, elements: Array<Element>, references: Array<Reference>, connections: Array<Connection>, diagnostics: Array<Diagnostic>, };
+export type Snapshot = { schemaVersion: number, revision: number, engineVersion: string, libraryVersion: string, documents: Array<SourceDocument>, elements: Array<Element>, memberships: Array<Membership>, references: Array<Reference>, connections: Array<Connection>, diagnostics: Array<Diagnostic>, };

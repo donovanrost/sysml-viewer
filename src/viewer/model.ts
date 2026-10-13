@@ -39,7 +39,7 @@ export class ViewerModel {
 
   constructor(snapshot: Snapshot) {
     this.snapshot = snapshot;
-    if (snapshot.schemaVersion !== 1) throw new Error('Unsupported kernel snapshot');
+    if (snapshot.schemaVersion !== 2) throw new Error('Unsupported kernel snapshot');
     this.connectionIds = new Set(snapshot.connections.map((c) => c.elementId));
     this.documents = [...snapshot.documents].sort(
       (a, b) => Number(a.id.startsWith('library://')) - Number(b.id.startsWith('library://')),
@@ -126,12 +126,13 @@ export class ViewerModel {
 
 export const emptyModel = () =>
   new ViewerModel({
-    schemaVersion: 1,
+    schemaVersion: 2,
     revision: 0,
     engineVersion: '',
     libraryVersion: '',
     documents: [],
     elements: [],
+    memberships: [],
     references: [],
     connections: [],
     diagnostics: [],

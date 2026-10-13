@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "toolkitRevision": "821221767c3c56cb1ebe7da22666197a47c9c645",
+  "patches": [
+    {
+      "id": "KERNEL-002",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+      "patch": "patches/0001-defer-alias-distinguishability.patch",
+      "sha256": "8ab4f7737a60948f0f5af581cef617e0356923063ba7a4475889aed8dc85305e",
+      "baseSha256": "80dda42883f8cbaa5a2f2e69f5080cb5a15ad8b0c0a5fcb8c2353fc43c84b50f",
+      "resultSha256": "f34aa7203810104300c28f32e5e61ce0b1b11d899981b964cfd5bafec5eda6ce",
+      "reason": "Defer unresolved alias target comparisons from syntax to the facade semantic namespace validator. IMP-022 must pass; IMP-015 and IMP-023 must still diagnose collisions."
+    }
+  ]
+}

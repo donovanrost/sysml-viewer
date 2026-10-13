@@ -32,11 +32,11 @@ test('inventory preserves complete extraction counts without manufacturing cover
   assert.equal(summary.libraryModels, 94);
   assert.equal(summary.schemaDefinitions, 270);
   assert.equal(summary.coveragePercent, null);
-  assert(
-    i.catalogue.items
-      .filter((x) => x.kind === 'constraint')
-      .every((x) => !i.assessments.assessments.some((a) => a.sources.includes(x.id))),
-  );
+  // Mapping a related clause never qualifies an untested metaclass rule.
+  const untested =
+    'SYSML-XMI-Systems-Ports-ConjugatedPortDefinition-validateConjugatedPortDefinitionOriginalPortDefinition';
+  assert(i.catalogue.items.some((x) => x.id === untested));
+  assert(!i.assessments.assessments.some((a) => a.sources.includes(untested)));
 });
 
 test('dropping a source unit or its provenance fails the extraction audit', () => {
@@ -93,7 +93,11 @@ test('a mapped case is not counted as executed and planned cases never pass by i
   const i = inputs();
   const rows = assessmentRows(i.assessments, i.matrix);
   assert.equal(rows.find((a) => a.id === 'RESOLUTION-PUBLIC').tests[0].status, 'not-run');
-  assert.equal(rows.find((a) => a.id === 'MEMBERSHIP-ENUMERATION').tests[0].status, 'planned');
+  assert.equal(
+    rows.find((a) => a.id === 'MEMBERSHIP-ENUMERATION').tests.find((t) => t.case === 'IMP-020')
+      .status,
+    'planned',
+  );
 });
 
 test('execution evidence rejects stale inputs, wrong pins and a planned case reported as passed', () => {

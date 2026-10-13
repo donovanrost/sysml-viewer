@@ -17,7 +17,7 @@ class TestWorker {
   terminate() {
     this.terminated = true;
   }
-  respond(revision: number, snapshotRevision = revision, schemaVersion = 1) {
+  respond(revision: number, snapshotRevision = revision, schemaVersion = 2) {
     this.onmessage?.({
       data: { revision, snapshot: { revision: snapshotRevision, schemaVersion } },
     });

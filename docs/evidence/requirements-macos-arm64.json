@@ -33,7 +33,7 @@
           "query",
           "wire"
         ],
-        "note": "Snapshot references expose the resolved target. Recursive and filtered imports still need qualification."
+        "note": "Public, recursive and re-export cases are bounded; filtered imports and all resolution contexts remain unqualified."
       },
       "tests": [
         {
@@ -54,9 +54,28 @@
               "status": "pass"
             }
           ]
+        },
+        {
+          "case": "IMP-011",
+          "checks": [
+            "nested",
+            "private"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "nested",
+              "status": "pass"
+            },
+            {
+              "id": "private",
+              "status": "pass"
+            }
+          ]
         }
       ],
-      "limits": "Snapshot references expose the resolved target. Recursive and filtered imports still need qualification."
+      "limits": "Public, recursive and re-export cases are bounded; filtered imports and all resolution contexts remain unqualified."
     },
     {
       "id": "RESOLUTION-VISIBILITY",
@@ -157,6 +176,35 @@
               "status": "pass"
             }
           ]
+        },
+        {
+          "case": "IMP-010",
+          "checks": [
+            "protected",
+            "outside",
+            "private",
+            "blocked"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "protected",
+              "status": "pass"
+            },
+            {
+              "id": "outside",
+              "status": "pass"
+            },
+            {
+              "id": "private",
+              "status": "pass"
+            },
+            {
+              "id": "blocked",
+              "status": "pass"
+            }
+          ]
         }
       ],
       "limits": "The cases exercise specific import paths; protected visibility and other import-all interactions remain unreviewed."
@@ -203,6 +251,35 @@
             },
             {
               "id": "local",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-009",
+          "checks": [
+            "clean",
+            "local",
+            "global",
+            "enclosing"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "local",
+              "status": "pass"
+            },
+            {
+              "id": "global",
+              "status": "pass"
+            },
+            {
+              "id": "enclosing",
               "status": "pass"
             }
           ]
@@ -306,6 +383,44 @@
             },
             {
               "id": "alias",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-012",
+          "checks": [
+            "clean",
+            "chain"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "chain",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-013",
+          "checks": [
+            "unresolved",
+            "bindings"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "unresolved",
+              "status": "pass"
+            },
+            {
+              "id": "bindings",
               "status": "pass"
             }
           ]
@@ -1216,7 +1331,7 @@
     },
     {
       "id": "MEMBERSHIP-ENUMERATION",
-      "obligation": "Expose namespace memberships, including imported aliases, as query results.",
+      "obligation": "Expose owned and inherited membership identities, alias long/short names, visibility and target status without rewriting element ownership.",
       "category": "product",
       "sources": [
         "SYSML-CLAUSE-7.5.2",
@@ -1225,32 +1340,106 @@
       "applicability": "current-product",
       "priority": "P0",
       "implementation": {
-        "status": "candidate",
+        "status": "partial",
         "evidence": [
           "engine",
-          "graph",
-          "query",
-          "wire"
+          "graph"
         ]
       },
       "api": {
-        "status": "unsupported",
+        "status": "partial",
         "evidence": [
-          "query",
-          "wire"
-        ],
-        "note": "The upstream graph has membership APIs, but our facade exposes a declaration projection. Design and qualify a public membership API."
+          "wire",
+          "query"
+        ]
       },
       "tests": [
         {
           "case": "IMP-008",
+          "checks": [
+            "clean",
+            "bindings",
+            "initial",
+            "second",
+            "third",
+            "fourth"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "bindings",
+              "status": "pass"
+            },
+            {
+              "id": "initial",
+              "status": "pass"
+            },
+            {
+              "id": "second",
+              "status": "pass"
+            },
+            {
+              "id": "third",
+              "status": "pass"
+            },
+            {
+              "id": "fourth",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-013",
+          "checks": [
+            "unresolved",
+            "bindings"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "unresolved",
+              "status": "pass"
+            },
+            {
+              "id": "bindings",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-014",
+          "checks": [
+            "clean",
+            "inherited"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "inherited",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-020",
           "checks": [],
           "polarity": "positive",
           "status": "planned",
           "results": []
         }
       ],
-      "limits": "The upstream graph has membership APIs, but our facade exposes a declaration projection. Design and qualify a public membership API."
+      "limits": "Schema 2 exposes explicit owned and inherited bindings; full imported membership closure, implicit construction and complete metamodel traversal remain open. Inheritance completeness accompanies the native query."
     },
     {
       "id": "MULTIPLICITY-EXPRESSION",
@@ -1262,31 +1451,195 @@
       "applicability": "current-product",
       "priority": "P0",
       "implementation": {
-        "status": "candidate",
+        "status": "partial",
         "evidence": [
           "engine",
-          "multiplicities",
-          "wire"
+          "cardinality"
         ]
       },
       "api": {
-        "status": "unsupported",
+        "status": "partial",
         "evidence": [
-          "query",
-          "wire"
-        ],
-        "note": "The upstream evaluator is a candidate implementation. The facade has no public bound-evaluation operation."
+          "wire",
+          "query"
+        ]
       },
       "tests": [
         {
           "case": "MULT-003",
-          "checks": [],
+          "checks": [
+            "clean",
+            "exact",
+            "range",
+            "open",
+            "zero"
+          ],
           "polarity": "positive",
-          "status": "planned",
-          "results": []
+          "status": "known-gap",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "exact",
+              "status": "known-gap"
+            },
+            {
+              "id": "range",
+              "status": "known-gap"
+            },
+            {
+              "id": "open",
+              "status": "pass"
+            },
+            {
+              "id": "zero",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-004",
+          "checks": [
+            "clean",
+            "unknown"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "unknown",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-005",
+          "checks": [
+            "clean",
+            "large",
+            "maximum",
+            "display"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "large",
+              "status": "pass"
+            },
+            {
+              "id": "maximum",
+              "status": "pass"
+            },
+            {
+              "id": "display",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-006",
+          "checks": [
+            "clean",
+            "inherited",
+            "explicit"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "inherited",
+              "status": "pass"
+            },
+            {
+              "id": "explicit",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-007",
+          "checks": [
+            "fractional",
+            "reversed",
+            "fractional-unknown",
+            "reversed-unknown"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "fractional",
+              "status": "pass"
+            },
+            {
+              "id": "reversed",
+              "status": "pass"
+            },
+            {
+              "id": "fractional-unknown",
+              "status": "pass"
+            },
+            {
+              "id": "reversed-unknown",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-008",
+          "checks": [
+            "unknown",
+            "missing"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "unknown",
+              "status": "pass"
+            },
+            {
+              "id": "missing",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-010",
+          "checks": [
+            "clean",
+            "reference"
+          ],
+          "polarity": "positive",
+          "status": "known-gap",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "reference",
+              "status": "known-gap"
+            }
+          ]
         }
       ],
-      "limits": "The upstream evaluator is a candidate implementation. The facade has no public bound-evaluation operation."
+      "limits": "Exact decimal integers, unbounded upper bounds and explicit unknown reasons are exposed. MULT-003 and MULT-010 retain three expected-result failures (KERNEL-001) for feature-valued providers under the full library. This does not qualify all multiplicity or evaluation semantics."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",
@@ -1487,28 +1840,378 @@
       },
       "tests": [],
       "limits": "KPAR packaging, archive metadata and normative metamodel identification are not exposed by the application."
+    },
+    {
+      "id": "NAMESPACE-DISTINGUISHABILITY",
+      "obligation": "Check collisions between comparable member metaclasses, including aliases versus inherited members and short/long-name collisions.",
+      "category": "standard",
+      "sources": [
+        "KERML-XMI-Root-Namespaces-Namespace-validateNamespaceDistinguishibility",
+        "KERML-XMI-Root-Namespaces-Membership-isDistinguishableFrom_Membership-unnamed1"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "alias-validation",
+          "syntax-structure"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "IMP-015",
+          "checks": [
+            "collision"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "collision",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-016",
+          "checks": [
+            "clean"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-017",
+          "checks": [
+            "collision"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "collision",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-022",
+          "checks": [
+            "clean"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-023",
+          "checks": [
+            "collision"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "collision",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Imported-membership collisions and specialized membership overrides are not exhaustively covered; this is bounded evidence, not qualification of the whole rule."
+    },
+    {
+      "id": "ROOT-IMPORT-VISIBILITY",
+      "obligation": "Reject non-private root imports while accepting private imports.",
+      "category": "standard",
+      "sources": [
+        "KERML-XMI-Root-Namespaces-Import-validateImportTopLevelVisibility"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "syntax-api",
+          "foundation-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "IMP-018",
+          "checks": [
+            "visibility"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "visibility",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-019",
+          "checks": [
+            "clean",
+            "imported"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "imported",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "The Rust foundation test additionally exhausts 32 dialect/import-kind/visibility/nesting partitions. Public abstract-syntax import ownership and visibility queries remain unavailable."
+    },
+    {
+      "id": "INHERITED-ALIAS-REDUCTION",
+      "obligation": "Apply the normative redefinition closure to distinct inherited memberships of the same Feature.",
+      "category": "standard",
+      "sources": [
+        "KERML-XMI-Core-Types-Type-removeRedefinedFeatures_Membership-unnamed1"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "graph"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "IMP-021",
+          "checks": [
+            "clean",
+            "reduced"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "reduced",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Only the shared Feature target boundary is tested here; non-Feature aliases are covered by IMP-014. Arbitrary redefinition closure is not qualified."
+    },
+    {
+      "id": "LEXICAL-NAMES",
+      "obligation": "Resolve quoted names and reject reserved words according to the selected dialect.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.1",
+        "KERML-CLAUSE-8.2.2.3"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "NAME-001",
+          "checks": [
+            "clean",
+            "spaced",
+            "escaped",
+            "unicode",
+            "reserved"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "spaced",
+              "status": "pass"
+            },
+            {
+              "id": "escaped",
+              "status": "pass"
+            },
+            {
+              "id": "unicode",
+              "status": "pass"
+            },
+            {
+              "id": "reserved",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "NAME-002",
+          "checks": [
+            "reserved",
+            "recovered"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "reserved",
+              "status": "pass"
+            },
+            {
+              "id": "recovered",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "NAME-003",
+          "checks": [
+            "clean",
+            "resolved"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "resolved",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "These cases do not cover every lexical production, escape, expression literal or grammar alternative."
+    },
+    {
+      "id": "CARDINALITY-RECOVERY",
+      "obligation": "Never publish evaluated cardinality from a workspace with syntax errors that may have erased constraints.",
+      "category": "product",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.1"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "cardinality"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "MULT-009",
+          "checks": [
+            "syntax",
+            "unknown"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "unknown",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
     }
   ],
-  "executableCases": 29,
-  "plannedCases": 2,
+  "executableCases": 55,
+  "plannedCases": 1,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "974bdb806648513bba20a86c03f65db507efb55b1e52e0c614b688792ad0a33a",
+  "assessmentsSha256": "1d7f3dc25b52ae628a41521fda4e9d6a4098666b574d8c6f269c7579b35d062c",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "6f751ef8a7324b7f12c413fc41b16e48d02cc228599d5e6af5c4c657c9603ba4",
-    "generatedAt": "2026-10-13T02:19:36.845Z",
-    "kernelInputSha256": "2377b6882085725aa7f309508070bc21547c9298f2540cd10a1749f6f6fd56cd",
-    "binarySha256": "bad192e5f6755b559b233b2a15051f350a52d9392a744ad1e386c7a71c3d56c1",
+    "sha256": "5d536f5ff231cb37fece7ba3e747356df8fef42d529594a9ad753604560f4779",
+    "generatedAt": "2026-10-13T04:28:23.941Z",
+    "kernelInputSha256": "daf221add9284352334afdd294474f01e689f3e7459176cfa43266c0e9ddd541",
+    "binarySha256": "810277ad8caf6f9a03a7a94afa86f5b703d44ca7b292c4c17247b6ba2eda4534",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.1",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 29,
-      "known-gap": 0,
-      "planned": 2,
+      "pass": 53,
+      "known-gap": 2,
+      "planned": 1,
       "fail": 0
     }
   }

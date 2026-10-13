@@ -7,3 +7,6 @@ vendor/** -text
 tests/conformance/upstream/** -text -whitespace
 # This source-coordinate fixture intentionally contains CRLF.
 tests/conformance/fixtures/source-001.sysml whitespace=cr-at-eol
+
+# Unified diffs retain whitespace in context lines.
+patches/*.patch -whitespace

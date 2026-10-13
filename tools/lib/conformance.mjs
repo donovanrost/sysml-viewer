@@ -5,7 +5,9 @@ const ops = {
   reference: ['owner', 'kind', 'spelling', 'status', 'target'],
   members: ['owner', 'mode', 'names', 'complete'],
   multiplicity: ['owner', 'value'],
-  diagnostic: ['stage', 'code', 'severity'],
+  cardinality: ['owner', 'status', 'lower', 'upper', 'reason'],
+  memberships: ['owner', 'mode', 'bindings'],
+  diagnostic: ['stage', 'code', 'severity', 'messageIncludes'],
   noDiagnostics: ['stage'],
   source: ['owner', 'text'],
   connection: ['name', 'chains', 'statuses'],
@@ -70,6 +72,8 @@ export function validateMatrix(matrix) {
         );
       if (Object.hasOwn(check, 'severity')) assert(['warning', 'error'].includes(check.severity));
       if (Object.hasOwn(check, 'code')) assert(typeof check.code === 'string' && check.code.length);
+      if (Object.hasOwn(check, 'messageIncludes'))
+        assert(typeof check.messageIncludes === 'string' && check.messageIncludes.length);
       if (Object.hasOwn(check, 'complete')) assert.equal(typeof check.complete, 'boolean');
       if (check.op === 'reference') {
         assert(
@@ -101,6 +105,45 @@ export function validateMatrix(matrix) {
         assert(check.stage || check.code, 'Diagnostic must identify a stage or code');
       if (check.op === 'element') assert(check.name && check.metaclass);
       if (check.op === 'multiplicity') assert(check.owner && Object.hasOwn(check, 'value'));
+      if (check.op === 'cardinality') {
+        assert(check.owner && ['evaluated', 'unknown', 'notApplicable'].includes(check.status));
+        if (check.status === 'evaluated') {
+          const integer = (v) => typeof v === 'string' && /^(0|[1-9][0-9]*)$/.test(v);
+          assert(integer(check.lower));
+          assert(check.upper === null || integer(check.upper));
+          assert(check.upper === null || BigInt(check.upper) >= BigInt(check.lower));
+          assert(!Object.hasOwn(check, 'reason'));
+        } else {
+          assert(!Object.hasOwn(check, 'lower') && !Object.hasOwn(check, 'upper'));
+          assert(check.status !== 'unknown' || check.reason);
+          assert(check.status !== 'notApplicable' || !Object.hasOwn(check, 'reason'));
+        }
+      }
+      if (check.op === 'memberships') {
+        assert(
+          check.owner &&
+            ['owned', 'inherited'].includes(check.mode) &&
+            Array.isArray(check.bindings),
+        );
+        for (const b of check.bindings) {
+          keys(
+            b,
+            ['name', 'shortName', 'namespace', 'target', 'status', 'visibility', 'alias'],
+            'membership binding',
+          );
+          for (const k of ['name', 'shortName', 'target'])
+            assert(b[k] === null || typeof b[k] === 'string');
+          assert(
+            b.namespace &&
+              ['resolved', 'unresolved', 'ambiguous', 'unsupported'].includes(b.status),
+          );
+          assert(
+            ['public', 'protected', 'private'].includes(b.visibility) &&
+              typeof b.alias === 'boolean',
+          );
+          assert(b.status === 'resolved' || b.target === null);
+        }
+      }
       if (check.op === 'source') assert(check.owner && typeof check.text === 'string');
       if (check.op === 'connection')
         assert(
@@ -167,12 +210,57 @@ export function checkSnapshot(snapshot, check) {
     case 'multiplicity':
       assert.equal(find(check.owner).declaredMultiplicity, check.value);
       break;
+    case 'cardinality': {
+      const { id, op, owner, ...expected } = check;
+      assert.deepEqual(find(owner).cardinality, expected);
+      break;
+    }
+    case 'memberships': {
+      const owner = find(check.owner);
+      assert(owner.membersAvailable, 'Membership query unavailable');
+      const membershipById = new Map(snapshot.memberships.map((m) => [m.id, m]));
+      const bindings = (
+        check.mode === 'owned' ? owner.ownedMemberships : owner.inheritedMemberships
+      )
+        .map((id) => {
+          const m = membershipById.get(id);
+          assert(m, `Dangling membership ${id}`);
+          const namespace = byId.get(m.namespaceId);
+          assert(namespace, 'Missing membership owner');
+          return { m, namespace };
+        })
+        .filter(({ namespace }) => !namespace.library)
+        .map(({ m, namespace }) => ({
+          name: m.name,
+          shortName: m.shortName,
+          namespace: namespace.qualifiedName,
+          target:
+            m.member.status === 'resolved' ? byId.get(m.member.targetId)?.qualifiedName : null,
+          status: m.member.status,
+          visibility: m.visibility,
+          alias: m.isAlias,
+        }));
+      const key = (b) =>
+        JSON.stringify([
+          b.namespace,
+          b.name,
+          b.shortName,
+          b.target,
+          b.status,
+          b.visibility,
+          b.alias,
+        ]);
+      const sorted = (items) => [...items].sort((a, b) => key(a).localeCompare(key(b)));
+      assert.deepEqual(sorted(bindings), sorted(check.bindings));
+      break;
+    }
     case 'diagnostic':
       assert(
         snapshot.diagnostics.some(
           (d) =>
             (!check.stage || d.stage === check.stage) &&
             (!check.code || d.code === check.code) &&
+            (!check.messageIncludes || d.message.includes(check.messageIncludes)) &&
             (!check.severity || d.severity === check.severity),
         ),
         `Missing diagnostic ${JSON.stringify(check)}`,

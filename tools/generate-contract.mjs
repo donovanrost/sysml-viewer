@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import assert from 'node:assert/strict';
 import { cargo, root } from './rust.mjs';
@@ -11,6 +11,12 @@ try {
     ['run', '--locked', '-p', 'sysml-kernel', '--features', 'bindings', '--bin', 'export-types'],
     { env: { ...process.env, TS_RS_EXPORT_DIR: output } },
   );
+  // ts-rs places trailing spaces before field comments. Normalize identically
+  // in generation and checking so generated contracts obey repository hygiene.
+  for (const file of readdirSync(output)) {
+    const path = join(output, file);
+    writeFileSync(path, readFileSync(path, 'utf8').replace(/[ \t]+$/gm, ''));
+  }
   if (check) {
     assert.deepEqual(
       readdirSync(output).sort(),

@@ -27,19 +27,19 @@
       "path": "crates/sysml-kernel/src/engine.rs",
       "symbol": "pub fn analyze(",
       "role": "facade implementation",
-      "sha256": "06e9c236f27bdbc2644dc401426b67f24d94f8ff5513c359fd091573d320d47f"
+      "sha256": "b29602ca09a03f8953de400ef92a44c034a250e2622fee53513ca00950223356"
     },
     "query": {
       "path": "crates/sysml-kernel/src/query.rs",
       "symbol": "pub struct SnapshotQuery",
       "role": "public query boundary",
-      "sha256": "3888a557451c92a6dc6e6a44a5622a6d8ae5f39b4c63e6db4363a2c4dca03839"
+      "sha256": "e038c4bf3dae79e3049b331f3cafcb6ed35ba6b82e7aa34f1909c9bd06ae7730"
     },
     "wire": {
       "path": "crates/sysml-kernel/src/types.rs",
       "symbol": "pub struct Snapshot",
       "role": "public wire fields",
-      "sha256": "3408fffd4a5f8755dd1eb8c21b96288d7f0fa9753398adc1bb9554e1b2668905"
+      "sha256": "0dd96ea1c09e6eaa298341e6c6b90fe523aab9ba9e23cbab0d89d46b132cc442"
     },
     "graph": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
@@ -94,6 +94,30 @@
       "symbol": "export function diagramEdges(",
       "role": "current structural overview; not complete normative graphical notation",
       "sha256": "2477bf295de24ef4b7f445bdaa524ff01d75644d4e4830e2492e68d5d017700d"
+    },
+    "cardinality": {
+      "path": "crates/sysml-kernel/src/cardinality.rs",
+      "symbol": "pub(crate) fn cardinality",
+      "role": "Exact checked cardinality adapter; unknown is never a default",
+      "sha256": "32b9c1b7c400fae03ece34cafcc54f021b466f71f8957af1c3f67d01ad7beabb"
+    },
+    "alias-validation": {
+      "path": "crates/sysml-kernel/src/namespaces.rs",
+      "symbol": "pub(crate) fn alias_collisions",
+      "role": "Plain alias distinguishability against owned and inherited memberships",
+      "sha256": "882492526af41bfb1f7362ef338b4ba46e1672610b036b68182f59877e3cf418"
+    },
+    "foundation-tests": {
+      "path": "crates/sysml-kernel/tests/foundation.rs",
+      "symbol": "fn top_level_import_visibility_checks_both_dialects_kinds_and_nesting",
+      "role": "Contract regressions, complete import-predicate input partitions and bundled-library syntax sweep",
+      "sha256": "7677251503f889b9ef14597511bb4aa0933f7bc3bbcf509fa4b684a6ec5a59cc"
+    },
+    "syntax-structure": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+      "symbol": "pub fn validate(",
+      "role": "Patched syntax structure checker; KERNEL-002 defers alias metaclass comparisons until resolution",
+      "sha256": "f34aa7203810104300c28f32e5e61ce0b1b11d899981b964cfd5bafec5eda6ce"
     }
   },
   "assessments": [
@@ -122,7 +146,7 @@
           "query",
           "wire"
         ],
-        "note": "Snapshot references expose the resolved target. Recursive and filtered imports still need qualification."
+        "note": "Public, recursive and re-export cases are bounded; filtered imports and all resolution contexts remain unqualified."
       },
       "tests": [
         {
@@ -131,9 +155,16 @@
             "clean",
             "target"
           ]
+        },
+        {
+          "case": "IMP-011",
+          "checks": [
+            "nested",
+            "private"
+          ]
         }
       ],
-      "limits": "Snapshot references expose the resolved target. Recursive and filtered imports still need qualification."
+      "limits": "Public, recursive and re-export cases are bounded; filtered imports and all resolution contexts remain unqualified."
     },
     {
       "id": "RESOLUTION-VISIBILITY",
@@ -186,6 +217,15 @@
             "private-local",
             "all"
           ]
+        },
+        {
+          "case": "IMP-010",
+          "checks": [
+            "protected",
+            "outside",
+            "private",
+            "blocked"
+          ]
         }
       ],
       "limits": "The cases exercise specific import paths; protected visibility and other import-all interactions remain unreviewed."
@@ -222,6 +262,15 @@
           "checks": [
             "clean",
             "local"
+          ]
+        },
+        {
+          "case": "IMP-009",
+          "checks": [
+            "clean",
+            "local",
+            "global",
+            "enclosing"
           ]
         }
       ],
@@ -297,6 +346,20 @@
           "checks": [
             "clean",
             "alias"
+          ]
+        },
+        {
+          "case": "IMP-012",
+          "checks": [
+            "clean",
+            "chain"
+          ]
+        },
+        {
+          "case": "IMP-013",
+          "checks": [
+            "unresolved",
+            "bindings"
           ]
         }
       ],
@@ -893,7 +956,7 @@
     },
     {
       "id": "MEMBERSHIP-ENUMERATION",
-      "obligation": "Expose namespace memberships, including imported aliases, as query results.",
+      "obligation": "Expose owned and inherited membership identities, alias long/short names, visibility and target status without rewriting element ownership.",
       "category": "product",
       "sources": [
         "SYSML-CLAUSE-7.5.2",
@@ -902,29 +965,51 @@
       "applicability": "current-product",
       "priority": "P0",
       "implementation": {
-        "status": "candidate",
+        "status": "partial",
         "evidence": [
           "engine",
-          "graph",
-          "query",
-          "wire"
+          "graph"
         ]
       },
       "api": {
-        "status": "unsupported",
+        "status": "partial",
         "evidence": [
-          "query",
-          "wire"
-        ],
-        "note": "The upstream graph has membership APIs, but our facade exposes a declaration projection. Design and qualify a public membership API."
+          "wire",
+          "query"
+        ]
       },
       "tests": [
         {
           "case": "IMP-008",
+          "checks": [
+            "clean",
+            "bindings",
+            "initial",
+            "second",
+            "third",
+            "fourth"
+          ]
+        },
+        {
+          "case": "IMP-013",
+          "checks": [
+            "unresolved",
+            "bindings"
+          ]
+        },
+        {
+          "case": "IMP-014",
+          "checks": [
+            "clean",
+            "inherited"
+          ]
+        },
+        {
+          "case": "IMP-020",
           "checks": []
         }
       ],
-      "limits": "The upstream graph has membership APIs, but our facade exposes a declaration projection. Design and qualify a public membership API."
+      "limits": "Schema 2 exposes explicit owned and inherited bindings; full imported membership closure, implicit construction and complete metamodel traversal remain open. Inheritance completeness accompanies the native query."
     },
     {
       "id": "MULTIPLICITY-EXPRESSION",
@@ -936,28 +1021,79 @@
       "applicability": "current-product",
       "priority": "P0",
       "implementation": {
-        "status": "candidate",
+        "status": "partial",
         "evidence": [
           "engine",
-          "multiplicities",
-          "wire"
+          "cardinality"
         ]
       },
       "api": {
-        "status": "unsupported",
+        "status": "partial",
         "evidence": [
-          "query",
-          "wire"
-        ],
-        "note": "The upstream evaluator is a candidate implementation. The facade has no public bound-evaluation operation."
+          "wire",
+          "query"
+        ]
       },
       "tests": [
         {
           "case": "MULT-003",
-          "checks": []
+          "checks": [
+            "clean",
+            "exact",
+            "range",
+            "open",
+            "zero"
+          ]
+        },
+        {
+          "case": "MULT-004",
+          "checks": [
+            "clean",
+            "unknown"
+          ]
+        },
+        {
+          "case": "MULT-005",
+          "checks": [
+            "clean",
+            "large",
+            "maximum",
+            "display"
+          ]
+        },
+        {
+          "case": "MULT-006",
+          "checks": [
+            "clean",
+            "inherited",
+            "explicit"
+          ]
+        },
+        {
+          "case": "MULT-007",
+          "checks": [
+            "fractional",
+            "reversed",
+            "fractional-unknown",
+            "reversed-unknown"
+          ]
+        },
+        {
+          "case": "MULT-008",
+          "checks": [
+            "unknown",
+            "missing"
+          ]
+        },
+        {
+          "case": "MULT-010",
+          "checks": [
+            "clean",
+            "reference"
+          ]
         }
       ],
-      "limits": "The upstream evaluator is a candidate implementation. The facade has no public bound-evaluation operation."
+      "limits": "Exact decimal integers, unbounded upper bounds and explicit unknown reasons are exposed. MULT-003 and MULT-010 retain three expected-result failures (KERNEL-001) for feature-valued providers under the full library. This does not qualify all multiplicity or evaluation semantics."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",
@@ -1158,6 +1294,224 @@
       },
       "tests": [],
       "limits": "KPAR packaging, archive metadata and normative metamodel identification are not exposed by the application."
+    },
+    {
+      "id": "NAMESPACE-DISTINGUISHABILITY",
+      "obligation": "Check collisions between comparable member metaclasses, including aliases versus inherited members and short/long-name collisions.",
+      "category": "standard",
+      "sources": [
+        "KERML-XMI-Root-Namespaces-Namespace-validateNamespaceDistinguishibility",
+        "KERML-XMI-Root-Namespaces-Membership-isDistinguishableFrom_Membership-unnamed1"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "alias-validation",
+          "syntax-structure"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "IMP-015",
+          "checks": [
+            "collision"
+          ]
+        },
+        {
+          "case": "IMP-016",
+          "checks": [
+            "clean"
+          ]
+        },
+        {
+          "case": "IMP-017",
+          "checks": [
+            "collision"
+          ]
+        },
+        {
+          "case": "IMP-022",
+          "checks": [
+            "clean"
+          ]
+        },
+        {
+          "case": "IMP-023",
+          "checks": [
+            "collision"
+          ]
+        }
+      ],
+      "limits": "Imported-membership collisions and specialized membership overrides are not exhaustively covered; this is bounded evidence, not qualification of the whole rule."
+    },
+    {
+      "id": "ROOT-IMPORT-VISIBILITY",
+      "obligation": "Reject non-private root imports while accepting private imports.",
+      "category": "standard",
+      "sources": [
+        "KERML-XMI-Root-Namespaces-Import-validateImportTopLevelVisibility"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "syntax-api",
+          "foundation-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "IMP-018",
+          "checks": [
+            "visibility"
+          ]
+        },
+        {
+          "case": "IMP-019",
+          "checks": [
+            "clean",
+            "imported"
+          ]
+        }
+      ],
+      "limits": "The Rust foundation test additionally exhausts 32 dialect/import-kind/visibility/nesting partitions. Public abstract-syntax import ownership and visibility queries remain unavailable."
+    },
+    {
+      "id": "INHERITED-ALIAS-REDUCTION",
+      "obligation": "Apply the normative redefinition closure to distinct inherited memberships of the same Feature.",
+      "category": "standard",
+      "sources": [
+        "KERML-XMI-Core-Types-Type-removeRedefinedFeatures_Membership-unnamed1"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "graph"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "IMP-021",
+          "checks": [
+            "clean",
+            "reduced"
+          ]
+        }
+      ],
+      "limits": "Only the shared Feature target boundary is tested here; non-Feature aliases are covered by IMP-014. Arbitrary redefinition closure is not qualified."
+    },
+    {
+      "id": "LEXICAL-NAMES",
+      "obligation": "Resolve quoted names and reject reserved words according to the selected dialect.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.1",
+        "KERML-CLAUSE-8.2.2.3"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "NAME-001",
+          "checks": [
+            "clean",
+            "spaced",
+            "escaped",
+            "unicode",
+            "reserved"
+          ]
+        },
+        {
+          "case": "NAME-002",
+          "checks": [
+            "reserved",
+            "recovered"
+          ]
+        },
+        {
+          "case": "NAME-003",
+          "checks": [
+            "clean",
+            "resolved"
+          ]
+        }
+      ],
+      "limits": "These cases do not cover every lexical production, escape, expression literal or grammar alternative."
+    },
+    {
+      "id": "CARDINALITY-RECOVERY",
+      "obligation": "Never publish evaluated cardinality from a workspace with syntax errors that may have erased constraints.",
+      "category": "product",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.1"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "cardinality"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "MULT-009",
+          "checks": [
+            "syntax",
+            "unknown"
+          ]
+        }
+      ],
+      "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
     }
   ]
 }

@@ -46,12 +46,37 @@ Clause references identify the source of a test, not complete coverage of that c
 | SOURCE-002 | Names and source fidelity: KerML 1.0 §8.2.2 | negative | Covered | Syntax recovery retains an earlier valid declaration. |
 | CYCLE-001 | Cyclic input handling: KerML 1.0 §7.2.5.4, KerML 1.0 §7.3.2.3 | robustness | Covered | Cyclic imports terminate and preserve a reachable public definition. |
 | CYCLE-002 | Cyclic input handling: KerML 1.0 §7.2.5.4, KerML 1.0 §7.3.2.3 | robustness | Covered | Mutual specialization terminates and preserves both declarations. |
-| IMP-008 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Planned | Qualified membership enumeration includes imported aliases. |
-| MULT-003 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Planned | Evaluate expression-valued bounds with an explicit completeness result. |
+| IMP-008 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Enumerate owned membership identity, alias names and short names separately from target ownership. |
+| IMP-009 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Resolve local, enclosing and explicitly global names with lexical shadowing. |
+| IMP-010 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Protected members are inherited but not externally visible; private members are not inherited. |
+| IMP-011 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Recursive import reaches nested public members and excludes private members. |
+| IMP-012 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Forward aliases resolve transitively to the original element. |
+| IMP-013 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Unresolved alias remains a binding with an explicit unresolved target. |
+| IMP-014 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Inherited memberships retain protected aliases of a nested definition and its declaring namespace; private aliases do not inherit. |
+| IMP-015 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Detect an owned alias colliding with an inherited member of a conforming metaclass. |
+| IMP-016 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Same names on unrelated metaclasses and anonymous members are distinguishable. |
+| IMP-017 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | A short name colliding with a long name of the same metaclass is rejected. |
+| IMP-018 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | A root namespace import must have private visibility. |
+| IMP-019 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | A private root import is valid and visible to its nested package. |
+| MULT-003 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Known gap: KERNEL-001, KERNEL-001 | Evaluate multiplicity feature references backed by integer formulas, retaining exact bounds and unbounded/zero distinctions. |
+| MULT-004 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | An unvalued multiplicity provider yields unknown, not a default or an empty domain. |
+| MULT-005 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Preserve integers beyond IEEE-754 exact range through the wire and display contracts. |
+| MULT-006 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Subset multiplicities inherit an interval and preserve an explicit narrower interval. |
+| MULT-007 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Fractional and reversed cardinality bounds are invalid and never evaluated results. |
+| MULT-008 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Unresolved subset targets prevent a default cardinality result. |
+| MULT-009 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Syntax recovery cannot erase a malformed bound and claim an implicit singleton. |
+| IMP-020 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Planned | Expose complete imported membership closure with completeness guarantees. |
+| IMP-021 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Distinct inherited memberships of the same Feature are removed by Type::removeRedefinedFeatures; non-Feature aliases use IMP-014. |
+| NAME-001 | Lexical names and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3 | positive | Covered | Quoted names preserve spaces, escaped quotes, Unicode and reserved words through resolution. |
+| NAME-002 | Lexical names and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3 | negative | Covered | Unquoted SysML reserved words are rejected as identifiers and later declarations recover. |
+| NAME-003 | Lexical names and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3 | positive | Covered | A SysML-only keyword remains a legal unquoted KerML identifier. |
+| IMP-022 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Aliases with equal names and unrelated target metaclasses remain distinguishable. |
+| IMP-023 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Alias short-name/long-name collisions of conforming target metaclasses are diagnosed. |
+| MULT-010 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Known gap: KERNEL-001 | A literal-valued scalar feature supplies exact multiplicity bounds. |
 
 ## Coverage limits
 
-- **Imports and visibility:** Recursive and filtered imports, protected visibility, import-all interactions and complete membership enumeration remain unqualified.
+- **Imports and visibility:** Filtered imports, imported membership enumeration, alias collisions through imports, and all contextual name-resolution rules remain unqualified.
 - **Typing:** Multiple and implicit typing, chained types and all type-kind constraints need further cases.
 - **Specialization and inheritance:** Diamond coverage is limited to a common ancestor; conflicts, cycles and all inherited memberships require broader qualification.
 - **Subsetting:** These cases check target identity, not instance-value containment or every conformance constraint.
@@ -61,11 +86,14 @@ Clause references identify the source of a test, not complete coverage of that c
 - **Connections and chains:** Endpoint identity and arity are covered; direction, flow compatibility and connection end conformance need further cases.
 - **Names and source fidelity:** Byte/UTF-16 mapping and recovery are project API guarantees; lexical names are the standards link. No editable CST contract is claimed.
 - **Cyclic input handling:** Termination is an operational guarantee, not a semantic verdict about every cycle. Continuous fuzzing remains separate work.
+- **Lexical names and dialect boundaries:** These cases exercise reserved, quoted and escaped names; all terminals, escape forms and grammar alternatives remain unqualified.
 
 ## Known failures and planned work
 
-- **IMP-008:** The facade currently exposes owned declarations and effective features, not all namespace memberships. Design an explicit membership query before asserting this.
-- **MULT-003:** The current declaredMultiplicity field is a normalized literal query; expression evaluation is outside the public contract.
+- **KERNEL-001 / MULT-003 / exact:** The upstream checked operator/callee proof is incomplete with the full pinned library; valid formula-valued providers return unsupportedBound. Preserve the expected exact result.
+- **KERNEL-001 / MULT-003 / range:** The upstream checked operator/callee proof is incomplete with the full pinned library; valid formula-valued providers return unsupportedBound. Preserve the expected exact result.
+- **IMP-020:** Owned and inherited bindings are public; complete imported membership enumeration is not yet exposed.
+- **KERNEL-001 / MULT-010 / reference:** The full-library checked model-level reference proof reports IncompleteFeaturing even for a literal-valued provider; retain the expected exact interval.
 
 The authored fixtures are in `tests/conformance/fixtures`. Official examples are
 copied unchanged from the pinned release; see `tests/conformance/upstream/provenance.json`

@@ -108,6 +108,61 @@ pub struct Reference {
     pub source: SourceRange,
 }
 
+/// A membership is a binding, distinct from the element it names. Several
+/// aliases may bind the same element without changing that element's owner.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
+#[serde(rename_all = "camelCase")]
+pub struct Membership {
+    pub id: String,
+    pub metaclass: String,
+    pub namespace_id: String,
+    pub name: Option<String>,
+    pub short_name: Option<String>,
+    pub visibility: Visibility,
+    pub is_alias: bool,
+    pub member: Resolution,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
+#[serde(rename_all = "camelCase")]
+pub enum Visibility {
+    Public,
+    Protected,
+    Private,
+}
+
+/// Exact decimal integer strings avoid rounding through JSON/JavaScript numbers.
+/// An evaluated result proves supported bounds, not whole-model validity.
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
+#[serde(tag = "status", rename_all = "camelCase")]
+pub enum Cardinality {
+    Evaluated {
+        lower: String,
+        upper: Option<String>,
+    },
+    Unknown {
+        reason: CardinalityIssue,
+    },
+    NotApplicable,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
+#[serde(rename_all = "camelCase")]
+pub enum CardinalityIssue {
+    InvalidSyntax,
+    InvalidRelationship,
+    IncompleteProvider,
+    UnsupportedBound,
+    CyclicDependency,
+    ConflictingConstraints,
+    WorkLimit,
+    Unavailable,
+}
+
 /// A declaration's semantic facts. IDs are opaque and snapshot-scoped, never
 /// persistent identity or array indexes. Metaclass names follow the pinned schema.
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -124,10 +179,15 @@ pub struct Element {
     pub documentation: String,
     pub value_expression: Option<String>,
     pub declared_multiplicity: Option<String>,
+    pub cardinality: Cardinality,
     /// Library/navigation stubs have no member-query result in this snapshot.
     pub members_available: bool,
     pub owned_members: Vec<String>,
     pub effective_members: Vec<String>,
+    /// Explicit owned bindings, including aliases and anonymous memberships.
+    pub owned_memberships: Vec<String>,
+    /// Inherited bindings supplied by the engine; see inheritance_complete.
+    pub inherited_memberships: Vec<String>,
     pub inheritance_complete: bool,
 }
 
@@ -161,6 +221,7 @@ pub struct Snapshot {
     pub library_version: String,
     pub documents: Vec<SourceDocument>,
     pub elements: Vec<Element>,
+    pub memberships: Vec<Membership>,
     pub references: Vec<Reference>,
     pub connections: Vec<Connection>,
     pub diagnostics: Vec<Diagnostic>,

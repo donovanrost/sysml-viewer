@@ -15,11 +15,14 @@ automatic background update or a replacement of failing expected results.
    The importer verifies tracked cleanliness and revision equality. Inventory/hash
    checking detects leftover files: remove only files verified to have been removed
    upstream, or import into a clean staging checkout and review the diff.
-3. Review all imported changes. Our only current toolkit packaging adaptation is
-   its reduced workspace manifest. Preserve source and notices; do not make silent
-   edits inside `vendor/`. If a source patch is unavoidable, first add a failing
-   regression, document its upstream revision and rationale, and introduce an
-   explicit patch/provenance mechanism rather than hand-editing the hash manifest.
+3. Review all imported changes. The toolkit has a reduced workspace manifest and the explicitly recorded
+   source patch in `patches/manifest.json`. Preserve source and notices; do not make silent
+   edits inside `vendor/`. For a source patch, first add a failing regression and review its standard
+   basis. Record its revision, original/result hashes and patch bytes in the
+   manifest; retain the original `vendor/SHA256SUMS.json` hashes. Run
+   `node tools/verify-vendor.mjs --apply` to apply or verify it. The verifier
+   reconstructs the original bytes in a temporary tree. Rebase/remove patches
+   explicitly during an upgrade; a changed upstream revision is rejected.
 4. If the library revision changes, refresh the official conformance fixtures from
    the same revision using their recorded upstream paths. Preserve bytes and update
    `tests/conformance/upstream/provenance.json`. Verify the expectations against the

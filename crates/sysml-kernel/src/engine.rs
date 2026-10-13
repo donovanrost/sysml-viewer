@@ -222,6 +222,9 @@ impl Engine {
         // a completeness result. Ownership alone is not an inheritance edge.
         let incomplete_members = incomplete_member_dependencies(&references);
         let mut member_queries = HashMap::new();
+        let mut membership_queries = HashMap::new();
+        let mut membership_order = Vec::new();
+        let mut membership_seen = HashSet::new();
         let mut connections = Vec::new();
         for &e in &declarations {
             checkpoint()?;
@@ -244,6 +247,18 @@ impl Engine {
                 diagnostics.push(Diagnostic { code: "incomplete-inheritance".into(), stage: Stage::Capability, severity: Severity::Warning, message: "The engine could not completely determine this element's inherited members.".into(), source: source(unit, span) });
             }
             member_queries.insert(e, (owned, effective, complete));
+            let owned: Vec<_> = graph
+                .owned_relationships(e)
+                .into_iter()
+                .filter(|m| check::metaclass_conforms(graph.element_type(*m), "Membership"))
+                .collect();
+            let inherited = graph.inherited_memberships(e, true);
+            for &m in owned.iter().chain(&inherited) {
+                if membership_seen.insert(m) {
+                    membership_order.push(m);
+                }
+            }
+            membership_queries.insert(e, (owned, inherited));
             if check::metaclass_conforms(graph.element_type(e), "Connector") {
                 let (unit, extent) = graph.member_extent(e).unwrap();
                 let failed = unresolved.iter().any(|r| {
@@ -268,6 +283,69 @@ impl Engine {
             }
         }
 
+        let mut memberships = Vec::new();
+        for m in membership_order {
+            let Some(owner) = graph.owner(m) else {
+                return Err(AnalysisError::Engine(
+                    "Membership has no owning namespace".into(),
+                ));
+            };
+            registry.include(owner);
+            let member = if let Some(target) = graph.membership_member(m) {
+                registry.include(target);
+                Resolution::Resolved {
+                    target_id: registry.id(target),
+                }
+            } else if let Some(site) = unresolved.iter().find(|s| s.owner == m) {
+                if ambiguous.contains(&(site.unit, site.span.start, site.span.end)) {
+                    Resolution::Ambiguous
+                } else {
+                    Resolution::Unresolved
+                }
+            } else {
+                Resolution::Unsupported {
+                    reason: "Membership target is unavailable".into(),
+                }
+            };
+            let properties = graph.element_properties(m);
+            let visibility = match properties.get("visibility").and_then(|v| v.as_str()) {
+                Some("private") => Visibility::Private,
+                Some("protected") => Visibility::Protected,
+                _ => Visibility::Public,
+            };
+            // Only owning memberships derive their names from the member.
+            // Aliases and anonymous reference memberships keep their own names.
+            let is_alias = graph.membership_is_alias(m);
+            let is_owning = check::metaclass_conforms(graph.element_type(m), "OwningMembership");
+            let target = graph.membership_member(m);
+            let name = if !is_owning {
+                properties
+                    .get("memberName")
+                    .and_then(|v| v.as_str())
+                    .map(str::to_owned)
+            } else {
+                target.and_then(|t| graph.element_effective_name(t))
+            };
+            let short_name = if !is_owning {
+                properties
+                    .get("memberShortName")
+                    .and_then(|v| v.as_str())
+                    .map(str::to_owned)
+            } else {
+                target.and_then(|t| graph.element_short_name(t))
+            };
+            memberships.push(Membership {
+                id: registry.id(m),
+                metaclass: graph.element_type(m).into(),
+                namespace_id: registry.id(owner),
+                name,
+                short_name,
+                visibility,
+                is_alias,
+                member,
+            });
+        }
+
         // Include the owner chain of referenced/library declarations for source
         // navigation. Library records are inspection stubs, not expanded queries.
         let mut cursor = 0;
@@ -280,6 +358,9 @@ impl Engine {
             }
             cursor += 1;
         }
+        let syntax_invalid = diagnostics
+            .iter()
+            .any(|d| matches!(d.stage, Stage::Syntax) && d.severity == Severity::Error);
         let mut elements = Vec::new();
         let mut used_units: HashSet<usize> = (user_start..sources.len()).collect();
         for e in registry.included.clone() {
@@ -292,23 +373,33 @@ impl Engine {
                     source(u, s)
                 });
             let (owned, effective, complete) = member_queries.remove(&e).unwrap_or_default();
+            let (owned_memberships, inherited_memberships) =
+                membership_queries.remove(&e).unwrap_or_default();
             let value_expression = graph.member_extent(e).and_then(|(u, _)| {
                 graph
                     .value_expr(e)
                     .map(|(_, expr)| expr.span.slice(&sources[u].text).to_string())
             });
-            let declared_multiplicity = graph.declared_multiplicity(e).map(|(lo, hi)| {
-                let upper = if hi.is_infinite() {
-                    "*".to_string()
-                } else {
-                    hi.to_string()
-                };
-                if lo == hi {
-                    format!("[{upper}]")
-                } else {
-                    format!("[{lo}..{upper}]")
+            // Navigation stubs do not run additional semantic queries. The
+            // compatibility call is used only to detect a header declaration;
+            // no floating-point bound crosses the public API.
+            let cardinality = if syntax_invalid {
+                Cardinality::Unknown {
+                    reason: CardinalityIssue::InvalidSyntax,
                 }
-            });
+            } else if declaration_set.contains(&e) {
+                crate::cardinality::cardinality(&mut graph, e)
+            } else {
+                Cardinality::Unknown {
+                    reason: CardinalityIssue::Unavailable,
+                }
+            };
+            let declared_multiplicity =
+                if declaration_set.contains(&e) && graph.declared_multiplicity(e).is_some() {
+                    crate::cardinality::display(&cardinality)
+                } else {
+                    None
+                };
             elements.push(Element {
                 id: registry.id(e),
                 metaclass: graph.element_type(e).into(),
@@ -327,12 +418,22 @@ impl Engine {
                     .join("\n"),
                 value_expression,
                 declared_multiplicity,
+                cardinality,
                 members_available: declaration_set.contains(&e),
                 owned_members: owned.into_iter().map(|m| registry.id(m)).collect(),
                 effective_members: effective.into_iter().map(|m| registry.id(m)).collect(),
+                owned_memberships: owned_memberships
+                    .into_iter()
+                    .map(|m| registry.id(m))
+                    .collect(),
+                inherited_memberships: inherited_memberships
+                    .into_iter()
+                    .map(|m| registry.id(m))
+                    .collect(),
                 inheritance_complete: complete,
             });
         }
+        diagnostics.extend(crate::namespaces::alias_collisions(&elements, &memberships));
         references.sort_by(|a, b| {
             (
                 &a.source.document_id,
@@ -361,7 +462,7 @@ impl Engine {
         });
         diagnostics.dedup_by(|a, b| a.source == b.source && a.message == b.message);
         checkpoint()?;
-        Ok(Snapshot {
+        let snapshot = Snapshot {
             schema_version: SCHEMA_VERSION,
             revision: request.revision,
             engine_version: ENGINE_VERSION.into(),
@@ -372,10 +473,15 @@ impl Engine {
                 .filter_map(|(u, d)| used_units.contains(&u).then_some(d))
                 .collect(),
             elements,
+            memberships,
             references,
             connections,
             diagnostics,
-        })
+        };
+        snapshot
+            .queries()
+            .map_err(|error| AnalysisError::Engine(format!("Invalid projection: {error}")))?;
+        Ok(snapshot)
     }
 }
 

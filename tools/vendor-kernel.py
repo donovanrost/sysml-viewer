@@ -1,4 +1,4 @@
-"""Copy pinned, unmodified upstream sources from verified local checkouts.
+"""Copy pinned upstream sources from verified local checkouts, then apply recorded patches.
 
 Only the two used Rust crates and the library sources are copied. Cargo git
 dependencies otherwise fetch the toolkit's large, unrelated corpus submodules.
@@ -59,3 +59,4 @@ for name in ["LICENSE", "LICENSE-GPL", "README.md"]:
     copy(args.library / name, vendor / "sysml-library" / name)
 (vendor / "SHA256SUMS.json").write_text(json.dumps(hashes, indent=2, sort_keys=True) + "\n")
 print(f"Vendored {len(hashes)} files from verified revisions.")
+subprocess.run(["node", str(ROOT / "tools/verify-vendor.mjs"), "--apply"], check=True)

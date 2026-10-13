@@ -136,7 +136,8 @@ check the viewer projection, source slicing and bundled example. This is the ini
 acceptance suite, not a substitute for an official semantic conformance matrix or
 continuous fuzzing.
 
-The coverage matrix has 29 executable cases and two explicitly planned cases. It
+The coverage matrix has 55 executable cases and one explicitly planned case.
+Two executable cases retain a named evaluator gap; they are not counted as passing. The matrix
 checks standards-linked expectations, including two unchanged official examples,
 with a fresh process and deadline per case. Its harness rejects new failures and
 unexpected passes of known gaps. Reports are saved to `target/conformance/` and
@@ -170,3 +171,7 @@ files, original licenses and a hash manifest are checked in. The toolkit uses
 Apache-2.0; the pinned March 2026 standard models carry LGPL-3.0 notices. Notices
 are also included in the built web/app assets at `third-party-notices.txt`.
 See the evaluation document and `tools/vendor-kernel.py` for the update procedure.
+
+The [foundation qualification record](docs/foundation-qualification.md) describes
+schema 2 membership/cardinality queries, namespace validation and the remaining
+checked-evaluator gap. Full language conformance remains unestablished.

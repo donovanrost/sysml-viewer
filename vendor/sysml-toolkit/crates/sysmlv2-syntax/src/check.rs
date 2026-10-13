@@ -1,3 +1,5 @@
+// Local change KERNEL-002: defer alias target comparisons to semantic validation.
+// Patch provenance: patches/manifest.json in the SysML Viewer repository.
 //! Post-parse validation: body-context legality.
 //!
 //! The parser deliberately accepts a superset grammar — every member form is
@@ -421,8 +423,8 @@ fn member_identification(k: &MemberKind) -> Option<&Identification> {
 /// Static element-metaclass identity used by the syntax-stage portion of
 /// KerML `Membership::isDistinguishableFrom`. Concrete sibling metaclasses
 /// are distinguishable even when they have the same name; identical
-/// metaclasses are not. Alias targets need resolution, so aliases remain
-/// conservative here and the model-stage namespace check refines them.
+/// metaclasses are not. Alias targets need resolution: defer those pairs to
+/// the consuming facade's semantic namespace check.
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum NamedMetaclass {
     UnknownAliasTarget,
@@ -529,7 +531,9 @@ fn metaclasses_are_distinguishable(a: NamedMetaclass, b: NamedMetaclass) -> bool
         (a, b),
         (NamedMetaclass::UnknownAliasTarget, _) | (_, NamedMetaclass::UnknownAliasTarget)
     ) {
-        return false;
+        // A syntax-only pass cannot establish the target metaclass. Reporting
+        // a collision here rejects legal aliases of unrelated metaclasses.
+        return true;
     }
     let conforms = match (a, b) {
         (NamedMetaclass::Definition(x), NamedMetaclass::Definition(y)) => {

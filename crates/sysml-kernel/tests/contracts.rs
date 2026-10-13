@@ -63,6 +63,7 @@ fn canonical_lookup_does_not_claim_scoped_resolution_or_choose_first_match() {
     let mut value = snapshot().clone();
     let mut second = value.find("Definitions::Base")[0].clone();
     second.id = "second-canonical-name".into();
+    second.owned_memberships.clear();
     value.elements.push(second);
     let query = value.queries().unwrap();
     assert!(query.find("mass").is_empty());

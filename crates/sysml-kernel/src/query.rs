@@ -1,6 +1,6 @@
 use crate::{
-    Diagnostic, Element, Reference, Resolution, Snapshot, SourceDocument, SourceIndex, SourceRange,
-    SCHEMA_VERSION,
+    Cardinality, Diagnostic, Element, Membership, Reference, Resolution, Snapshot, SourceDocument,
+    SourceIndex, SourceRange, SCHEMA_VERSION,
 };
 use std::collections::HashMap;
 
@@ -9,6 +9,7 @@ use std::collections::HashMap;
 pub enum QueryError {
     InvalidSnapshot(String),
     UnknownElement(String),
+    UnknownMembership(String),
     UnknownDocument(String),
     MembersUnavailable(String),
     ReferencesUnavailable(String),
@@ -30,11 +31,18 @@ pub struct EffectiveMembers<'a> {
     pub inheritance_complete: bool,
 }
 
+#[derive(Debug)]
+pub struct InheritedMemberships<'a> {
+    pub memberships: Vec<&'a Membership>,
+    pub inheritance_complete: bool,
+}
+
 /// An indexed immutable borrow of a structurally validated snapshot. Construction
 /// validates handle/range integrity, not the modeled system's semantic validity.
 pub struct SnapshotQuery<'a> {
     snapshot: &'a Snapshot,
     elements: HashMap<&'a str, &'a Element>,
+    memberships: HashMap<&'a str, &'a Membership>,
     documents: HashMap<&'a str, &'a SourceDocument>,
     names: HashMap<&'a str, Vec<&'a Element>>,
 }
@@ -54,6 +62,7 @@ impl<'a> SnapshotQuery<'a> {
         let mut query = Self {
             snapshot,
             elements: HashMap::new(),
+            memberships: HashMap::new(),
             documents: HashMap::new(),
             names: HashMap::new(),
         };
@@ -68,6 +77,16 @@ impl<'a> SnapshotQuery<'a> {
             }
             if let Some(name) = &element.qualified_name {
                 query.names.entry(name).or_default().push(element);
+            }
+        }
+        for membership in &snapshot.memberships {
+            if membership.id.is_empty()
+                || query
+                    .memberships
+                    .insert(&membership.id, membership)
+                    .is_some()
+            {
+                return Err(invalid("Empty or duplicate membership identity"));
             }
         }
         let indexes: HashMap<_, _> = snapshot
@@ -91,6 +110,10 @@ impl<'a> SnapshotQuery<'a> {
             }
             Ok(())
         };
+        for membership in &snapshot.memberships {
+            query.element(&membership.namespace_id)?;
+            validate_resolution(&membership.member)?;
+        }
         for element in &snapshot.elements {
             for id in element
                 .parent_id
@@ -101,9 +124,37 @@ impl<'a> SnapshotQuery<'a> {
                 query.element(id)?;
             }
             if !element.members_available
-                && (!element.owned_members.is_empty() || !element.effective_members.is_empty())
+                && (!element.owned_members.is_empty()
+                    || !element.effective_members.is_empty()
+                    || !element.owned_memberships.is_empty()
+                    || !element.inherited_memberships.is_empty())
             {
                 return Err(invalid("Unavailable member query contains results"));
+            }
+            for id in &element.owned_memberships {
+                if query.membership(id)?.namespace_id != element.id {
+                    return Err(invalid("Owned membership belongs to another namespace"));
+                }
+            }
+            for id in &element.inherited_memberships {
+                query.membership(id)?;
+            }
+            if let Cardinality::Evaluated { lower, upper } = &element.cardinality {
+                let number = |s: &str| -> Result<i128, QueryError> {
+                    let n = s
+                        .parse::<i128>()
+                        .map_err(|_| invalid("Invalid cardinality integer"))?;
+                    if n < 0 || n.to_string() != s {
+                        return Err(invalid("Noncanonical cardinality integer"));
+                    }
+                    Ok(n)
+                };
+                let low = number(lower)?;
+                if let Some(high) = upper {
+                    if number(high)? < low {
+                        return Err(invalid("Reversed cardinality interval"));
+                    }
+                }
             }
             if let Some(range) = &element.source {
                 validate_range(range)?;
@@ -159,6 +210,39 @@ impl<'a> SnapshotQuery<'a> {
             .get(id)
             .copied()
             .ok_or_else(|| QueryError::UnknownDocument(id.into()))
+    }
+
+    pub fn membership(&self, id: &str) -> Result<&'a Membership, QueryError> {
+        self.memberships
+            .get(id)
+            .copied()
+            .ok_or_else(|| QueryError::UnknownMembership(id.into()))
+    }
+
+    pub fn owned_memberships(&self, id: &str) -> Result<Vec<&'a Membership>, QueryError> {
+        self.member_owner(id)?
+            .owned_memberships
+            .iter()
+            .map(|id| self.membership(id))
+            .collect()
+    }
+
+    /// Retains membership identity, aliases and completeness. This is not a
+    /// complete namespace-membership closure (imports are not enumerated).
+    pub fn inherited_memberships(&self, id: &str) -> Result<InheritedMemberships<'a>, QueryError> {
+        let element = self.member_owner(id)?;
+        Ok(InheritedMemberships {
+            memberships: element
+                .inherited_memberships
+                .iter()
+                .map(|id| self.membership(id))
+                .collect::<Result<_, _>>()?,
+            inheritance_complete: element.inheritance_complete,
+        })
+    }
+
+    pub fn cardinality(&self, id: &str) -> Result<&'a Cardinality, QueryError> {
+        Ok(&self.element(id)?.cardinality)
     }
 
     pub fn owned_members(&self, id: &str) -> Result<Vec<&'a Element>, QueryError> {

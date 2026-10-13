@@ -34,18 +34,18 @@ All clause/prose decomposition remains pending. No percentage is published.
 
 ## Evidence mapped so far
 
-28 bounded assessments map 29 executable cases and 2 planned cases.
+33 bounded assessments map 55 executable cases and 1 planned cases.
 Linked tests are evidence for the assessment wording only. They do not qualify
 a whole source clause, its descendants, or a named constraint merely because it
 belongs to the same metaclass. Product robustness cases are identified separately.
 
 | Assessment | Category | Implementation / API | Positive / negative / robustness / planned | Limits |
 | --- | --- | --- | --- | --- |
-| RESOLUTION-PUBLIC | standard | partial / partial | 1 / 0 / 0 / 0 | Snapshot references expose the resolved target. Recursive and filtered imports still need qualification. |
-| RESOLUTION-VISIBILITY | standard | partial / partial | 1 / 2 / 0 / 0 | The cases exercise specific import paths; protected visibility and other import-all interactions remain unreviewed. |
-| RESOLUTION-SHADOWING | standard | partial / partial | 1 / 0 / 0 / 0 | One positive collision case; other lookup precedence interactions remain unreviewed. |
+| RESOLUTION-PUBLIC | standard | partial / partial | 1 / 1 / 0 / 0 | Public, recursive and re-export cases are bounded; filtered imports and all resolution contexts remain unqualified. |
+| RESOLUTION-VISIBILITY | standard | partial / partial | 1 / 3 / 0 / 0 | The cases exercise specific import paths; protected visibility and other import-all interactions remain unreviewed. |
+| RESOLUTION-SHADOWING | standard | partial / partial | 2 / 0 / 0 / 0 | One positive collision case; other lookup precedence interactions remain unreviewed. |
 | RESOLUTION-AMBIGUITY | standard | partial / partial | 0 / 1 / 0 / 0 | One conflicting wildcard-import case. This does not establish all namespace distinguishability constraints. |
-| RESOLUTION-ALIAS | standard | partial / partial | 1 / 0 / 0 / 0 | Official example checks target identity; alias chains and cycles remain unreviewed. |
+| RESOLUTION-ALIAS | standard | partial / partial | 2 / 1 / 0 / 0 | Official example checks target identity; alias chains and cycles remain unreviewed. |
 | TYPING-CROSS-DIALECT | standard | partial / partial | 1 / 0 / 0 / 0 | The selected classifier works across dialects; this is not all typing compatibility. |
 | TYPING-MISSING | standard | partial / partial | 0 / 1 / 0 / 0 | Reports an unresolved reference. No claim about every validation consequence of the missing type. |
 | TYPING-KIND | standard | partial / partial | 0 / 1 / 0 / 0 | The current check emits a generic semantic error. It is not evidence that a particular named metamodel constraint is exhaustively implemented. |
@@ -60,8 +60,8 @@ belongs to the same metaclass. Product robustness cases are identified separatel
 | SOURCE-NAMES | standard | partial / partial | 1 / 0 / 0 / 0 | Only name spelling relates to the standard here; byte/UTF-16 coordinate fidelity is a product guarantee. |
 | SOURCE-RECOVERY | product | partial / partial | 0 / 1 / 0 / 0 | Error recovery policy is a product requirement; the linked clause supplies context, not a recovery conformance rule. |
 | ROBUSTNESS-CYCLES | product | partial / partial | 0 / 0 / 2 / 0 | Termination and retained declarations do not establish a semantic verdict on cyclic models. |
-| MEMBERSHIP-ENUMERATION | product | candidate / unsupported | 0 / 0 / 0 / 1 | The upstream graph has membership APIs, but our facade exposes a declaration projection. Design and qualify a public membership API. |
-| MULTIPLICITY-EXPRESSION | product | candidate / unsupported | 0 / 0 / 0 / 1 | The upstream evaluator is a candidate implementation. The facade has no public bound-evaluation operation. |
+| MEMBERSHIP-ENUMERATION | product | partial / partial | 2 / 1 / 0 / 1 | Schema 2 exposes explicit owned and inherited bindings; full imported membership closure, implicit construction and complete metamodel traversal remain open. Inheritance completeness accompanies the native query. |
+| MULTIPLICITY-EXPRESSION | product | partial / partial | 5 / 2 / 0 / 0 | Exact decimal integers, unbounded upper bounds and explicit unknown reasons are exposed. MULT-003 and MULT-010 retain three expected-result failures (KERNEL-001) for feature-valued providers under the full library. This does not qualify all multiplicity or evaluation semantics. |
 | CONF-ABSTRACT-SYSML | conformance-point | partial / unsupported | 0 / 0 / 0 / 0 | The viewer reads selected declarations and does not provide full metamodel CRUD or complete well-formedness validation. |
 | CONF-ABSTRACT-KERML | conformance-point | partial / unsupported | 0 / 0 / 0 / 0 | The public kernel has no general metamodel mutation API and validation coverage is incomplete. |
 | CONF-TEXTUAL | conformance-point | partial / unsupported | 0 / 0 / 0 / 0 | Read/analysis operations are partial. Full textual create/update/delete operations and complete grammar qualification are absent. |
@@ -69,6 +69,11 @@ belongs to the same metaclass. Product robustness cases are identified separatel
 | CONF-SEMANTIC | conformance-point | partial / unsupported | 0 / 0 / 0 / 0 | Name resolution and selected queries do not establish complete semantic conformance. No public execution/simulation API is present. |
 | CONF-INTERCHANGE | conformance-point | candidate / unsupported | 0 / 0 / 0 / 0 | Our JSON snapshot is a private protocol. The facade does not import/export normative JSON or KPAR archives. |
 | CONF-SYSML-ARCHIVE | conformance-point | unsupported / unsupported | 0 / 0 / 0 / 0 | KPAR packaging, archive metadata and normative metamodel identification are not exposed by the application. |
+| NAMESPACE-DISTINGUISHABILITY | standard | partial / partial | 2 / 3 / 0 / 0 | Imported-membership collisions and specialized membership overrides are not exhaustively covered; this is bounded evidence, not qualification of the whole rule. |
+| ROOT-IMPORT-VISIBILITY | standard | partial / partial | 1 / 1 / 0 / 0 | The Rust foundation test additionally exhausts 32 dialect/import-kind/visibility/nesting partitions. Public abstract-syntax import ownership and visibility queries remain unavailable. |
+| INHERITED-ALIAS-REDUCTION | standard | partial / partial | 1 / 0 / 0 / 0 | Only the shared Feature target boundary is tested here; non-Feature aliases are covered by IMP-014. Arbitrary redefinition closure is not qualified. |
+| LEXICAL-NAMES | standard | partial / partial | 2 / 1 / 0 / 0 | These cases do not cover every lexical production, escape, expression literal or grammar alternative. |
+| CARDINALITY-RECOVERY | product | partial / partial | 0 / 1 / 0 / 0 | Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work. |
 
 ## Sources and extraction checks
 

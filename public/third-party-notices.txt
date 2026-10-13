@@ -2,7 +2,7 @@ SysML Viewer third-party notices
 
 Open-MBEE sysml-toolkit 0.10.2
 https://github.com/Open-MBEE/sysml-toolkit/tree/821221767c3c56cb1ebe7da22666197a47c9c645
-Unmodified Rust source snapshot; Cargo workspace packaging adapted.
+Pinned Rust source snapshot with recorded local patch KERNEL-002; Cargo workspace packaging adapted.
 
 
                                  Apache License
@@ -1080,3 +1080,7 @@ may consider it more useful to permit linking proprietary applications with
 the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <https://www.gnu.org/licenses/why-not-lgpl.html>.
+
+Local toolkit modification KERNEL-002: syntax-stage alias distinguishability
+comparisons are deferred to resolved semantic validation. Exact patch provenance
+is recorded in patches/manifest.json in this application source distribution.

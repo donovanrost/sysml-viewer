@@ -59,3 +59,24 @@ test('fixed gaps and malformed runtime data require review', () => {
   assert.equal(assessCase(fixed, caseWithGap)[0].status, 'unexpected-pass');
   assert.equal(assessCase({ ...snapshot, elements: [null] }, caseWithGap)[0].status, 'fail');
 });
+
+test('cardinality assertions retain exact integer strings and do not accept unknown as evaluated', () => {
+  const m = matrix();
+  const c = m.cases.find((c) => c.id === 'MULT-005');
+  const check = c.checks.find((c) => c.id === 'large');
+  const snapshot = {
+    elements: [
+      {
+        qualifiedName: check.owner,
+        cardinality: { status: 'unknown', reason: 'unsupportedBound' },
+      },
+    ],
+    memberships: [],
+    references: [],
+    diagnostics: [],
+    connections: [],
+  };
+  assert.equal(assessCase(snapshot, { checks: [check] })[0].status, 'fail');
+  check.lower = 9007199254740993;
+  assert.throws(() => validateMatrix(m));
+});

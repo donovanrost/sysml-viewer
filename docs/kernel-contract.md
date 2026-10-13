@@ -6,7 +6,7 @@ the facade. Status: implemented, reviewed against the qualification suite.
 
 The stable seam is source text → analysis → explicit query results. The current
 facade is a **declaration projection**, not a complete metamodel API. In particular,
-namespace membership enumeration, arbitrary scoped-name resolution, AST editing,
+complete imported-membership enumeration, arbitrary scoped-name resolution, AST editing,
 expression evaluation and simulation are not public operations. Consumers requiring
 raw syntax can use the pinned syntax crate directly, accepting its upstream API;
 we do not disguise that coupling by re-exporting its types from `sysml-kernel`.
@@ -22,6 +22,10 @@ we do not disguise that coupling by re-exporting its types from `sysml-kernel`.
 | `query.find(qualified_name)` | Zero, one or several matches | Exact canonical-name lookup; does not enumerate aliases or resolve a name in a scope. Never selects an arbitrary first match. |
 | `query.owned_members(id)` | Declaration records or explicit failure | Includes projected owned declarations. Does not promise every metamodel membership. A known empty scope returns an empty collection. |
 | `query.effective_members(id)` | Records plus `inheritance_complete` | Retains library and inherited records. The viewer alone chooses which to display. Partial computation stays explicit. |
+| `query.owned_memberships(id)` | Explicit owned binding records | Includes aliases with their own identity, long/short names, target status and visibility. |
+| `query.inherited_memberships(id)` | Binding records plus `inheritance_complete` | Preserves the original declaring namespace; does not enumerate the full imported closure. |
+| `query.membership(id)` | Binding or explicit failure | Membership identity is separate from member-element identity. |
+| `query.cardinality(id)` | Evaluated interval, unknown reason, or not applicable | Integer bounds are decimal strings; a null upper bound means infinity only within an evaluated result. |
 | `query.references_from/at(...)` | Written references with `Resolution` | User sources only. Library reference enumeration reports `ReferencesUnavailable`. Multiple source sites can overlap. |
 | `query.diagnostics(document_id)` | Findings for a user document | Library diagnostics are not projected and report `DiagnosticsUnavailable`. Empty findings do not certify a model. |
 | `query.source(range)` | Exact source slice or range error | Uses UTF-8 byte offsets. Sources can include referenced library files. |
@@ -65,10 +69,22 @@ that name denotes. For conjugated port typing `~P`, the written spelling include
 `~`, while the name target is `P`; this is not a promise that it is the complete
 semantic FeatureTyping target after implicit conjugated-definition construction.
 
-`declaredMultiplicity` is the engine's normalized literal-bound query. Null does
-not establish an effective default and must not be interpreted as `[1]` or as
-proof that no expression-valued multiplicity was written. `valueExpression` is
-source text; the facade does not execute it.
+`cardinality` uses the upstream checked constraint reader. Evaluated integer
+bounds remain exact through JSON and JavaScript, up to the engine's signed 128-bit
+integer limit. Unknown providers, unsupported bounds, cycles and work limits are
+explicit reasons; they are never represented as `[1]`, `[0..*]`, or an empty result.
+An evaluated interval does not establish whole-model validity or instantiate its
+members. Library navigation stubs return `unknown/unavailable`.
+
+Any syntax error in the workspace makes cardinality unknown for this analysis:
+recovery may have dropped a constraint needed by another declaration or file.
+This conservative policy is intentional until dependency-sensitive validity is
+proved. `declaredMultiplicity` is a display string produced only when a header
+multiplicity exists and checked bounds are available; no floating-point bound is
+exported. Null still does not establish absence or an effective default.
+`valueExpression` remains source text, not a public general-purpose evaluation API.
+Valid formula-valued multiplicity providers can still return unknown under the full
+library; see KERNEL-001 in [foundation qualification](foundation-qualification.md).
 
 `membersAvailable: false` describes a navigation record. It must not be read as an
 empty namespace. `inheritanceComplete` is meaningful when member results are
@@ -77,7 +93,7 @@ propagation of unresolved written typing, specialization, subsetting and redefin
 dependencies. This includes definitions/usages that depend transitively on a
 missing parent. Ownership alone does not propagate inheritance uncertainty.
 The snapshot is not a serialization of every relationship, annotation, import membership or
-implied element in the semantic graph. The planned membership-enumeration case in
+implied element in the semantic graph. The remaining imported-membership closure case in
 the coverage matrix makes this gap visible.
 
 ## Failure policy
@@ -85,7 +101,7 @@ the coverage matrix makes this gap visible.
 - Malformed language input produces partial results and diagnostics where upstream
   recovery succeeds. Every returned range and handle must remain usable.
 - Input-policy violations return `AnalysisError::InvalidInput`; requested
-  cancellation returns `Cancelled`. `Engine` remains a reserved error variant;
+  cancellation returns `Cancelled`. `Engine` reports projection invariant failures;
   upstream panics are not currently converted into that variant.
 - Native callers needing fault containment should use a process boundary. A stack
   overflow/abort is not recoverable by the facade. CLI and benchmark processes are
@@ -131,3 +147,13 @@ with all newly passing gaps and regressions reviewed. See
 
 Implementation tests are in `crates/sysml-kernel/tests/contracts.rs`, supplemented
 by the original acceptance tests, the matrix and `tests/kernel-client.test.ts`.
+
+## Schema 2 migration
+
+Schema 2 adds `Snapshot.memberships`, each element's `ownedMemberships`,
+`inheritedMemberships`, and `cardinality`. Consumers must regenerate/recompile their
+types and reject schema 1; there is no lossy migration that invents these results
+from an old snapshot. The bundled worker and viewer now require schema 2. Element
+IDs and membership IDs use the same snapshot identity domain; navigation records
+may describe a relationship that also has a membership record. Neither changes
+the owning namespace of an aliased element.
