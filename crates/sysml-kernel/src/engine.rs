@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use sysmlv2_model::{
     check,
     json::{self, ElementRef, ResolvedModel},
-    model::Model,
+    model::{GraphFormat, Model},
 };
 use sysmlv2_syntax::{diag, span::Span, token::TokenKind};
 
@@ -46,7 +46,7 @@ impl Engine {
         };
         checkpoint()?;
         validate_documents(&request.documents)?;
-        let mut model = Model::new();
+        let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
         let mut sources = Vec::new();
         for lib in &self.library {
             model.add_library_source(&lib.name, &lib.text);
@@ -116,6 +116,15 @@ impl Engine {
         }
         checkpoint()?;
         let mut graph = ResolvedModel::build(&model);
+        checkpoint()?;
+        // Checked invocation bindings consume the shared canonical publication;
+        // merely building the authored graph leaves positional arguments unmapped.
+        // This API materializes the whole model once, even when queried on a root.
+        // A declined family remains incomplete in the checked reports below.
+        let preparation_root = graph.elements().next();
+        if let Some(root) = preparation_root {
+            graph.implied_relationships(root);
+        }
         checkpoint()?;
         // The upstream public report is the authority on ambiguous vs absent
         // references. It currently builds a second graph; keep this cost visible

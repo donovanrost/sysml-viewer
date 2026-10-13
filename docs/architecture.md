@@ -6,7 +6,7 @@ complete language or graphical-notation conformance.
 
 The [public contract review](kernel-contract.md) defines supported operations and
 compatibility policy. The [executable matrix](conformance.md) records bounded
-standards coverage; [qualification evidence](qualification.md) records results.
+standards coverage; [qualification evidence](foundation-qualification.md) records results.
 The [requirements inventory](requirements.md) indexes all specification clauses and
 formal source units, with separate implementation, API and test evidence. Indexed
 units and partially tested clauses are never promoted to full conformance.
@@ -66,12 +66,18 @@ inspection. Library records are navigation stubs (`membersAvailable: false`), no
 fully expanded library queries. User effective-member queries include implied
 library heritage. The default diagram hides library members as a display policy.
 
+The facade selects the upstream CanonicalV3 graph before loading sources and
+requests its shared implied-relationship publication before validation and
+projection. Checked arithmetic bindings require that publication. The facade does
+not manufacture positional arguments or substitute compatibility evaluation when
+a semantic family is incomplete. Graph format and snapshot schema are independent.
+
 Graphical notation support is deliberately smaller than language support. Binary
 connections are rendered; other arities remain in the snapshot and receive a
 visible unsupported-view label. A resolved connection establishes endpoint lookup,
 not proof that every semantic rule applicable to it has been validated.
 
-## Snapshot contract v1
+## Snapshot contract v2
 
 Rust types in `crates/sysml-kernel/src/types.rs` are authoritative. `ts-rs` generates
 the checked-in TypeScript files. `npm run contract:check` detects drift.
@@ -91,6 +97,9 @@ the checked-in TypeScript files. `npm run contract:check` detects drift.
   upstream rule codes pass through; unnamed diagnostics use stable stage codes.
 - Library member-query stubs and incomplete inheritance are explicit. Validation
   coverage remains partial even when no diagnostics are reported.
+- Membership records retain binding identity, aliases, names and visibility.
+  Cardinality distinguishes exact decimal-string intervals from unknown results;
+  its limits and supported provider families are documented in the public contract.
 - Unresolved declared heritage makes dependent member queries incomplete, including
   transitive dependencies. The facade accounts for missing edges that the upstream
   graph's completeness flag does not represent.

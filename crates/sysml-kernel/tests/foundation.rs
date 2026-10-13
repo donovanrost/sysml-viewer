@@ -43,6 +43,87 @@ fn provider_fixture() -> &'static Snapshot {
     })
 }
 
+fn arithmetic_fixture() -> &'static Snapshot {
+    static VALUE: OnceLock<Snapshot> = OnceLock::new();
+    VALUE.get_or_init(|| {
+        analyze(vec![
+            document(
+                "formulas.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-003.sysml"),
+            ),
+            document(
+                "arithmetic.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-013.sysml"),
+            ),
+            document(
+                "invalid-arithmetic.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-014.sysml"),
+            ),
+        ])
+    })
+}
+
+#[test]
+fn arithmetic_bounds_use_complete_bindings_even_alongside_unadmitted_calls() {
+    let q = arithmetic_fixture().queries().unwrap();
+    for (name, value) in [
+        ("add", "10"),
+        ("subtract", "5"),
+        ("multiply", "16"),
+        ("divide", "4"),
+        ("modulo", "2"),
+        ("power", "8"),
+        ("compound", "30"),
+        ("unary", "1"),
+        ("exactLarge", "9007199254740993"),
+    ] {
+        let e = q.find(&format!("ArithmeticBounds::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Evaluated {
+                lower: value.into(),
+                upper: Some(value.into()),
+            },
+            "{name}"
+        );
+        assert_eq!(
+            e.declared_multiplicity.as_deref(),
+            Some(format!("[{value}]").as_str())
+        );
+    }
+    let e = q.find("FormulaBounds::Assembly::ranged")[0];
+    assert_eq!(
+        q.cardinality(&e.id).unwrap(),
+        &Cardinality::Evaluated {
+            lower: "3".into(),
+            upper: Some("6".into()),
+        }
+    );
+}
+
+#[test]
+fn arithmetic_failures_never_become_successful_numeric_bounds() {
+    let q = arithmetic_fixture().queries().unwrap();
+    for name in [
+        "division",
+        "fraction",
+        "belowZero",
+        "overflow",
+        "cycle",
+        "call",
+    ] {
+        let e = q.find(&format!("ArithmeticGuards::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Unknown {
+                reason: CardinalityIssue::UnsupportedBound,
+            },
+            "{name}"
+        );
+        assert_eq!(e.declared_multiplicity, None);
+    }
+}
+
 #[test]
 fn package_attribute_providers_retain_exact_bounds_through_queries_and_json() {
     let snapshot: Snapshot =

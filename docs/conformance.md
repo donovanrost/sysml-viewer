@@ -58,7 +58,7 @@ Clause references identify the source of a test, not complete coverage of that c
 | IMP-017 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | A short name colliding with a long name of the same metaclass is rejected. |
 | IMP-018 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | A root namespace import must have private visibility. |
 | IMP-019 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | A private root import is valid and visible to its nested package. |
-| MULT-003 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Known gap: KERNEL-001, KERNEL-001 | Evaluate multiplicity feature references backed by integer formulas, retaining exact bounds and unbounded/zero distinctions. |
+| MULT-003 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Evaluate multiplicity feature references backed by integer formulas, retaining exact bounds and unbounded/zero distinctions. |
 | MULT-004 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | An unvalued multiplicity provider yields unknown, not a default or an empty domain. |
 | MULT-005 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Preserve integers beyond IEEE-754 exact range through the wire and display contracts. |
 | MULT-006 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Subset multiplicities inherit an interval and preserve an explicit narrower interval. |
@@ -75,6 +75,10 @@ Clause references identify the source of a test, not complete coverage of that c
 | MULT-010 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | A literal-valued scalar feature supplies exact multiplicity bounds. |
 | MULT-011 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Static package attribute providers retain alias identity, transitive values, range endpoints, zero, and exact large integers. |
 | MULT-012 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Cyclic, unvalued, variation and context-dependent providers cannot supply checked static bounds. |
+| MULT-013 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Evaluate arithmetic-valued package providers with complete canonical argument bindings, retaining exact integer results. |
+| MULT-014 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Undefined, non-natural, out-of-range, cyclic and unbound arithmetic providers cannot supply checked numeric bounds. |
+| MULT-015 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | A user package shadowing DataFunctions cannot be used to certify a designated arithmetic operator. |
+| MULT-016 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Known gap: KERNEL-003 | A valid conditional-valued provider should select the true branch for a static multiplicity bound. |
 
 ## Coverage limits
 
@@ -92,9 +96,8 @@ Clause references identify the source of a test, not complete coverage of that c
 
 ## Known failures and planned work
 
-- **KERNEL-001 / MULT-003 / exact:** The upstream checked operator/callee proof is incomplete with the full pinned library; valid formula-valued providers return unsupportedBound. Preserve the expected exact result.
-- **KERNEL-001 / MULT-003 / range:** The upstream checked operator/callee proof is incomplete with the full pinned library; valid formula-valued providers return unsupportedBound. Preserve the expected exact result.
 - **IMP-020:** Owned and inherited bindings are public; complete imported membership enumeration is not yet exposed.
+- **KERNEL-003 / MULT-016 / sized:** The canonical graph preserves conditional operand wrappers, but the checked expression provider does not yet certify conditional invocation and branch selection. Retain the expected exact result.
 
 The authored fixtures are in `tests/conformance/fixtures`. Official examples are
 copied unchanged from the pinned release; see `tests/conformance/upstream/provenance.json`

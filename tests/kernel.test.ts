@@ -14,7 +14,7 @@ const documents = ['Definitions', 'Mission', 'Errors'].map((name) => ({
   name: `${name}.sysml`,
   text: readFileSync(new URL(`./fixtures/kernel/${name}.sysml`, import.meta.url), 'utf8'),
 }));
-for (const name of ['mult-011', 'mult-012']) {
+for (const name of ['mult-011', 'mult-012', 'mult-013', 'mult-014']) {
   documents.push({
     id: name,
     name: `${name}.sysml`,
@@ -74,6 +74,29 @@ test('checked attribute bounds preserve exact values and unknown results in WebA
     const element = snapshot.elements.find((e) => e.qualifiedName === `ProviderGuards::${name}`)!;
     assert.deepEqual(element.cardinality, { status: 'unknown', reason });
     assert.equal(element.declaredMultiplicity, null);
+  }
+});
+
+test('canonical arithmetic bindings agree across native and WebAssembly without rounding or defaults', () => {
+  for (const [name, value] of [
+    ['add', '10'],
+    ['subtract', '5'],
+    ['multiply', '16'],
+    ['divide', '4'],
+    ['modulo', '2'],
+    ['power', '8'],
+    ['compound', '30'],
+    ['unary', '1'],
+    ['exactLarge', '9007199254740993'],
+  ]) {
+    const e = snapshot.elements.find((e) => e.qualifiedName === `ArithmeticBounds::${name}`)!;
+    assert.deepEqual(e.cardinality, { status: 'evaluated', lower: value, upper: value });
+    assert.equal(e.declaredMultiplicity, `[${value}]`);
+  }
+  for (const name of ['division', 'fraction', 'belowZero', 'overflow', 'cycle', 'call']) {
+    const e = snapshot.elements.find((e) => e.qualifiedName === `ArithmeticGuards::${name}`)!;
+    assert.deepEqual(e.cardinality, { status: 'unknown', reason: 'unsupportedBound' });
+    assert.equal(e.declaredMultiplicity, null);
   }
 });
 

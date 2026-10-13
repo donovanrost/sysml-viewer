@@ -27,7 +27,7 @@
       "path": "crates/sysml-kernel/src/engine.rs",
       "symbol": "pub fn analyze(",
       "role": "facade implementation",
-      "sha256": "b29602ca09a03f8953de400ef92a44c034a250e2622fee53513ca00950223356"
+      "sha256": "496cef9181700a01886de401ebab6697ed0973e9343ccaa0741c5e1428a26527"
     },
     "query": {
       "path": "crates/sysml-kernel/src/query.rs",
@@ -111,7 +111,7 @@
       "path": "crates/sysml-kernel/tests/foundation.rs",
       "symbol": "fn top_level_import_visibility_checks_both_dialects_kinds_and_nesting",
       "role": "Contract regressions, complete import-predicate input partitions and bundled-library syntax sweep",
-      "sha256": "230181c98d5bb47d3a371e21a4dec1c08210d17f70809aa9d084ced0a3d5405b"
+      "sha256": "65ddb3cff80e30122c40cefca34b51898f1ce72cf2aa149394e7d257d9fe9235"
     },
     "syntax-structure": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
@@ -130,6 +130,12 @@
       "symbol": "pub fn model_level_evaluability(",
       "role": "Bounded eligibility proof; package attribute support does not qualify every expression family.",
       "sha256": "c54b284a1773583b0b67926869c03fcc4efa1df3ef44421907af67354b6e4412"
+    },
+    "checked-invocation": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
+      "symbol": "pub fn invocation_binding_report(",
+      "role": "Checked canonical callee/input/argument identity mapping; requires current shared publication and retains incomplete-provider failures.",
+      "sha256": "a42417413b22fa9aaa2cf67dc7127cbf2d69c55a1657e302d0b9a3314cd7dbb0"
     }
   },
   "assessments": [
@@ -1029,7 +1035,9 @@
       "category": "product",
       "sources": [
         "KERML-CLAUSE-7.3.4.2",
-        "KERML-CLAUSE-8.3.4.8.5"
+        "KERML-CLAUSE-8.3.4.8.5",
+        "KERML-CLAUSE-8.3.4.8.8",
+        "KERML-CLAUSE-8.3.4.8.17"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1039,7 +1047,8 @@
           "engine",
           "cardinality",
           "checked-featuring",
-          "checked-model-level"
+          "checked-model-level",
+          "checked-invocation"
         ]
       },
       "api": {
@@ -1126,9 +1135,51 @@
             "variationBound",
             "featuredBound"
           ]
+        },
+        {
+          "case": "MULT-013",
+          "checks": [
+            "clean",
+            "add",
+            "subtract",
+            "multiply",
+            "divide",
+            "modulo",
+            "power",
+            "compound",
+            "unary",
+            "exactLarge"
+          ]
+        },
+        {
+          "case": "MULT-014",
+          "checks": [
+            "division",
+            "fraction",
+            "belowZero",
+            "overflow",
+            "cycle",
+            "call",
+            "unbound-call",
+            "negative-bound"
+          ]
+        },
+        {
+          "case": "MULT-015",
+          "checks": [
+            "sized",
+            "shadow-warning"
+          ]
+        },
+        {
+          "case": "MULT-016",
+          "checks": [
+            "clean",
+            "sized"
+          ]
         }
       ],
-      "limits": "Exact decimal integers, unbounded upper bounds and explicit unknown reasons are exposed. Static package-owned attribute providers, aliases and reference chains are covered. MULT-003 retains two expected-result failures (KERNEL-001) for arithmetic providers under the full library. Variation, variable, cyclic, unvalued and context-dependent providers remain qualified/unknown. This does not qualify all multiplicity or evaluation semantics."
+      "limits": "Static package-owned providers support aliases, reference chains and checked arithmetic after canonical semantic publication. MULT-003 and MULT-010 now pass. Division by zero, fractional/negative bounds, i128 overflow, recursive/unbound providers and non-unique designated operators retain unknown results. MULT-016 preserves a valid conditional-bound failure (KERNEL-003). General function execution, conditional selection and all contextual/evaluation semantics remain unqualified."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",

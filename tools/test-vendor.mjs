@@ -28,11 +28,21 @@ try {
     { recursive: true },
   );
   copyFileSync(join(root, 'tools', 'vendor-tests.Cargo.lock'), join(workspace, 'Cargo.lock'));
-  for (const module of ['type_relations', 'model_level_evaluability', 'cardinality']) {
+  for (const module of [
+    'type_relations',
+    'model_level_evaluability',
+    'cardinality',
+    'invocation_bindings',
+    'constructor_bindings',
+    'dynamic_graph',
+    'owned_results',
+    'end_constancy',
+  ]) {
     cargo(
       [
         'test',
         '--locked',
+        '--release',
         '--manifest-path',
         join(workspace, 'Cargo.toml'),
         '--package',

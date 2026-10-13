@@ -1087,5 +1087,5 @@ is recorded in patches/manifest.json in this application source distribution.
 
 Local toolkit modification KERNEL-001: checked featuring evidence admits static
 package-owned AttributeUsage providers, preserving ownership and completeness
-guards. Arithmetic provider evaluation remains unqualified. Exact patch
+guards. Arithmetic operator bindings are prepared by the facade. Exact patch
 provenance is recorded in patches/manifest.json.

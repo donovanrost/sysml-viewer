@@ -58,6 +58,12 @@ lookups avoid repeated whole-snapshot scans.
 
 ## Source and semantic interpretation
 
+Analysis builds the upstream CanonicalV3 graph and requests shared implied
+relationship publication before validation and projection. Checked operator
+queries consume this published callee/input/argument evidence. Publication can
+decline a family; its checked query still returns unknown. The graph format is
+internal and distinct from snapshot schema 2; this is not an interchange API.
+
 Ranges are half-open. Byte/UTF-16 offsets are zero-based; line and UTF-16 column
 numbers are one-based. Original encoding after UTF-8 decoding and line endings
 are preserved. Indexed query construction verifies coordinate agreement.
@@ -83,10 +89,11 @@ proved. `declaredMultiplicity` is a display string produced only when a header
 multiplicity exists and checked bounds are available; no floating-point bound is
 exported. Null still does not establish absence or an effective default.
 `valueExpression` remains source text, not a public general-purpose evaluation API.
-Static package-owned attributes can supply checked literal bounds through aliases
-and reference chains. Unsupported featuring or variation contexts remain unknown.
-Valid formula-valued multiplicity providers can still return unknown under the full
-library; see KERNEL-001 in [foundation qualification](foundation-qualification.md).
+Static package-owned attributes can supply checked bounds through aliases,
+reference chains and numeric operators (`+`, `-`, `*`, `/`, `%`, `^`), including
+nested and unary expressions. Unsupported featuring or variation contexts remain
+unknown. Conditional-valued providers remain incomplete; see KERNEL-003 in
+[foundation qualification](foundation-qualification.md).
 
 `membersAvailable: false` describes a navigation record. It must not be read as an
 empty namespace. `inheritanceComplete` is meaningful when member results are

@@ -18,7 +18,7 @@
       "sha256": "9e7896680259939831570769aa5f2a0c2f59a71ee1a9332fb5b9a35aaceff805",
       "baseSha256": "0d5d41bc6500e2e0f5732ed3803342967b43abdb8d4372dcdf1a724d4bb925a0",
       "resultSha256": "581edf552f7a33497a0deea3268c912c3b91f255c7f6d3a3624aa5a02ce90925",
-      "reason": "Audit featuring evidence for static package-owned AttributeUsage providers, retaining checked ownership, explicit/inverse featuring, variable/variant exclusion, stale-evidence and work-budget guards. MULT-010 is the original full-library regression; arithmetic remains unqualified."
+      "reason": "Audit featuring evidence for static package-owned AttributeUsage providers, retaining checked ownership, explicit/inverse featuring, variable/variant exclusion, stale-evidence and work-budget guards. MULT-010 is the original full-library regression. Canonical graph publication for arithmetic is a facade responsibility."
     }
   ]
 }

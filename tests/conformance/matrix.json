@@ -1365,18 +1365,6 @@
           "lower": "0",
           "upper": "0"
         }
-      ],
-      "knownFailures": [
-        {
-          "check": "exact",
-          "issue": "KERNEL-001",
-          "reason": "The upstream checked operator/callee proof is incomplete with the full pinned library; valid formula-valued providers return unsupportedBound. Preserve the expected exact result."
-        },
-        {
-          "check": "range",
-          "issue": "KERNEL-001",
-          "reason": "The upstream checked operator/callee proof is incomplete with the full pinned library; valid formula-valued providers return unsupportedBound. Preserve the expected exact result."
-        }
       ]
     },
     {
@@ -1796,6 +1784,204 @@
           "owner": "ProviderGuards::featuredBound",
           "status": "unknown",
           "reason": "incompleteProvider"
+        }
+      ]
+    },
+    {
+      "id": "MULT-013",
+      "area": "multiplicity",
+      "purpose": "Evaluate arithmetic-valued package providers with complete canonical argument bindings, retaining exact integer results.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-013.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "add",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::add",
+          "status": "evaluated",
+          "lower": "10",
+          "upper": "10"
+        },
+        {
+          "id": "subtract",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::subtract",
+          "status": "evaluated",
+          "lower": "5",
+          "upper": "5"
+        },
+        {
+          "id": "multiply",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::multiply",
+          "status": "evaluated",
+          "lower": "16",
+          "upper": "16"
+        },
+        {
+          "id": "divide",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::divide",
+          "status": "evaluated",
+          "lower": "4",
+          "upper": "4"
+        },
+        {
+          "id": "modulo",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::modulo",
+          "status": "evaluated",
+          "lower": "2",
+          "upper": "2"
+        },
+        {
+          "id": "power",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::power",
+          "status": "evaluated",
+          "lower": "8",
+          "upper": "8"
+        },
+        {
+          "id": "compound",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::compound",
+          "status": "evaluated",
+          "lower": "30",
+          "upper": "30"
+        },
+        {
+          "id": "unary",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::unary",
+          "status": "evaluated",
+          "lower": "1",
+          "upper": "1"
+        },
+        {
+          "id": "exactLarge",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::exactLarge",
+          "status": "evaluated",
+          "lower": "9007199254740993",
+          "upper": "9007199254740993"
+        }
+      ]
+    },
+    {
+      "id": "MULT-014",
+      "area": "multiplicity",
+      "purpose": "Undefined, non-natural, out-of-range, cyclic and unbound arithmetic providers cannot supply checked numeric bounds.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-014.sysml"],
+      "checks": [
+        {
+          "id": "division",
+          "op": "cardinality",
+          "owner": "ArithmeticGuards::division",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "fraction",
+          "op": "cardinality",
+          "owner": "ArithmeticGuards::fraction",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "belowZero",
+          "op": "cardinality",
+          "owner": "ArithmeticGuards::belowZero",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "overflow",
+          "op": "cardinality",
+          "owner": "ArithmeticGuards::overflow",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "cycle",
+          "op": "cardinality",
+          "owner": "ArithmeticGuards::cycle",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "call",
+          "op": "cardinality",
+          "owner": "ArithmeticGuards::call",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "unbound-call",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "messageIncludes": "binds 0 of its 1 parameters"
+        },
+        {
+          "id": "negative-bound",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "messageIncludes": "upper bound is negative"
+        }
+      ]
+    },
+    {
+      "id": "MULT-015",
+      "area": "multiplicity",
+      "purpose": "A user package shadowing DataFunctions cannot be used to certify a designated arithmetic operator.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-015.sysml"],
+      "checks": [
+        {
+          "id": "sized",
+          "op": "cardinality",
+          "owner": "ShadowedArithmetic::sized",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "shadow-warning",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "messageIncludes": "shadows the standard library"
+        }
+      ]
+    },
+    {
+      "id": "MULT-016",
+      "area": "multiplicity",
+      "purpose": "A valid conditional-valued provider should select the true branch for a static multiplicity bound.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-016.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "sized",
+          "op": "cardinality",
+          "owner": "ConditionalBounds::sized",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        }
+      ],
+      "knownFailures": [
+        {
+          "check": "sized",
+          "issue": "KERNEL-003",
+          "reason": "The canonical graph preserves conditional operand wrappers, but the checked expression provider does not yet certify conditional invocation and branch selection. Retain the expected exact result."
         }
       ]
     }

@@ -1447,7 +1447,9 @@
       "category": "product",
       "sources": [
         "KERML-CLAUSE-7.3.4.2",
-        "KERML-CLAUSE-8.3.4.8.5"
+        "KERML-CLAUSE-8.3.4.8.5",
+        "KERML-CLAUSE-8.3.4.8.8",
+        "KERML-CLAUSE-8.3.4.8.17"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1457,7 +1459,8 @@
           "engine",
           "cardinality",
           "checked-featuring",
-          "checked-model-level"
+          "checked-model-level",
+          "checked-invocation"
         ]
       },
       "api": {
@@ -1478,7 +1481,7 @@
             "zero"
           ],
           "polarity": "positive",
-          "status": "known-gap",
+          "status": "pass",
           "results": [
             {
               "id": "clean",
@@ -1486,11 +1489,11 @@
             },
             {
               "id": "exact",
-              "status": "known-gap"
+              "status": "pass"
             },
             {
               "id": "range",
-              "status": "known-gap"
+              "status": "pass"
             },
             {
               "id": "open",
@@ -1708,9 +1711,155 @@
               "status": "pass"
             }
           ]
+        },
+        {
+          "case": "MULT-013",
+          "checks": [
+            "clean",
+            "add",
+            "subtract",
+            "multiply",
+            "divide",
+            "modulo",
+            "power",
+            "compound",
+            "unary",
+            "exactLarge"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "add",
+              "status": "pass"
+            },
+            {
+              "id": "subtract",
+              "status": "pass"
+            },
+            {
+              "id": "multiply",
+              "status": "pass"
+            },
+            {
+              "id": "divide",
+              "status": "pass"
+            },
+            {
+              "id": "modulo",
+              "status": "pass"
+            },
+            {
+              "id": "power",
+              "status": "pass"
+            },
+            {
+              "id": "compound",
+              "status": "pass"
+            },
+            {
+              "id": "unary",
+              "status": "pass"
+            },
+            {
+              "id": "exactLarge",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-014",
+          "checks": [
+            "division",
+            "fraction",
+            "belowZero",
+            "overflow",
+            "cycle",
+            "call",
+            "unbound-call",
+            "negative-bound"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "division",
+              "status": "pass"
+            },
+            {
+              "id": "fraction",
+              "status": "pass"
+            },
+            {
+              "id": "belowZero",
+              "status": "pass"
+            },
+            {
+              "id": "overflow",
+              "status": "pass"
+            },
+            {
+              "id": "cycle",
+              "status": "pass"
+            },
+            {
+              "id": "call",
+              "status": "pass"
+            },
+            {
+              "id": "unbound-call",
+              "status": "pass"
+            },
+            {
+              "id": "negative-bound",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-015",
+          "checks": [
+            "sized",
+            "shadow-warning"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "sized",
+              "status": "pass"
+            },
+            {
+              "id": "shadow-warning",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-016",
+          "checks": [
+            "clean",
+            "sized"
+          ],
+          "polarity": "positive",
+          "status": "known-gap",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "sized",
+              "status": "known-gap"
+            }
+          ]
         }
       ],
-      "limits": "Exact decimal integers, unbounded upper bounds and explicit unknown reasons are exposed. Static package-owned attribute providers, aliases and reference chains are covered. MULT-003 retains two expected-result failures (KERNEL-001) for arithmetic providers under the full library. Variation, variable, cyclic, unvalued and context-dependent providers remain qualified/unknown. This does not qualify all multiplicity or evaluation semantics."
+      "limits": "Static package-owned providers support aliases, reference chains and checked arithmetic after canonical semantic publication. MULT-003 and MULT-010 now pass. Division by zero, fractional/negative bounds, i128 overflow, recursive/unbound providers and non-unique designated operators retain unknown results. MULT-016 preserves a valid conditional-bound failure (KERNEL-003). General function execution, conditional selection and all contextual/evaluation semantics remain unqualified."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",
@@ -2263,24 +2412,24 @@
       "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
     }
   ],
-  "executableCases": 57,
+  "executableCases": 61,
   "plannedCases": 1,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "1fd5a0f7c1292595b8e236d2e346eb729296a3d083d7f891e7770963e0968885",
+  "assessmentsSha256": "58846b65b0aab0831fdb87ca9de8c6aeb031f0a482ea88925fcb067ba1cef1b4",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "ab933e31960bae2a3b8d0095122684a3ee6959deef60d73c5812ad1149a28d88",
-    "generatedAt": "2026-10-13T05:00:10.694Z",
-    "kernelInputSha256": "db74f049b5a601954c3c92a27bf4482c44ef084202b9b12bc213ce158dbc59a7",
-    "binarySha256": "d7032af7c33045290f0ac5580c4b3e1e798bdee35c9f395618c6ce63e87fcea2",
+    "sha256": "10a2db2fbfcc18280428b2893ae743d286c1105622a471cc1d87e7f18360a4a9",
+    "generatedAt": "2026-10-13T08:13:42.154Z",
+    "kernelInputSha256": "de61e217567e24f4b95a2aefd0c1cd04d9f87d334f279dae05cd42b1002d4c5d",
+    "binarySha256": "fe1d38b839bb992f30c2be6141b17ebcf22da5c5d5c1be03a529e09daffebaf8",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.2",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.3",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 56,
+      "pass": 60,
       "known-gap": 1,
       "planned": 1,
       "fail": 0

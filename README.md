@@ -137,25 +137,25 @@ check the viewer projection, source slicing and bundled example. This is the ini
 acceptance suite, not a substitute for an official semantic conformance matrix or
 continuous fuzzing.
 
-The coverage matrix has 57 executable cases and one explicitly planned case.
-One executable case retains a named arithmetic evaluator gap; it is not counted as passing. The matrix
+The coverage matrix has 61 executable cases and one explicitly planned case.
+One executable case retains a named conditional evaluator gap; it is not counted as passing. The matrix
 checks standards-linked expectations, including two unchanged official examples,
 with a fresh process and deadline per case. Its harness rejects new failures and
 unexpected passes of known gaps. Reports are saved to `target/conformance/` and
 uploaded by CI. The matrix document is generated from its JSON catalogue and checked
 for drift. This is bounded coverage, not full standards certification.
 
-Native/WASM benchmarks use three fresh processes for the bundled example and two
-synthetic sizes. They record whole-process time and peak RSS where available;
+Native/WASM benchmarks use three fresh processes for the bundled example, literal
+and arithmetic provider fixtures, and two synthetic sizes. They record whole-process time and peak RSS where available;
 these are observations rather than production-model performance promises. Results
-are in `target/benchmarks/latest.json`. See [qualification evidence](docs/qualification.md)
+are in `target/benchmarks/latest.json`. See [qualification evidence](docs/foundation-qualification.md)
 for the recorded run and remaining platform verification.
 
 ## Current limits
 
 Analysis rebuilds the workspace for each load; incremental parsing/analysis and a
 lossless editable CST are deferred. IDs last for one snapshot. Library records
-support inspection and source navigation but not full member exploration. Expression
+support inspection and source navigation but not full member exploration. General expression
 execution, simulation and complete graphical notation are outside this milestone.
 
 Input limits: 32 files, 5 MB per file, 20 MB combined, 500,000 lexical tokens and
