@@ -204,16 +204,38 @@ This qualifies the recorded independent components. Dependent dynamic families,
 malformed evidence, metadata and other unsupported configurations can still prevent
 shared publication; general proof isolation and incremental analysis remain open.
 
-## KERNEL-005: compound range proof budget (open)
+## KERNEL-005: compound range proof reuse (qualified for the recorded facade cases)
 
-Changing MULT-020's range to `part range [count..selected];`, where `count` is
-`2 + 3` and `selected` is `if true ? count * 2 else 0`, returns
-`unknown/workLimit` with engine suffix `.6`. The same result occurs after removing
-`BrokenDomain`, so this is independent of KERNEL-004. Each single bound succeeds,
-but their combined proof exceeds the current query allowance. This variant is a
-recorded open limit, not a passing assertion in the executable matrix. Further
-work should reduce repeated proof work while preserving budget and evidence checks.
-The allowance has not been increased to make the example pass.
+With engine suffix `.6`, a range whose lower provider is `2 + 3` and upper
+provider is `if true ? count * 2 else 0` returned `unknown/workLimit`, even though
+each bound succeeded separately. MULT-022 retains this `[5..10]` expectation,
+alongside aliases and repeated endpoints. The original facade failure was reproduced
+before the change; removing unrelated unresolved definitions did not resolve it.
+
+The checked cardinality walk now shares a private eligibility batch across its
+expressions. It retains the complete topology certificate, checked TypeRelations
+and designated self identity under one semantic stamp. Each expression still gets
+a fresh eligibility proof with its own path-local cycle guards. No eligibility
+classification or evaluated value is cached across reports, snapshots or requests.
+The stamp checks source rows, publication, ownership, metadata, library boundary,
+provider readiness and closure policy. A stale batch refuses further reuse.
+
+Work accounting remains cumulative across cache hits and interleaved readers;
+callers cannot reset the allowance by supplying a smaller count. Partial graph
+construction is never retained. Tests cover row edits, semantic generation changes,
+different models, malformed identities, cold/warm work exhaustion and fresh retries.
+MULT-023 keeps missing, fractional, non-Boolean and reversed endpoints unknown.
+Native round-trip and WASM tests include both clean and missing-base workspaces.
+The original vendor inventory is unchanged: combined KERNEL-003/005 patches retain
+the earlier conditional changes, and a new module export patch is recorded.
+Snapshot schema 3 remains unchanged; the engine patch suffix is `.7`.
+
+In a direct full-library probe, the prepared range report uses about 7.5 million
+steps instead of exceeding the unchanged 10-million-step allowance. A first direct
+range query with cold library evidence can still exceed that allowance, then succeed
+on a fresh query after shared preparation. This remaining cold-entry limitation and
+larger compositions require further work; these cases do not establish universal
+expression or performance coverage.
 
 ## Remaining foundation work
 
@@ -242,10 +264,10 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **71 passing conformance cases**, **no
-known-gap cases**, and **no planned cases in the current matrix**. All **41 Rust facade tests**,
-**30 Node tests**, and **218 dependency proof tests** pass.
-The dependency suites cover type relations (41), model-level evaluability (26),
+On macOS arm64, the completed run has **73 passing conformance cases**, **no
+known-gap cases**, and **no planned cases in the current matrix**. All **42 Rust facade tests**,
+**31 Node tests**, and **222 dependency proof tests** pass.
+The dependency suites cover type relations (41), model-level evaluability (30),
 cardinality (22), invocation bindings (16), constructor bindings (16), dynamic graph
 (17), dynamic invocations (25), owned results (4), end constancy (10) and checked
 namespace operations (41). The corpus and the 32 import-rule partitions are included
@@ -258,28 +280,32 @@ pass. The saved [matrix execution](evidence/conformance-macos-arm64.json) and
 [requirements execution](evidence/requirements-macos-arm64.json) record the current
 source, patch and fixture fingerprints. Windows/Linux execution remains pending CI.
 
-The latest [isolation benchmark](evidence/benchmark-isolation-macos-arm64.json)
-records three fresh processes per native/WASM workload, for 48 samples. All
-repeated native and WASM snapshots agree exactly. The initial attempt timed out
-on its first native sample at 60 seconds; a direct rerun completed in 3.2 seconds,
-and the complete 48-sample rerun below passed with the same deadline. The cause
-of that initial timeout is unresolved.
+The latest [compound-range benchmark](evidence/benchmark-ranges-macos-arm64.json)
+records three fresh processes per native/WASM workload, for 54 successful samples.
+All repeated native and WASM snapshots agree exactly. The compound-range workload
+covers MULT-022 alongside the eight retained workloads.
 
 | Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
 | --- | ---: | ---: | ---: |
-| Independent bounds with missing base | 2,216 | 3,504 | 397.0/349.7 |
-| Imported memberships | 2,117 | 2,487 | 392.7/338.2 |
-| Viewer example | 2,163 | 2,581 | 396.5/355.9 |
-| Attribute providers | 2,145 | 2,616 | 394.7/343.5 |
-| Arithmetic providers | 2,739 | 2,974 | 385.5/355.8 |
-| Conditional providers | 2,823 | 3,133 | 394.0/356.8 |
-| 100 usages | 2,048 | 2,562 | 408.3/357.2 |
-| 1,000 usages | 2,532 | 2,715 | 418.5/364.2 |
+| Compound ranges | 2,667 | 3,010 | 391.9/353.9 |
+| Independent bounds with missing base | 2,075 | 2,502 | 405.6/346.6 |
+| Imported memberships | 1,992 | 2,435 | 396.6/341.9 |
+| Viewer example | 2,006 | 2,452 | 393.7/363.9 |
+| Attribute providers | 2,027 | 2,512 | 408.1/351.2 |
+| Arithmetic providers | 2,133 | 3,048 | 414.1/363.5 |
+| Conditional providers | 2,218 | 2,686 | 393.3/355.3 |
+| 100 usages | 2,004 | 2,441 | 407.2/354.1 |
+| 1,000 usages | 2,357 | 2,610 | 406.4/369.4 |
+
+The preceding `.6` isolation run had an initial native sample time out at 60
+seconds; a direct retry completed in 3.2 seconds, and its full 48-sample rerun
+passed. The cause of that earlier timeout remains unresolved. No timeout occurred
+in this `.7` run.
 
 Measurements include startup, bundled-library analysis and serialization. They are
 observations on this Mac, not cross-platform latency guarantees. Canonical
 preparation is a whole-model pass. Compared with the retained
-[import run](evidence/benchmark-imports-macos-arm64.json), these
+[isolation run](evidence/benchmark-isolation-macos-arm64.json), these
 uncontrolled runs do not isolate incremental query cost or establish a regression
 budget. Large import-heavy production models and incremental performance remain
 open engineering work.

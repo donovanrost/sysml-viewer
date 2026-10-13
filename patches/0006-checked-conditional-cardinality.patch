@@ -1,8 +1,7 @@
 diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
-index f151c0b..5be9df3 100644
 --- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
 +++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
-@@ -787,15 +787,43 @@ fn certified_operators(
+@@ -787,15 +787,44 @@
      steps: &mut usize,
  ) -> Result<crate::eval::CheckedMultiplicityExpressions, CardinalityIssue> {
      use sysmlv2_syntax::ast::BinaryOp;
@@ -19,6 +18,7 @@ index f151c0b..5be9df3 100644
 -    let mut pending: Vec<_> = roots.iter().copied().collect();
 +    let mut pending: Vec<_> = roots.iter().copied().map(Task::Visit).collect();
      let mut seen = HashSet::new();
++    let mut eligibility = super::model_level_evaluability::EligibilityBatch::default();
      let mut contextual_features: Option<(HashSet<usize>, HashSet<usize>)> = None;
      let mut operators = crate::eval::CheckedMultiplicityExpressions::default();
      let raw =
@@ -48,8 +48,12 @@ index f151c0b..5be9df3 100644
          if !seen.insert(expression) {
              continue;
          }
-@@ -814,7 +842,7 @@ fn certified_operators(
-             require_model_level_value(r, expression, steps)?;
+@@ -811,10 +840,10 @@
+         // not its separate model-level classification. Other expression kinds
+         // retain the existing model-level admission requirement.
+         if r.b.elements[expression].ty != "FeatureReferenceExpression" {
+-            require_model_level_value(r, expression, steps)?;
++            require_model_level_value(r, expression, &mut eligibility, steps)?;
          }
          match r.b.elements[expression].ty {
 -            "LiteralInteger" | "LiteralInfinity" => continue,
@@ -57,7 +61,16 @@ index f151c0b..5be9df3 100644
              "FeatureReferenceExpression" => {
                  certify_reference_domain(&r.b, &raw, expression, steps)?;
                  // The referenced Feature is the first non-parameter member,
-@@ -881,7 +909,7 @@ fn certified_operators(
+@@ -840,7 +869,7 @@
+                     .owner_elem(target)
+                     .is_none_or(|owner| !conforms(r.b.elements[owner].ty, "Type"))
+                 {
+-                    require_model_level_value(r, expression, steps)?;
++                    require_model_level_value(r, expression, &mut eligibility, steps)?;
+                 } else {
+                     let receiver = context
+                         .and_then(|scope| r.b.scope_owner(scope))
+@@ -881,7 +910,7 @@
                  operators
                      .references
                      .insert(expression, (target, selected, value));
@@ -66,7 +79,7 @@ index f151c0b..5be9df3 100644
                  continue;
              }
              "OperatorExpression" => {}
-@@ -892,6 +920,30 @@ fn certified_operators(
+@@ -892,6 +921,30 @@
          let arguments = report
              .arguments
              .map_err(|_| CardinalityIssue::UnsupportedBound)?;
@@ -97,7 +110,7 @@ index f151c0b..5be9df3 100644
          let operator = match r.b.elements[expression]
              .props
              .get("operator")
-@@ -916,12 +968,55 @@ fn certified_operators(
+@@ -916,10 +969,53 @@
          {
              return Err(CardinalityIssue::UnsupportedBound);
          }
@@ -106,8 +119,8 @@ index f151c0b..5be9df3 100644
          operators.operators.insert(expression, (operator, operands));
      }
      Ok(operators)
- }
- 
++}
++
 +/// A canonical conditional argument owns a reference to an Expression. Do not
 +/// reinterpret a plain Feature reference, missing wrapper or broken reciprocal
 +/// membership as a deferred expression. Both branches require this evidence.
@@ -149,15 +162,26 @@ index f151c0b..5be9df3 100644
 +        }
 +    }
 +    expression.ok_or(CardinalityIssue::InvalidRelationship)
-+}
-+
+ }
+ 
  /// A contextual reference replaces only the model-level eligibility predicate,
- /// never the complete inverse membership and current ownership evidence.
- fn certify_reference_domain(
-@@ -1004,6 +1099,83 @@ mod tests {
+@@ -972,9 +1068,10 @@
+ fn require_model_level_value(
+     r: &mut ResolvedModel,
+     expression: usize,
++    eligibility: &mut super::model_level_evaluability::EligibilityBatch,
+     steps: &mut usize,
+ ) -> Result<(), CardinalityIssue> {
+-    let proof = r.model_level_evaluability_with_budget(ElementRef(expression), *steps);
++    let proof = eligibility.report(r, ElementRef(expression), *steps);
+     *steps = proof.steps;
+     if proof.classification == super::ModelLevelEvaluability::Evaluable {
+         Ok(())
+@@ -1003,6 +1100,83 @@
+     fn bounds(r: &mut ResolvedModel, name: &str) -> Result<CardinalityBounds, CardinalityIssue> {
          let e = r.resolve_qualified(name).unwrap();
          r.cardinality_report(e).bounds
-     }
++    }
 +    fn conditional_model() -> Model {
 +        let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
 +        m.add_library_source("conditional-library.kerml", "standard library package Base {classifier Anything; feature things:Anything;} standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;} standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;} standard library package ControlFunctions {function 'if' {in test; in expr thenValue {return r;} in expr elseValue {return r;} return result;}} ");
@@ -234,7 +258,6 @@ index f151c0b..5be9df3 100644
 +        r.b.elements[boolean.0].props.insert("value", json!(false));
 +        r.implied_relationships(slots);
 +        assert_eq!(r.cardinality_report(slots).bounds.unwrap().size(), Some(4));
-+    }
+     }
      #[test]
      fn checked_constraints_preserve_local_precedence_and_intersect_inheritance() {
-         for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {

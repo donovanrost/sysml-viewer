@@ -1,0 +1,10 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability.rs
+@@ -1,5 +1,6 @@
+ //! Bounded evidence for normative model-level eligibility, separate from execution.
+ mod adapter;
++pub(in crate::json) use adapter::EligibilityBatch;
+ use std::collections::{HashMap, HashSet};
+ 
+ /// A proof of the model-level eligibility rule, not a promise that evaluation

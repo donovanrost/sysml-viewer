@@ -1636,7 +1636,8 @@
           "checked-bound-expressions",
           "checked-bound-execution",
           "checked-dynamic-isolation",
-          "isolation-tests"
+          "isolation-tests",
+          "checked-eligibility-batch"
         ]
       },
       "api": {
@@ -2328,9 +2329,82 @@
               "status": "pass"
             }
           ]
+        },
+        {
+          "case": "MULT-022",
+          "checks": [
+            "clean",
+            "exact",
+            "chosen",
+            "range",
+            "viaAlias",
+            "repeated",
+            "repeatedLower"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "exact",
+              "status": "pass"
+            },
+            {
+              "id": "chosen",
+              "status": "pass"
+            },
+            {
+              "id": "range",
+              "status": "pass"
+            },
+            {
+              "id": "viaAlias",
+              "status": "pass"
+            },
+            {
+              "id": "repeated",
+              "status": "pass"
+            },
+            {
+              "id": "repeatedLower",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-023",
+          "checks": [
+            "incomplete",
+            "fraction",
+            "nonBoolean",
+            "reversed"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "incomplete",
+              "status": "pass"
+            },
+            {
+              "id": "fraction",
+              "status": "pass"
+            },
+            {
+              "id": "nonBoolean",
+              "status": "pass"
+            },
+            {
+              "id": "reversed",
+              "status": "pass"
+            }
+          ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. Combined arithmetic/conditional range endpoints can still exhaust the checked query allowance (KERNEL-005); single-bound success does not qualify every composition."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. Cold full-library queries and more complex expressions can still exhaust the unchanged work allowance; reuse does not qualify every composition or a global cache."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",
@@ -2883,24 +2957,24 @@
       "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
     }
   ],
-  "executableCases": 71,
+  "executableCases": 73,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "605faa16e84562f262db1c45b69bc22f5783ce563626e7bfe3b1ee8211dff882",
+  "assessmentsSha256": "10568dd74cd7f9f59e84e7db4a4c9f694340bdaa3fe1c7d1e23db20c85072fb5",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "865d5d83e77456e725eef43ab294f244adef3594d050865f799edb8631dff7c6",
-    "generatedAt": "2026-10-13T10:03:46.060Z",
-    "kernelInputSha256": "68531b1a5634d66e65bd08e03a8d16e88e8e7a76a51fae7a67dda327e966213d",
-    "binarySha256": "6cefe2f438ea25342cf8d371b3be1235e7765eb567ed5cb587d92713580a4b37",
+    "sha256": "3368bfbcbc079aa397f4df9ce9ea113187ac4f7c068479e3f6583fdfb519b25e",
+    "generatedAt": "2026-10-13T20:06:39.344Z",
+    "kernelInputSha256": "808df75ad3cf1cca3537dd7814825987475c3c52d7c0e83a66dc4c6ca33a8fd9",
+    "binarySha256": "9fb2f4342261123647e2da2d11e80af3a51dc0395d28d0e4ecf44f50cc00e984",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.6",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.7",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 71,
+      "pass": 73,
       "known-gap": 0,
       "planned": 0,
       "fail": 0

@@ -27,6 +27,10 @@ if (process.argv.includes('--wasm-child')) {
   );
   const scenarios = [
     {
+      name: 'compound-ranges',
+      text: readFileSync(join(root, 'tests/conformance/fixtures/mult-022.sysml'), 'utf8'),
+    },
+    {
       name: 'isolated-providers',
       text: readFileSync(join(root, 'tests/conformance/fixtures/mult-020.sysml'), 'utf8'),
       checks: JSON.parse(

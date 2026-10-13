@@ -137,7 +137,7 @@ check the viewer projection, source slicing and bundled example. This is the ini
 acceptance suite, not a substitute for an official semantic conformance matrix or
 continuous fuzzing.
 
-The coverage matrix has 71 executable cases. The matrix
+The coverage matrix has 73 executable cases. The matrix
 checks standards-linked expectations, including two unchanged official examples,
 with a fresh process and deadline per case. Its harness rejects new failures and
 unexpected passes of known gaps. Reports are saved to `target/conformance/` and
@@ -145,7 +145,7 @@ uploaded by CI. The matrix document is generated from its JSON catalogue and che
 for drift. This is bounded coverage, not full standards certification.
 
 Native/WASM benchmarks use three fresh processes for the bundled example, literal,
-arithmetic and conditional providers, isolated expressions alongside missing bases,
+arithmetic and conditional providers, compound ranges, isolated expressions alongside missing bases,
 imported membership closure, and two synthetic sizes. They record
 whole-process time and peak RSS where available;
 these are observations rather than production-model performance promises. Results

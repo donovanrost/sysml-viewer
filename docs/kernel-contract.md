@@ -99,7 +99,11 @@ executed. Unsupported featuring, variation, predicates and other control operato
 remain unknown. Canonical unresolved classifier bases retain independent arithmetic
 and conditional proofs when source/target evidence is consistent. Direct and transitive
 dependents remain incomplete; malformed relationships and other unsupported dynamic
-families can still prevent publication. See KERNEL-003/004 in
+families can still prevent publication. Within a single cardinality query, related
+expressions reuse stamped topology and type evidence while eligibility and execution
+remain independently checked. Compound arithmetic/conditional range endpoints are
+covered; cold library preparation and larger compositions can still reach `workLimit`.
+See KERNEL-003/004/005 in
 [foundation qualification](foundation-qualification.md).
 
 `membersAvailable: false` describes a navigation record. It must not be read as an

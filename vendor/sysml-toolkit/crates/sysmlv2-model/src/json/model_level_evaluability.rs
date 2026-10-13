@@ -1,5 +1,6 @@
 //! Bounded evidence for normative model-level eligibility, separate from execution.
 mod adapter;
+pub(in crate::json) use adapter::EligibilityBatch;
 use std::collections::{HashMap, HashSet};
 
 /// A proof of the model-level eligibility rule, not a promise that evaluation

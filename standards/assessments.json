@@ -111,7 +111,7 @@
       "path": "crates/sysml-kernel/tests/foundation.rs",
       "symbol": "fn top_level_import_visibility_checks_both_dialects_kinds_and_nesting",
       "role": "Contract regressions, complete import-predicate input partitions and bundled-library syntax sweep",
-      "sha256": "f7d4d0f51b3b1fd06a1398f846c332998ffc858f4004c252b9ef67209416f500"
+      "sha256": "6199b2555487a1954f55bdd1506d981b1ec297af8006bd4daf07c658255e9693"
     },
     "syntax-structure": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
@@ -129,7 +129,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
       "symbol": "pub fn model_level_evaluability(",
       "role": "Bounded eligibility proof; package attribute support does not qualify every expression family.",
-      "sha256": "10957c72a3e66ef5d714f6bff4998808b5878e18d3b58bf109aac2be96223bd0"
+      "sha256": "64bbbb73733cbe9ee764764e04499e2cfd7df580b6e565ac2910e56725af8bff"
     },
     "checked-invocation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
@@ -141,7 +141,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
       "symbol": "fn certified_operators(",
       "role": "Checked operand/wrapper certification, Boolean branch selection and retained unknown boundaries; includes private conditional proof regressions.",
-      "sha256": "5411cfdcae34719dae8fef00e15f49bf6fbe5625d995b1a3dcc38e8568af546e"
+      "sha256": "bbfb6da78facfe4136b0631f85b9113a1bb2551a5068bf533a0be22f674a399a"
     },
     "checked-bound-execution": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs",
@@ -178,6 +178,12 @@
       "symbol": "fn unresolved_bases_leave_independent_values_exact_in_either_file_order",
       "role": "Independent exact bounds and direct/transitive unknown providers, within one file and in either cross-file order.",
       "sha256": "75baf2856dcb17d37f334015aa27a556060e7d6448593e1ef6a4bd8de67340c4"
+    },
+    "checked-eligibility-batch": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
+      "symbol": "pub(in crate::json) struct EligibilityBatch",
+      "role": "Query-local reuse of checked topology and TypeRelations, with fresh path-sensitive eligibility proofs, semantic stamps, cumulative work and partial-certificate guards.",
+      "sha256": "64bbbb73733cbe9ee764764e04499e2cfd7df580b6e565ac2910e56725af8bff"
     }
   },
   "assessments": [
@@ -1149,7 +1155,8 @@
           "checked-bound-expressions",
           "checked-bound-execution",
           "checked-dynamic-isolation",
-          "isolation-tests"
+          "isolation-tests",
+          "checked-eligibility-batch"
         ]
       },
       "api": {
@@ -1353,9 +1360,30 @@
             "conditional-range",
             "import"
           ]
+        },
+        {
+          "case": "MULT-022",
+          "checks": [
+            "clean",
+            "exact",
+            "chosen",
+            "range",
+            "viaAlias",
+            "repeated",
+            "repeatedLower"
+          ]
+        },
+        {
+          "case": "MULT-023",
+          "checks": [
+            "incomplete",
+            "fraction",
+            "nonBoolean",
+            "reversed"
+          ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. Combined arithmetic/conditional range endpoints can still exhaust the checked query allowance (KERNEL-005); single-bound success does not qualify every composition."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. Cold full-library queries and more complex expressions can still exhaust the unchanged work allowance; reuse does not qualify every composition or a global cache."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",

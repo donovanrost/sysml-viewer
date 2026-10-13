@@ -88,6 +88,8 @@ Clause references identify the source of a test, not complete coverage of that c
 | IMP-027 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Recovered import syntax cannot be certified as a complete empty closure. |
 | MULT-020 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | robustness | Covered | Unresolved classifier specialization leaves independent arithmetic and conditional bounds exact while direct/transitive dependents remain unknown. |
 | MULT-021 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | robustness | Covered | Independent exact arithmetic, nested/lazy conditional bounds and unknown import results coexist across files with a missing base. |
+| MULT-022 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Compound range endpoints share checked topology and type evidence while preserving exact arithmetic, conditional, alias and repeated-provider values. |
+| MULT-023 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Checked range evidence cannot turn missing, fractional, non-Boolean or reversed endpoints into successful intervals. |
 
 ## Coverage limits
 

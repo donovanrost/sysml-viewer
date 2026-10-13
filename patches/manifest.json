@@ -39,22 +39,22 @@
       "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results."
     },
     {
-      "id": "KERNEL-003",
+      "id": "KERNEL-003/005",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
       "patch": "patches/0005-designated-callee-evidence.patch",
-      "sha256": "8e7fcac3b365a05d28c1cd48832f393c58a6c5177bf4d1a0dfec69282f2ae07e",
+      "sha256": "936e211fafc9a04e1daa4fd29e4d6560a2beda0792a07340dade9ed8421c4897",
       "baseSha256": "c54b284a1773583b0b67926869c03fcc4efa1df3ef44421907af67354b6e4412",
-      "resultSha256": "10957c72a3e66ef5d714f6bff4998808b5878e18d3b58bf109aac2be96223bd0",
-      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results."
+      "resultSha256": "64bbbb73733cbe9ee764764e04499e2cfd7df580b6e565ac2910e56725af8bff",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates."
     },
     {
-      "id": "KERNEL-003",
+      "id": "KERNEL-003/005",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
       "patch": "patches/0006-checked-conditional-cardinality.patch",
-      "sha256": "55d450b8af439c10777b317caa1619049301f8c2b77aded4fe43dd16d445f6aa",
+      "sha256": "64d7f0f0aa73ff288b4336b1d5219b4a1c5e70436214511b321d34da57f94850",
       "baseSha256": "bbfb520a8321275808a0ba832e00ab4470218ae2ebc9e80a874fa8dfad6f29c4",
-      "resultSha256": "5411cfdcae34719dae8fef00e15f49bf6fbe5625d995b1a3dcc38e8568af546e",
-      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results."
+      "resultSha256": "bbfb6da78facfe4136b0631f85b9113a1bb2551a5068bf533a0be22f674a399a",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates."
     },
     {
       "id": "KERNEL-003",
@@ -73,6 +73,15 @@
       "baseSha256": "39a7c5dcd2b4993c883a9c7e3bf949e6e8601601ecc656bbd2c414ef4d35ff7e",
       "resultSha256": "d21425982816889cbce7c1c56cae76f1d9a89f00a81cd38ff731d94418514104",
       "reason": "Isolate canonical unresolved Specialization/Subclassification rows only after certifying all source aliases and the shared semantic carrier. Preserve the final dependency audit, incomplete affected signatures, legacy refusal, malformed/stale evidence and work limits. MULT-020/021 retain independent arithmetic and conditional bounds alongside missing bases."
+    },
+    {
+      "id": "KERNEL-005",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability.rs",
+      "patch": "patches/0009-shared-eligibility-batch.patch",
+      "sha256": "fe2d87e2a993aade2e9ef62396566b8b69061867ca9b01e3991258c04b40f6fe",
+      "baseSha256": "a64241bea532060b0112494b8c99c7f0a5c49750bc76359fc14eb3742cce0a24",
+      "resultSha256": "9d5968b21f6da29cb9425c6019e2d27621a27ff5c3fd5452bf231bb883a5287d",
+      "reason": "KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates."
     }
   ]
 }

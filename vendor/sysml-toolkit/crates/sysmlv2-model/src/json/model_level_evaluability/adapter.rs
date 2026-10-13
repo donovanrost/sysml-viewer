@@ -64,6 +64,83 @@ impl ResolvedModel {
     }
 }
 
+/// Reuse checked structural and type evidence within one enclosing query.
+/// Checked TypeRelations and the library self identity share that generation.
+/// Each expression gets a fresh semantic proof and path-local cycle guards.
+/// No eligibility classification survives between reports.
+#[derive(Default)]
+pub(in crate::json) struct EligibilityBatch {
+    graph: Option<StoredGraph>,
+    relations: TypeRelations,
+    self_target: Option<Option<usize>>,
+    stamp: Option<super::super::semantic::certified_types::Stamp>,
+    used: usize,
+    stale: bool,
+}
+impl EligibilityBatch {
+    pub(in crate::json) fn report(
+        &mut self,
+        model: &mut ResolvedModel,
+        expression: ElementRef,
+        initial: usize,
+    ) -> ModelLevelEvaluabilityReport {
+        let mut proof = Proof::new(
+            RepositoryEvidence::new(model),
+            crate::eval::MAX_STEPS,
+            super::super::MAX_RESOLUTION_DEPTH,
+        );
+        // Interleaved readers can advance the same allowance; callers cannot
+        // rewind it by supplying a smaller initial count on a cache hit.
+        proof.budget.used = initial.max(self.used);
+        let classification = if let Err(reason) = proof.budget.charge(1) {
+            Unknown(reason)
+        } else if self.stale
+            || self
+                .stamp
+                .as_ref()
+                .is_some_and(|stamp| !stamp.current(proof.provider.model))
+        {
+            self.stale = true;
+            Unknown(MissingOrMalformedMembership)
+        } else {
+            proof.provider.graph = self.graph.take();
+            proof.provider.relations = std::mem::take(&mut self.relations);
+            proof.provider.self_target = self.self_target;
+            let result = proof.walk(expression.0, 0);
+            if self
+                .stamp
+                .as_ref()
+                .is_some_and(|stamp| !stamp.current(proof.provider.model))
+                || proof
+                    .provider
+                    .graph
+                    .as_ref()
+                    .is_some_and(|graph| !graph.current(&proof.provider.model.b))
+            {
+                self.stale = true;
+                Unknown(MissingOrMalformedMembership)
+            } else {
+                // A failed construction never installs a partial graph. A
+                // later fresh batch can retry after work exhaustion or edits.
+                self.graph = proof.provider.graph.take();
+                self.relations = std::mem::take(&mut proof.provider.relations);
+                self.self_target = proof.provider.self_target;
+                if self.stamp.is_none() {
+                    self.stamp = Some(super::super::semantic::certified_types::Stamp::capture(
+                        proof.provider.model,
+                    ));
+                }
+                result
+            }
+        };
+        self.used = proof.budget.used;
+        ModelLevelEvaluabilityReport {
+            classification,
+            steps: self.used,
+        }
+    }
+}
+
 /// One complete identity/carrier index per query. No name-based membership or
 /// feature-value fallback is used; malformed graph entries remain visible.
 struct StoredGraph {
@@ -683,6 +760,139 @@ mod tests {
             .unwrap();
         (owner, rel, r.b.elements[rel].children[0])
     }
+    #[test]
+    fn eligibility_batch_reuses_topology_without_reusing_classifications() {
+        let mut r = fixture();
+        let (_, _, read) = value(&mut r, "read");
+        let read = ElementRef(read);
+        assert_eq!(r.model_level_evaluability(read).classification, Yes);
+        let baseline = r.model_level_evaluability(read);
+        let mut batch = EligibilityBatch::default();
+        let first = batch.report(&mut r, read, 0);
+        assert_eq!(first.classification, Yes);
+        assert!(batch.graph.is_some());
+        let second = batch.report(&mut r, read, first.steps);
+        assert_eq!(second.classification, baseline.classification);
+        assert!(second.steps > first.steps);
+        assert!(second.steps - first.steps < baseline.steps);
+        assert_eq!(
+            batch
+                .report(&mut r, ElementRef(usize::MAX), second.steps)
+                .classification,
+            Unknown(InvalidElement)
+        );
+        assert_eq!(batch.report(&mut r, read, 0).classification, Yes);
+    }
+
+    #[test]
+    fn eligibility_batch_rejects_row_and_semantic_generation_changes() {
+        for mutation in 0..6 {
+            let mut r = fixture();
+            let (_, _, read) = value(&mut r, "read");
+            let (_, _, literal) = value(&mut r, "target");
+            let read = ElementRef(read);
+            assert_eq!(r.model_level_evaluability(read).classification, Yes);
+            let mut batch = EligibilityBatch::default();
+            assert_eq!(batch.report(&mut r, read, 0).classification, Yes);
+            match mutation {
+                0 => {
+                    r.b.elements[literal]
+                        .props
+                        .insert("value", serde_json::json!(2));
+                }
+                1 => {
+                    r.b.metadata_association_generation = Some(Arc::new(()));
+                }
+                2 => {
+                    r.b.metadata_associations_incomplete = true;
+                }
+                3 => {
+                    r.b.recorded_lookup_incomplete = true;
+                }
+                4 => {
+                    r.b.lib_boundary = 0;
+                }
+                _ => {
+                    let mut replacement = fixture();
+                    assert_eq!(
+                        replacement.model_level_evaluability(read).classification,
+                        Yes
+                    );
+                    r = replacement;
+                }
+            }
+            assert_eq!(
+                batch.report(&mut r, read, 0).classification,
+                Unknown(MissingOrMalformedMembership),
+                "mutation {mutation}"
+            );
+            assert!(batch.stale);
+            let expected = r.model_level_evaluability(read).classification;
+            assert_eq!(
+                EligibilityBatch::default()
+                    .report(&mut r, read, 0)
+                    .classification,
+                expected,
+                "fresh mutation {mutation}"
+            );
+        }
+    }
+
+    #[test]
+    fn eligibility_batch_keeps_cumulative_work_limits_and_fresh_retries() {
+        for (warmed, remaining) in [(false, 0), (false, 10), (true, 0), (true, 10)] {
+            let mut r = fixture();
+            let (_, _, read) = value(&mut r, "read");
+            let read = ElementRef(read);
+            assert_eq!(r.model_level_evaluability(read).classification, Yes);
+            let mut batch = EligibilityBatch::default();
+            if warmed {
+                assert_eq!(batch.report(&mut r, read, 0).classification, Yes);
+            }
+            let exhausted = batch.report(&mut r, read, crate::eval::MAX_STEPS - remaining);
+            assert_eq!(exhausted.classification, Unknown(WorkLimit));
+            let retry = batch.report(&mut r, read, 0);
+            assert_eq!(retry.classification, Unknown(WorkLimit));
+            assert!(retry.steps > exhausted.steps);
+            if !warmed {
+                assert!(batch.graph.is_none());
+            }
+            assert_eq!(
+                EligibilityBatch::default()
+                    .report(&mut r, read, 0)
+                    .classification,
+                Yes
+            );
+        }
+    }
+
+    #[test]
+    fn eligibility_batch_never_retains_a_partial_topology_certificate() {
+        let mut r = fixture();
+        let (_, _, read) = value(&mut r, "read");
+        let (_, _, literal) = value(&mut r, "target");
+        let read = ElementRef(read);
+        let original = r.b.elements[literal].id;
+        r.b.elements[literal].id = r.b.elements[read.0].id;
+        let mut batch = EligibilityBatch::default();
+        assert!(matches!(
+            batch.report(&mut r, read, 0).classification,
+            Unknown(_)
+        ));
+        assert!(batch.graph.is_none());
+        r.b.elements[literal].id = original;
+        assert_eq!(
+            batch.report(&mut r, read, 0).classification,
+            Unknown(MissingOrMalformedMembership)
+        );
+        assert_eq!(
+            EligibilityBatch::default()
+                .report(&mut r, read, 0)
+                .classification,
+            Yes
+        );
+    }
+
     #[test]
     fn owned_general_inputs_use_exact_in_direction_and_complete_valuations() {
         for (declaration, expected) in [

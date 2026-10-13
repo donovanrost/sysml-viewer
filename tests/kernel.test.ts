@@ -22,6 +22,8 @@ for (const name of [
   'mult-014',
   'mult-017',
   'mult-018',
+  'mult-022',
+  'mult-023',
   'imp-020',
 ]) {
   documents.push({
@@ -198,6 +200,33 @@ test('conditional bounds agree across native and WebAssembly with lazy branches 
       reason: ['unavailable', 'unbound'].includes(name) ? 'incompleteProvider' : 'unsupportedBound',
     });
     assert.equal(e.declaredMultiplicity, null);
+  }
+});
+
+test('compound ranges retain exact endpoints and negative guards across native and WebAssembly', () => {
+  for (const state of [snapshot, importGuards]) {
+    for (const [name, lower, upper] of [
+      ['exact', '5', '5'],
+      ['chosen', '10', '10'],
+      ['range', '5', '10'],
+      ['viaAlias', '5', '10'],
+      ['repeated', '10', '10'],
+      ['repeatedLower', '5', '5'],
+    ]) {
+      const e = state.elements.find((e) => e.qualifiedName === `CompoundRanges::${name}`)!;
+      assert.deepEqual(e.cardinality, { status: 'evaluated', lower, upper }, name);
+    }
+    for (const name of ['incomplete', 'fraction', 'nonBoolean', 'reversed']) {
+      const e = state.elements.find((e) => e.qualifiedName === `CompoundRangeGuards::${name}`)!;
+      assert.deepEqual(
+        e.cardinality,
+        {
+          status: 'unknown',
+          reason: name === 'incomplete' ? 'incompleteProvider' : 'unsupportedBound',
+        },
+        name,
+      );
+    }
   }
 });
 

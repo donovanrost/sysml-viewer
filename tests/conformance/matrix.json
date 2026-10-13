@@ -2776,6 +2776,104 @@
           "reason": "incompleteProvider"
         }
       ]
+    },
+    {
+      "id": "MULT-022",
+      "area": "multiplicity",
+      "purpose": "Compound range endpoints share checked topology and type evidence while preserving exact arithmetic, conditional, alias and repeated-provider values.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-022.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "exact",
+          "op": "cardinality",
+          "owner": "CompoundRanges::exact",
+          "status": "evaluated",
+          "lower": "5",
+          "upper": "5"
+        },
+        {
+          "id": "chosen",
+          "op": "cardinality",
+          "owner": "CompoundRanges::chosen",
+          "status": "evaluated",
+          "lower": "10",
+          "upper": "10"
+        },
+        {
+          "id": "range",
+          "op": "cardinality",
+          "owner": "CompoundRanges::range",
+          "status": "evaluated",
+          "lower": "5",
+          "upper": "10"
+        },
+        {
+          "id": "viaAlias",
+          "op": "cardinality",
+          "owner": "CompoundRanges::viaAlias",
+          "status": "evaluated",
+          "lower": "5",
+          "upper": "10"
+        },
+        {
+          "id": "repeated",
+          "op": "cardinality",
+          "owner": "CompoundRanges::repeated",
+          "status": "evaluated",
+          "lower": "10",
+          "upper": "10"
+        },
+        {
+          "id": "repeatedLower",
+          "op": "cardinality",
+          "owner": "CompoundRanges::repeatedLower",
+          "status": "evaluated",
+          "lower": "5",
+          "upper": "5"
+        }
+      ]
+    },
+    {
+      "id": "MULT-023",
+      "area": "multiplicity",
+      "purpose": "Checked range evidence cannot turn missing, fractional, non-Boolean or reversed endpoints into successful intervals.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-023.sysml"],
+      "checks": [
+        {
+          "id": "incomplete",
+          "op": "cardinality",
+          "owner": "CompoundRangeGuards::incomplete",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "fraction",
+          "op": "cardinality",
+          "owner": "CompoundRangeGuards::fraction",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "nonBoolean",
+          "op": "cardinality",
+          "owner": "CompoundRangeGuards::nonBoolean",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "reversed",
+          "op": "cardinality",
+          "owner": "CompoundRangeGuards::reversed",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        }
+      ]
     }
   ]
 }

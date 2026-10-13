@@ -502,3 +502,61 @@ fn anonymous_reference_memberships_do_not_acquire_the_target_name() {
         }
     );
 }
+
+#[test]
+fn compound_ranges_preserve_exact_values_and_unknown_endpoints_after_round_trip() {
+    for with_missing_base in [false, true] {
+        let mut documents = vec![
+            document(
+                "ranges.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-022.sysml"),
+            ),
+            document(
+                "guards.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-023.sysml"),
+            ),
+        ];
+        if with_missing_base {
+            documents.push(document(
+                "missing.sysml",
+                "package BrokenRangeContext { part def Base :> MissingBase; }",
+            ));
+        }
+        let original = analyze(documents);
+        let restored: Snapshot =
+            serde_json::from_str(&serde_json::to_string(&original).unwrap()).unwrap();
+        let q = restored.queries().unwrap();
+        for (name, lower, upper) in [
+            ("exact", "5", "5"),
+            ("chosen", "10", "10"),
+            ("range", "5", "10"),
+            ("viaAlias", "5", "10"),
+            ("repeated", "10", "10"),
+            ("repeatedLower", "5", "5"),
+        ] {
+            let e = q.find(&format!("CompoundRanges::{name}"))[0];
+            assert_eq!(
+                q.cardinality(&e.id).unwrap(),
+                &Cardinality::Evaluated {
+                    lower: lower.into(),
+                    upper: Some(upper.into())
+                },
+                "{name}"
+            );
+        }
+        for name in ["incomplete", "fraction", "nonBoolean", "reversed"] {
+            let e = q.find(&format!("CompoundRangeGuards::{name}"))[0];
+            assert_eq!(
+                q.cardinality(&e.id).unwrap(),
+                &Cardinality::Unknown {
+                    reason: if name == "incomplete" {
+                        CardinalityIssue::IncompleteProvider
+                    } else {
+                        CardinalityIssue::UnsupportedBound
+                    }
+                },
+                "{name}"
+            );
+        }
+    }
+}

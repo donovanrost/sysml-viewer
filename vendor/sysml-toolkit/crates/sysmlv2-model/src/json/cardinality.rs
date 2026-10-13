@@ -799,6 +799,7 @@ fn certified_operators(
     charge(steps, roots.len())?;
     let mut pending: Vec<_> = roots.iter().copied().map(Task::Visit).collect();
     let mut seen = HashSet::new();
+    let mut eligibility = super::model_level_evaluability::EligibilityBatch::default();
     let mut contextual_features: Option<(HashSet<usize>, HashSet<usize>)> = None;
     let mut operators = crate::eval::CheckedMultiplicityExpressions::default();
     let raw =
@@ -839,7 +840,7 @@ fn certified_operators(
         // not its separate model-level classification. Other expression kinds
         // retain the existing model-level admission requirement.
         if r.b.elements[expression].ty != "FeatureReferenceExpression" {
-            require_model_level_value(r, expression, steps)?;
+            require_model_level_value(r, expression, &mut eligibility, steps)?;
         }
         match r.b.elements[expression].ty {
             "LiteralInteger" | "LiteralInfinity" | "LiteralBoolean" => continue,
@@ -868,7 +869,7 @@ fn certified_operators(
                     .owner_elem(target)
                     .is_none_or(|owner| !conforms(r.b.elements[owner].ty, "Type"))
                 {
-                    require_model_level_value(r, expression, steps)?;
+                    require_model_level_value(r, expression, &mut eligibility, steps)?;
                 } else {
                     let receiver = context
                         .and_then(|scope| r.b.scope_owner(scope))
@@ -1067,9 +1068,10 @@ fn certify_reference_domain(
 fn require_model_level_value(
     r: &mut ResolvedModel,
     expression: usize,
+    eligibility: &mut super::model_level_evaluability::EligibilityBatch,
     steps: &mut usize,
 ) -> Result<(), CardinalityIssue> {
-    let proof = r.model_level_evaluability_with_budget(ElementRef(expression), *steps);
+    let proof = eligibility.report(r, ElementRef(expression), *steps);
     *steps = proof.steps;
     if proof.classification == super::ModelLevelEvaluability::Evaluable {
         Ok(())
