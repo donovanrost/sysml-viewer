@@ -148,8 +148,9 @@ pub struct Connection {
     pub ends: Vec<Endpoint>,
 }
 
-/// Immutable result of one complete analysis. Consumers may cache queries for
-/// its lifetime; using an ID from another revision returns no element.
+/// Owned transport value for one analysis. Treat as immutable; use `queries()`
+/// to validate and borrow it. IDs require a unique caller revision per snapshot
+/// in the caller's session; they are not globally unique across engines/sessions.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
 #[serde(rename_all = "camelCase")]

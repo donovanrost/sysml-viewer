@@ -1,0 +1,1 @@
+package Consumer { part x : KernelTypes::Machine; }

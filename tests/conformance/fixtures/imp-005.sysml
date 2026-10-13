@@ -1,0 +1,1 @@
+package Left { part def T; } package Right { part def T; } package Consumer { private import Left::*; private import Right::*; part x : T; }

@@ -1,0 +1,1 @@
+package Redef { part def Derived { part replacement redefines absent; } }

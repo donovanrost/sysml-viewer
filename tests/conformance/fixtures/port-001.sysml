@@ -1,0 +1,1 @@
+package PortsTest { port def P; part host { port p : ~P; } }

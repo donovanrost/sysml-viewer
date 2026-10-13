@@ -6,7 +6,8 @@ import type { Reference } from "./Reference";
 import type { SourceDocument } from "./SourceDocument";
 
 /**
- * Immutable result of one complete analysis. Consumers may cache queries for
- * its lifetime; using an ID from another revision returns no element.
+ * Owned transport value for one analysis. Treat as immutable; use `queries()`
+ * to validate and borrow it. IDs require a unique caller revision per snapshot
+ * in the caller's session; they are not globally unique across engines/sessions.
  */
 export type Snapshot = { schemaVersion: number, revision: number, engineVersion: string, libraryVersion: string, documents: Array<SourceDocument>, elements: Array<Element>, references: Array<Reference>, connections: Array<Connection>, diagnostics: Array<Diagnostic>, };

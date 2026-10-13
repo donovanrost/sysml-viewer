@@ -7,3 +7,4 @@ src-tauri/
 dist/
 release/
 tools/kernel-evaluation/target/
+tests/conformance/upstream/

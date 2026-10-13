@@ -1,0 +1,9 @@
+* text=auto eol=lf
+# Source coordinates and provenance hashes depend on exact model/vendor bytes.
+*.sysml -text
+*.kerml -text
+vendor/** -text
+# Preserve official examples verbatim, including their original whitespace.
+tests/conformance/upstream/** -text -whitespace
+# This source-coordinate fixture intentionally contains CRLF.
+tests/conformance/fixtures/source-001.sysml whitespace=cr-at-eol

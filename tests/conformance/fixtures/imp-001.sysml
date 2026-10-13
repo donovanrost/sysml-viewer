@@ -1,0 +1,1 @@
+package Consumer { private import Catalog::*; part x : Device; }

@@ -1,0 +1,1 @@
+package Origin { part def T; } package PublicGate { public import Origin::*; } package PrivateGate { private import Origin::*; } package Consumer { part a : PublicGate::T; part b : PrivateGate::T; }

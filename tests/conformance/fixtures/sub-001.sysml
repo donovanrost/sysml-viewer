@@ -1,0 +1,1 @@
+package Subsets { part def Item; part collection : Item[*]; part chosen : Item[0..1] :> collection; }

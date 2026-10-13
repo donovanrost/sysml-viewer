@@ -1,0 +1,904 @@
+{
+  "version": 1,
+  "standards": {
+    "SysML 2.0": {
+      "document": "formal/2026-03-02",
+      "url": "https://www.omg.org/spec/SysML/2.0/Language/PDF"
+    },
+    "KerML 1.0": {
+      "document": "formal/2026-03-01",
+      "url": "https://www.omg.org/spec/KerML/1.0/PDF"
+    }
+  },
+  "areas": [
+    {
+      "id": "imports",
+      "title": "Imports and visibility",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "7.5.2"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "7.5.3"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "7.2.5.4"
+        }
+      ],
+      "uncovered": "Recursive and filtered imports, protected visibility, import-all interactions and complete membership enumeration remain unqualified."
+    },
+    {
+      "id": "typing",
+      "title": "Typing",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "7.6.3"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "7.3.4.3"
+        }
+      ],
+      "uncovered": "Multiple and implicit typing, chained types and all type-kind constraints need further cases."
+    },
+    {
+      "id": "specialization",
+      "title": "Specialization and inheritance",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "7.6.2"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "7.3.2.3"
+        }
+      ],
+      "uncovered": "Diamond coverage is limited to a common ancestor; conflicts, cycles and all inherited memberships require broader qualification."
+    },
+    {
+      "id": "subsetting",
+      "title": "Subsetting",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "7.6.3"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "7.3.4.4"
+        }
+      ],
+      "uncovered": "These cases check target identity, not instance-value containment or every conformance constraint."
+    },
+    {
+      "id": "redefinition",
+      "title": "Redefinition",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "7.6.3"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "7.3.4.5"
+        }
+      ],
+      "uncovered": "Direction, multiplicity, featuring-type conformance and nested redefinitions need additional cases."
+    },
+    {
+      "id": "multiplicity",
+      "title": "Multiplicity",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "7.6.3"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "7.3.4.2"
+        }
+      ],
+      "uncovered": "Only literal declared bounds are asserted; expression bounds, effective defaults and containment are unqualified."
+    },
+    {
+      "id": "ports",
+      "title": "Conjugated port typing",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "7.12.3"
+        }
+      ],
+      "uncovered": "These assertions cover written references, not conjugated direction/flow semantics."
+    },
+    {
+      "id": "connections",
+      "title": "Connections and chains",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "7.6.6"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "7.13.2"
+        }
+      ],
+      "uncovered": "Endpoint identity and arity are covered; direction, flow compatibility and connection end conformance need further cases."
+    },
+    {
+      "id": "source",
+      "title": "Names and source fidelity",
+      "clauses": [
+        {
+          "standard": "KerML 1.0",
+          "section": "8.2.2"
+        }
+      ],
+      "uncovered": "Byte/UTF-16 mapping and recovery are project API guarantees; lexical names are the standards link. No editable CST contract is claimed."
+    },
+    {
+      "id": "robustness",
+      "title": "Cyclic input handling",
+      "clauses": [
+        {
+          "standard": "KerML 1.0",
+          "section": "7.2.5.4"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "7.3.2.3"
+        }
+      ],
+      "uncovered": "Termination is an operational guarantee, not a semantic verdict about every cycle. Continuous fuzzing remains separate work."
+    }
+  ],
+  "cases": [
+    {
+      "id": "IMP-001",
+      "area": "imports",
+      "purpose": "Cross-file wildcard import resolves a public definition.",
+      "polarity": "positive",
+      "files": [
+        "tests/conformance/fixtures/catalog.sysml",
+        "tests/conformance/fixtures/imp-001.sysml"
+      ],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "target",
+          "op": "reference",
+          "owner": "Consumer::x",
+          "kind": "typing",
+          "status": "resolved",
+          "target": "Catalog::Device"
+        }
+      ]
+    },
+    {
+      "id": "IMP-002",
+      "area": "imports",
+      "purpose": "Private membership stays inaccessible to an external client.",
+      "polarity": "negative",
+      "files": [
+        "tests/conformance/fixtures/catalog.sysml",
+        "tests/conformance/fixtures/imp-002.sysml"
+      ],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "hidden",
+          "op": "reference",
+          "owner": "Consumer::x",
+          "kind": "typing",
+          "status": "unresolved"
+        },
+        {
+          "id": "reported",
+          "op": "diagnostic",
+          "stage": "resolution"
+        }
+      ]
+    },
+    {
+      "id": "IMP-003",
+      "area": "imports",
+      "purpose": "Public re-export resolves; private re-export stays hidden.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/imp-003.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "public",
+          "op": "reference",
+          "owner": "Consumer::a",
+          "kind": "typing",
+          "status": "resolved",
+          "target": "Origin::T"
+        },
+        {
+          "id": "private",
+          "op": "reference",
+          "owner": "Consumer::b",
+          "kind": "typing",
+          "status": "unresolved"
+        }
+      ]
+    },
+    {
+      "id": "IMP-004",
+      "area": "imports",
+      "purpose": "An owned name wins over an imported name.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/imp-004.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "local",
+          "op": "reference",
+          "owner": "Consumer::x",
+          "kind": "typing",
+          "status": "resolved",
+          "target": "Consumer::T"
+        }
+      ]
+    },
+    {
+      "id": "IMP-005",
+      "area": "imports",
+      "purpose": "Conflicting wildcard imports produce ambiguity.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/imp-005.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "ambiguity",
+          "op": "reference",
+          "owner": "Consumer::x",
+          "kind": "typing",
+          "status": "ambiguous"
+        },
+        {
+          "id": "reported",
+          "op": "diagnostic",
+          "code": "ambiguous-reference"
+        }
+      ]
+    },
+    {
+      "id": "IMP-006",
+      "area": "imports",
+      "purpose": "Pinned official alias-import example resolves its original definition.",
+      "polarity": "positive",
+      "files": ["tests/conformance/upstream/AliasImport.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "alias",
+          "op": "reference",
+          "owner": "AliasImport::Usages::vehicle",
+          "kind": "typing",
+          "status": "resolved",
+          "target": "AliasImport::Definitions::Vehicle"
+        }
+      ]
+    },
+    {
+      "id": "IMP-007",
+      "area": "imports",
+      "purpose": "Pinned official import-all example reaches the privately imported definition.",
+      "polarity": "positive",
+      "files": ["tests/conformance/upstream/PrivateImportTest.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "private-local",
+          "op": "reference",
+          "owner": "PrivateImportTest::z",
+          "kind": "typing",
+          "status": "resolved",
+          "target": "PrivateImportTest::P3::B"
+        },
+        {
+          "id": "all",
+          "op": "reference",
+          "owner": "PrivateImportTest::P4::z1",
+          "kind": "typing",
+          "status": "resolved",
+          "target": "PrivateImportTest::P1::A"
+        }
+      ]
+    },
+    {
+      "id": "TYPE-001",
+      "area": "typing",
+      "purpose": "A SysML usage resolves a KerML classifier across files.",
+      "polarity": "positive",
+      "files": [
+        "tests/conformance/fixtures/kernel-types.kerml",
+        "tests/conformance/fixtures/type-001.sysml"
+      ],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "cross-dialect",
+          "op": "reference",
+          "owner": "Consumer::x",
+          "kind": "typing",
+          "status": "resolved",
+          "target": "KernelTypes::Machine"
+        }
+      ]
+    },
+    {
+      "id": "TYPE-002",
+      "area": "typing",
+      "purpose": "An absent type remains unresolved.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/type-002.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "missing",
+          "op": "reference",
+          "owner": "Types::x",
+          "kind": "typing",
+          "status": "unresolved"
+        },
+        {
+          "id": "reported",
+          "op": "diagnostic",
+          "stage": "resolution"
+        }
+      ]
+    },
+    {
+      "id": "TYPE-003",
+      "area": "typing",
+      "purpose": "A part typed by an attribute definition receives a semantic diagnostic.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/type-003.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "kind-rule",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error"
+        }
+      ]
+    },
+    {
+      "id": "TYPE-004",
+      "area": "typing",
+      "purpose": "A standard-library scalar type resolves to a library declaration.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/type-004.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "stdlib",
+          "op": "reference",
+          "owner": "Types::x",
+          "kind": "typing",
+          "status": "resolved",
+          "target": "ScalarValues::Real"
+        }
+      ]
+    },
+    {
+      "id": "SPEC-001",
+      "area": "specialization",
+      "purpose": "Diamond inheritance contributes the common member once.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/spec-001.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "diamond",
+          "op": "members",
+          "owner": "Diamond::x",
+          "mode": "effective",
+          "names": ["Diamond::Root::mass", "Diamond::Both::serial"],
+          "complete": true
+        },
+        {
+          "id": "owned",
+          "op": "members",
+          "owner": "Diamond::x",
+          "mode": "owned",
+          "names": []
+        }
+      ]
+    },
+    {
+      "id": "SPEC-002",
+      "area": "specialization",
+      "purpose": "An absent general type is reported without inventing a target.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/spec-002.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "missing-base",
+          "op": "reference",
+          "owner": "Types::Derived",
+          "kind": "specialization",
+          "status": "unresolved"
+        },
+        {
+          "id": "incomplete",
+          "op": "members",
+          "owner": "Types::Derived",
+          "mode": "effective",
+          "names": [],
+          "complete": false
+        },
+        {
+          "id": "capability-diagnostic",
+          "op": "diagnostic",
+          "code": "incomplete-inheritance",
+          "stage": "capability"
+        }
+      ]
+    },
+    {
+      "id": "SPEC-003",
+      "area": "specialization",
+      "purpose": "Missing heritage stays incomplete through definitions and typed usages.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/spec-003.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "Derived",
+          "op": "members",
+          "owner": "MissingHeritage::Derived",
+          "mode": "effective",
+          "names": [],
+          "complete": false
+        },
+        {
+          "id": "Leaf",
+          "op": "members",
+          "owner": "MissingHeritage::Leaf",
+          "mode": "effective",
+          "names": [],
+          "complete": false
+        },
+        {
+          "id": "x",
+          "op": "members",
+          "owner": "MissingHeritage::x",
+          "mode": "effective",
+          "names": [],
+          "complete": false
+        },
+        {
+          "id": "independent",
+          "op": "members",
+          "owner": "MissingHeritage::Independent",
+          "mode": "effective",
+          "names": [],
+          "complete": true
+        }
+      ]
+    },
+    {
+      "id": "SUB-001",
+      "area": "subsetting",
+      "purpose": "A usage subsets the intended feature.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/sub-001.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "subset",
+          "op": "reference",
+          "owner": "Subsets::chosen",
+          "kind": "subsetting",
+          "status": "resolved",
+          "target": "Subsets::collection"
+        }
+      ]
+    },
+    {
+      "id": "SUB-002",
+      "area": "subsetting",
+      "purpose": "A missing subsetted feature remains unresolved.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/sub-002.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "missing",
+          "op": "reference",
+          "owner": "Subsets::chosen",
+          "kind": "subsetting",
+          "status": "unresolved"
+        }
+      ]
+    },
+    {
+      "id": "REDEF-001",
+      "area": "redefinition",
+      "purpose": "A redefining feature replaces its inherited predecessor.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/redef-001.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "redefined",
+          "op": "reference",
+          "owner": "Redef::Derived::p",
+          "kind": "redefinition",
+          "status": "resolved",
+          "target": "Redef::Base::p"
+        },
+        {
+          "id": "replacement",
+          "op": "members",
+          "owner": "Redef::x",
+          "mode": "effective",
+          "names": ["Redef::Derived::p", "Redef::Base::keep"],
+          "complete": true
+        }
+      ]
+    },
+    {
+      "id": "REDEF-002",
+      "area": "redefinition",
+      "purpose": "A missing redefinition target remains unresolved.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/redef-002.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "missing",
+          "op": "reference",
+          "owner": "Redef::Derived::replacement",
+          "kind": "redefinition",
+          "status": "unresolved"
+        }
+      ]
+    },
+    {
+      "id": "MULT-001",
+      "area": "multiplicity",
+      "purpose": "Literal bounds survive normalization, including an unbounded upper limit.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-001.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "optional",
+          "op": "multiplicity",
+          "owner": "Bounds::a",
+          "value": "[0..1]"
+        },
+        {
+          "id": "fixed",
+          "op": "multiplicity",
+          "owner": "Bounds::b",
+          "value": "[2]"
+        },
+        {
+          "id": "unbounded",
+          "op": "multiplicity",
+          "owner": "Bounds::c",
+          "value": "[0..*]"
+        }
+      ]
+    },
+    {
+      "id": "MULT-002",
+      "area": "multiplicity",
+      "purpose": "A reversed literal interval receives a semantic diagnostic.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-002.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "reversed-range",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error"
+        }
+      ]
+    },
+    {
+      "id": "PORT-001",
+      "area": "ports",
+      "purpose": "Conjugated spelling is preserved while its name target resolves.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/port-001.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "conjugation",
+          "op": "reference",
+          "owner": "PortsTest::host::p",
+          "kind": "typing",
+          "status": "resolved",
+          "target": "PortsTest::P",
+          "spelling": "~P"
+        }
+      ]
+    },
+    {
+      "id": "PORT-002",
+      "area": "ports",
+      "purpose": "An absent conjugated port type is not silently resolved.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/port-002.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "conjugation",
+          "op": "reference",
+          "owner": "PortsTest::host::p",
+          "kind": "typing",
+          "status": "unresolved",
+          "spelling": "~Absent"
+        }
+      ]
+    },
+    {
+      "id": "CONN-001",
+      "area": "connections",
+      "purpose": "Binary endpoints retain their usage and port chain.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/conn-001.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "ends",
+          "op": "connection",
+          "name": "Wiring::host::wire",
+          "chains": [
+            ["Wiring::host::a", "Wiring::Device::p"],
+            ["Wiring::host::b", "Wiring::Device::p"]
+          ],
+          "statuses": ["resolved", "resolved"]
+        }
+      ]
+    },
+    {
+      "id": "CONN-002",
+      "area": "connections",
+      "purpose": "A broken final endpoint never becomes a resolved prefix.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/conn-002.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "ends",
+          "op": "connection",
+          "name": "Wiring::host::wire",
+          "chains": [["Wiring::host::a"], ["Wiring::host::b"]],
+          "statuses": ["unsupported", "unsupported"]
+        }
+      ]
+    },
+    {
+      "id": "CONN-003",
+      "area": "connections",
+      "purpose": "Three written connection ends remain three semantic endpoints.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/conn-003.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "arity",
+          "op": "connection",
+          "name": "Wiring::host::wire",
+          "chains": [["Wiring::host::a"], ["Wiring::host::b"], ["Wiring::host::c"]],
+          "statuses": ["resolved", "resolved", "resolved"]
+        }
+      ]
+    },
+    {
+      "id": "SOURCE-001",
+      "area": "source",
+      "purpose": "Quoted Unicode names retain exact CRLF source coordinates.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/source-001.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "name",
+          "op": "reference",
+          "owner": "'海'::x",
+          "kind": "typing",
+          "status": "resolved",
+          "target": "'海'::'Éngine'"
+        },
+        {
+          "id": "bytes-and-utf16",
+          "op": "source",
+          "owner": "'海'::x",
+          "text": "part x : 'Éngine';"
+        }
+      ]
+    },
+    {
+      "id": "SOURCE-002",
+      "area": "source",
+      "purpose": "Syntax recovery retains an earlier valid declaration.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/source-002.sysml"],
+      "checks": [
+        {
+          "id": "syntax-error",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error"
+        },
+        {
+          "id": "surviving-node",
+          "op": "element",
+          "name": "Recovery::x",
+          "metaclass": "PartUsage"
+        }
+      ]
+    },
+    {
+      "id": "CYCLE-001",
+      "area": "robustness",
+      "purpose": "Cyclic imports terminate and preserve a reachable public definition.",
+      "polarity": "robustness",
+      "files": ["tests/conformance/fixtures/cycle-001.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "reachable",
+          "op": "reference",
+          "owner": "Client::x",
+          "kind": "typing",
+          "status": "resolved",
+          "target": "A::T"
+        }
+      ]
+    },
+    {
+      "id": "CYCLE-002",
+      "area": "robustness",
+      "purpose": "Mutual specialization terminates and preserves both declarations.",
+      "polarity": "robustness",
+      "files": ["tests/conformance/fixtures/cycle-002.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "a",
+          "op": "element",
+          "name": "Cycles::A",
+          "metaclass": "PartDefinition"
+        },
+        {
+          "id": "b",
+          "op": "element",
+          "name": "Cycles::B",
+          "metaclass": "PartDefinition"
+        }
+      ]
+    },
+    {
+      "id": "IMP-008",
+      "area": "imports",
+      "purpose": "Qualified membership enumeration includes imported aliases.",
+      "polarity": "positive",
+      "planned": "The facade currently exposes owned declarations and effective features, not all namespace memberships. Design an explicit membership query before asserting this."
+    },
+    {
+      "id": "MULT-003",
+      "area": "multiplicity",
+      "purpose": "Evaluate expression-valued bounds with an explicit completeness result.",
+      "polarity": "positive",
+      "planned": "The current declaredMultiplicity field is a normalized literal query; expression evaluation is outside the public contract."
+    }
+  ]
+}

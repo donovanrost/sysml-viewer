@@ -1,0 +1,1 @@
+package Wiring { port def P; part def Device { port p : P; } part host { part a : Device; part b : Device; connection wire connect a.p to b.p; } }

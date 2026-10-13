@@ -1,0 +1,1 @@
+package Wiring { part host { part a; part b; connection wire connect a.missing to b; } }

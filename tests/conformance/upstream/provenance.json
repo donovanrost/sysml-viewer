@@ -1,0 +1,17 @@
+{
+  "repository": "https://github.com/Systems-Modeling/SysML-v2-Release",
+  "revision": "cd99f7ca70b96abb38f09dfd25725e3cf259baa3",
+  "license": "LGPL-3.0",
+  "files": [
+    {
+      "path": "tests/conformance/upstream/AliasImport.sysml",
+      "upstreamPath": "sysml/src/examples/Import Tests/AliasImport.sysml",
+      "sha256": "b243243ba39ca49c9ad53521418513ea3111b4e6be864023dfa1bb921baf96e2"
+    },
+    {
+      "path": "tests/conformance/upstream/PrivateImportTest.sysml",
+      "upstreamPath": "sysml/src/examples/Import Tests/PrivateImportTest.sysml",
+      "sha256": "5111a800ab20f0018277bef5b4ed9d055327d03ac8afbdea2c2d3e5713113007"
+    }
+  ]
+}

@@ -1,8 +1,12 @@
 # Architecture and contracts
 
-Status: implemented first migration milestone. Normative target: SysML 2.0 and
+Status: kernel migration and initial qualification implemented. Normative target: SysML 2.0 and
 KerML 1.0; bundled model library: the March 2026 release. This is not a claim of
 complete language or graphical-notation conformance.
+
+The [public contract review](kernel-contract.md) defines supported operations and
+compatibility policy. The [executable matrix](conformance.md) records bounded
+standards coverage; [qualification evidence](qualification.md) records results.
 
 ## Dependency direction
 
@@ -84,10 +88,19 @@ the checked-in TypeScript files. `npm run contract:check` detects drift.
   upstream rule codes pass through; unnamed diagnostics use stable stage codes.
 - Library member-query stubs and incomplete inheritance are explicit. Validation
   coverage remains partial even when no diagnostics are reported.
+- Unresolved declared heritage makes dependent member queries incomplete, including
+  transitive dependencies. The facade accounts for missing edges that the upstream
+  graph's completeness flag does not represent.
 
 `Snapshot::element`, `find` and `references_at` are convenience queries. The viewer
 builds maps once per snapshot for interactive lookups. The native CLI reads files
 and writes JSON; `--request-json` exercises exactly the browser request contract.
+Native consumers can call `Snapshot::queries()` for indexed lookup, checked source
+ranges and explicit unavailable-member/reference/diagnostic errors. `check_syntax`
+parses and checks one source without invoking semantic analysis or loading libraries.
+Snapshot values own public transport fields; the query object borrows them
+immutably. Treating the value as immutable is a consumer rule, not a property of
+the public-field type itself.
 
 ## Reliability and scheduling
 
@@ -116,15 +129,19 @@ a failed load. Files are never written by analysis.
 4. Native and WASM snapshots match for a shared multi-file request.
 5. Viewer projection tests preserve the same semantic facts and the built-in
    example's four subsystem cards and five connections.
-6. Web build and platform package build pass on each supported OS.
+6. Contract and worker tests cover unavailable queries, source integrity,
+   cancellation, stale replies, traps and deadlines. The standards matrix passes
+   without unexplained failures or unexpected passes; its report is retained.
+7. Web build and platform package build pass on each supported OS.
 
 Windows and Linux packaging require those CI runners; a successful Mac build is
 not evidence that the other packages work.
 
 ## Subsequent milestones
 
-- Expand the requirement-to-test matrix against official grammar and semantic
-  rules. Parsing the example corpus does not establish semantic conformance.
+- Expand the initial executable matrix against official grammar and semantic
+  rules, including pilot differential runs. Parsing the example corpus does not
+  establish semantic conformance.
 - Add continuous fuzzing and larger real-model performance benchmarks.
 - Evaluate a prepared-library cache and incremental workspace queries based on
   measured use cases. Keep cache invalidation tied to engine and library versions.

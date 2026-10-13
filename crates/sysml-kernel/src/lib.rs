@@ -1,14 +1,18 @@
 //! Reusable, host-independent analysis of explicitly supplied SysML/KerML sources.
 //!
 //! Syntax and semantics are supplied by the pinned Open-MBEE libraries. This
-//! facade owns input policy, source mapping, immutable snapshots and query contracts.
+//! facade owns input policy, source mapping, owned snapshots and query contracts.
 //! It does not read files, start threads, draw diagrams, or depend on Tauri.
 mod engine;
+mod query;
 mod source;
+mod syntax;
 mod types;
 
 pub use engine::Engine;
+pub use query::{EffectiveMembers, QueryError, SnapshotQuery};
 pub use source::SourceIndex;
+pub use syntax::{check_syntax, SyntaxReport};
 pub use types::*;
 
 /// Required stack for native host threads calling the upstream recursive passes.

@@ -12,6 +12,11 @@ behind our own versioned facade. This is **not a claim of complete SysML conform
 Read [the architecture](docs/architecture.md) and [the engine evaluation](docs/kernel-evaluation.md)
 for the boundaries, evidence and remaining work.
 
+Kernel qualification adds a [public contract review](docs/kernel-contract.md),
+[executable standards coverage](docs/conformance.md), checked native queries and
+syntax-only checking. The [dependency upgrade process](docs/dependency-upgrades.md)
+defines how to preserve that evidence across engine/library changes.
+
 ## Build and run
 
 Development requires Node.js 24, Rust installed through rustup, and the
@@ -104,9 +109,12 @@ node tools/rust.mjs fmt -p sysml-kernel -p sysml-cli -p sysml-wasm -- --check
 node tools/rust.mjs clippy --locked --workspace --all-targets --all-features -- -D warnings
 npm run format:check
 npm run contract:check
+npm run conformance:check
 npm run kernel:test
 npm test
+npm run conformance
 npm run build
+npm run benchmark
 ```
 
 Format only our named Rust packages: `cargo fmt --all` also traverses vendored
@@ -121,12 +129,18 @@ check the viewer projection, source slicing and bundled example. This is the ini
 acceptance suite, not a substitute for an official semantic conformance matrix or
 continuous fuzzing.
 
-Verified locally on 2026-10-12: 12 Rust tests, 6 Node/WASM integration tests,
-formatting, Clippy, generated contract consistency, vendor hashes, production web
-build and Apple Silicon macOS bundle. Interactive checks covered browser multi-file
-imports, inheritance and source navigation, distinct ambiguity/missing-name
-diagnostics, and native file selection with successful bundled WASM analysis.
-Windows/Linux execution and packaging remain for their CI runners.
+The coverage matrix has 29 executable cases and two explicitly planned cases. It
+checks standards-linked expectations, including two unchanged official examples,
+with a fresh process and deadline per case. Its harness rejects new failures and
+unexpected passes of known gaps. Reports are saved to `target/conformance/` and
+uploaded by CI. The matrix document is generated from its JSON catalogue and checked
+for drift. This is bounded coverage, not full standards certification.
+
+Native/WASM benchmarks use three fresh processes for the bundled example and two
+synthetic sizes. They record whole-process time and peak RSS where available;
+these are observations rather than production-model performance promises. Results
+are in `target/benchmarks/latest.json`. See [qualification evidence](docs/qualification.md)
+for the recorded run and remaining platform verification.
 
 ## Current limits
 

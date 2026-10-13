@@ -11,13 +11,17 @@
     "contract:generate": "node tools/generate-contract.mjs",
     "contract:check": "node tools/generate-contract.mjs --check",
     "pretest": "npm run kernel:build && node tools/rust.mjs build --locked --release -p sysml-cli",
-    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test": "node --experimental-strip-types --test tests/*.test.ts tests/*.test.mjs",
+    "conformance": "node tools/conformance.mjs",
+    "conformance:docs": "node tools/conformance.mjs --write-docs",
+    "conformance:check": "node tools/conformance.mjs --check-docs",
+    "benchmark": "node tools/benchmark-kernel.mjs",
     "inspect": "node tools/rust.mjs run --locked --release -p sysml-cli --",
     "desktop": "node tools/desktop.mjs dev",
     "desktop:build": "node tools/desktop.mjs build",
     "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
-    "format": "prettier --write src tests tools/*.mjs",
-    "format:check": "prettier --check src tests tools/*.mjs"
+    "format": "prettier --write src tests \"tools/**/*.mjs\"",
+    "format:check": "prettier --check src tests \"tools/**/*.mjs\""
   },
   "dependencies": {
     "@tauri-apps/api": "~2.11.0",

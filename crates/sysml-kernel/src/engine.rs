@@ -45,7 +45,7 @@ impl Engine {
             }
         };
         checkpoint()?;
-        validate_input(&request)?;
+        validate_documents(&request.documents)?;
         let mut model = Model::new();
         let mut sources = Vec::new();
         for lib in &self.library {
@@ -154,7 +154,7 @@ impl Engine {
             }
         }
 
-        // Renderable declarations are namespaces/types/features with written
+        // The declaration projection includes namespaces/types/features with written
         // extents. Membership and relationship nodes remain engine internals.
         let declarations: Vec<_> = graph
             .user_elements()
@@ -216,6 +216,11 @@ impl Engine {
             });
         }
 
+        // Upstream's completeness flag covers graph-query availability, but an
+        // unresolved written general/type can be absent from that graph. Propagate
+        // this uncertainty over declared inheritance dependencies before exposing
+        // a completeness result. Ownership alone is not an inheritance edge.
+        let incomplete_members = incomplete_member_dependencies(&references);
         let mut member_queries = HashMap::new();
         let mut connections = Vec::new();
         for &e in &declarations {
@@ -232,7 +237,8 @@ impl Engine {
                 }
                 registry.include(m);
             }
-            let complete = !graph.inheritance_incomplete(e, true);
+            let complete = !graph.inheritance_incomplete(e, true)
+                && !incomplete_members.contains(&registry.id(e));
             if !complete {
                 let (unit, span) = graph.member_extent(e).unwrap();
                 diagnostics.push(Diagnostic { code: "incomplete-inheritance".into(), stage: Stage::Capability, severity: Severity::Warning, message: "The engine could not completely determine this element's inherited members.".into(), source: source(unit, span) });
@@ -373,15 +379,48 @@ impl Engine {
     }
 }
 
-fn validate_input(request: &AnalysisRequest) -> Result<(), AnalysisError> {
+fn incomplete_member_dependencies(references: &[Reference]) -> HashSet<String> {
+    let mut dependents: HashMap<&str, Vec<&str>> = HashMap::new();
+    let mut incomplete = HashSet::new();
+    let mut pending = Vec::new();
+    for reference in references {
+        if !matches!(
+            reference.kind,
+            RelationshipKind::Typing
+                | RelationshipKind::Specialization
+                | RelationshipKind::Subsetting
+                | RelationshipKind::Redefinition
+        ) {
+            continue;
+        }
+        let Some(owner) = reference.owner_id.as_deref() else {
+            continue;
+        };
+        if let Resolution::Resolved { target_id } = &reference.resolution {
+            dependents.entry(target_id).or_default().push(owner);
+        } else if incomplete.insert(owner.to_string()) {
+            pending.push(owner);
+        }
+    }
+    while let Some(target) = pending.pop() {
+        for &owner in dependents.get(target).into_iter().flatten() {
+            if incomplete.insert(owner.to_string()) {
+                pending.push(owner);
+            }
+        }
+    }
+    incomplete
+}
+
+pub(crate) fn validate_documents(documents: &[SourceDocument]) -> Result<(), AnalysisError> {
     let fail = |s: &str| AnalysisError::InvalidInput(s.into());
-    if request.documents.len() > 32 {
+    if documents.len() > 32 {
         return Err(fail("At most 32 documents are supported"));
     }
     let mut ids = HashSet::new();
     let mut total = 0;
     let mut tokens = 0;
-    for doc in &request.documents {
+    for doc in documents {
         if doc.id.is_empty() || doc.id.starts_with("library://") || !ids.insert(&doc.id) {
             return Err(fail(
                 "Document IDs must be nonempty, unique and outside library://",
@@ -405,7 +444,7 @@ fn validate_input(request: &AnalysisRequest) -> Result<(), AnalysisError> {
     Ok(())
 }
 
-fn diagnostic(
+pub(crate) fn diagnostic(
     d: &diag::Diagnostic,
     stage: Stage,
     fallback_code: &str,

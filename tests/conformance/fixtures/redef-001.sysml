@@ -1,0 +1,1 @@
+package Redef { port def P; part def Base { port p : P; attribute keep : ScalarValues::Real; } part def Derived :> Base { port redefines p : P; } part x : Derived; }

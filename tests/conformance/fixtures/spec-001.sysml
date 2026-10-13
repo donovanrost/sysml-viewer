@@ -1,0 +1,1 @@
+package Diamond { part def Root { attribute mass : ScalarValues::Real; } part def Left :> Root; part def Right :> Root; part def Both :> Left, Right { attribute serial : ScalarValues::Integer; } part x : Both; }

@@ -1,0 +1,1 @@
+package Origin { part def T; } package Consumer { private import Origin::*; part def T; part x : T; }

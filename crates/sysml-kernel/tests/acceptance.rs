@@ -224,6 +224,8 @@ fn unicode_source_navigation_uses_utf16_and_exact_byte_ranges() {
 #[test]
 fn every_snapshot_handle_and_source_range_is_valid() {
     let s = fixture();
+    s.queries()
+        .expect("Snapshot must satisfy the public query contract");
     let ids: std::collections::HashSet<_> = s.elements.iter().map(|e| &e.id).collect();
     assert_eq!(ids.len(), s.elements.len());
     for e in &s.elements {

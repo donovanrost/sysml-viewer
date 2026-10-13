@@ -1,0 +1,1 @@
+package A { public import B::*; part def T; } package B { public import A::*; } package Client { part x : B::T; }

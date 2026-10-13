@@ -1,0 +1,1 @@
+package Wiring { part host { part a; part b; part c; connection wire connect (a,b,c); } }

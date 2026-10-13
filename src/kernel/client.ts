@@ -47,6 +47,10 @@ export class KernelClient {
           reject(new Error('Incompatible kernel protocol'));
           return;
         }
+        if (data.snapshot.revision !== revision) {
+          reject(new Error('Snapshot does not belong to this analysis revision'));
+          return;
+        }
         resolve(data.snapshot as Snapshot);
       };
       worker.onerror = () => {

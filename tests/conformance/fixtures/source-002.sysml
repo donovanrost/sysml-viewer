@@ -1,0 +1,1 @@
+package Recovery { part def Good; part x : Good; part broken : ; }

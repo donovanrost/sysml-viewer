@@ -1,0 +1,1 @@
+package Bounds { part a[0..1]; part b[2]; part c[*]; }

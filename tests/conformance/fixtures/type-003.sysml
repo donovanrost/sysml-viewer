@@ -1,0 +1,1 @@
+package Types { attribute def Amount; part x : Amount; }
