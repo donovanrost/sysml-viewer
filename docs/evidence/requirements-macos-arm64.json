@@ -1619,7 +1619,9 @@
         "KERML-CLAUSE-8.3.4.8.8",
         "KERML-CLAUSE-8.3.4.8.17",
         "KERML-CLAUSE-8.4.4.9.6",
-        "KERML-CLAUSE-9.4.17.2"
+        "KERML-CLAUSE-9.4.17.2",
+        "KERML-CLAUSE-8.3.3.1.8",
+        "KERML-CLAUSE-8.3.3.2.3"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1632,7 +1634,9 @@
           "checked-model-level",
           "checked-invocation",
           "checked-bound-expressions",
-          "checked-bound-execution"
+          "checked-bound-execution",
+          "checked-dynamic-isolation",
+          "isolation-tests"
         ]
       },
       "api": {
@@ -2161,9 +2165,172 @@
               "status": "pass"
             }
           ]
+        },
+        {
+          "case": "MULT-020",
+          "checks": [
+            "missing",
+            "syntax",
+            "structure",
+            "exact",
+            "conditional",
+            "range",
+            "broken",
+            "indirect",
+            "dependent"
+          ],
+          "polarity": "robustness",
+          "status": "pass",
+          "results": [
+            {
+              "id": "missing",
+              "status": "pass"
+            },
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "exact",
+              "status": "pass"
+            },
+            {
+              "id": "conditional",
+              "status": "pass"
+            },
+            {
+              "id": "range",
+              "status": "pass"
+            },
+            {
+              "id": "broken",
+              "status": "pass"
+            },
+            {
+              "id": "indirect",
+              "status": "pass"
+            },
+            {
+              "id": "dependent",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-021",
+          "checks": [
+            "missing",
+            "arithmetic-add",
+            "arithmetic-subtract",
+            "arithmetic-multiply",
+            "arithmetic-divide",
+            "arithmetic-modulo",
+            "arithmetic-power",
+            "arithmetic-compound",
+            "arithmetic-unary",
+            "arithmetic-exactLarge",
+            "conditional-trueBranch",
+            "conditional-falseBranch",
+            "conditional-nestedBranch",
+            "conditional-arithmetic",
+            "conditional-skippedDivision",
+            "conditional-skippedUnbound",
+            "conditional-exactLarge",
+            "conditional-nestedCondition",
+            "conditional-range",
+            "import"
+          ],
+          "polarity": "robustness",
+          "status": "pass",
+          "results": [
+            {
+              "id": "missing",
+              "status": "pass"
+            },
+            {
+              "id": "arithmetic-add",
+              "status": "pass"
+            },
+            {
+              "id": "arithmetic-subtract",
+              "status": "pass"
+            },
+            {
+              "id": "arithmetic-multiply",
+              "status": "pass"
+            },
+            {
+              "id": "arithmetic-divide",
+              "status": "pass"
+            },
+            {
+              "id": "arithmetic-modulo",
+              "status": "pass"
+            },
+            {
+              "id": "arithmetic-power",
+              "status": "pass"
+            },
+            {
+              "id": "arithmetic-compound",
+              "status": "pass"
+            },
+            {
+              "id": "arithmetic-unary",
+              "status": "pass"
+            },
+            {
+              "id": "arithmetic-exactLarge",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-trueBranch",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-falseBranch",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-nestedBranch",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-arithmetic",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-skippedDivision",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-skippedUnbound",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-exactLarge",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-nestedCondition",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-range",
+              "status": "pass"
+            },
+            {
+              "id": "import",
+              "status": "pass"
+            }
+          ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. An unresolved base elsewhere in the workspace can conservatively invalidate unrelated arithmetic/conditional certificates (KERNEL-004); native/WASM tests retain this pre-existing proof-isolation limit."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. Combined arithmetic/conditional range endpoints can still exhaust the checked query allowance (KERNEL-005); single-bound success does not qualify every composition."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",
@@ -2716,24 +2883,24 @@
       "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
     }
   ],
-  "executableCases": 69,
+  "executableCases": 71,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "9982fd616b643568791456c6a1a6f252d4f8aa947be2574802e6c29fbd8b7d85",
+  "assessmentsSha256": "605faa16e84562f262db1c45b69bc22f5783ce563626e7bfe3b1ee8211dff882",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "e3ed3b7508116e8e23f8ad747d93cfb08045b4ee6cbcebdb8bc271a097c02215",
-    "generatedAt": "2026-10-13T09:19:51.086Z",
-    "kernelInputSha256": "895ad1104916dd972823dc76b00698117f903e46b81a392e2fb53e01628ab65f",
-    "binarySha256": "518d588229fb1e209c619f8679326f7d7b846822c4e3c9794ded9eb296023666",
+    "sha256": "865d5d83e77456e725eef43ab294f244adef3594d050865f799edb8631dff7c6",
+    "generatedAt": "2026-10-13T10:03:46.060Z",
+    "kernelInputSha256": "68531b1a5634d66e65bd08e03a8d16e88e8e7a76a51fae7a67dda327e966213d",
+    "binarySha256": "6cefe2f438ea25342cf8d371b3be1235e7765eb567ed5cb587d92713580a4b37",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.5",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.6",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 69,
+      "pass": 71,
       "known-gap": 0,
       "planned": 0,
       "fail": 0

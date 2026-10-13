@@ -86,6 +86,8 @@ Clause references identify the source of a test, not complete coverage of that c
 | IMP-025 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Prune indistinguishable imported aliases and imports colliding with an owned member, preserving unrelated bindings. |
 | IMP-026 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Incomplete import endpoints, inherited providers and inline filters remain unknown; a proved false package filter yields a complete empty closure. |
 | IMP-027 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Recovered import syntax cannot be certified as a complete empty closure. |
+| MULT-020 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | robustness | Covered | Unresolved classifier specialization leaves independent arithmetic and conditional bounds exact while direct/transitive dependents remain unknown. |
+| MULT-021 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | robustness | Covered | Independent exact arithmetic, nested/lazy conditional bounds and unknown import results coexist across files with a missing base. |
 
 ## Coverage limits
 

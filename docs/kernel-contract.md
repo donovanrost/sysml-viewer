@@ -96,9 +96,11 @@ nested and unary expressions. Conditional providers support static Boolean tests
 aliases and nested conditionals, evaluating only the selected branch after proving
 argument eligibility. Unselected unbound values or arithmetic errors are not
 executed. Unsupported featuring, variation, predicates and other control operators
-remain unknown. Unresolved heritage elsewhere in the workspace can also make
-otherwise independent expression providers unknown; dependency-local proof isolation
-is not yet established. See KERNEL-003/004 in [foundation qualification](foundation-qualification.md).
+remain unknown. Canonical unresolved classifier bases retain independent arithmetic
+and conditional proofs when source/target evidence is consistent. Direct and transitive
+dependents remain incomplete; malformed relationships and other unsupported dynamic
+families can still prevent publication. See KERNEL-003/004 in
+[foundation qualification](foundation-qualification.md).
 
 `membersAvailable: false` describes a navigation record. It must not be read as an
 empty namespace. `inheritanceComplete` is meaningful when member results are

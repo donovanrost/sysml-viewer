@@ -35,6 +35,7 @@ try {
     'invocation_bindings',
     'constructor_bindings',
     'dynamic_graph',
+    'dynamic_invocations',
     'owned_results',
     'end_constancy',
     'operations::namespaces',

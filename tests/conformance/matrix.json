@@ -2535,6 +2535,247 @@
           "reason": "invalidSyntax"
         }
       ]
+    },
+    {
+      "id": "MULT-020",
+      "area": "multiplicity",
+      "purpose": "Unresolved classifier specialization leaves independent arithmetic and conditional bounds exact while direct/transitive dependents remain unknown.",
+      "polarity": "robustness",
+      "files": ["tests/conformance/fixtures/mult-020.sysml"],
+      "checks": [
+        {
+          "id": "missing",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "messageIncludes": "MissingBase"
+        },
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "exact",
+          "op": "cardinality",
+          "owner": "IndependentBounds::exact",
+          "status": "evaluated",
+          "lower": "5",
+          "upper": "5"
+        },
+        {
+          "id": "conditional",
+          "op": "cardinality",
+          "owner": "IndependentBounds::chosen",
+          "status": "evaluated",
+          "lower": "10",
+          "upper": "10"
+        },
+        {
+          "id": "range",
+          "op": "cardinality",
+          "owner": "IndependentBounds::range",
+          "status": "evaluated",
+          "lower": "5",
+          "upper": "10"
+        },
+        {
+          "id": "broken",
+          "op": "cardinality",
+          "owner": "BrokenDomain::Broken",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "indirect",
+          "op": "cardinality",
+          "owner": "BrokenDomain::Indirect",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "dependent",
+          "op": "cardinality",
+          "owner": "BrokenDomain::dependent",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        }
+      ]
+    },
+    {
+      "id": "MULT-021",
+      "area": "multiplicity",
+      "purpose": "Independent exact arithmetic, nested/lazy conditional bounds and unknown import results coexist across files with a missing base.",
+      "polarity": "robustness",
+      "files": [
+        "tests/conformance/fixtures/mult-013.sysml",
+        "tests/conformance/fixtures/mult-017.sysml",
+        "tests/conformance/fixtures/imp-026.sysml"
+      ],
+      "checks": [
+        {
+          "id": "missing",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "messageIncludes": "MissingBase"
+        },
+        {
+          "id": "arithmetic-add",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::add",
+          "status": "evaluated",
+          "lower": "10",
+          "upper": "10"
+        },
+        {
+          "id": "arithmetic-subtract",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::subtract",
+          "status": "evaluated",
+          "lower": "5",
+          "upper": "5"
+        },
+        {
+          "id": "arithmetic-multiply",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::multiply",
+          "status": "evaluated",
+          "lower": "16",
+          "upper": "16"
+        },
+        {
+          "id": "arithmetic-divide",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::divide",
+          "status": "evaluated",
+          "lower": "4",
+          "upper": "4"
+        },
+        {
+          "id": "arithmetic-modulo",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::modulo",
+          "status": "evaluated",
+          "lower": "2",
+          "upper": "2"
+        },
+        {
+          "id": "arithmetic-power",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::power",
+          "status": "evaluated",
+          "lower": "8",
+          "upper": "8"
+        },
+        {
+          "id": "arithmetic-compound",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::compound",
+          "status": "evaluated",
+          "lower": "30",
+          "upper": "30"
+        },
+        {
+          "id": "arithmetic-unary",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::unary",
+          "status": "evaluated",
+          "lower": "1",
+          "upper": "1"
+        },
+        {
+          "id": "arithmetic-exactLarge",
+          "op": "cardinality",
+          "owner": "ArithmeticBounds::exactLarge",
+          "status": "evaluated",
+          "lower": "9007199254740993",
+          "upper": "9007199254740993"
+        },
+        {
+          "id": "conditional-trueBranch",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::trueBranch",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "conditional-falseBranch",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::falseBranch",
+          "status": "evaluated",
+          "lower": "4",
+          "upper": "4"
+        },
+        {
+          "id": "conditional-nestedBranch",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::nestedBranch",
+          "status": "evaluated",
+          "lower": "5",
+          "upper": "5"
+        },
+        {
+          "id": "conditional-arithmetic",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::arithmetic",
+          "status": "evaluated",
+          "lower": "10",
+          "upper": "10"
+        },
+        {
+          "id": "conditional-skippedDivision",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::skippedDivision",
+          "status": "evaluated",
+          "lower": "6",
+          "upper": "6"
+        },
+        {
+          "id": "conditional-skippedUnbound",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::skippedUnbound",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "conditional-exactLarge",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::exactLarge",
+          "status": "evaluated",
+          "lower": "9007199254740993",
+          "upper": "9007199254740993"
+        },
+        {
+          "id": "conditional-nestedCondition",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::nestedCondition",
+          "status": "evaluated",
+          "lower": "8",
+          "upper": "8"
+        },
+        {
+          "id": "conditional-range",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::range",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "4"
+        },
+        {
+          "id": "import",
+          "op": "memberships",
+          "owner": "IncompleteImport",
+          "mode": "imported",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        }
+      ]
     }
   ]
 }

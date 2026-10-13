@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { cpus, totalmem, release } from 'node:os';
 import { createHash } from 'node:crypto';
 import { cargo, root } from './rust.mjs';
+import { assessCase } from './lib/conformance.mjs';
 
 // Each WASM sample gets a fresh Node process and WebAssembly instance, matching
 // the disposable-worker policy. The measured process also includes V8 overhead.
@@ -25,6 +26,13 @@ if (process.argv.includes('--wasm-child')) {
     `target/release/sysml-inspect${process.platform === 'win32' ? '.exe' : ''}`,
   );
   const scenarios = [
+    {
+      name: 'isolated-providers',
+      text: readFileSync(join(root, 'tests/conformance/fixtures/mult-020.sysml'), 'utf8'),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'MULT-020').checks,
+    },
     {
       name: 'import-closures',
       text: readFileSync(join(root, 'tests/conformance/fixtures/imp-020.sysml'), 'utf8'),
@@ -89,7 +97,14 @@ if (process.argv.includes('--wasm-child')) {
           schemaVersion: snapshot.schemaVersion,
         };
         assert.equal(snapshot.engineVersion, metadata.engineVersion);
-        assert.deepEqual(snapshot.diagnostics, [], `${scenario.name}: unexpected diagnostics`);
+        if (scenario.checks) {
+          const failures = assessCase(snapshot, { checks: scenario.checks }).filter(
+            (c) => c.status !== 'pass',
+          );
+          assert.deepEqual(failures, [], `${scenario.name}: checked isolation regression`);
+        } else {
+          assert.deepEqual(snapshot.diagnostics, [], `${scenario.name}: unexpected diagnostics`);
+        }
         if (mode === 'native') native ??= snapshot;
         assert.deepEqual(snapshot, native, `${scenario.name}: repeat or native/WASM mismatch`);
         let peakRssBytes = null;

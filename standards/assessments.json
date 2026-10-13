@@ -166,6 +166,18 @@
       "symbol": "fn imported_alias_identity_and_contextual_visibility_survive_round_trip",
       "role": "Native import identity, visibility, unknown-provider and malformed-transport regressions.",
       "sha256": "c0437ecdc5e3cd801a573660f78146880839a2bd181f5b96908954a326d91eba"
+    },
+    "checked-dynamic-isolation": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
+      "symbol": "fn consistent_unresolved_source(",
+      "role": "Checked localization of canonical unresolved classifier specializations; preserves dependent qualifications, identity, ownership, revision and work guards.",
+      "sha256": "d21425982816889cbce7c1c56cae76f1d9a89f00a81cd38ff731d94418514104"
+    },
+    "isolation-tests": {
+      "path": "crates/sysml-kernel/tests/isolation.rs",
+      "symbol": "fn unresolved_bases_leave_independent_values_exact_in_either_file_order",
+      "role": "Independent exact bounds and direct/transitive unknown providers, within one file and in either cross-file order.",
+      "sha256": "75baf2856dcb17d37f334015aa27a556060e7d6448593e1ef6a4bd8de67340c4"
     }
   },
   "assessments": [
@@ -1120,7 +1132,9 @@
         "KERML-CLAUSE-8.3.4.8.8",
         "KERML-CLAUSE-8.3.4.8.17",
         "KERML-CLAUSE-8.4.4.9.6",
-        "KERML-CLAUSE-9.4.17.2"
+        "KERML-CLAUSE-9.4.17.2",
+        "KERML-CLAUSE-8.3.3.1.8",
+        "KERML-CLAUSE-8.3.3.2.3"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1133,7 +1147,9 @@
           "checked-model-level",
           "checked-invocation",
           "checked-bound-expressions",
-          "checked-bound-execution"
+          "checked-bound-execution",
+          "checked-dynamic-isolation",
+          "isolation-tests"
         ]
       },
       "api": {
@@ -1298,9 +1314,48 @@
             "sized",
             "shadow-warning"
           ]
+        },
+        {
+          "case": "MULT-020",
+          "checks": [
+            "missing",
+            "syntax",
+            "structure",
+            "exact",
+            "conditional",
+            "range",
+            "broken",
+            "indirect",
+            "dependent"
+          ]
+        },
+        {
+          "case": "MULT-021",
+          "checks": [
+            "missing",
+            "arithmetic-add",
+            "arithmetic-subtract",
+            "arithmetic-multiply",
+            "arithmetic-divide",
+            "arithmetic-modulo",
+            "arithmetic-power",
+            "arithmetic-compound",
+            "arithmetic-unary",
+            "arithmetic-exactLarge",
+            "conditional-trueBranch",
+            "conditional-falseBranch",
+            "conditional-nestedBranch",
+            "conditional-arithmetic",
+            "conditional-skippedDivision",
+            "conditional-skippedUnbound",
+            "conditional-exactLarge",
+            "conditional-nestedCondition",
+            "conditional-range",
+            "import"
+          ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. An unresolved base elsewhere in the workspace can conservatively invalidate unrelated arithmetic/conditional certificates (KERNEL-004); native/WASM tests retain this pre-existing proof-isolation limit."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. Combined arithmetic/conditional range endpoints can still exhaust the checked query allowance (KERNEL-005); single-bound success does not qualify every composition."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",

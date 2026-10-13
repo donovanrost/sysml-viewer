@@ -174,16 +174,46 @@ import results in the same workspace. Namespace dependency tests check stale and
 malformed graph evidence, recursion/work limits and serialization replay. These
 are bounded qualifications, not proof of all import/filter contexts.
 
-## KERNEL-004: expression proof isolation (open)
+## KERNEL-004: expression proof isolation (fixed for the recorded cases)
 
-The combined import-guard workspace revealed an existing conservative limit:
-`part def Base :> MissingBase` can make unrelated arithmetic and conditional bounds
-unknown. The same request was reproduced against the preceding commit `1adeadc`
-(engine suffix `.4`), confirming that import-query projection did not introduce it.
-The native/WASM suite now retains both the valid workspace's exact results and
-this incomplete workspace's unknown results, with parity checked for both requests.
-This is a limitation of proof availability, not evidence that the independent
-arithmetic is invalid. Dependency-local proof isolation remains work to do.
+An unresolved classifier base previously aborted shared dynamic-relationship
+preparation: `part def Base :> MissingBase` could make unrelated arithmetic and
+conditional bounds unknown. The original combined import-guard request also failed
+against preceding commit `1adeadc` (engine suffix `.4`), so import projection did not
+introduce the defect.
+
+Canonical planning now localizes exact `Specialization` and `Subclassification`
+rows with unresolved targets. Every supplied source alias and generic endpoint must
+agree with the local source identity; the semantic carrier and all unresolved target
+aliases are checked independently. The existing dependency audit still refuses a
+family that reaches an incomplete source. No missing base is replaced with an empty
+ancestry or a default value. LegacyV2 keeps its prior refusal.
+
+MULT-020 retains exact arithmetic, aliases and conditional bounds in the same file
+as a missing base, while direct and transitive dependents remain unknown. MULT-021
+combines arithmetic, conditional and incomplete-import fixtures across files. The
+Rust regression checks both file orders, and native/WASM parity compares the valid
+and incomplete workspaces. Dependency tests cover both relationship kinds,
+contradictory source aliases, malformed targets, dependent signatures, stale evidence
+and work exhaustion. The patch and original/result hashes are recorded under
+KERNEL-004. Snapshot schema 3 is unchanged; the engine patch suffix is `.6`.
+
+KerML §8.3.3.1.8 and §8.3.3.2.3 define the specialization endpoints and classifier
+restriction; the existing invocation and operator proof obligations still apply.
+This qualifies the recorded independent components. Dependent dynamic families,
+malformed evidence, metadata and other unsupported configurations can still prevent
+shared publication; general proof isolation and incremental analysis remain open.
+
+## KERNEL-005: compound range proof budget (open)
+
+Changing MULT-020's range to `part range [count..selected];`, where `count` is
+`2 + 3` and `selected` is `if true ? count * 2 else 0`, returns
+`unknown/workLimit` with engine suffix `.6`. The same result occurs after removing
+`BrokenDomain`, so this is independent of KERNEL-004. Each single bound succeeds,
+but their combined proof exceeds the current query allowance. This variant is a
+recorded open limit, not a passing assertion in the executable matrix. Further
+work should reduce repeated proof work while preserving budget and evidence checks.
+The allowance has not been increased to make the example pass.
 
 ## Remaining foundation work
 
@@ -212,14 +242,15 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **69 passing conformance cases**, **no
-known-gap cases**, and **no planned cases in the current matrix**. All **40 Rust facade tests**,
-**30 Node tests**, and **193 dependency proof tests** pass.
+On macOS arm64, the completed run has **71 passing conformance cases**, **no
+known-gap cases**, and **no planned cases in the current matrix**. All **41 Rust facade tests**,
+**30 Node tests**, and **218 dependency proof tests** pass.
 The dependency suites cover type relations (41), model-level evaluability (26),
 cardinality (22), invocation bindings (16), constructor bindings (16), dynamic graph
-(17), owned results (4), end constancy (10) and checked namespace operations (41). The corpus and the 32
-import-rule partitions are included in the Rust suite, not additional independently qualified
-specification counts. Native and WebAssembly outputs match exactly.
+(17), dynamic invocations (25), owned results (4), end constancy (10) and checked
+namespace operations (41). The corpus and the 32 import-rule partitions are included
+in the Rust suite, not additional independently qualified specification counts.
+Native and WebAssembly outputs match exactly.
 
 Rust formatting, Clippy with warnings denied, TypeScript checking, Prettier,
 generated-contract consistency, source/patch verification and inventory checks
@@ -227,24 +258,28 @@ pass. The saved [matrix execution](evidence/conformance-macos-arm64.json) and
 [requirements execution](evidence/requirements-macos-arm64.json) record the current
 source, patch and fixture fingerprints. Windows/Linux execution remains pending CI.
 
-The latest [import-query benchmark](evidence/benchmark-imports-macos-arm64.json)
-records three fresh processes per native/WASM workload, for 42 samples. All
-repeated native and WASM snapshots agree exactly.
+The latest [isolation benchmark](evidence/benchmark-isolation-macos-arm64.json)
+records three fresh processes per native/WASM workload, for 48 samples. All
+repeated native and WASM snapshots agree exactly. The initial attempt timed out
+on its first native sample at 60 seconds; a direct rerun completed in 3.2 seconds,
+and the complete 48-sample rerun below passed with the same deadline. The cause
+of that initial timeout is unresolved.
 
 | Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
 | --- | ---: | ---: | ---: |
-| Imported memberships | 2,187 | 2,570 | 394.3/340.0 |
-| Viewer example | 2,165 | 2,671 | 393.5/354.4 |
-| Attribute providers | 2,246 | 2,713 | 392.3/346.5 |
-| Arithmetic providers | 2,622 | 3,132 | 382.8/353.7 |
-| Conditional providers | 2,937 | 3,514 | 380.8/351.2 |
-| 100 usages | 2,104 | 2,549 | 397.0/353.2 |
-| 1,000 usages | 2,405 | 2,709 | 405.2/370.8 |
+| Independent bounds with missing base | 2,216 | 3,504 | 397.0/349.7 |
+| Imported memberships | 2,117 | 2,487 | 392.7/338.2 |
+| Viewer example | 2,163 | 2,581 | 396.5/355.9 |
+| Attribute providers | 2,145 | 2,616 | 394.7/343.5 |
+| Arithmetic providers | 2,739 | 2,974 | 385.5/355.8 |
+| Conditional providers | 2,823 | 3,133 | 394.0/356.8 |
+| 100 usages | 2,048 | 2,562 | 408.3/357.2 |
+| 1,000 usages | 2,532 | 2,715 | 418.5/364.2 |
 
 Measurements include startup, bundled-library analysis and serialization. They are
 observations on this Mac, not cross-platform latency guarantees. Canonical
 preparation is a whole-model pass. Compared with the retained
-[conditional run](evidence/benchmark-conditionals-macos-arm64.json), these
+[import run](evidence/benchmark-imports-macos-arm64.json), these
 uncontrolled runs do not isolate incremental query cost or establish a regression
 budget. Large import-heavy production models and incremental performance remain
 open engineering work.

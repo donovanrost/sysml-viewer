@@ -106,14 +106,17 @@ test('checked import closure preserves aliases, contextual visibility and unknow
   }
 });
 
-test('unresolved heritage conservatively limits expression certificates across the workspace', () => {
-  // Reproduced on the preceding kernel version as well: this records a current
-  // proof-domain limit, not a claim that the independent arithmetic is invalid.
-  for (const name of ['ArithmeticBounds::add', 'ConditionalProviders::trueBranch']) {
-    assert.deepEqual(importGuards.elements.find((e) => e.qualifiedName === name)!.cardinality, {
-      status: 'unknown',
-      reason: 'unsupportedBound',
-    });
+test('unresolved heritage preserves independent arithmetic and conditional certificates', () => {
+  for (const e of snapshot.elements.filter(
+    (e) =>
+      e.qualifiedName?.startsWith('ArithmeticBounds::') ||
+      e.qualifiedName?.startsWith('ConditionalProviders::'),
+  )) {
+    assert.deepEqual(
+      importGuards.elements.find((other) => other.qualifiedName === e.qualifiedName)!.cardinality,
+      e.cardinality,
+      e.qualifiedName!,
+    );
   }
 });
 

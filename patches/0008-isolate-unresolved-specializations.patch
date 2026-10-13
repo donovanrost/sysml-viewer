@@ -1,0 +1,333 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs
+index 19d130c..5cab43a 100644
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs
+@@ -89,6 +89,58 @@ fn consistent_unresolved_target(node: &super::Elem, steps: &mut usize) -> Result
+             .is_none_or(|value| value.as_array().is_some_and(Vec::is_empty)))
+ }
+ 
++/// An unresolved target can be isolated only when every available source alias
++/// identifies the same local Type. A contradictory source could affect another
++/// component, so it must still refuse the complete batch. Carrier identity is
++/// separately certified by the shared semantic ownership reader.
++fn consistent_unresolved_source(
++    b: &Builder,
++    relation: usize,
++    source: usize,
++    carrier: Option<usize>,
++    steps: &mut usize,
++) -> Result<bool, Refusal> {
++    let node = &b.elements[relation];
++    let source_id = b.elements[source].id;
++    for key in [
++        "specific",
++        "subclassifier",
++        "typedFeature",
++        "subsettingFeature",
++        "redefiningFeature",
++        "referencingFeature",
++        "crossingFeature",
++    ] {
++        charge(steps, 1)?;
++        if node
++            .props
++            .get(key)
++            .is_some_and(|v| v.as_reference() != Some(source_id))
++        {
++            return Ok(false);
++        }
++    }
++    if node
++        .props
++        .get("owningRelatedElement")
++        .is_some_and(|v| v.as_reference() != carrier.map(|owner| b.elements[owner].id))
++    {
++        return Ok(false);
++    }
++    for (key, length) in [("source", 1), ("relatedElement", 2)] {
++        if let Some(value) = node.props.get(key) {
++            let Some(values) = value.as_array() else {
++                return Ok(false);
++            };
++            charge(steps, values.len())?;
++            if values.len() != length || values[0].as_reference() != Some(source_id) {
++                return Ok(false);
++            }
++        }
++    }
++    Ok(true)
++}
++
+ /// Capture the immutable prefix once for this source/configuration generation.
+ /// Cold recipes retain the legacy emitter IDs. On a warm model, exact matching
+ /// graph recipes adopt the already-existing physical row IDs (including public
+@@ -268,27 +320,32 @@ pub(super) fn prepare_with_workspace(
+         }
+         // A local unresolved target cannot enter the minimizer's identity
+         // graph. Canonical planning may retain an unrelated complete component,
+-        // but only after proving this row's source through the shared inverse
+-        // domain and quarantining every dependency that reaches it.
++        // but only after proving this row's local source and quarantining every
++        // dependency that reaches it. Feature relationships additionally retain
++        // their shared inverse-domain certificate.
+         if b.graph_format == crate::model::GraphFormat::CanonicalV3
+-            && (conforms(node.ty, "Subsetting") || conforms(node.ty, "FeatureTyping"))
++            && (matches!(node.ty, "Specialization" | "Subclassification")
++                || conforms(node.ty, "Subsetting")
++                || conforms(node.ty, "FeatureTyping"))
+             && super::implied::specialization_target(node).is_none()
+         {
+-            if !consistent_unresolved_target(node, steps)? {
+-                return Err(incomplete(steps));
+-            }
+-            let typing = raw.typing(b, steps).ok_or_else(|| incomplete(steps))?;
+-            charge(steps, typing.relationships.get(&source).map_or(0, Vec::len))?;
+-            if typing.sources_incomplete
+-                || !typing
+-                    .relationships
+-                    .get(&source)
+-                    .is_some_and(|rows| rows.contains(&relation))
+-                || super::semantic_ownership::checked_relationship_carrier(b, &raw, relation, steps)
+-                    != Some(carrier)
++            if !consistent_unresolved_target(node, steps)?
++                || !consistent_unresolved_source(b, relation, source, carrier, steps)?
+             {
+                 return Err(incomplete(steps));
+             }
++            if conforms(node.ty, "Subsetting") || conforms(node.ty, "FeatureTyping") {
++                let typing = raw.typing(b, steps).ok_or_else(|| incomplete(steps))?;
++                charge(steps, typing.relationships.get(&source).map_or(0, Vec::len))?;
++                if typing.sources_incomplete
++                    || !typing
++                        .relationships
++                        .get(&source)
++                        .is_some_and(|rows| rows.contains(&relation))
++                {
++                    return Err(incomplete(steps));
++                }
++            }
+             unresolved_sources.insert(source);
+ 
+             continue;
+@@ -893,6 +950,221 @@ mod tests {
+         r.b.static_specialization_prefix(&HashMap::new(), true, Some(&mut 0))
+             .unwrap()
+     }
++
++    const ISOLATION_LIB: &str = "standard library package Base {classifier Anything; feature things:Anything;} standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;} standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;}";
++    fn unresolved_classifier_fixture() -> ResolvedModel {
++        unresolved_specialization_fixture(false)
++    }
++    fn unresolved_specialization_fixture(generic: bool) -> ResolvedModel {
++        let mut model =
++            crate::model::Model::with_graph_format(crate::model::GraphFormat::CanonicalV3);
++        model.add_library_source("isolation-library.kerml", ISOLATION_LIB);
++        let parsed = model.add_source(
++            "isolated.kerml",
++            &format!(
++                "{} function F {{in p; return r;}} feature call=F(1);",
++                if generic {
++                    "classifier Unused; specialization subtype Unused specializes Missing;"
++                } else {
++                    "class Unused specializes Missing;"
++                }
++            ),
++        );
++        assert!(parsed.diagnostics.is_empty());
++        ResolvedModel::build(&model)
++    }
++
++    #[test]
++    fn canonical_unresolved_classifier_preserves_independent_calls() {
++        for generic in [false, true] {
++            let mut r = unresolved_specialization_fixture(generic);
++            let unused = r.resolve_qualified("Unused").unwrap();
++            let kind = if generic {
++                "Specialization"
++            } else {
++                "Subclassification"
++            };
++            assert!(
++                r.b.elements
++                    .iter()
++                    .any(|e| e.ty == kind
++                        && super::super::implied::specialization_target(e).is_none())
++            );
++            let call = r
++                .elements()
++                .find(|&e| r.element_type(e) == "InvocationExpression")
++                .unwrap();
++            let prefix = static_prefix(&mut r);
++            let plan = prepare(&mut r.b, prefix, &HashSet::new(), None, &mut 0).unwrap();
++            assert!(plan.incomplete_bases.contains(&unused.0));
++            assert!(plan.affected_owners.contains(&call.0));
++            assert!(!plan.affected_owners.contains(&unused.0));
++            assert!(r.b.implied.is_none(), "planning must remain detached");
++            // Public publication owns prefix/cache preparation. Exercise that
++            // lifecycle on a fresh graph, independently of the detached planner.
++            let mut r = unresolved_specialization_fixture(generic);
++            let unused = r.resolve_qualified("Unused").unwrap();
++            let call = r
++                .elements()
++                .find(|&e| r.element_type(e) == "InvocationExpression")
++                .unwrap();
++            r.implied_relationships(call);
++            assert_eq!(
++                r.invocation_binding_report(call)
++                    .arguments
++                    .unwrap()
++                    .bindings
++                    .len(),
++                1
++            );
++            assert!(r.type_feature_report(unused).projections.is_err());
++        }
++    }
++
++    #[test]
++    fn canonical_unresolved_classifier_rejects_contradictory_source_evidence() {
++        for key in [
++            "specific",
++            "subclassifier",
++            "typedFeature",
++            "subsettingFeature",
++            "redefiningFeature",
++            "referencingFeature",
++            "crossingFeature",
++            "source",
++            "relatedElement",
++            "owningRelatedElement",
++        ] {
++            let mut r = unresolved_classifier_fixture();
++            let relationship =
++                r.b.elements
++                    .iter()
++                    .position(|e| {
++                        e.ty == "Subclassification"
++                            && super::super::implied::specialization_target(e).is_none()
++                    })
++                    .unwrap();
++            let f = r.resolve_qualified("F").unwrap();
++            let wrong = r.element_id(f).to_string();
++            let value = match key {
++                "source" => serde_json::json!([{"@id":wrong}]),
++                "relatedElement" => serde_json::json!([{"@id":wrong},{"@ref":"Missing"}]),
++                _ => serde_json::json!({"@id":wrong}),
++            };
++            // Keep the explicit original source even when replacing its most
++            // specialized alias, so every contradiction has two witnesses.
++            let unused = r.resolve_qualified("Unused").unwrap();
++            let original = r.element_id(unused).to_string();
++            r.b.set(
++                relationship,
++                "specific",
++                serde_json::json!({"@id":original}),
++            );
++            r.b.set(
++                relationship,
++                "subclassifier",
++                serde_json::json!({"@id":original}),
++            );
++            r.b.set(relationship, key, value);
++            let prefix = static_prefix(&mut r);
++            assert!(
++                prepare(&mut r.b, prefix, &HashSet::new(), None, &mut 0).is_err(),
++                "{key}"
++            );
++        }
++    }
++
++    #[test]
++    fn canonical_unresolved_classifier_rejects_malformed_or_conflicting_targets() {
++        for (key, value) in [
++            ("general", serde_json::json!({"@ref":"Different"})),
++            ("general", serde_json::json!(null)),
++            ("target", serde_json::json!([])),
++            ("target", serde_json::json!([{"@ref":"Different"}])),
++            (
++                "superclassifier",
++                serde_json::json!({"@ref":"Missing","extra":true}),
++            ),
++            ("source", serde_json::json!(null)),
++        ] {
++            let mut r = unresolved_classifier_fixture();
++            let relationship =
++                r.b.elements
++                    .iter()
++                    .position(|e| {
++                        e.ty == "Subclassification"
++                            && super::super::implied::specialization_target(e).is_none()
++                    })
++                    .unwrap();
++            r.b.set(relationship, key, value);
++            let prefix = static_prefix(&mut r);
++            assert!(
++                prepare(&mut r.b, prefix, &HashSet::new(), None, &mut 0).is_err(),
++                "{key}"
++            );
++        }
++    }
++
++    #[test]
++    fn unresolved_classifier_dependents_never_receive_complete_signatures() {
++        for source in [
++            "function Broken specializes Missing {in p;} feature call=Broken(1);",
++            "function Broken specializes Missing {in p;} function Indirect specializes Broken; feature call=Indirect(1);",
++        ] {
++            let mut model =
++                crate::model::Model::with_graph_format(crate::model::GraphFormat::CanonicalV3);
++            model.add_library_source("isolation-library.kerml", ISOLATION_LIB);
++            assert!(
++                model
++                    .add_source("dependent.kerml", source)
++                    .diagnostics
++                    .is_empty()
++            );
++            let mut r = ResolvedModel::build(&model);
++            let call = r
++                .elements()
++                .find(|&e| r.element_type(e) == "InvocationExpression")
++                .unwrap();
++            r.implied_relationships(call);
++            assert!(r.invocation_binding_report(call).arguments.is_err());
++        }
++    }
++
++    #[test]
++    fn unresolved_classifier_isolation_keeps_work_and_revision_guards() {
++        let mut r = unresolved_classifier_fixture();
++        let prefix = static_prefix(&mut r);
++        assert!(matches!(
++            prepare(
++                &mut r.b,
++                prefix,
++                &HashSet::new(),
++                None,
++                &mut (crate::eval::MAX_STEPS - 1)
++            ),
++            Err(Refusal::WorkLimit)
++        ));
++        assert!(r.b.implied.is_none(), "work refusal must not publish rows");
++        let mut r = unresolved_classifier_fixture();
++        let call = r
++            .elements()
++            .find(|&e| r.element_type(e) == "InvocationExpression")
++            .unwrap();
++        r.implied_relationships(call);
++        assert!(r.invocation_binding_report(call).arguments.is_ok());
++        let relationship =
++            r.b.elements
++                .iter()
++                .position(|e| {
++                    e.ty == "Subclassification"
++                        && super::super::implied::specialization_target(e).is_none()
++                })
++                .unwrap();
++        let f = r.resolve_qualified("F").unwrap();
++        let wrong = r.element_id(f).to_string();
++        r.b.set(relationship, "specific", serde_json::json!({"@id":wrong}));
++        assert!(r.invocation_binding_report(call).arguments.is_err());
++    }
+     #[test]
+     fn canonical_nested_signature_qualification_tracks_actual_consumers() {
+         for (feature, succeeds) in [("feature n", true), ("in p", false)] {

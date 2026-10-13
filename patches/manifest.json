@@ -64,6 +64,15 @@
       "baseSha256": "00d3fe66bae837b67ba53e1f177ccd53c8c089513e8354f4a5208f8abf9841ae",
       "resultSha256": "f50ac0bc5e6ee35caaa46fe3a6280b66a9e8181bc78466c3e54b96be2f4b964b",
       "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results."
+    },
+    {
+      "id": "KERNEL-004",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
+      "patch": "patches/0008-isolate-unresolved-specializations.patch",
+      "sha256": "8f1253d5954ce5e3ef66e05d87c686456ac1a1b8eb989e03c6824f3f820b47cb",
+      "baseSha256": "39a7c5dcd2b4993c883a9c7e3bf949e6e8601601ecc656bbd2c414ef4d35ff7e",
+      "resultSha256": "d21425982816889cbce7c1c56cae76f1d9a89f00a81cd38ff731d94418514104",
+      "reason": "Isolate canonical unresolved Specialization/Subclassification rows only after certifying all source aliases and the shared semantic carrier. Preserve the final dependency audit, incomplete affected signatures, legacy refusal, malformed/stale evidence and work limits. MULT-020/021 retain independent arithmetic and conditional bounds alongside missing bases."
     }
   ]
 }
