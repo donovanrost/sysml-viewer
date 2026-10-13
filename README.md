@@ -110,6 +110,7 @@ TypeScript parser or name resolver.
 
 ```sh
 python3 tools/verify-vendor.py
+npm run vendor:test
 node tools/rust.mjs fmt -p sysml-kernel -p sysml-cli -p sysml-wasm -- --check
 node tools/rust.mjs clippy --locked --workspace --all-targets --all-features -- -D warnings
 npm run format:check
@@ -136,8 +137,8 @@ check the viewer projection, source slicing and bundled example. This is the ini
 acceptance suite, not a substitute for an official semantic conformance matrix or
 continuous fuzzing.
 
-The coverage matrix has 55 executable cases and one explicitly planned case.
-Two executable cases retain a named evaluator gap; they are not counted as passing. The matrix
+The coverage matrix has 57 executable cases and one explicitly planned case.
+One executable case retains a named arithmetic evaluator gap; it is not counted as passing. The matrix
 checks standards-linked expectations, including two unchanged official examples,
 with a fresh process and deadline per case. Its harness rejects new failures and
 unexpected passes of known gaps. Reports are saved to `target/conformance/` and

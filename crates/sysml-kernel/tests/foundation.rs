@@ -26,6 +26,71 @@ fn document(name: &str, text: &str) -> SourceDocument {
         text: text.into(),
     }
 }
+
+fn provider_fixture() -> &'static Snapshot {
+    static VALUE: OnceLock<Snapshot> = OnceLock::new();
+    VALUE.get_or_init(|| {
+        analyze(vec![
+            document(
+                "providers.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-011.sysml"),
+            ),
+            document(
+                "guards.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-012.sysml"),
+            ),
+        ])
+    })
+}
+
+#[test]
+fn package_attribute_providers_retain_exact_bounds_through_queries_and_json() {
+    let snapshot: Snapshot =
+        serde_json::from_str(&serde_json::to_string(provider_fixture()).unwrap()).unwrap();
+    let q = snapshot.queries().unwrap();
+    for (name, lower, upper, display) in [
+        ("viaAlias", "3", "3", "[3]"),
+        ("chain", "3", "3", "[3]"),
+        ("ranged", "3", "6", "[3..6]"),
+        (
+            "exactLarge",
+            "9007199254740993",
+            "9007199254740993",
+            "[9007199254740993]",
+        ),
+        ("empty", "0", "0", "[0]"),
+    ] {
+        let element = q.find(&format!("ProviderBounds::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&element.id).unwrap(),
+            &Cardinality::Evaluated {
+                lower: lower.into(),
+                upper: Some(upper.into()),
+            },
+            "{name}"
+        );
+        assert_eq!(element.declared_multiplicity.as_deref(), Some(display));
+    }
+}
+
+#[test]
+fn incomplete_providers_never_become_default_or_empty_intervals() {
+    let q = provider_fixture().queries().unwrap();
+    for (name, reason) in [
+        ("unvaluedBound", CardinalityIssue::IncompleteProvider),
+        ("cycleBound", CardinalityIssue::UnsupportedBound),
+        ("variationBound", CardinalityIssue::UnsupportedBound),
+        ("featuredBound", CardinalityIssue::IncompleteProvider),
+    ] {
+        let element = q.find(&format!("ProviderGuards::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&element.id).unwrap(),
+            &Cardinality::Unknown { reason },
+            "{name}"
+        );
+        assert_eq!(element.declared_multiplicity, None);
+    }
+}
 fn fixture() -> &'static Snapshot {
     static VALUE: OnceLock<Snapshot> = OnceLock::new();
     VALUE.get_or_init(|| {

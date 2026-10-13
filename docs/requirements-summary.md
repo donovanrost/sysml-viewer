@@ -34,7 +34,7 @@ All clause/prose decomposition remains pending. No percentage is published.
 
 ## Evidence mapped so far
 
-33 bounded assessments map 55 executable cases and 1 planned cases.
+33 bounded assessments map 57 executable cases and 1 planned cases.
 Linked tests are evidence for the assessment wording only. They do not qualify
 a whole source clause, its descendants, or a named constraint merely because it
 belongs to the same metaclass. Product robustness cases are identified separately.
@@ -61,7 +61,7 @@ belongs to the same metaclass. Product robustness cases are identified separatel
 | SOURCE-RECOVERY | product | partial / partial | 0 / 1 / 0 / 0 | Error recovery policy is a product requirement; the linked clause supplies context, not a recovery conformance rule. |
 | ROBUSTNESS-CYCLES | product | partial / partial | 0 / 0 / 2 / 0 | Termination and retained declarations do not establish a semantic verdict on cyclic models. |
 | MEMBERSHIP-ENUMERATION | product | partial / partial | 2 / 1 / 0 / 1 | Schema 2 exposes explicit owned and inherited bindings; full imported membership closure, implicit construction and complete metamodel traversal remain open. Inheritance completeness accompanies the native query. |
-| MULTIPLICITY-EXPRESSION | product | partial / partial | 5 / 2 / 0 / 0 | Exact decimal integers, unbounded upper bounds and explicit unknown reasons are exposed. MULT-003 and MULT-010 retain three expected-result failures (KERNEL-001) for feature-valued providers under the full library. This does not qualify all multiplicity or evaluation semantics. |
+| MULTIPLICITY-EXPRESSION | product | partial / partial | 7 / 2 / 0 / 0 | Exact decimal integers, unbounded upper bounds and explicit unknown reasons are exposed. Static package-owned attribute providers, aliases and reference chains are covered. MULT-003 retains two expected-result failures (KERNEL-001) for arithmetic providers under the full library. Variation, variable, cyclic, unvalued and context-dependent providers remain qualified/unknown. This does not qualify all multiplicity or evaluation semantics. |
 | CONF-ABSTRACT-SYSML | conformance-point | partial / unsupported | 0 / 0 / 0 / 0 | The viewer reads selected declarations and does not provide full metamodel CRUD or complete well-formedness validation. |
 | CONF-ABSTRACT-KERML | conformance-point | partial / unsupported | 0 / 0 / 0 / 0 | The public kernel has no general metamodel mutation API and validation coverage is incomplete. |
 | CONF-TEXTUAL | conformance-point | partial / unsupported | 0 / 0 / 0 / 0 | Read/analysis operations are partial. Full textual create/update/delete operations and complete grammar qualification are absent. |

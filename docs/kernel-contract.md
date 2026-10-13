@@ -83,6 +83,8 @@ proved. `declaredMultiplicity` is a display string produced only when a header
 multiplicity exists and checked bounds are available; no floating-point bound is
 exported. Null still does not establish absence or an effective default.
 `valueExpression` remains source text, not a public general-purpose evaluation API.
+Static package-owned attributes can supply checked literal bounds through aliases
+and reference chains. Unsupported featuring or variation contexts remain unknown.
 Valid formula-valued multiplicity providers can still return unknown under the full
 library; see KERNEL-001 in [foundation qualification](foundation-qualification.md).
 

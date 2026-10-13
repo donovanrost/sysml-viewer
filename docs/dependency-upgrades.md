@@ -16,7 +16,7 @@ automatic background update or a replacement of failing expected results.
    checking detects leftover files: remove only files verified to have been removed
    upstream, or import into a clean staging checkout and review the diff.
 3. Review all imported changes. The toolkit has a reduced workspace manifest and the explicitly recorded
-   source patch in `patches/manifest.json`. Preserve source and notices; do not make silent
+   source patches in `patches/manifest.json`. Preserve source and notices; do not make silent
    edits inside `vendor/`. For a source patch, first add a failing regression and review its standard
    basis. Record its revision, original/result hashes and patch bytes in the
    manifest; retain the original `vendor/SHA256SUMS.json` hashes. Run
@@ -31,10 +31,16 @@ automatic background update or a replacement of failing expected results.
    needed. Keep the WASM binding generator exactly aligned with its crate version.
    Regenerate TypeScript only if public Rust wire types changed. Reassess the
    schema version when the meaning or shape of an output changes.
-6. Run vendor verification, formatting, Clippy, contract and matrix-document
+6. Run vendor verification, `npm run vendor:test`, formatting, Clippy, contract and matrix-document
    checks, Rust/Node tests, the executable matrix, benchmarks and platform builds.
    Preserve matrix/benchmark reports for comparison. CI must run on all three OSes
    before calling an upgrade cross-platform verified.
+   `vendor:test` copies the verified toolkit and library to a disposable workspace
+   and runs the type-relation, model-level evaluability and cardinality private
+   suites. Its pruned `tools/vendor-tests.Cargo.lock` must contain only unchanged
+   package records from the application lock. Regenerate and review this lock when
+   dependency changes require it; neither Cargo nor the tests may write into the
+   pinned vendor inventory.
 7. Investigate every new failure and unexpected pass. A known gap is tied to a
    named assertion, issue identifier and explanation; a crash, timeout or unrelated
    failure cannot inherit that exemption. Remove a resolved gap after reviewing the

@@ -8,6 +8,7 @@
     "build": "npm run kernel:build && tsc --noEmit && vite build",
     "kernel:build": "node tools/build-kernel.mjs",
     "kernel:test": "node tools/rust.mjs test --locked --release --workspace",
+    "vendor:test": "node tools/test-vendor.mjs",
     "contract:generate": "node tools/generate-contract.mjs",
     "contract:check": "node tools/generate-contract.mjs --check",
     "pretest": "npm run kernel:build && node tools/rust.mjs build --locked --release -p sysml-cli",

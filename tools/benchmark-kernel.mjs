@@ -29,6 +29,10 @@ if (process.argv.includes('--wasm-child')) {
       name: 'viewer-example',
       text: readFileSync(join(root, 'examples/CoastalExplorer.sysml'), 'utf8'),
     },
+    {
+      name: 'attribute-providers',
+      text: readFileSync(join(root, 'tests/conformance/fixtures/mult-011.sysml'), 'utf8'),
+    },
   ];
   for (const count of [100, 1000])
     scenarios.push({

@@ -72,7 +72,9 @@ Clause references identify the source of a test, not complete coverage of that c
 | NAME-003 | Lexical names and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3 | positive | Covered | A SysML-only keyword remains a legal unquoted KerML identifier. |
 | IMP-022 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Aliases with equal names and unrelated target metaclasses remain distinguishable. |
 | IMP-023 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Alias short-name/long-name collisions of conforming target metaclasses are diagnosed. |
-| MULT-010 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Known gap: KERNEL-001 | A literal-valued scalar feature supplies exact multiplicity bounds. |
+| MULT-010 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | A literal-valued scalar feature supplies exact multiplicity bounds. |
+| MULT-011 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Static package attribute providers retain alias identity, transitive values, range endpoints, zero, and exact large integers. |
+| MULT-012 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Cyclic, unvalued, variation and context-dependent providers cannot supply checked static bounds. |
 
 ## Coverage limits
 
@@ -93,7 +95,6 @@ Clause references identify the source of a test, not complete coverage of that c
 - **KERNEL-001 / MULT-003 / exact:** The upstream checked operator/callee proof is incomplete with the full pinned library; valid formula-valued providers return unsupportedBound. Preserve the expected exact result.
 - **KERNEL-001 / MULT-003 / range:** The upstream checked operator/callee proof is incomplete with the full pinned library; valid formula-valued providers return unsupportedBound. Preserve the expected exact result.
 - **IMP-020:** Owned and inherited bindings are public; complete imported membership enumeration is not yet exposed.
-- **KERNEL-001 / MULT-010 / reference:** The full-library checked model-level reference proof reports IncompleteFeaturing even for a literal-valued provider; retain the expected exact interval.
 
 The authored fixtures are in `tests/conformance/fixtures`. Official examples are
 copied unchanged from the pinned release; see `tests/conformance/upstream/provenance.json`

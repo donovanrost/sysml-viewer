@@ -1446,7 +1446,8 @@
       "obligation": "Expose evaluated expression-valued bounds with explicit completeness.",
       "category": "product",
       "sources": [
-        "KERML-CLAUSE-7.3.4.2"
+        "KERML-CLAUSE-7.3.4.2",
+        "KERML-CLAUSE-8.3.4.8.5"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1454,7 +1455,9 @@
         "status": "partial",
         "evidence": [
           "engine",
-          "cardinality"
+          "cardinality",
+          "checked-featuring",
+          "checked-model-level"
         ]
       },
       "api": {
@@ -1626,7 +1629,7 @@
             "reference"
           ],
           "polarity": "positive",
-          "status": "known-gap",
+          "status": "pass",
           "results": [
             {
               "id": "clean",
@@ -1634,12 +1637,80 @@
             },
             {
               "id": "reference",
-              "status": "known-gap"
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-011",
+          "checks": [
+            "clean",
+            "viaAlias",
+            "chain",
+            "ranged",
+            "exactLarge",
+            "empty"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "viaAlias",
+              "status": "pass"
+            },
+            {
+              "id": "chain",
+              "status": "pass"
+            },
+            {
+              "id": "ranged",
+              "status": "pass"
+            },
+            {
+              "id": "exactLarge",
+              "status": "pass"
+            },
+            {
+              "id": "empty",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-012",
+          "checks": [
+            "unvaluedBound",
+            "cycleBound",
+            "variationBound",
+            "featuredBound"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "unvaluedBound",
+              "status": "pass"
+            },
+            {
+              "id": "cycleBound",
+              "status": "pass"
+            },
+            {
+              "id": "variationBound",
+              "status": "pass"
+            },
+            {
+              "id": "featuredBound",
+              "status": "pass"
             }
           ]
         }
       ],
-      "limits": "Exact decimal integers, unbounded upper bounds and explicit unknown reasons are exposed. MULT-003 and MULT-010 retain three expected-result failures (KERNEL-001) for feature-valued providers under the full library. This does not qualify all multiplicity or evaluation semantics."
+      "limits": "Exact decimal integers, unbounded upper bounds and explicit unknown reasons are exposed. Static package-owned attribute providers, aliases and reference chains are covered. MULT-003 retains two expected-result failures (KERNEL-001) for arithmetic providers under the full library. Variation, variable, cyclic, unvalued and context-dependent providers remain qualified/unknown. This does not qualify all multiplicity or evaluation semantics."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",
@@ -2192,25 +2263,25 @@
       "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
     }
   ],
-  "executableCases": 55,
+  "executableCases": 57,
   "plannedCases": 1,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "1d7f3dc25b52ae628a41521fda4e9d6a4098666b574d8c6f269c7579b35d062c",
+  "assessmentsSha256": "1fd5a0f7c1292595b8e236d2e346eb729296a3d083d7f891e7770963e0968885",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "5d536f5ff231cb37fece7ba3e747356df8fef42d529594a9ad753604560f4779",
-    "generatedAt": "2026-10-13T04:28:23.941Z",
-    "kernelInputSha256": "daf221add9284352334afdd294474f01e689f3e7459176cfa43266c0e9ddd541",
-    "binarySha256": "810277ad8caf6f9a03a7a94afa86f5b703d44ca7b292c4c17247b6ba2eda4534",
+    "sha256": "ab933e31960bae2a3b8d0095122684a3ee6959deef60d73c5812ad1149a28d88",
+    "generatedAt": "2026-10-13T05:00:10.694Z",
+    "kernelInputSha256": "db74f049b5a601954c3c92a27bf4482c44ef084202b9b12bc213ce158dbc59a7",
+    "binarySha256": "d7032af7c33045290f0ac5580c4b3e1e798bdee35c9f395618c6ce63e87fcea2",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.1",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.2",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 53,
-      "known-gap": 2,
+      "pass": 56,
+      "known-gap": 1,
       "planned": 1,
       "fail": 0
     }

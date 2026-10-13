@@ -14,6 +14,13 @@ const documents = ['Definitions', 'Mission', 'Errors'].map((name) => ({
   name: `${name}.sysml`,
   text: readFileSync(new URL(`./fixtures/kernel/${name}.sysml`, import.meta.url), 'utf8'),
 }));
+for (const name of ['mult-011', 'mult-012']) {
+  documents.push({
+    id: name,
+    name: `${name}.sysml`,
+    text: readFileSync(new URL(`./conformance/fixtures/${name}.sysml`, import.meta.url), 'utf8'),
+  });
+}
 documents.push({
   id: 'unicode',
   name: 'unicode.sysml',
@@ -45,6 +52,29 @@ test('native CLI and WebAssembly emit identical snapshots', () => {
     }),
   );
   assert.deepEqual(snapshot, native);
+});
+
+test('checked attribute bounds preserve exact values and unknown results in WebAssembly', () => {
+  for (const [name, lower, upper] of [
+    ['viaAlias', '3', '3'],
+    ['chain', '3', '3'],
+    ['ranged', '3', '6'],
+    ['exactLarge', '9007199254740993', '9007199254740993'],
+    ['empty', '0', '0'],
+  ]) {
+    const element = snapshot.elements.find((e) => e.qualifiedName === `ProviderBounds::${name}`)!;
+    assert.deepEqual(element.cardinality, { status: 'evaluated', lower, upper });
+  }
+  for (const [name, reason] of [
+    ['unvaluedBound', 'incompleteProvider'],
+    ['cycleBound', 'unsupportedBound'],
+    ['variationBound', 'unsupportedBound'],
+    ['featuredBound', 'incompleteProvider'],
+  ]) {
+    const element = snapshot.elements.find((e) => e.qualifiedName === `ProviderGuards::${name}`)!;
+    assert.deepEqual(element.cardinality, { status: 'unknown', reason });
+    assert.equal(element.declaredMultiplicity, null);
+  }
 });
 
 test('viewer uses kernel member results and draws resolved endpoint owners', () => {

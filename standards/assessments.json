@@ -111,13 +111,25 @@
       "path": "crates/sysml-kernel/tests/foundation.rs",
       "symbol": "fn top_level_import_visibility_checks_both_dialects_kinds_and_nesting",
       "role": "Contract regressions, complete import-predicate input partitions and bundled-library syntax sweep",
-      "sha256": "7677251503f889b9ef14597511bb4aa0933f7bc3bbcf509fa4b684a6ec5a59cc"
+      "sha256": "230181c98d5bb47d3a371e21a4dec1c08210d17f70809aa9d084ced0a3d5405b"
     },
     "syntax-structure": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
       "symbol": "pub fn validate(",
       "role": "Patched syntax structure checker; KERNEL-002 defers alias metaclass comparisons until resolution",
       "sha256": "f34aa7203810104300c28f32e5e61ce0b1b11d899981b964cfd5bafec5eda6ce"
+    },
+    "checked-featuring": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
+      "symbol": "pub(super) fn audited_featuring_domain(",
+      "role": "Audited package AttributeUsage domain; checked ownership and featuring relationships, with variable/variation and malformed-evidence exclusions.",
+      "sha256": "581edf552f7a33497a0deea3268c912c3b91f255c7f6d3a3624aa5a02ce90925"
+    },
+    "checked-model-level": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
+      "symbol": "pub fn model_level_evaluability(",
+      "role": "Bounded eligibility proof; package attribute support does not qualify every expression family.",
+      "sha256": "c54b284a1773583b0b67926869c03fcc4efa1df3ef44421907af67354b6e4412"
     }
   },
   "assessments": [
@@ -1016,7 +1028,8 @@
       "obligation": "Expose evaluated expression-valued bounds with explicit completeness.",
       "category": "product",
       "sources": [
-        "KERML-CLAUSE-7.3.4.2"
+        "KERML-CLAUSE-7.3.4.2",
+        "KERML-CLAUSE-8.3.4.8.5"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1024,7 +1037,9 @@
         "status": "partial",
         "evidence": [
           "engine",
-          "cardinality"
+          "cardinality",
+          "checked-featuring",
+          "checked-model-level"
         ]
       },
       "api": {
@@ -1091,9 +1106,29 @@
             "clean",
             "reference"
           ]
+        },
+        {
+          "case": "MULT-011",
+          "checks": [
+            "clean",
+            "viaAlias",
+            "chain",
+            "ranged",
+            "exactLarge",
+            "empty"
+          ]
+        },
+        {
+          "case": "MULT-012",
+          "checks": [
+            "unvaluedBound",
+            "cycleBound",
+            "variationBound",
+            "featuredBound"
+          ]
         }
       ],
-      "limits": "Exact decimal integers, unbounded upper bounds and explicit unknown reasons are exposed. MULT-003 and MULT-010 retain three expected-result failures (KERNEL-001) for feature-valued providers under the full library. This does not qualify all multiplicity or evaluation semantics."
+      "limits": "Exact decimal integers, unbounded upper bounds and explicit unknown reasons are exposed. Static package-owned attribute providers, aliases and reference chains are covered. MULT-003 retains two expected-result failures (KERNEL-001) for arithmetic providers under the full library. Variation, variable, cyclic, unvalued and context-dependent providers remain qualified/unknown. This does not qualify all multiplicity or evaluation semantics."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",

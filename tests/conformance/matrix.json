@@ -1707,12 +1707,95 @@
           "lower": "3",
           "upper": "3"
         }
-      ],
-      "knownFailures": [
+      ]
+    },
+    {
+      "id": "MULT-011",
+      "area": "multiplicity",
+      "purpose": "Static package attribute providers retain alias identity, transitive values, range endpoints, zero, and exact large integers.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-011.sysml"],
+      "checks": [
         {
-          "check": "reference",
-          "issue": "KERNEL-001",
-          "reason": "The full-library checked model-level reference proof reports IncompleteFeaturing even for a literal-valued provider; retain the expected exact interval."
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "viaAlias",
+          "op": "cardinality",
+          "owner": "ProviderBounds::viaAlias",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "chain",
+          "op": "cardinality",
+          "owner": "ProviderBounds::chain",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "ranged",
+          "op": "cardinality",
+          "owner": "ProviderBounds::ranged",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "6"
+        },
+        {
+          "id": "exactLarge",
+          "op": "cardinality",
+          "owner": "ProviderBounds::exactLarge",
+          "status": "evaluated",
+          "lower": "9007199254740993",
+          "upper": "9007199254740993"
+        },
+        {
+          "id": "empty",
+          "op": "cardinality",
+          "owner": "ProviderBounds::empty",
+          "status": "evaluated",
+          "lower": "0",
+          "upper": "0"
+        }
+      ]
+    },
+    {
+      "id": "MULT-012",
+      "area": "multiplicity",
+      "purpose": "Cyclic, unvalued, variation and context-dependent providers cannot supply checked static bounds.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-012.sysml"],
+      "checks": [
+        {
+          "id": "unvaluedBound",
+          "op": "cardinality",
+          "owner": "ProviderGuards::unvaluedBound",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "cycleBound",
+          "op": "cardinality",
+          "owner": "ProviderGuards::cycleBound",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "variationBound",
+          "op": "cardinality",
+          "owner": "ProviderGuards::variationBound",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "featuredBound",
+          "op": "cardinality",
+          "owner": "ProviderGuards::featuredBound",
+          "status": "unknown",
+          "reason": "incompleteProvider"
         }
       ]
     }

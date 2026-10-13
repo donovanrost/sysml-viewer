@@ -23,7 +23,7 @@ Imported closure is not enumerated by this pass. Findings use the normative
 Checked cardinality uses the upstream constraint report, not its approximate numeric
 compatibility result. Integer bounds cross JSON as decimal strings. Evaluated zero,
 an unbounded upper limit, and an unknown result are distinct. Feature-valued providers and inherited subset bounds have executable cases;
-provider cases retain the known gap described below. Unknown providers and
+arithmetic provider cases retain the known gap described below. Unknown providers and
 invalid intervals do not become default or empty intervals. Recovery can discard a
 malformed constraint, so syntax errors conservatively invalidate cardinality results
 across the workspace, including clean dependent files.
@@ -75,22 +75,39 @@ addition and multiplication, then references them from multiplicity bounds. The
 expected intervals are `[5]` and `[3..6]`. The current checked reader returns
 `unknown/unsupportedBound` instead. The matrix retains the expected values and
 marks only these two assertions as known failures; the case is not counted as passing.
-MULT-010 also retains the expected `[3]` interval for a literal-valued provider: its
-model-level reference proof reports `IncompleteFeaturing`. Thus the gap extends
-beyond arithmetic operators.
+The literal-valued provider regression MULT-010 now passes with `[3]`. Its checked
+model-level proof previously reported `IncompleteFeaturing` because the audited
+domain admitted only exact KerML `Feature` instances. The second recorded patch
+also admits exact SysML `AttributeUsage` instances with ordinary package ownership.
+It retains checked reciprocal ownership, explicit/inverse featuring, feature-chain,
+metadata, variable/variation, stale-evidence and work-budget checks. A failed proof
+still cannot supply a numeric interval.
 
-A reduced probe with the complete pinned library traced this to incomplete checked
-callee/argument evidence. In the current LegacyV2 graph, checked operator argument
+KerML 1.0 §8.3.4.8.5 allows the unfeatured-referent branch when the value expression
+is model-level evaluable. SysML's usage-variation featuring rule requires additional
+context, so variant ownership and variation attributes remain outside this audited
+domain. This is a bounded extension, not a general proof that every attribute is
+model-level evaluable.
+
+MULT-011 covers aliases, transitive reference values, separate range endpoints,
+zero and the exact integer `9007199254740993`. MULT-012 retains unknown results for
+unvalued, cyclic, variation and type-owned contextual providers. Native query/JSON
+and WebAssembly tests exercise these same sources. The dependency's private tests
+also inject malformed flags, reciprocal ownership and carrier evidence, check
+inverse TypeFeaturing, and exhaust/retry the work budget.
+
+Reduced probes with the complete pinned library traced the remaining arithmetic
+failures to incomplete checked callee/argument evidence. In the current LegacyV2 graph, checked operator argument
 mapping reports `UnsupportedConfiguration`. Switching only to CanonicalV3 still
 reports `UnmappedArgument`; model-level eligibility remains `IncompleteCallee`.
 Synthetic minimal operator libraries can pass upstream tests without establishing
 this full-library integration. The compatibility evaluator is not used as a fallback
 because doing so would discard the checked reader's completeness guarantees.
 
-Resolving this requires qualifying canonical operator construction, formal-input
+Resolving the remaining arithmetic gap requires qualifying canonical operator construction, formal-input
 selection and supplied-argument redefinition together, including negative cases for
 unmapped, ambiguous and recursive providers. An upstream source change must use the
-[documented patch/provenance procedure](dependency-upgrades.md). The separate syntax patch below does not change this evaluator behavior.
+[documented patch/provenance procedure](dependency-upgrades.md). The featuring fix does not change operator construction or invocation binding.
 
 ## Remaining foundation work
 
@@ -119,9 +136,12 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **53 passing conformance cases**, **two
-known-gap cases** (three exact-bound assertions), and **one planned case**. All
-**29 Rust tests** and **24 Node tests** pass. The corpus and the 32 import-rule
+On macOS arm64, the completed run has **56 passing conformance cases**, **one
+known-gap case** (two arithmetic-bound assertions), and **one planned case**. All
+**31 Rust facade tests**, **25 Node tests**, and **86 dependency proof tests** pass.
+The dependency suites cover type relations (41), model-level evaluability (26),
+and cardinality (19), including three new adversarial/regression tests in the patch.
+The corpus and the 32 import-rule
 partitions are included in the Rust suite, not additional independently qualified
 specification counts. Native and WebAssembly outputs match exactly.
 
@@ -131,12 +151,15 @@ pass. The saved [matrix execution](evidence/conformance-macos-arm64.json) and
 [requirements execution](evidence/requirements-macos-arm64.json) record the current
 source, patch and fixture fingerprints. Windows/Linux execution remains pending CI.
 
-The [foundation benchmark](evidence/benchmark-foundations-macos-arm64.json) records
-three fresh processes per native/WASM workload. Median whole-process times were
-1,552/1,750 ms for the viewer example, 1,402/1,698 ms for 100 usages and
-1,697/1,859 ms for 1,000 usages. Maximum peak RSS for the largest workload was
-272.1/302.5 MiB. These include startup, bundled-library analysis and serialization;
-they are observations on this Mac, not cross-platform latency guarantees.
+The latest [provider benchmark](evidence/benchmark-providers-macos-arm64.json)
+records three fresh processes per native/WASM workload, including the new provider
+fixture. Median whole-process times were 1,537/1,917 ms for the viewer example,
+1,574/1,884 ms for attribute providers, 1,564/2,222 ms for 100 usages and
+1,889/2,350 ms for 1,000 usages. Maximum peak RSS for the largest workload was
+276.7/292.0 MiB. These include startup, bundled-library analysis and serialization;
+they are observations on this Mac, not cross-platform latency guarantees. Some
+times are higher than the retained [foundation run](evidence/benchmark-foundations-macos-arm64.json);
+these uncontrolled runs do not establish performance equivalence or a regression budget.
 
 The production web build and macOS arm64 bundle build pass. The new local bundle
 is `src-tauri/target/release/bundle/macos/SysML Viewer.app` (11.91 MiB). This run
