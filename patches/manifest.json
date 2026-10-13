@@ -19,6 +19,51 @@
       "baseSha256": "0d5d41bc6500e2e0f5732ed3803342967b43abdb8d4372dcdf1a724d4bb925a0",
       "resultSha256": "581edf552f7a33497a0deea3268c912c3b91f255c7f6d3a3624aa5a02ce90925",
       "reason": "Audit featuring evidence for static package-owned AttributeUsage providers, retaining checked ownership, explicit/inverse featuring, variable/variant exclusion, stale-evidence and work-budget guards. MULT-010 is the original full-library regression. Canonical graph publication for arithmetic is a facade responsibility."
+    },
+    {
+      "id": "KERNEL-003",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
+      "patch": "patches/0003-checked-conditional-bindings.patch",
+      "sha256": "6dedde2062df2a3de872930e4866c5e26f4848a4f16edc3417dd0158d2d2f3c0",
+      "baseSha256": "a42417413b22fa9aaa2cf67dc7127cbf2d69c55a1657e302d0b9a3314cd7dbb0",
+      "resultSha256": "49ca02390be192e4a8b29b5e12d9c34e2dffcbfcefc49d16ffd1f3dfd6882671",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results."
+    },
+    {
+      "id": "KERNEL-003",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs",
+      "patch": "patches/0004-designated-operator-cache.patch",
+      "sha256": "e0069e86d2356c9acd421d528bd0fac106aa30fcefa9ccbbb0d1468b0f83597a",
+      "baseSha256": "0a900848b5d128403be09b8d97d8543124f37609925dab0982c3dac0f9f0aa49",
+      "resultSha256": "f66871f1bb4ddac9adc989c7af28b5ffdc49c10a68f2ba007001f713933d7a9f",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results."
+    },
+    {
+      "id": "KERNEL-003",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
+      "patch": "patches/0005-designated-callee-evidence.patch",
+      "sha256": "8e7fcac3b365a05d28c1cd48832f393c58a6c5177bf4d1a0dfec69282f2ae07e",
+      "baseSha256": "c54b284a1773583b0b67926869c03fcc4efa1df3ef44421907af67354b6e4412",
+      "resultSha256": "10957c72a3e66ef5d714f6bff4998808b5878e18d3b58bf109aac2be96223bd0",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results."
+    },
+    {
+      "id": "KERNEL-003",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
+      "patch": "patches/0006-checked-conditional-cardinality.patch",
+      "sha256": "55d450b8af439c10777b317caa1619049301f8c2b77aded4fe43dd16d445f6aa",
+      "baseSha256": "bbfb520a8321275808a0ba832e00ab4470218ae2ebc9e80a874fa8dfad6f29c4",
+      "resultSha256": "5411cfdcae34719dae8fef00e15f49bf6fbe5625d995b1a3dcc38e8568af546e",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results."
+    },
+    {
+      "id": "KERNEL-003",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs",
+      "patch": "patches/0007-exact-conditional-execution.patch",
+      "sha256": "96f556c7d2d1e037c2a2a4e38d3cbf7e13d8ed5a9fc6f5f260a8f1bbc75f4174",
+      "baseSha256": "00d3fe66bae837b67ba53e1f177ccd53c8c089513e8354f4a5208f8abf9841ae",
+      "resultSha256": "f50ac0bc5e6ee35caaa46fe3a6280b66a9e8181bc78466c3e54b96be2f4b964b",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results."
     }
   ]
 }

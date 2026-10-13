@@ -167,7 +167,7 @@ impl ResolvedModel {
 pub(super) struct ConstructorBatchEvidence {
     stamp: Option<Stamp>,
     features: HashMap<usize, super::TypeFeatures>,
-    numeric_targets: HashMap<&'static str, usize>,
+    operator_targets: HashMap<&'static str, usize>,
     relations: super::type_relations::TypeRelations,
 }
 fn projection_work(features: &super::TypeFeatures) -> usize {
@@ -205,29 +205,29 @@ impl ConstructorBatchEvidence {
             steps,
             self.features
                 .capacity()
-                .saturating_add(self.numeric_targets.capacity()),
+                .saturating_add(self.operator_targets.capacity()),
         )?;
         self.relations.reset_with_budget(steps).ok_or(WorkLimit)?;
         self.features = HashMap::new();
-        self.numeric_targets = HashMap::new();
+        self.operator_targets = HashMap::new();
         self.stamp = Some(Stamp::capture_builder(b));
         Ok(())
     }
-    pub(super) fn numeric_target(
+    pub(super) fn operator_target(
         &mut self,
         b: &mut super::Builder,
         receiver: usize,
         steps: &mut usize,
     ) -> Option<usize> {
-        let operator = super::invocation_bindings::numeric_operator_name(b, receiver)?;
+        let operator = super::invocation_bindings::designated_operator_name(b, receiver)?;
         self.align(b, steps).ok()?;
-        if let Some(&target) = self.numeric_targets.get(operator) {
+        if let Some(&target) = self.operator_targets.get(operator) {
             charge(steps, 1).ok()?;
             return Some(target);
         }
-        let target = super::invocation_bindings::numeric_operator_target(b, receiver, steps)?;
+        let target = super::invocation_bindings::designated_operator_target(b, receiver, steps)?;
         self.align(b, steps).ok()?;
-        self.numeric_targets.insert(operator, target);
+        self.operator_targets.insert(operator, target);
         Some(target)
     }
     pub(super) fn features(

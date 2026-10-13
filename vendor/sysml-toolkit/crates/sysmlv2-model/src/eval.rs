@@ -1056,8 +1056,27 @@ pub(crate) fn implicit_open_multiplicity(model: &mut ResolvedModel, e: ElementRe
 #[derive(Default)]
 pub(crate) struct CheckedMultiplicityExpressions {
     pub(crate) operators: HashMap<usize, (BinaryOp, Vec<usize>)>,
+    pub(crate) conditionals: HashMap<usize, (usize, usize, usize)>,
     pub(crate) references: HashMap<usize, (usize, usize, usize)>,
     pub(crate) universal_relationships: HashSet<usize>,
+}
+
+/// Select a conditional branch with the same exact, bounded graph evaluator.
+/// Integers and unknown values are never coerced to Boolean truth values.
+pub(crate) fn checked_multiplicity_condition(
+    b: &mut Builder,
+    expression: usize,
+    context: Option<usize>,
+    operators: &CheckedMultiplicityExpressions,
+    steps: &mut usize,
+) -> Option<bool> {
+    let mut evaluator = checked_multiplicity_evaluator(b, *steps);
+    let result = evaluator.certified_multiplicity_value(expression, context, operators, 0);
+    *steps = evaluator.steps;
+    match result? {
+        Value::Boolean(value) => Some(value),
+        _ => None,
+    }
 }
 
 /// Read a structurally certified range through the same numeric/receiver evaluator.
@@ -2066,6 +2085,9 @@ impl Evaluator<'_> {
         }
         match self.b.elements[e].ty {
             "LiteralInfinity" => Some(Value::Real(f64::INFINITY)),
+            "LiteralBoolean" => Some(Value::Boolean(
+                self.b.elements[e].props.get("value")?.as_bool()?,
+            )),
             "LiteralInteger" => Some(Value::Integer(
                 match self.b.elements[e].props.get("value")? {
                     Atom::Number(n) => i128::from(n.as_i64()?),
@@ -2083,6 +2105,19 @@ impl Evaluator<'_> {
                 self.certified_multiplicity_value(value, context, operators, depth + 1)
             }
             "OperatorExpression" => {
+                if let Some(&(test, when_true, when_false)) = operators.conditionals.get(&e) {
+                    let Value::Boolean(condition) =
+                        self.certified_multiplicity_value(test, context, operators, depth + 1)?
+                    else {
+                        return None;
+                    };
+                    return self.certified_multiplicity_value(
+                        if condition { when_true } else { when_false },
+                        context,
+                        operators,
+                        depth + 1,
+                    );
+                }
                 let (operator, operands) = operators.operators.get(&e)?;
                 let first = self.certified_multiplicity_value(
                     *operands.first()?,

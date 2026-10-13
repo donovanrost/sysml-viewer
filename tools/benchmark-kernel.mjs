@@ -37,6 +37,10 @@ if (process.argv.includes('--wasm-child')) {
       name: 'arithmetic-providers',
       text: readFileSync(join(root, 'tests/conformance/fixtures/mult-013.sysml'), 'utf8'),
     },
+    {
+      name: 'conditional-providers',
+      text: readFileSync(join(root, 'tests/conformance/fixtures/mult-017.sysml'), 'utf8'),
+    },
   ];
   for (const count of [100, 1000])
     scenarios.push({

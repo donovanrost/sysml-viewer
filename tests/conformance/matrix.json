@@ -1976,12 +1976,184 @@
           "lower": "3",
           "upper": "3"
         }
-      ],
-      "knownFailures": [
+      ]
+    },
+    {
+      "id": "MULT-017",
+      "area": "multiplicity",
+      "purpose": "Conditional providers select true/false and nested branches, preserve exact integers and skip execution of unselected unbound or undefined values.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-017.sysml"],
+      "checks": [
         {
-          "check": "sized",
-          "issue": "KERNEL-003",
-          "reason": "The canonical graph preserves conditional operand wrappers, but the checked expression provider does not yet certify conditional invocation and branch selection. Retain the expected exact result."
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "trueBranch",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::trueBranch",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "falseBranch",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::falseBranch",
+          "status": "evaluated",
+          "lower": "4",
+          "upper": "4"
+        },
+        {
+          "id": "nestedBranch",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::nestedBranch",
+          "status": "evaluated",
+          "lower": "5",
+          "upper": "5"
+        },
+        {
+          "id": "arithmetic",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::arithmetic",
+          "status": "evaluated",
+          "lower": "10",
+          "upper": "10"
+        },
+        {
+          "id": "skippedDivision",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::skippedDivision",
+          "status": "evaluated",
+          "lower": "6",
+          "upper": "6"
+        },
+        {
+          "id": "skippedUnbound",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::skippedUnbound",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "exactLarge",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::exactLarge",
+          "status": "evaluated",
+          "lower": "9007199254740993",
+          "upper": "9007199254740993"
+        },
+        {
+          "id": "nestedCondition",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::nestedCondition",
+          "status": "evaluated",
+          "lower": "8",
+          "upper": "8"
+        },
+        {
+          "id": "range",
+          "op": "cardinality",
+          "owner": "ConditionalProviders::range",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "4"
+        }
+      ]
+    },
+    {
+      "id": "MULT-018",
+      "area": "multiplicity",
+      "purpose": "Conditional bounds reject unavailable/non-Boolean conditions, invalid selected values and ineligible recursive branches.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-018.sysml"],
+      "checks": [
+        {
+          "id": "unavailable",
+          "op": "cardinality",
+          "owner": "ConditionalGuards::unavailable",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "wrongType",
+          "op": "cardinality",
+          "owner": "ConditionalGuards::wrongType",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "unbound",
+          "op": "cardinality",
+          "owner": "ConditionalGuards::unbound",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "division",
+          "op": "cardinality",
+          "owner": "ConditionalGuards::division",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "belowZero",
+          "op": "cardinality",
+          "owner": "ConditionalGuards::belowZero",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "fraction",
+          "op": "cardinality",
+          "owner": "ConditionalGuards::fraction",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "overflow",
+          "op": "cardinality",
+          "owner": "ConditionalGuards::overflow",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "recursive",
+          "op": "cardinality",
+          "owner": "ConditionalGuards::recursive",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "ineligible",
+          "op": "cardinality",
+          "owner": "ConditionalGuards::ineligible",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        }
+      ]
+    },
+    {
+      "id": "MULT-019",
+      "area": "multiplicity",
+      "purpose": "A shadowed ControlFunctions package cannot certify the designated conditional operator.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-019.sysml"],
+      "checks": [
+        {
+          "id": "sized",
+          "op": "cardinality",
+          "owner": "ShadowedConditional::sized",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "shadow-warning",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "messageIncludes": "shadows the standard library"
         }
       ]
     }

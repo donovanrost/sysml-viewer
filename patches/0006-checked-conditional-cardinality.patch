@@ -1,0 +1,240 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
+index f151c0b..5be9df3 100644
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
+@@ -787,15 +787,43 @@ fn certified_operators(
+     steps: &mut usize,
+ ) -> Result<crate::eval::CheckedMultiplicityExpressions, CardinalityIssue> {
+     use sysmlv2_syntax::ast::BinaryOp;
++    enum Task {
++        Visit(usize),
++        Select {
++            expression: usize,
++            test: usize,
++            when_true: usize,
++            when_false: usize,
++        },
++    }
+     charge(steps, roots.len())?;
+-    let mut pending: Vec<_> = roots.iter().copied().collect();
++    let mut pending: Vec<_> = roots.iter().copied().map(Task::Visit).collect();
+     let mut seen = HashSet::new();
+     let mut contextual_features: Option<(HashSet<usize>, HashSet<usize>)> = None;
+     let mut operators = crate::eval::CheckedMultiplicityExpressions::default();
+     let raw =
+         StoredStructure::for_query(&mut r.b, steps).ok_or(CardinalityIssue::IncompleteProvider)?;
+-    while let Some(expression) = pending.pop() {
++    while let Some(task) = pending.pop() {
+         charge(steps, 1)?;
++        let expression = match task {
++            Task::Visit(expression) => expression,
++            Task::Select {
++                expression,
++                test,
++                when_true,
++                when_false,
++            } => {
++                let condition = crate::eval::checked_multiplicity_condition(
++                    &mut r.b, test, context, &operators, steps,
++                )
++                .ok_or(CardinalityIssue::UnsupportedBound)?;
++                operators
++                    .conditionals
++                    .insert(expression, (test, when_true, when_false));
++                pending.push(Task::Visit(if condition { when_true } else { when_false }));
++                continue;
++            }
++        };
+         if !seen.insert(expression) {
+             continue;
+         }
+@@ -814,7 +842,7 @@ fn certified_operators(
+             require_model_level_value(r, expression, steps)?;
+         }
+         match r.b.elements[expression].ty {
+-            "LiteralInteger" | "LiteralInfinity" => continue,
++            "LiteralInteger" | "LiteralInfinity" | "LiteralBoolean" => continue,
+             "FeatureReferenceExpression" => {
+                 certify_reference_domain(&r.b, &raw, expression, steps)?;
+                 // The referenced Feature is the first non-parameter member,
+@@ -881,7 +909,7 @@ fn certified_operators(
+                 operators
+                     .references
+                     .insert(expression, (target, selected, value));
+-                pending.push(value);
++                pending.push(Task::Visit(value));
+                 continue;
+             }
+             "OperatorExpression" => {}
+@@ -892,6 +920,30 @@ fn certified_operators(
+         let arguments = report
+             .arguments
+             .map_err(|_| CardinalityIssue::UnsupportedBound)?;
++        if r.b.elements[expression]
++            .props
++            .get("operator")
++            .and_then(|v| v.as_str())
++            == Some("if")
++        {
++            // Eligibility was proved for the complete argument list above.
++            // Execution certification follows only the selected branch; an
++            // unselected, well-formed branch may have no executable value.
++            if arguments.inputs.len() != 3 || arguments.bindings.len() != 3 {
++                return Err(CardinalityIssue::UnsupportedBound);
++            }
++            let test = arguments.bindings[0].value.0;
++            let when_true = conditional_operand(&r.b, &raw, arguments.bindings[1].value.0, steps)?;
++            let when_false = conditional_operand(&r.b, &raw, arguments.bindings[2].value.0, steps)?;
++            pending.push(Task::Select {
++                expression,
++                test,
++                when_true,
++                when_false,
++            });
++            pending.push(Task::Visit(test));
++            continue;
++        }
+         let operator = match r.b.elements[expression]
+             .props
+             .get("operator")
+@@ -916,12 +968,55 @@ fn certified_operators(
+         {
+             return Err(CardinalityIssue::UnsupportedBound);
+         }
+-        pending.extend(operands.iter().copied());
++        pending.extend(operands.iter().copied().map(Task::Visit));
+         operators.operators.insert(expression, (operator, operands));
+     }
+     Ok(operators)
+ }
+ 
++/// A canonical conditional argument owns a reference to an Expression. Do not
++/// reinterpret a plain Feature reference, missing wrapper or broken reciprocal
++/// membership as a deferred expression. Both branches require this evidence.
++fn conditional_operand(
++    b: &Builder,
++    raw: &StoredStructure,
++    reference: usize,
++    steps: &mut usize,
++) -> Result<usize, CardinalityIssue> {
++    if b.elements[reference].ty != "FeatureReferenceExpression"
++        || raw.metadata_annotation_targets.contains(&reference)
++        || b.metadata_of.get(&reference).is_some_and(|m| !m.is_empty())
++    {
++        return Err(CardinalityIssue::UnsupportedBound);
++    }
++    certify_reference_domain(b, raw, reference, steps)?;
++    let relationships = semantic_ownership::owned_relationships(b, reference)
++        .ok_or(CardinalityIssue::InvalidRelationship)?;
++    let mut expression = None;
++    for relationship in relationships.iter() {
++        charge(steps, 1)?;
++        let kind = b.elements[relationship].ty;
++        if !conforms(kind, "Membership") || conforms(kind, "ParameterMembership") {
++            continue;
++        }
++        let target = membership_evidence::member(b, raw, reference, relationship, steps)
++            .ok_or(CardinalityIssue::InvalidRelationship)?;
++        if kind != "FeatureMembership"
++            || !conforms(b.elements[target].ty, "Expression")
++            || b.elements[target].owning_relationship != Some(relationship)
++            || expression.replace(target).is_some()
++        {
++            return Err(CardinalityIssue::InvalidRelationship);
++        }
++        if raw.metadata_annotation_targets.contains(&target)
++            || b.metadata_of.get(&target).is_some_and(|m| !m.is_empty())
++        {
++            return Err(CardinalityIssue::IncompleteProvider);
++        }
++    }
++    expression.ok_or(CardinalityIssue::InvalidRelationship)
++}
++
+ /// A contextual reference replaces only the model-level eligibility predicate,
+ /// never the complete inverse membership and current ownership evidence.
+ fn certify_reference_domain(
+@@ -1004,6 +1099,83 @@ mod tests {
+         let e = r.resolve_qualified(name).unwrap();
+         r.cardinality_report(e).bounds
+     }
++    fn conditional_model() -> Model {
++        let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++        m.add_library_source("conditional-library.kerml", "standard library package Base {classifier Anything; feature things:Anything;} standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;} standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;} standard library package ControlFunctions {function 'if' {in test; in expr thenValue {return r;} in expr elseValue {return r;} return result;}} ");
++        let unit = m.add_source(
++            "conditional.kerml",
++            "feature n = if true ? 3 else 4; feature slots[n];",
++        );
++        assert!(unit.diagnostics.is_empty(), "{:?}", unit.diagnostics);
++        m
++    }
++    fn conditional_fixture() -> (ResolvedModel, ElementRef) {
++        let mut r = ResolvedModel::build(&conditional_model());
++        let slots = r.resolve_qualified("slots").unwrap();
++        r.implied_relationships(slots);
++        assert_eq!(r.cardinality_report(slots).bounds.unwrap().size(), Some(3));
++        (r, slots)
++    }
++    #[test]
++    fn conditional_bounds_require_reciprocal_wrappers_even_on_the_skipped_branch() {
++        for mutation in 0..4 {
++            let (mut r, slots) = conditional_fixture();
++            let call = r
++                .user_elements()
++                .find(|&e| r.element_type(e) == "OperatorExpression")
++                .unwrap();
++            let wrapper = r
++                .invocation_binding_report(call)
++                .arguments
++                .unwrap()
++                .bindings[2]
++                .value
++                .0;
++            let raw = StoredStructure::for_query(&mut r.b, &mut 0).unwrap();
++            let child = conditional_operand(&r.b, &raw, wrapper, &mut 0).unwrap();
++            match mutation {
++                0 => r.b.elements[child].owning_relationship = None,
++                1 => {
++                    r.b.metadata_of.insert(wrapper, vec![wrapper]);
++                }
++                2 => {
++                    r.b.elements[wrapper].ty = "LiteralInteger";
++                }
++                _ => {
++                    r.b.metadata_of.insert(child, vec![child]);
++                }
++            }
++            let report = r.cardinality_report(slots);
++            assert!(report.bounds.is_err(), "mutation {mutation}");
++            assert!(report.multiplicities.is_empty());
++        }
++    }
++    #[test]
++    fn conditional_bounds_reject_stale_publication_and_exhausted_work() {
++        let (mut r, slots) = conditional_fixture();
++        let report = r.cardinality_report_with_budget(slots, crate::eval::MAX_STEPS);
++        assert_eq!(report.bounds, Err(CardinalityIssue::WorkLimit));
++        assert!(report.multiplicities.is_empty());
++        let boolean = r
++            .user_elements()
++            .find(|&e| r.element_type(e) == "LiteralBoolean")
++            .unwrap();
++        r.b.elements[boolean.0].props.insert("value", json!(false));
++        assert!(r.cardinality_report(slots).bounds.is_err());
++    }
++    #[test]
++    fn conditional_bounds_use_current_graph_values_before_publication() {
++        // Mutate retained graph evidence, not source text, before publication.
++        let mut r = ResolvedModel::build(&conditional_model());
++        let slots = r.resolve_qualified("slots").unwrap();
++        let boolean = r
++            .user_elements()
++            .find(|&e| r.element_type(e) == "LiteralBoolean")
++            .unwrap();
++        r.b.elements[boolean.0].props.insert("value", json!(false));
++        r.implied_relationships(slots);
++        assert_eq!(r.cardinality_report(slots).bounds.unwrap().size(), Some(4));
++    }
+     #[test]
+     fn checked_constraints_preserve_local_precedence_and_intersect_inheritance() {
+         for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {

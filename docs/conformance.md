@@ -78,7 +78,10 @@ Clause references identify the source of a test, not complete coverage of that c
 | MULT-013 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Evaluate arithmetic-valued package providers with complete canonical argument bindings, retaining exact integer results. |
 | MULT-014 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Undefined, non-natural, out-of-range, cyclic and unbound arithmetic providers cannot supply checked numeric bounds. |
 | MULT-015 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | A user package shadowing DataFunctions cannot be used to certify a designated arithmetic operator. |
-| MULT-016 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Known gap: KERNEL-003 | A valid conditional-valued provider should select the true branch for a static multiplicity bound. |
+| MULT-016 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | A valid conditional-valued provider should select the true branch for a static multiplicity bound. |
+| MULT-017 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Conditional providers select true/false and nested branches, preserve exact integers and skip execution of unselected unbound or undefined values. |
+| MULT-018 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Conditional bounds reject unavailable/non-Boolean conditions, invalid selected values and ineligible recursive branches. |
+| MULT-019 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | A shadowed ControlFunctions package cannot certify the designated conditional operator. |
 
 ## Coverage limits
 
@@ -97,7 +100,6 @@ Clause references identify the source of a test, not complete coverage of that c
 ## Known failures and planned work
 
 - **IMP-020:** Owned and inherited bindings are public; complete imported membership enumeration is not yet exposed.
-- **KERNEL-003 / MULT-016 / sized:** The canonical graph preserves conditional operand wrappers, but the checked expression provider does not yet certify conditional invocation and branch selection. Retain the expected exact result.
 
 The authored fixtures are in `tests/conformance/fixtures`. Official examples are
 copied unchanged from the pinned release; see `tests/conformance/upstream/provenance.json`

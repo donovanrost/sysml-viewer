@@ -14,7 +14,7 @@ const documents = ['Definitions', 'Mission', 'Errors'].map((name) => ({
   name: `${name}.sysml`,
   text: readFileSync(new URL(`./fixtures/kernel/${name}.sysml`, import.meta.url), 'utf8'),
 }));
-for (const name of ['mult-011', 'mult-012', 'mult-013', 'mult-014']) {
+for (const name of ['mult-011', 'mult-012', 'mult-013', 'mult-014', 'mult-017', 'mult-018']) {
   documents.push({
     id: name,
     name: `${name}.sysml`,
@@ -96,6 +96,41 @@ test('canonical arithmetic bindings agree across native and WebAssembly without 
   for (const name of ['division', 'fraction', 'belowZero', 'overflow', 'cycle', 'call']) {
     const e = snapshot.elements.find((e) => e.qualifiedName === `ArithmeticGuards::${name}`)!;
     assert.deepEqual(e.cardinality, { status: 'unknown', reason: 'unsupportedBound' });
+    assert.equal(e.declaredMultiplicity, null);
+  }
+});
+
+test('conditional bounds agree across native and WebAssembly with lazy branches and strict Boolean tests', () => {
+  for (const [name, value] of [
+    ['trueBranch', '3'],
+    ['falseBranch', '4'],
+    ['nestedBranch', '5'],
+    ['arithmetic', '10'],
+    ['skippedDivision', '6'],
+    ['skippedUnbound', '7'],
+    ['exactLarge', '9007199254740993'],
+    ['nestedCondition', '8'],
+  ]) {
+    const e = snapshot.elements.find((e) => e.qualifiedName === `ConditionalProviders::${name}`)!;
+    assert.deepEqual(e.cardinality, { status: 'evaluated', lower: value, upper: value });
+    assert.equal(e.declaredMultiplicity, `[${value}]`);
+  }
+  for (const name of [
+    'unavailable',
+    'wrongType',
+    'unbound',
+    'division',
+    'belowZero',
+    'fraction',
+    'overflow',
+    'recursive',
+    'ineligible',
+  ]) {
+    const e = snapshot.elements.find((e) => e.qualifiedName === `ConditionalGuards::${name}`)!;
+    assert.deepEqual(e.cardinality, {
+      status: 'unknown',
+      reason: ['unavailable', 'unbound'].includes(name) ? 'incompleteProvider' : 'unsupportedBound',
+    });
     assert.equal(e.declaredMultiplicity, null);
   }
 });

@@ -1,0 +1,46 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs
+index d713c36..265cbb0 100644
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs
+@@ -427,7 +427,7 @@ impl EvidenceProvider for RepositoryEvidence<'_> {
+         constructor: bool,
+         budget: &mut Budget,
+     ) -> Evidence<CallEvidence> {
+-        let mut numeric_callee = None;
++        let mut designated_callee = None;
+         let supplied =
+             if constructor && self.model.b.graph_format == crate::model::GraphFormat::CanonicalV3 {
+                 let mut issue = IncompleteArgumentMapping;
+@@ -466,7 +466,7 @@ impl EvidenceProvider for RepositoryEvidence<'_> {
+                     match report.arguments {
+                         Ok(arguments) => {
+                             if self.model.b.elements[node].ty == "OperatorExpression" {
+-                                numeric_callee = Some(arguments.callee);
++                                designated_callee = Some(arguments.callee);
+                             }
+                             Some(arguments.bindings.into_iter().map(|b| b.value.0).collect())
+                         }
+@@ -486,12 +486,12 @@ impl EvidenceProvider for RepositoryEvidence<'_> {
+         // Operator/trigger overrides need a unique designated-name resolver;
+         // the older ordered compatibility lookup is not complete evidence.
+         if (conforms(self.model.b.elements[node].ty, "OperatorExpression")
+-            && numeric_callee.is_none())
++            && designated_callee.is_none())
+             || self.model.b.elements[node].ty == "TriggerInvocationExpression"
+         {
+             return Err(IncompleteCallee);
+         }
+-        if numeric_callee.is_none() {
++        if designated_callee.is_none() {
+             self.graph
+                 .as_ref()
+                 .unwrap()
+@@ -517,7 +517,7 @@ impl EvidenceProvider for RepositoryEvidence<'_> {
+         // decisive negative. The constructor rule has no function conjunct.
+         let function = if constructor {
+             Yes
+-        } else if let Some(callee) = numeric_callee {
++        } else if let Some(callee) = designated_callee {
+             budget.charge(self.model.b.elements.len())?;
+             if self
+                 .model

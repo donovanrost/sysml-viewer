@@ -1089,3 +1089,9 @@ Local toolkit modification KERNEL-001: checked featuring evidence admits static
 package-owned AttributeUsage providers, preserving ownership and completeness
 guards. Arithmetic operator bindings are prepared by the facade. Exact patch
 provenance is recorded in patches/manifest.json.
+
+Local toolkit modification KERNEL-003: checked canonical bindings admit the
+designated conditional operator; exact cardinality evaluation selects Boolean
+branches while preserving eligibility, wrapper ownership, identity, freshness and
+work-budget guards. Exact per-file patch provenance is recorded in
+patches/manifest.json.

@@ -56,7 +56,7 @@ fn charge(steps: &mut usize, n: usize) -> Result<(), InvocationBindingIssue> {
 }
 impl ResolvedModel {
     /// Certify supplied arguments of ordinary InvocationExpressions and admitted
-    /// canonical numeric OperatorExpressions calling exact loaded library Functions.
+    /// canonical numeric and conditional OperatorExpressions calling exact loaded library Functions.
     /// Each argument must have one checked owned direct Redefinition.
     /// Named authored mappings are supported without truncating after an omitted
     /// earlier input. Positional mappings additionally require the current shared
@@ -118,7 +118,7 @@ impl super::Builder {
         let raw = StoredStructure::for_query(self, steps).ok_or(IncompleteProvider)?;
         let callee = if operator {
             batch
-                .numeric_target(self, receiver, steps)
+                .operator_target(self, receiver, steps)
                 .ok_or(UnsupportedConfiguration)?
         } else {
             membership_evidence::first_unowned_member(
@@ -385,8 +385,11 @@ impl super::Builder {
 }
 
 /// Shared exact loaded-library identity used by the evaluator's designated
-/// Function lookup. Only ordinary numeric operators enter this bounded domain.
-pub(super) fn numeric_operator_name(b: &super::Builder, receiver: usize) -> Option<&'static str> {
+/// Function lookup. Numeric operators and the conditional test enter this bounded domain.
+pub(super) fn designated_operator_name(
+    b: &super::Builder,
+    receiver: usize,
+) -> Option<&'static str> {
     if b.graph_format != crate::model::GraphFormat::CanonicalV3
         || b.elements.get(receiver)?.ty != "OperatorExpression"
     {
@@ -400,15 +403,16 @@ pub(super) fn numeric_operator_name(b: &super::Builder, receiver: usize) -> Opti
         "/" => "/",
         "%" => "%",
         "^" => "^",
+        "if" => "if",
         _ => return None,
     })
 }
-pub(super) fn numeric_operator_target(
+pub(super) fn designated_operator_target(
     b: &mut super::Builder,
     receiver: usize,
     steps: &mut usize,
 ) -> Option<usize> {
-    let operator = numeric_operator_name(b, receiver)?;
+    let operator = designated_operator_name(b, receiver)?;
     let raw = StoredStructure::for_query(b, steps)?;
     if !raw.ids_unique || raw.annotations_incomplete || b.metadata_associations_incomplete {
         return None;
@@ -419,13 +423,17 @@ pub(super) fn numeric_operator_target(
     // absence certificate, or enters its unbudgeted import/alias traversal.
     charge(steps, b.unit_starts.len()).ok()?;
     let roots: Vec<_> = b.unit_starts.iter().map(|&(root, _)| root).collect();
-    let mut base = None;
-    let mut data = None;
+    let packages: &[&str] = if operator == "if" {
+        &["BaseFunctions", "DataFunctions", "ControlFunctions"]
+    } else {
+        &["BaseFunctions", "DataFunctions"]
+    };
+    let mut selected = vec![None; packages.len()];
     for root in roots {
         if b.elements[root].ty != "Namespace" || b.elements[root].owning_relationship.is_some() {
             return None;
         }
-        for (name, selected) in [("BaseFunctions", &mut base), ("DataFunctions", &mut data)] {
+        for (name, selected) in packages.iter().zip(&mut selected) {
             if let Some(found) = direct_designated_member(b, &raw, root, name, false, steps)? {
                 if selected.replace(found).is_some() {
                     return None;
@@ -433,25 +441,26 @@ pub(super) fn numeric_operator_target(
             }
         }
     }
-    // OperatorExpression::instantiatedType searches BaseFunctions first. Its
-    // absence is established over the complete public direct-name domain.
-    if let Some(base) = base {
-        if !matches!(b.elements[base].ty, "Package" | "LibraryPackage")
-            || direct_designated_member(b, &raw, base, operator, true, steps)?.is_some()
+    // Certify absence in every earlier package in the normative search order.
+    // A compatibility resolver miss is not evidence for skipping an import/alias.
+    for package in selected[..selected.len() - 1].iter().flatten().copied() {
+        if !matches!(b.elements[package].ty, "Package" | "LibraryPackage")
+            || direct_designated_member(b, &raw, package, operator, true, steps)?.is_some()
         {
             return None;
         }
     }
-    let data = data?;
-    if !matches!(b.elements[data].ty, "Package" | "LibraryPackage") {
+    let package = (*selected.last()?)?;
+    if !matches!(b.elements[package].ty, "Package" | "LibraryPackage") {
         return None;
     }
-    let target = direct_designated_member(b, &raw, data, operator, true, steps)??;
+    let target = direct_designated_member(b, &raw, package, operator, true, steps)??;
+    let package_name = *packages.last()?;
     charge(steps, b.lib_qnames.len()).ok()?;
     let mut names = b
         .lib_qnames
         .iter()
-        .filter(|(_, name)| name.as_slice() == ["DataFunctions", operator]);
+        .filter(|(_, name)| name.as_slice() == [package_name, operator]);
     let (id, _) = names.next()?;
     (target < b.lib_boundary
         && b.elements[target].ty == "Function"
@@ -554,6 +563,81 @@ mod tests {
         model::{GraphFormat, Model},
     };
     const LIB: &str = "standard library package Base {classifier Anything; feature things:Anything;} standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;} standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;}";
+    const CONTROL: &str = "standard library package ControlFunctions { function 'if' {in test; in expr thenValue {return r;} in expr elseValue {return r;} return result;} }";
+    fn conditional_fixture(format: GraphFormat, earlier: &str) -> (ResolvedModel, ElementRef) {
+        let mut m = Model::with_graph_format(format);
+        m.add_library_source("base.kerml", LIB);
+        m.add_library_source("control.kerml", CONTROL);
+        let unit = m.add_library_source("earlier.kerml", earlier);
+        assert!(unit.diagnostics.is_empty(), "{:?}", unit.diagnostics);
+        m.add_source("conditional.kerml", "feature n = if true ? 3 else 4;");
+        let r = ResolvedModel::build(&m);
+        let call = r
+            .user_elements()
+            .find(|&e| r.element_type(e) == "OperatorExpression")
+            .unwrap();
+        (r, call)
+    }
+    #[test]
+    fn conditional_bindings_require_canonical_publication_and_complete_inputs() {
+        for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
+            let (mut r, call) = conditional_fixture(format, "");
+            assert!(r.invocation_binding_report(call).arguments.is_err());
+            r.implied_relationships(call);
+            let report = r.invocation_binding_report(call);
+            if format == GraphFormat::LegacyV2 {
+                assert!(report.arguments.is_err());
+                continue;
+            }
+            let arguments = report.arguments.unwrap();
+            assert_eq!(arguments.inputs.len(), 3);
+            assert_eq!(
+                arguments
+                    .bindings
+                    .iter()
+                    .map(|b| b.input)
+                    .collect::<Vec<_>>(),
+                arguments.inputs
+            );
+            assert_eq!(
+                r.element_type(arguments.bindings[0].value),
+                "LiteralBoolean"
+            );
+            for branch in &arguments.bindings[1..] {
+                assert_eq!(r.element_type(branch.value), "FeatureReferenceExpression");
+            }
+            assert_eq!(
+                r.model_level_evaluability(call).classification,
+                crate::json::ModelLevelEvaluability::Evaluable
+            );
+            assert_eq!(
+                r.invocation_binding_report_with_budget(call, crate::eval::MAX_STEPS)
+                    .arguments,
+                Err(WorkLimit)
+            );
+            r.b.elements[call.0]
+                .props
+                .insert("operator", serde_json::json!("missing"));
+            assert!(r.invocation_binding_report(call).arguments.is_err());
+        }
+    }
+    #[test]
+    fn conditional_designation_requires_absence_in_both_earlier_packages() {
+        for earlier in [
+            "standard library package BaseFunctions {function 'if' {in a; return r;}}",
+            "standard library package DataFunctions {function 'if' {in a; return r;}}",
+            "standard library package DataFunctions {public import Missing::*;}",
+            "standard library package BaseFunctions {alias 'if' for Missing::unknown;}",
+            "standard library package ControlFunctions {function 'if' {in a; return r;}}",
+        ] {
+            let (mut r, call) = conditional_fixture(GraphFormat::CanonicalV3, earlier);
+            r.implied_relationships(call);
+            assert!(
+                r.invocation_binding_report(call).arguments.is_err(),
+                "{earlier}"
+            );
+        }
+    }
     fn fixture(source: &str, format: GraphFormat) -> (ResolvedModel, ElementRef) {
         let mut m = Model::with_graph_format(format);
         assert!(

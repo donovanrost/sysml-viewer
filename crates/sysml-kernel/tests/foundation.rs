@@ -64,6 +64,52 @@ fn arithmetic_fixture() -> &'static Snapshot {
 }
 
 #[test]
+fn conditional_bounds_select_only_the_chosen_expression() {
+    let snapshot = analyze(vec![document(
+        "conditional.sysml",
+        include_str!("../../../tests/conformance/fixtures/mult-017.sysml"),
+    )]);
+    assert!(
+        snapshot.diagnostics.is_empty(),
+        "{:?}",
+        snapshot.diagnostics
+    );
+    let q = snapshot.queries().unwrap();
+    for (name, value) in [
+        ("trueBranch", "3"),
+        ("falseBranch", "4"),
+        ("nestedBranch", "5"),
+        ("arithmetic", "10"),
+        ("skippedDivision", "6"),
+        ("skippedUnbound", "7"),
+        ("exactLarge", "9007199254740993"),
+        ("nestedCondition", "8"),
+    ] {
+        let e = q.find(&format!("ConditionalProviders::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Evaluated {
+                lower: value.into(),
+                upper: Some(value.into())
+            },
+            "{name}"
+        );
+        assert_eq!(
+            e.declared_multiplicity.as_deref(),
+            Some(format!("[{value}]").as_str())
+        );
+    }
+    let e = q.find("ConditionalProviders::range")[0];
+    assert_eq!(
+        q.cardinality(&e.id).unwrap(),
+        &Cardinality::Evaluated {
+            lower: "3".into(),
+            upper: Some("4".into())
+        }
+    );
+}
+
+#[test]
 fn arithmetic_bounds_use_complete_bindings_even_alongside_unadmitted_calls() {
     let q = arithmetic_fixture().queries().unwrap();
     for (name, value) in [
@@ -99,6 +145,40 @@ fn arithmetic_bounds_use_complete_bindings_even_alongside_unadmitted_calls() {
             upper: Some("6".into()),
         }
     );
+}
+
+#[test]
+fn conditional_bounds_do_not_coerce_unavailable_conditions_or_invalid_selected_values() {
+    let snapshot = analyze(vec![document(
+        "conditional-guards.sysml",
+        include_str!("../../../tests/conformance/fixtures/mult-018.sysml"),
+    )]);
+    let q = snapshot.queries().unwrap();
+    for name in [
+        "unavailable",
+        "wrongType",
+        "unbound",
+        "division",
+        "belowZero",
+        "fraction",
+        "overflow",
+        "recursive",
+        "ineligible",
+    ] {
+        let e = q.find(&format!("ConditionalGuards::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Unknown {
+                reason: if matches!(name, "unavailable" | "unbound") {
+                    CardinalityIssue::IncompleteProvider
+                } else {
+                    CardinalityIssue::UnsupportedBound
+                },
+            },
+            "{name}"
+        );
+        assert_eq!(e.declared_multiplicity, None);
+    }
 }
 
 #[test]

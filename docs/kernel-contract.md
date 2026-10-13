@@ -91,9 +91,11 @@ exported. Null still does not establish absence or an effective default.
 `valueExpression` remains source text, not a public general-purpose evaluation API.
 Static package-owned attributes can supply checked bounds through aliases,
 reference chains and numeric operators (`+`, `-`, `*`, `/`, `%`, `^`), including
-nested and unary expressions. Unsupported featuring or variation contexts remain
-unknown. Conditional-valued providers remain incomplete; see KERNEL-003 in
-[foundation qualification](foundation-qualification.md).
+nested and unary expressions. Conditional providers support static Boolean tests,
+aliases and nested conditionals, evaluating only the selected branch after proving
+argument eligibility. Unselected unbound values or arithmetic errors are not
+executed. Unsupported featuring, variation, predicates and other control operators
+remain unknown. See KERNEL-003 in [foundation qualification](foundation-qualification.md).
 
 `membersAvailable: false` describes a navigation record. It must not be read as an
 empty namespace. `inheritanceComplete` is meaningful when member results are

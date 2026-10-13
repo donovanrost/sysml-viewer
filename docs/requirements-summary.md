@@ -34,7 +34,7 @@ All clause/prose decomposition remains pending. No percentage is published.
 
 ## Evidence mapped so far
 
-33 bounded assessments map 61 executable cases and 1 planned cases.
+33 bounded assessments map 64 executable cases and 1 planned cases.
 Linked tests are evidence for the assessment wording only. They do not qualify
 a whole source clause, its descendants, or a named constraint merely because it
 belongs to the same metaclass. Product robustness cases are identified separately.
@@ -61,7 +61,7 @@ belongs to the same metaclass. Product robustness cases are identified separatel
 | SOURCE-RECOVERY | product | partial / partial | 0 / 1 / 0 / 0 | Error recovery policy is a product requirement; the linked clause supplies context, not a recovery conformance rule. |
 | ROBUSTNESS-CYCLES | product | partial / partial | 0 / 0 / 2 / 0 | Termination and retained declarations do not establish a semantic verdict on cyclic models. |
 | MEMBERSHIP-ENUMERATION | product | partial / partial | 2 / 1 / 0 / 1 | Schema 2 exposes explicit owned and inherited bindings; full imported membership closure, implicit construction and complete metamodel traversal remain open. Inheritance completeness accompanies the native query. |
-| MULTIPLICITY-EXPRESSION | product | partial / partial | 9 / 4 / 0 / 0 | Static package-owned providers support aliases, reference chains and checked arithmetic after canonical semantic publication. MULT-003 and MULT-010 now pass. Division by zero, fractional/negative bounds, i128 overflow, recursive/unbound providers and non-unique designated operators retain unknown results. MULT-016 preserves a valid conditional-bound failure (KERNEL-003). General function execution, conditional selection and all contextual/evaluation semantics remain unqualified. |
+| MULTIPLICITY-EXPRESSION | product | partial / partial | 10 / 6 / 0 / 0 | Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. |
 | CONF-ABSTRACT-SYSML | conformance-point | partial / unsupported | 0 / 0 / 0 / 0 | The viewer reads selected declarations and does not provide full metamodel CRUD or complete well-formedness validation. |
 | CONF-ABSTRACT-KERML | conformance-point | partial / unsupported | 0 / 0 / 0 / 0 | The public kernel has no general metamodel mutation API and validation coverage is incomplete. |
 | CONF-TEXTUAL | conformance-point | partial / unsupported | 0 / 0 / 0 / 0 | Read/analysis operations are partial. Full textual create/update/delete operations and complete grammar qualification are absent. |

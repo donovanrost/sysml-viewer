@@ -1,17 +1,17 @@
 {
-  "generatedAt": "2026-10-13T08:13:42.154Z",
+  "generatedAt": "2026-10-13T08:51:14.365Z",
   "platform": "darwin",
   "arch": "arm64",
-  "kernelInputSha256": "de61e217567e24f4b95a2aefd0c1cd04d9f87d334f279dae05cd42b1002d4c5d",
+  "kernelInputSha256": "aa23b9433cc78844066ff417e76840226530bee1482215e445c97884f27ad637",
   "buildPerformed": true,
-  "binarySha256": "fe1d38b839bb992f30c2be6141b17ebcf22da5c5d5c1be03a529e09daffebaf8",
+  "binarySha256": "d3001f94fca05ccea73a03cd5d339c64b7f14a9621fe37aacf6bbc240d3729d2",
   "schemaVersion": 2,
-  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.3",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.4",
   "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
-  "matrixSha256": "dcbd019e9093534f47e4694ee14f1f70b922931346e88cd2f5c4e3b67422d458",
+  "matrixSha256": "99b515f03b0a733769616bf8ffab8df3c82c250db89b322c30b144a33d9c59d4",
   "counts": {
-    "pass": 60,
-    "known-gap": 1,
+    "pass": 64,
+    "known-gap": 0,
     "planned": 1,
     "fail": 0
   },
@@ -23,7 +23,7 @@
         "tests/conformance/fixtures/catalog.sysml": "eca432564be7438a0e1e93b62d957598d440a8a86d52518f1fe434bc09331be6",
         "tests/conformance/fixtures/imp-001.sysml": "c00509ea643b8f05e2813a3ce39744140bd36bf9b19cbd89859c8e87bfa0ce25"
       },
-      "elapsedMs": 2544,
+      "elapsedMs": 2971,
       "checks": [
         {
           "id": "clean",
@@ -42,7 +42,7 @@
         "tests/conformance/fixtures/catalog.sysml": "eca432564be7438a0e1e93b62d957598d440a8a86d52518f1fe434bc09331be6",
         "tests/conformance/fixtures/imp-002.sysml": "4b403a0ff5e0d359250e6f68b82d259d368bfff16a5d1eca62b59d547bbbd108"
       },
-      "elapsedMs": 2199,
+      "elapsedMs": 2420,
       "checks": [
         {
           "id": "syntax",
@@ -86,7 +86,7 @@
       "files": {
         "tests/conformance/fixtures/imp-004.sysml": "f96c5f28dc07c1001acd09c8522ebe6cbb158c49547c0d54ec07233b507457c5"
       },
-      "elapsedMs": 2069,
+      "elapsedMs": 2589,
       "checks": [
         {
           "id": "clean",
@@ -104,7 +104,7 @@
       "files": {
         "tests/conformance/fixtures/imp-005.sysml": "501f783085dbf700c3ae3ab5ba7867ce5f69069dc78c573e11209bcc2f712a72"
       },
-      "elapsedMs": 2051,
+      "elapsedMs": 3662,
       "checks": [
         {
           "id": "syntax",
@@ -126,7 +126,7 @@
       "files": {
         "tests/conformance/upstream/AliasImport.sysml": "b243243ba39ca49c9ad53521418513ea3111b4e6be864023dfa1bb921baf96e2"
       },
-      "elapsedMs": 2021,
+      "elapsedMs": 4110,
       "checks": [
         {
           "id": "clean",
@@ -144,7 +144,7 @@
       "files": {
         "tests/conformance/upstream/PrivateImportTest.sysml": "5111a800ab20f0018277bef5b4ed9d055327d03ac8afbdea2c2d3e5713113007"
       },
-      "elapsedMs": 2295,
+      "elapsedMs": 7490,
       "checks": [
         {
           "id": "syntax",
@@ -167,7 +167,7 @@
         "tests/conformance/fixtures/kernel-types.kerml": "8c7e8e352c78db7526134f4ea5870bfcc31f6cdce8eef554897c4b5d699bc502",
         "tests/conformance/fixtures/type-001.sysml": "2301ad9a7b681414e014bfa7a5e0bda8eacbaf26f402a4e91c655b73b45fd614"
       },
-      "elapsedMs": 2105,
+      "elapsedMs": 3493,
       "checks": [
         {
           "id": "clean",
@@ -185,7 +185,7 @@
       "files": {
         "tests/conformance/fixtures/type-002.sysml": "6fc3e465a0378de4409a4712fca09fe551b3441c2f0dc0cffe8de0fb1d42c8dd"
       },
-      "elapsedMs": 2479,
+      "elapsedMs": 6353,
       "checks": [
         {
           "id": "syntax",
@@ -207,7 +207,7 @@
       "files": {
         "tests/conformance/fixtures/type-003.sysml": "c3d91d3eeda512a4d9713259954b96f5d43ff366a280c84018d1456486d4e1b6"
       },
-      "elapsedMs": 2249,
+      "elapsedMs": 5773,
       "checks": [
         {
           "id": "syntax",
@@ -225,7 +225,7 @@
       "files": {
         "tests/conformance/fixtures/type-004.sysml": "a5b233eb65d735d4e6c6f99685f7b7a4a883da578af598a3015a9dcc8484adac"
       },
-      "elapsedMs": 2086,
+      "elapsedMs": 6851,
       "checks": [
         {
           "id": "clean",
@@ -243,7 +243,7 @@
       "files": {
         "tests/conformance/fixtures/spec-001.sysml": "104d99bc99d66f49f98456f0502acdb2207db04a3b1881e9148a1a9fa4317b30"
       },
-      "elapsedMs": 2175,
+      "elapsedMs": 5854,
       "checks": [
         {
           "id": "clean",
@@ -265,7 +265,7 @@
       "files": {
         "tests/conformance/fixtures/spec-002.sysml": "35d10c036152bdc7211750a2415fc50981cfe12d733773e40f394e6ffb596aed"
       },
-      "elapsedMs": 2030,
+      "elapsedMs": 4256,
       "checks": [
         {
           "id": "syntax",
@@ -291,7 +291,7 @@
       "files": {
         "tests/conformance/fixtures/spec-003.sysml": "31e0bf1f6e8603975d2b72f9b9d375889b56dc2607f64764fb046aa419740f02"
       },
-      "elapsedMs": 1985,
+      "elapsedMs": 2897,
       "checks": [
         {
           "id": "syntax",
@@ -321,7 +321,7 @@
       "files": {
         "tests/conformance/fixtures/sub-001.sysml": "460969728212d35c3ddea0e0b9f973e6391ea7b84bbbc73bf1a69cd1407dce29"
       },
-      "elapsedMs": 2271,
+      "elapsedMs": 2467,
       "checks": [
         {
           "id": "clean",
@@ -339,7 +339,7 @@
       "files": {
         "tests/conformance/fixtures/sub-002.sysml": "4106782cec961295224a366c64d6b2b5109f4acdf5410d1974e2a80b3f4c9380"
       },
-      "elapsedMs": 2970,
+      "elapsedMs": 2966,
       "checks": [
         {
           "id": "syntax",
@@ -357,7 +357,7 @@
       "files": {
         "tests/conformance/fixtures/redef-001.sysml": "a1dfb49761ab6ac121449b0bcd4cfa90cc9eb80b3fe87694bf3946fd0734d329"
       },
-      "elapsedMs": 2324,
+      "elapsedMs": 2217,
       "checks": [
         {
           "id": "clean",
@@ -379,7 +379,7 @@
       "files": {
         "tests/conformance/fixtures/redef-002.sysml": "3667569752b49815ad7d441214dd7425d1ca5d7a9d27c173c98b4f64ca5aaffd"
       },
-      "elapsedMs": 2108,
+      "elapsedMs": 2244,
       "checks": [
         {
           "id": "syntax",
@@ -397,7 +397,7 @@
       "files": {
         "tests/conformance/fixtures/mult-001.sysml": "6d80714dcb3c4517c1d1fc5647631fdcfc00df1763db9d9b0b78a6e01f73e8d9"
       },
-      "elapsedMs": 2148,
+      "elapsedMs": 2191,
       "checks": [
         {
           "id": "clean",
@@ -423,7 +423,7 @@
       "files": {
         "tests/conformance/fixtures/mult-002.sysml": "b62a2973c488e51b535af399898498870725ad65b06957f24e183432cc2a92a6"
       },
-      "elapsedMs": 2071,
+      "elapsedMs": 2203,
       "checks": [
         {
           "id": "syntax",
@@ -441,7 +441,7 @@
       "files": {
         "tests/conformance/fixtures/port-001.sysml": "65bc6e78d2732c401d2efb461f453421464e3724013b291cf23ecc39695cd011"
       },
-      "elapsedMs": 2368,
+      "elapsedMs": 2370,
       "checks": [
         {
           "id": "clean",
@@ -459,7 +459,7 @@
       "files": {
         "tests/conformance/fixtures/port-002.sysml": "b71fda2b582ab0b86b25dac8ba52925179e418b1f16428c21f1cc3d9e411dadc"
       },
-      "elapsedMs": 2046,
+      "elapsedMs": 2314,
       "checks": [
         {
           "id": "syntax",
@@ -477,7 +477,7 @@
       "files": {
         "tests/conformance/fixtures/conn-001.sysml": "02362e5c2d07b5aee5cf9e4554b97e6c0aa91124b982c513a86a4e8057461b5e"
       },
-      "elapsedMs": 2695,
+      "elapsedMs": 2130,
       "checks": [
         {
           "id": "clean",
@@ -495,7 +495,7 @@
       "files": {
         "tests/conformance/fixtures/conn-002.sysml": "a893967d876835da80b46b359476d5ca84ab49bc5c6fd77068f15d58810f30f9"
       },
-      "elapsedMs": 3340,
+      "elapsedMs": 2141,
       "checks": [
         {
           "id": "syntax",
@@ -513,7 +513,7 @@
       "files": {
         "tests/conformance/fixtures/conn-003.sysml": "b6cb21d52654f0fcadd6786398ec9cd5bae0a2d5c73c08ada6db6310fcb00680"
       },
-      "elapsedMs": 2676,
+      "elapsedMs": 2092,
       "checks": [
         {
           "id": "clean",
@@ -531,7 +531,7 @@
       "files": {
         "tests/conformance/fixtures/source-001.sysml": "93cd61e2ef9ab252d159aa4ddd1d68b92ced8bd56e5e970fa2092fd331ee3e11"
       },
-      "elapsedMs": 2772,
+      "elapsedMs": 2199,
       "checks": [
         {
           "id": "clean",
@@ -553,7 +553,7 @@
       "files": {
         "tests/conformance/fixtures/source-002.sysml": "06fd81bcc8f6cfd6c4392b4bc83719caa5a241e4660e17c336f0fe5b99652285"
       },
-      "elapsedMs": 2003,
+      "elapsedMs": 2174,
       "checks": [
         {
           "id": "syntax-error",
@@ -571,7 +571,7 @@
       "files": {
         "tests/conformance/fixtures/cycle-001.sysml": "5a4e5747ae73f0fc0a4cc4218bc62156b94218c1ac20f3a3423f2ed7725f53fe"
       },
-      "elapsedMs": 2160,
+      "elapsedMs": 2601,
       "checks": [
         {
           "id": "syntax",
@@ -589,7 +589,7 @@
       "files": {
         "tests/conformance/fixtures/cycle-002.sysml": "7001ff2663a326d9a0fb9a060a9ba6e148c18797699e791898c96f23be59e81f"
       },
-      "elapsedMs": 2005,
+      "elapsedMs": 2674,
       "checks": [
         {
           "id": "syntax",
@@ -611,7 +611,7 @@
       "files": {
         "tests/conformance/fixtures/imp-008.sysml": "a2615a6860a8af8301145e8a88f821354741a16b3cbeeedc1cad6167bba9153a"
       },
-      "elapsedMs": 2006,
+      "elapsedMs": 2865,
       "checks": [
         {
           "id": "clean",
@@ -645,7 +645,7 @@
       "files": {
         "tests/conformance/fixtures/imp-009.sysml": "dda3ec1106b6b1b675ed75c9b731739e304b8de8912f30e40aa1b3c876dda8d8"
       },
-      "elapsedMs": 2094,
+      "elapsedMs": 3328,
       "checks": [
         {
           "id": "clean",
@@ -671,7 +671,7 @@
       "files": {
         "tests/conformance/fixtures/imp-010.sysml": "6eb41259b6f5aae759d94e1f28924659daa397854fed2aa6ecea8f4fd14e6498"
       },
-      "elapsedMs": 2959,
+      "elapsedMs": 2797,
       "checks": [
         {
           "id": "protected",
@@ -697,7 +697,7 @@
       "files": {
         "tests/conformance/fixtures/imp-011.sysml": "f02ae3aa1769d16596db7d1b497faf4e8f41a9d41e0d1788140fd05f52a06416"
       },
-      "elapsedMs": 2180,
+      "elapsedMs": 2275,
       "checks": [
         {
           "id": "nested",
@@ -715,7 +715,7 @@
       "files": {
         "tests/conformance/fixtures/imp-012.sysml": "57d8ea41766e1efde37488ab3888aa3a677836bee9e512120cb901d2f0b72fb5"
       },
-      "elapsedMs": 2586,
+      "elapsedMs": 2374,
       "checks": [
         {
           "id": "clean",
@@ -733,7 +733,7 @@
       "files": {
         "tests/conformance/fixtures/imp-013.sysml": "3ffd047ce6424010ab6a2c46c6329d9f94719b82acc99f6cd5d94d995dd1135a"
       },
-      "elapsedMs": 2750,
+      "elapsedMs": 2109,
       "checks": [
         {
           "id": "unresolved",
@@ -751,7 +751,7 @@
       "files": {
         "tests/conformance/fixtures/imp-014.sysml": "d2321f69645be92cd3aeaa61a093be97943256d8123e93b7ff2fa193eba5c7e7"
       },
-      "elapsedMs": 2165,
+      "elapsedMs": 2182,
       "checks": [
         {
           "id": "clean",
@@ -769,7 +769,7 @@
       "files": {
         "tests/conformance/fixtures/imp-015.sysml": "981fb841dd499cc15602cd64a7ccb229262b344726feb0636cffa007a22bbbb3"
       },
-      "elapsedMs": 2064,
+      "elapsedMs": 2131,
       "checks": [
         {
           "id": "collision",
@@ -783,7 +783,7 @@
       "files": {
         "tests/conformance/fixtures/imp-016.sysml": "87391d34f8675d7c95f37a903722d819315afaee779218b557e27e1ee3278b2e"
       },
-      "elapsedMs": 2054,
+      "elapsedMs": 2115,
       "checks": [
         {
           "id": "clean",
@@ -797,7 +797,7 @@
       "files": {
         "tests/conformance/fixtures/imp-017.sysml": "56a3965e4f9b1e41a7ca4b411b9a50a38d3f488efc753c3606468f82639b4397"
       },
-      "elapsedMs": 2043,
+      "elapsedMs": 3072,
       "checks": [
         {
           "id": "collision",
@@ -811,7 +811,7 @@
       "files": {
         "tests/conformance/fixtures/imp-018.sysml": "6539fdb9595436cb53c00c2620b6430477461c55f416da340ea620eacb54c436"
       },
-      "elapsedMs": 2107,
+      "elapsedMs": 2602,
       "checks": [
         {
           "id": "visibility",
@@ -825,7 +825,7 @@
       "files": {
         "tests/conformance/fixtures/imp-019.sysml": "aaaf05ad17eb41cef3b72e7680a6dca46a9a1b0a1700caf1ace73998a5b53b73"
       },
-      "elapsedMs": 2111,
+      "elapsedMs": 2248,
       "checks": [
         {
           "id": "clean",
@@ -843,7 +843,7 @@
       "files": {
         "tests/conformance/fixtures/mult-003.sysml": "03de768dc2d3a1cd96dc594df4c9e9c984f57408ac1cabc7199925f247b9d70f"
       },
-      "elapsedMs": 2281,
+      "elapsedMs": 2353,
       "checks": [
         {
           "id": "clean",
@@ -873,7 +873,7 @@
       "files": {
         "tests/conformance/fixtures/mult-004.sysml": "2f10563071e1acef1c3550cd43f85a50d73a14101c25d8d00c79eca48bc48d2c"
       },
-      "elapsedMs": 3221,
+      "elapsedMs": 2116,
       "checks": [
         {
           "id": "clean",
@@ -891,7 +891,7 @@
       "files": {
         "tests/conformance/fixtures/mult-005.sysml": "35b13a80ece02bcdc4ce50931e98610b9f277bcb9c5287845032a796ff2bb84d"
       },
-      "elapsedMs": 3271,
+      "elapsedMs": 2113,
       "checks": [
         {
           "id": "clean",
@@ -917,7 +917,7 @@
       "files": {
         "tests/conformance/fixtures/mult-006.sysml": "fc0eade5d9b84d6b8be8e6c12d82a9549c33f7a786e715a95430196ed171a05b"
       },
-      "elapsedMs": 3066,
+      "elapsedMs": 2142,
       "checks": [
         {
           "id": "clean",
@@ -939,7 +939,7 @@
       "files": {
         "tests/conformance/fixtures/mult-007.sysml": "848aba281867153c1e31fde2de598c4409ed97a902c81d84619bc52c6122dfb7"
       },
-      "elapsedMs": 2906,
+      "elapsedMs": 2157,
       "checks": [
         {
           "id": "fractional",
@@ -965,7 +965,7 @@
       "files": {
         "tests/conformance/fixtures/mult-008.sysml": "df4d8beb7150d60ef54618af3b9093ca746d47e301d89ad2ad4f0dd4ab53cca8"
       },
-      "elapsedMs": 6360,
+      "elapsedMs": 2170,
       "checks": [
         {
           "id": "unknown",
@@ -983,7 +983,7 @@
       "files": {
         "tests/conformance/fixtures/mult-009.sysml": "1d20732a16e36fcac3db3f39806ee395ec4c0133946bb140338b624ae6e2d7b0"
       },
-      "elapsedMs": 4416,
+      "elapsedMs": 2096,
       "checks": [
         {
           "id": "syntax",
@@ -1006,7 +1006,7 @@
       "files": {
         "tests/conformance/fixtures/imp-021.sysml": "818885142984804af13ac37a8fd4d5b7cc61e9dfd9045184a1040a9ca2563a59"
       },
-      "elapsedMs": 3987,
+      "elapsedMs": 2168,
       "checks": [
         {
           "id": "clean",
@@ -1024,7 +1024,7 @@
       "files": {
         "tests/conformance/fixtures/name-001.sysml": "5ad1713a9332f65b16422acedd77240c60b3c5d67874769f0fbcc6e967301b52"
       },
-      "elapsedMs": 3597,
+      "elapsedMs": 2149,
       "checks": [
         {
           "id": "clean",
@@ -1054,7 +1054,7 @@
       "files": {
         "tests/conformance/fixtures/name-002.sysml": "7db579ccd5f2e2be3822e21b459206223ee894503cec2b762cf997907d8bc6c4"
       },
-      "elapsedMs": 3163,
+      "elapsedMs": 2359,
       "checks": [
         {
           "id": "reserved",
@@ -1072,7 +1072,7 @@
       "files": {
         "tests/conformance/fixtures/name-003.kerml": "4688ffbd699ec1bc3afc7cda6127a6f6586ec03ab3c4b390e124b8a9f99ab4d1"
       },
-      "elapsedMs": 6203,
+      "elapsedMs": 2182,
       "checks": [
         {
           "id": "clean",
@@ -1090,7 +1090,7 @@
       "files": {
         "tests/conformance/fixtures/imp-022.sysml": "4dcecfdfbb466d3bdbe1e87ce3866cdaac0d5823d86118aeb733e98095c9a4e5"
       },
-      "elapsedMs": 2694,
+      "elapsedMs": 2133,
       "checks": [
         {
           "id": "clean",
@@ -1104,7 +1104,7 @@
       "files": {
         "tests/conformance/fixtures/imp-023.sysml": "51bc54b40c728b031231f86a57f7816641f5be650cd2357d08990f2f024a7753"
       },
-      "elapsedMs": 2358,
+      "elapsedMs": 2256,
       "checks": [
         {
           "id": "collision",
@@ -1118,7 +1118,7 @@
       "files": {
         "tests/conformance/fixtures/mult-010.sysml": "34fc51e4c561bb0c5986100a18fa847a035851f71c23781d61886ca6ff0c5129"
       },
-      "elapsedMs": 2285,
+      "elapsedMs": 2324,
       "checks": [
         {
           "id": "clean",
@@ -1136,7 +1136,7 @@
       "files": {
         "tests/conformance/fixtures/mult-011.sysml": "a6bcbd0e9b75901543125a8444e00f5a0c9f3037b2e03b2d2a591ec063311260"
       },
-      "elapsedMs": 2523,
+      "elapsedMs": 2333,
       "checks": [
         {
           "id": "clean",
@@ -1170,7 +1170,7 @@
       "files": {
         "tests/conformance/fixtures/mult-012.sysml": "8afa29fc1a2f5884ddf904bb9cd07b43dcfc5f88800adb0ef9737977017fd4e3"
       },
-      "elapsedMs": 3748,
+      "elapsedMs": 2144,
       "checks": [
         {
           "id": "unvaluedBound",
@@ -1196,7 +1196,7 @@
       "files": {
         "tests/conformance/fixtures/mult-013.sysml": "ed818d0f10f0053a01abb53fb754dded59a03c72457b01761ae0c75df3401148"
       },
-      "elapsedMs": 13727,
+      "elapsedMs": 2545,
       "checks": [
         {
           "id": "clean",
@@ -1246,7 +1246,7 @@
       "files": {
         "tests/conformance/fixtures/mult-014.sysml": "fb8157504e6b2e4a27793dc7dece20c0ccbbda50f0bb7b59d8393545d1b8cd6b"
       },
-      "elapsedMs": 7316,
+      "elapsedMs": 2283,
       "checks": [
         {
           "id": "division",
@@ -1288,7 +1288,7 @@
       "files": {
         "tests/conformance/fixtures/mult-015.sysml": "994dc72b74a3398348de1964d8cc245386ee806b4859d66a5e3006366f977de1"
       },
-      "elapsedMs": 3909,
+      "elapsedMs": 2147,
       "checks": [
         {
           "id": "sized",
@@ -1302,11 +1302,11 @@
     },
     {
       "id": "MULT-016",
-      "status": "known-gap",
+      "status": "pass",
       "files": {
         "tests/conformance/fixtures/mult-016.sysml": "ddc43a5090cc66bf9e2b25dd3962269534b41a7f0f1c12ce7bf4f81d75192261"
       },
-      "elapsedMs": 2129,
+      "elapsedMs": 2200,
       "checks": [
         {
           "id": "clean",
@@ -1314,9 +1314,121 @@
         },
         {
           "id": "sized",
-          "status": "known-gap",
-          "issue": "KERNEL-003",
-          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   reason: 'unsupportedBound',\n+   status: 'unknown'\n-   lower: '3',\n-   status: 'evaluated',\n-   upper: '3'\n  }\n"
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "MULT-017",
+      "status": "pass",
+      "files": {
+        "tests/conformance/fixtures/mult-017.sysml": "17a2314b4f817b2c579d20a0d17a15639500804f8735b3a639fd286eabcaad29"
+      },
+      "elapsedMs": 2800,
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "trueBranch",
+          "status": "pass"
+        },
+        {
+          "id": "falseBranch",
+          "status": "pass"
+        },
+        {
+          "id": "nestedBranch",
+          "status": "pass"
+        },
+        {
+          "id": "arithmetic",
+          "status": "pass"
+        },
+        {
+          "id": "skippedDivision",
+          "status": "pass"
+        },
+        {
+          "id": "skippedUnbound",
+          "status": "pass"
+        },
+        {
+          "id": "exactLarge",
+          "status": "pass"
+        },
+        {
+          "id": "nestedCondition",
+          "status": "pass"
+        },
+        {
+          "id": "range",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "MULT-018",
+      "status": "pass",
+      "files": {
+        "tests/conformance/fixtures/mult-018.sysml": "bb851b64a8e07318d7e26f0bb5589404284c227e74ba3d33b5b5beb4fffa9cc2"
+      },
+      "elapsedMs": 2517,
+      "checks": [
+        {
+          "id": "unavailable",
+          "status": "pass"
+        },
+        {
+          "id": "wrongType",
+          "status": "pass"
+        },
+        {
+          "id": "unbound",
+          "status": "pass"
+        },
+        {
+          "id": "division",
+          "status": "pass"
+        },
+        {
+          "id": "belowZero",
+          "status": "pass"
+        },
+        {
+          "id": "fraction",
+          "status": "pass"
+        },
+        {
+          "id": "overflow",
+          "status": "pass"
+        },
+        {
+          "id": "recursive",
+          "status": "pass"
+        },
+        {
+          "id": "ineligible",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "MULT-019",
+      "status": "pass",
+      "files": {
+        "tests/conformance/fixtures/mult-019.sysml": "1aa2ce0161cee91d5603f48ee920055fd0a9aa69731991db245703406a5303a3"
+      },
+      "elapsedMs": 2152,
+      "checks": [
+        {
+          "id": "sized",
+          "status": "pass"
+        },
+        {
+          "id": "shadow-warning",
+          "status": "pass"
         }
       ]
     }
