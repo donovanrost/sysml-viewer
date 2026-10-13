@@ -1637,7 +1637,8 @@
           "checked-bound-execution",
           "checked-dynamic-isolation",
           "isolation-tests",
-          "checked-eligibility-batch"
+          "checked-eligibility-batch",
+          "cold-query-tests"
         ]
       },
       "api": {
@@ -2404,7 +2405,7 @@
           ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. Cold full-library queries and more complex expressions can still exhaust the unchanged work allowance; reuse does not qualify every composition or a global cache."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. KERNEL-006 qualifies first direct range, alias and repeated-endpoint queries over the full pinned library after implied relationships are published, without preceding proof queries. Callee signatures share checked evidence; every supplied binding is rechecked. Other cold entry paths and more complex expressions can still exhaust the unchanged allowance; reuse does not qualify every composition or a global cache."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",
@@ -2962,16 +2963,16 @@
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "10568dd74cd7f9f59e84e7db4a4c9f694340bdaa3fe1c7d1e23db20c85072fb5",
+  "assessmentsSha256": "d17ca980707b0e2dd2d2c06e51c340a34d2db1caad9788d395ed3546bff6a9ca",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "3368bfbcbc079aa397f4df9ce9ea113187ac4f7c068479e3f6583fdfb519b25e",
-    "generatedAt": "2026-10-13T20:06:39.344Z",
-    "kernelInputSha256": "808df75ad3cf1cca3537dd7814825987475c3c52d7c0e83a66dc4c6ca33a8fd9",
-    "binarySha256": "9fb2f4342261123647e2da2d11e80af3a51dc0395d28d0e4ecf44f50cc00e984",
+    "sha256": "5511ad577b906c6f4833021e2fe057996a236db4a895cdcf890d3cda24ddae48",
+    "generatedAt": "2026-10-13T20:56:35.483Z",
+    "kernelInputSha256": "7c6f0cfa7573ccab9d3740aa99830863b59bf42098e416bbffe1fc1f1c7c9a23",
+    "binarySha256": "94db8ef9ef2bf6385183eee3be098eb67b2c5bf68e2003d7b593f963c4b115a1",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.7",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.8",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
       "pass": 73,

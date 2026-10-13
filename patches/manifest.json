@@ -39,13 +39,13 @@
       "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results."
     },
     {
-      "id": "KERNEL-003/005",
+      "id": "KERNEL-003/005/006",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
       "patch": "patches/0005-designated-callee-evidence.patch",
-      "sha256": "936e211fafc9a04e1daa4fd29e4d6560a2beda0792a07340dade9ed8421c4897",
+      "sha256": "a680fdee92c6f23f9ebe723417646b9002ced5313afee027b2d555c974f26add",
       "baseSha256": "c54b284a1773583b0b67926869c03fcc4efa1df3ef44421907af67354b6e4412",
-      "resultSha256": "64bbbb73733cbe9ee764764e04499e2cfd7df580b6e565ac2910e56725af8bff",
-      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates."
+      "resultSha256": "08f521867657bed8204154c271036b5fdf12db1ea4f71f31e6e256a3dd77f3f3",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates. KERNEL-006 reuses checked callee signatures within the eligibility batch through the existing constructor/invocation evidence provider; every supplied binding is independently checked and the unchanged cumulative allowance still bounds cold and warm queries."
     },
     {
       "id": "KERNEL-003/005",

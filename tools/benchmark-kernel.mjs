@@ -29,6 +29,9 @@ if (process.argv.includes('--wasm-child')) {
     {
       name: 'compound-ranges',
       text: readFileSync(join(root, 'tests/conformance/fixtures/mult-022.sysml'), 'utf8'),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'MULT-022').checks,
     },
     {
       name: 'isolated-providers',
@@ -105,7 +108,7 @@ if (process.argv.includes('--wasm-child')) {
           const failures = assessCase(snapshot, { checks: scenario.checks }).filter(
             (c) => c.status !== 'pass',
           );
-          assert.deepEqual(failures, [], `${scenario.name}: checked isolation regression`);
+          assert.deepEqual(failures, [], `${scenario.name}: checked regression`);
         } else {
           assert.deepEqual(snapshot.diagnostics, [], `${scenario.name}: unexpected diagnostics`);
         }

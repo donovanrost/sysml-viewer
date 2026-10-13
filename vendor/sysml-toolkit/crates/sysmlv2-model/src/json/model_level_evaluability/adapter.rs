@@ -66,12 +66,14 @@ impl ResolvedModel {
 
 /// Reuse checked structural and type evidence within one enclosing query.
 /// Checked TypeRelations and the library self identity share that generation.
+/// Callee signatures are shared, while each call's supplied bindings are rechecked.
 /// Each expression gets a fresh semantic proof and path-local cycle guards.
 /// No eligibility classification survives between reports.
 #[derive(Default)]
 pub(in crate::json) struct EligibilityBatch {
     graph: Option<StoredGraph>,
     relations: TypeRelations,
+    bindings: super::super::constructor_bindings::ConstructorBatchEvidence,
     self_target: Option<Option<usize>>,
     stamp: Option<super::super::semantic::certified_types::Stamp>,
     used: usize,
@@ -105,6 +107,7 @@ impl EligibilityBatch {
         } else {
             proof.provider.graph = self.graph.take();
             proof.provider.relations = std::mem::take(&mut self.relations);
+            proof.provider.bindings = std::mem::take(&mut self.bindings);
             proof.provider.self_target = self.self_target;
             let result = proof.walk(expression.0, 0);
             if self
@@ -124,6 +127,7 @@ impl EligibilityBatch {
                 // later fresh batch can retry after work exhaustion or edits.
                 self.graph = proof.provider.graph.take();
                 self.relations = std::mem::take(&mut proof.provider.relations);
+                self.bindings = std::mem::take(&mut proof.provider.bindings);
                 self.self_target = proof.provider.self_target;
                 if self.stamp.is_none() {
                     self.stamp = Some(super::super::semantic::certified_types::Stamp::capture(
@@ -334,6 +338,7 @@ struct RepositoryEvidence<'a> {
     model: &'a mut ResolvedModel,
     graph: Option<StoredGraph>,
     relations: TypeRelations,
+    bindings: super::super::constructor_bindings::ConstructorBatchEvidence,
     self_target: Option<Option<usize>>,
 }
 impl<'a> RepositoryEvidence<'a> {
@@ -342,6 +347,7 @@ impl<'a> RepositoryEvidence<'a> {
             model,
             graph: None,
             relations: TypeRelations::default(),
+            bindings: super::super::constructor_bindings::ConstructorBatchEvidence::default(),
             self_target: None,
         }
     }
@@ -509,11 +515,12 @@ impl EvidenceProvider for RepositoryEvidence<'_> {
             if constructor && self.model.b.graph_format == crate::model::GraphFormat::CanonicalV3 {
                 let mut issue = IncompleteArgumentMapping;
                 let mapping = structural_read(budget, |steps| {
-                    let report = self
-                        .model
-                        .constructor_binding_report_with_budget(ElementRef(node), *steps);
-                    *steps = report.steps;
-                    match report.arguments {
+                    match self.model.b.checked_constructor_bindings_in_batch(
+                        node,
+                        steps,
+                        None,
+                        &mut self.bindings,
+                    ) {
                         Ok(arguments) => {
                             Some(arguments.bindings.into_iter().map(|b| b.value.0).collect())
                         }
@@ -536,11 +543,12 @@ impl EvidenceProvider for RepositoryEvidence<'_> {
             {
                 let mut issue = IncompleteArgumentMapping;
                 let mapping = structural_read(budget, |steps| {
-                    let report = self
-                        .model
-                        .invocation_binding_report_with_budget(ElementRef(node), *steps);
-                    *steps = report.steps;
-                    match report.arguments {
+                    match self.model.b.checked_invocation_bindings_in_batch(
+                        node,
+                        steps,
+                        None,
+                        &mut self.bindings,
+                    ) {
                         Ok(arguments) => {
                             if self.model.b.elements[node].ty == "OperatorExpression" {
                                 designated_callee = Some(arguments.callee);
@@ -760,6 +768,119 @@ mod tests {
             .unwrap();
         (owner, rel, r.b.elements[rel].children[0])
     }
+    fn binding_fixture() -> ResolvedModel {
+        let mut model = Model::with_graph_format(crate::model::GraphFormat::CanonicalV3);
+        model.add_library_source("binding-library.kerml", concat!(
+            "standard library package Base {classifier Anything; feature things:Anything;} ",
+            "standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;} ",
+            "standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;} ",
+            "standard library package DataFunctions {function '+' {in a; in b; return result;}}"
+        ));
+        model.add_source(
+            "bindings.kerml",
+            concat!(
+                "feature sumOne=1+2; feature sumTwo=3+4; ",
+                "class C {feature a;} feature construct=new C(a=5); ",
+                "feature another=new C(a=6); feature invalid=new C(missing=7);"
+            ),
+        );
+        assert!(!model.has_errors());
+        let mut r = ResolvedModel::build(&model);
+        r.ensure_implied();
+        r
+    }
+
+    #[test]
+    fn eligibility_batch_shares_signatures_but_rechecks_each_argument_list() {
+        let mut r = binding_fixture();
+        let mut batch = EligibilityBatch::default();
+        for name in ["sumOne", "sumTwo", "construct", "another"] {
+            let (_, _, expression) = value(&mut r, name);
+            let expression = ElementRef(expression);
+            assert_eq!(
+                r.model_level_evaluability(expression).classification,
+                Yes,
+                "{name}"
+            );
+            let first = batch.report(&mut r, expression, 0);
+            assert_eq!(first.classification, Yes, "{name}");
+            let fresh = r.model_level_evaluability(expression);
+            let repeated = batch.report(&mut r, expression, 0);
+            assert_eq!(repeated.classification, fresh.classification);
+            assert!(repeated.steps > first.steps);
+            assert!(repeated.steps - first.steps < fresh.steps);
+        }
+        // The same constructor's cached feature sequence cannot bless a
+        // different invocation with an unmapped named argument.
+        let (_, _, invalid) = value(&mut r, "invalid");
+        let invalid = ElementRef(invalid);
+        let expected = r.model_level_evaluability(invalid).classification;
+        assert!(matches!(expected, Unknown(_)));
+        assert_eq!(batch.report(&mut r, invalid, 0).classification, expected);
+    }
+
+    #[test]
+    fn eligibility_binding_evidence_refuses_changed_signatures_and_arguments() {
+        for mutate_signature in [false, true] {
+            let mut r = binding_fixture();
+            let (_, _, expression) = value(&mut r, "sumOne");
+            let expression = ElementRef(expression);
+            let arguments = r.invocation_binding_report(expression).arguments.unwrap();
+            let mut batch = EligibilityBatch::default();
+            assert_eq!(batch.report(&mut r, expression, 0).classification, Yes);
+            if mutate_signature {
+                r.b.elements[arguments.inputs[0].0]
+                    .props
+                    .insert("direction", serde_json::json!("out"));
+            } else {
+                r.b.elements[arguments.bindings[0].value.0].ty = "CalculationUsage";
+            }
+            assert_eq!(
+                batch.report(&mut r, expression, 0).classification,
+                Unknown(MissingOrMalformedMembership)
+            );
+            let expected = r.model_level_evaluability(expression).classification;
+            assert_ne!(expected, Yes);
+            assert_eq!(
+                EligibilityBatch::default()
+                    .report(&mut r, expression, 0)
+                    .classification,
+                expected
+            );
+        }
+    }
+
+    #[test]
+    fn eligibility_binding_cache_cannot_reset_exhausted_work() {
+        for name in ["sumOne", "construct"] {
+            for warmed in [false, true] {
+                let mut r = binding_fixture();
+                let (_, _, expression) = value(&mut r, name);
+                let expression = ElementRef(expression);
+                let mut batch = EligibilityBatch::default();
+                if warmed {
+                    assert_eq!(batch.report(&mut r, expression, 0).classification, Yes);
+                }
+                assert_eq!(
+                    batch
+                        .report(&mut r, expression, crate::eval::MAX_STEPS - 10)
+                        .classification,
+                    Unknown(WorkLimit)
+                );
+                assert_eq!(
+                    batch.report(&mut r, expression, 0).classification,
+                    Unknown(WorkLimit)
+                );
+                assert_eq!(
+                    EligibilityBatch::default()
+                        .report(&mut r, expression, 0)
+                        .classification,
+                    Yes
+                );
+            }
+        }
+    }
+
     #[test]
     fn eligibility_batch_reuses_topology_without_reusing_classifications() {
         let mut r = fixture();

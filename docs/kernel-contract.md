@@ -101,9 +101,11 @@ and conditional proofs when source/target evidence is consistent. Direct and tra
 dependents remain incomplete; malformed relationships and other unsupported dynamic
 families can still prevent publication. Within a single cardinality query, related
 expressions reuse stamped topology and type evidence while eligibility and execution
-remain independently checked. Compound arithmetic/conditional range endpoints are
-covered; cold library preparation and larger compositions can still reach `workLimit`.
-See KERNEL-003/004/005 in
+remain independently checked. Checked callee signatures also share evidence, while
+every invocation and constructor argument list is validated separately. First range,
+alias and repeated-endpoint queries over the full pinned library are covered after
+implied relationships are published. Other entry paths and larger compositions can
+still reach `workLimit`. See KERNEL-003/004/005/006 in
 [foundation qualification](foundation-qualification.md).
 
 `membersAvailable: false` describes a navigation record. It must not be read as an

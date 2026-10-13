@@ -129,7 +129,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
       "symbol": "pub fn model_level_evaluability(",
       "role": "Bounded eligibility proof; package attribute support does not qualify every expression family.",
-      "sha256": "64bbbb73733cbe9ee764764e04499e2cfd7df580b6e565ac2910e56725af8bff"
+      "sha256": "08f521867657bed8204154c271036b5fdf12db1ea4f71f31e6e256a3dd77f3f3"
     },
     "checked-invocation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
@@ -182,8 +182,14 @@
     "checked-eligibility-batch": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
       "symbol": "pub(in crate::json) struct EligibilityBatch",
-      "role": "Query-local reuse of checked topology and TypeRelations, with fresh path-sensitive eligibility proofs, semantic stamps, cumulative work and partial-certificate guards.",
-      "sha256": "64bbbb73733cbe9ee764764e04499e2cfd7df580b6e565ac2910e56725af8bff"
+      "role": "Query-local reuse of checked topology, TypeRelations and callee signatures, with fresh path-sensitive eligibility and supplied-binding proofs, semantic stamps, cumulative work and partial-certificate guards.",
+      "sha256": "08f521867657bed8204154c271036b5fdf12db1ea4f71f31e6e256a3dd77f3f3"
+    },
+    "cold-query-tests": {
+      "path": "crates/sysml-kernel/tests/cold_queries.rs",
+      "symbol": "fn first_compound_range_query_fits_the_budget_with_the_full_library",
+      "role": "First direct range, alias and repeated-endpoint queries over all 94 library sources, with and without an unrelated missing base; each case rebuilds the canonical model and publishes implied relationships before the first proof.",
+      "sha256": "485d97b0e4a9dcc8e72023ca3b29bb99706d88c5f59e1f7f2fb435f9d1222226"
     }
   },
   "assessments": [
@@ -1156,7 +1162,8 @@
           "checked-bound-execution",
           "checked-dynamic-isolation",
           "isolation-tests",
-          "checked-eligibility-batch"
+          "checked-eligibility-batch",
+          "cold-query-tests"
         ]
       },
       "api": {
@@ -1383,7 +1390,7 @@
           ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. Cold full-library queries and more complex expressions can still exhaust the unchanged work allowance; reuse does not qualify every composition or a global cache."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General predicates, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. KERNEL-006 qualifies first direct range, alias and repeated-endpoint queries over the full pinned library after implied relationships are published, without preceding proof queries. Callee signatures share checked evidence; every supplied binding is rechecked. Other cold entry paths and more complex expressions can still exhaust the unchanged allowance; reuse does not qualify every composition or a global cache."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",

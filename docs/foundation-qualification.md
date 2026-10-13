@@ -230,12 +230,43 @@ The original vendor inventory is unchanged: combined KERNEL-003/005 patches reta
 the earlier conditional changes, and a new module export patch is recorded.
 Snapshot schema 3 remains unchanged; the engine patch suffix is `.7`.
 
-In a direct full-library probe, the prepared range report uses about 7.5 million
-steps instead of exceeding the unchanged 10-million-step allowance. A first direct
-range query with cold library evidence can still exceed that allowance, then succeed
-on a fresh query after shared preparation. This remaining cold-entry limitation and
-larger compositions require further work; these cases do not establish universal
-expression or performance coverage.
+With `.7`, a direct full-library probe used about 7.5 million steps for a prepared
+range report instead of exceeding the unchanged 10-million-step allowance. A first
+direct range query with cold library evidence still exceeded that allowance. The
+recorded first-query failure is addressed by KERNEL-006 below; larger compositions
+still need separate qualification.
+
+## KERNEL-006: first-query range budget (fixed for the recorded entry path)
+
+The `.7` first range query spent about 5.2 million steps on shared preparation and
+constraint validation before checking expressions. Model-level eligibility then
+repeated complete callee signature projections for each call, including calls
+visited again from another bound. That repeated work exhausted the 10-million-step
+allowance even though a later query on the prepared model succeeded.
+
+The eligibility adapter now retains the existing `ConstructorBatchEvidence` within
+its private query context. Constructor and invocation readers share checked callee
+feature sequences and designated operator targets. Each supplied argument still
+passes the existing binding reader: successful signature reuse never substitutes
+for argument mapping, valuation checks or recursive eligibility. No new binding
+algorithm or global cache is introduced. Semantic stamps and cumulative work
+accounting remain in force; the allowance is unchanged.
+
+A direct probe now completes the first `[5..10]` query in about 9.3 million steps
+and a subsequent query in about 4.3 million. The full-library regression independently
+rebuilds the model for a range, an alias endpoint and repeated endpoints, both with
+and without an unrelated missing base. Each first query must succeed without an
+earlier proof query or a retry. These queries require the canonical graph with
+implied relationships already published; unpublished graphs remain unqualified.
+This is a bounded-work regression, not a latency promise for every cold entry path.
+
+Private regressions check constructor and operator reuse, a different call to the
+same constructor with an unmapped argument, changed callee directions and argument kinds, and
+exhausted cold/warm budgets followed by fresh retries. Existing stale-generation,
+cycle, malformed-graph and invalid-endpoint tests remain required. KERNEL-006 is
+recorded in the combined adapter patch against the original upstream bytes.
+The engine patch suffix is `.8`; snapshot schema 3 and package version 0.3.0 remain
+unchanged.
 
 ## Remaining foundation work
 
@@ -265,9 +296,9 @@ are rejected.
 ## Recorded verification
 
 On macOS arm64, the completed run has **73 passing conformance cases**, **no
-known-gap cases**, and **no planned cases in the current matrix**. All **42 Rust facade tests**,
-**31 Node tests**, and **222 dependency proof tests** pass.
-The dependency suites cover type relations (41), model-level evaluability (30),
+known-gap cases**, and **no planned cases in the current matrix**. All **43 Rust kernel tests**,
+**31 Node tests**, and **225 dependency proof tests** pass.
+The dependency suites cover type relations (41), model-level evaluability (33),
 cardinality (22), invocation bindings (16), constructor bindings (16), dynamic graph
 (17), dynamic invocations (25), owned results (4), end constancy (10) and checked
 namespace operations (41). The corpus and the 32 import-rule partitions are included
@@ -280,37 +311,40 @@ pass. The saved [matrix execution](evidence/conformance-macos-arm64.json) and
 [requirements execution](evidence/requirements-macos-arm64.json) record the current
 source, patch and fixture fingerprints. Windows/Linux execution remains pending CI.
 
-The latest [compound-range benchmark](evidence/benchmark-ranges-macos-arm64.json)
+The latest [signature-reuse benchmark](evidence/benchmark-signatures-macos-arm64.json)
 records three fresh processes per native/WASM workload, for 54 successful samples.
-All repeated native and WASM snapshots agree exactly. The compound-range workload
-covers MULT-022 alongside the eight retained workloads.
+All repeated native and WASM snapshots agree exactly. Every compound-range sample
+also passes all MULT-022 assertions, alongside the retained isolation assertions
+and seven other workloads.
 
 | Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
 | --- | ---: | ---: | ---: |
-| Compound ranges | 2,667 | 3,010 | 391.9/353.9 |
-| Independent bounds with missing base | 2,075 | 2,502 | 405.6/346.6 |
-| Imported memberships | 1,992 | 2,435 | 396.6/341.9 |
-| Viewer example | 2,006 | 2,452 | 393.7/363.9 |
-| Attribute providers | 2,027 | 2,512 | 408.1/351.2 |
-| Arithmetic providers | 2,133 | 3,048 | 414.1/363.5 |
-| Conditional providers | 2,218 | 2,686 | 393.3/355.3 |
-| 100 usages | 2,004 | 2,441 | 407.2/354.1 |
-| 1,000 usages | 2,357 | 2,610 | 406.4/369.4 |
+| Compound ranges | 2,831 | 2,773 | 404.2/350.7 |
+| Independent bounds with missing base | 2,430 | 2,761 | 391.0/346.0 |
+| Imported memberships | 2,045 | 2,604 | 389.8/335.4 |
+| Viewer example | 2,038 | 2,449 | 407.2/355.1 |
+| Attribute providers | 2,044 | 2,518 | 415.1/344.8 |
+| Arithmetic providers | 2,138 | 2,624 | 390.6/355.7 |
+| Conditional providers | 2,162 | 2,705 | 398.5/352.9 |
+| 100 usages | 2,006 | 2,477 | 415.5/352.6 |
+| 1,000 usages | 2,362 | 2,681 | 409.9/368.0 |
 
-The preceding `.6` isolation run had an initial native sample time out at 60
+The earlier `.6` isolation run had an initial native sample time out at 60
 seconds; a direct retry completed in 3.2 seconds, and its full 48-sample rerun
 passed. The cause of that earlier timeout remains unresolved. No timeout occurred
-in this `.7` run.
+in the recorded `.7` or `.8` runs.
 
 Measurements include startup, bundled-library analysis and serialization. They are
 observations on this Mac, not cross-platform latency guarantees. Canonical
-preparation is a whole-model pass. Compared with the retained
-[isolation run](evidence/benchmark-isolation-macos-arm64.json), these
-uncontrolled runs do not isolate incremental query cost or establish a regression
-budget. Large import-heavy production models and incremental performance remain
-open engineering work.
+preparation is a whole-model pass. The facade runs its model scan before projecting
+cardinality; the separate direct-query regression exercises the first-query budget.
+Compared with the retained [compound-range run](evidence/benchmark-ranges-macos-arm64.json),
+these uncontrolled runs do not isolate incremental query cost or establish a
+regression budget. Large import-heavy production models and incremental performance
+remain open engineering work.
 
-The production web build and macOS arm64 bundle build pass. The new local bundle
-is `src-tauri/target/release/bundle/macos/SysML Viewer.app` (11.97 MiB). This run
+The production web build and macOS arm64 app and DMG builds pass. The new local app
+is `src-tauri/target/release/bundle/macos/SysML Viewer.app` (11.97 MiB), with a
+4.27 MiB installer under `src-tauri/target/release/bundle/dmg/`. This run
 checks automated viewer integration and packaging; it does not repeat the earlier
 interactive file-picker/navigation checks or establish Windows/Linux packaging.
