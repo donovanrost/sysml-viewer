@@ -1,0 +1,1515 @@
+{
+  "version": 1,
+  "sourceUnits": 6167,
+  "clauses": 1571,
+  "grammarProductions": 620,
+  "metamodelConstraints": 724,
+  "proseCandidates": 1008,
+  "libraryModels": 94,
+  "schemaDefinitions": 270,
+  "assessments": [
+    {
+      "id": "RESOLUTION-PUBLIC",
+      "obligation": "Resolve a public imported definition across input files.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-7.5.3",
+        "KERML-CLAUSE-8.2.3.5"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "resolution",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Snapshot references expose the resolved target. Recursive and filtered imports still need qualification."
+      },
+      "tests": [
+        {
+          "case": "IMP-001",
+          "checks": [
+            "clean",
+            "target"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "target",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Snapshot references expose the resolved target. Recursive and filtered imports still need qualification."
+    },
+    {
+      "id": "RESOLUTION-VISIBILITY",
+      "obligation": "Respect private visibility and public re-export during name resolution.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-7.5.3",
+        "KERML-CLAUSE-7.2.5.4"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "resolution",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "The cases exercise specific import paths; protected visibility and other import-all interactions remain unreviewed."
+      },
+      "tests": [
+        {
+          "case": "IMP-002",
+          "checks": [
+            "syntax",
+            "hidden",
+            "reported"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "hidden",
+              "status": "pass"
+            },
+            {
+              "id": "reported",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-003",
+          "checks": [
+            "syntax",
+            "public",
+            "private"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "public",
+              "status": "pass"
+            },
+            {
+              "id": "private",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "IMP-007",
+          "checks": [
+            "syntax",
+            "private-local",
+            "all"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "private-local",
+              "status": "pass"
+            },
+            {
+              "id": "all",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "The cases exercise specific import paths; protected visibility and other import-all interactions remain unreviewed."
+    },
+    {
+      "id": "RESOLUTION-SHADOWING",
+      "obligation": "Prefer an owned declaration over an imported declaration with the same name.",
+      "category": "standard",
+      "sources": [
+        "KERML-CLAUSE-8.2.3.5"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "resolution",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "One positive collision case; other lookup precedence interactions remain unreviewed."
+      },
+      "tests": [
+        {
+          "case": "IMP-004",
+          "checks": [
+            "clean",
+            "local"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "local",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "One positive collision case; other lookup precedence interactions remain unreviewed."
+    },
+    {
+      "id": "RESOLUTION-AMBIGUITY",
+      "obligation": "Preserve ambiguity when competing imported declarations cannot be uniquely selected.",
+      "category": "standard",
+      "sources": [
+        "KERML-CLAUSE-8.2.3.5"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "resolution",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "One conflicting wildcard-import case. This does not establish all namespace distinguishability constraints."
+      },
+      "tests": [
+        {
+          "case": "IMP-005",
+          "checks": [
+            "syntax",
+            "ambiguity",
+            "reported"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "ambiguity",
+              "status": "pass"
+            },
+            {
+              "id": "reported",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "One conflicting wildcard-import case. This does not establish all namespace distinguishability constraints."
+    },
+    {
+      "id": "RESOLUTION-ALIAS",
+      "obligation": "Resolve a written alias to its referenced declaration.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-7.5.2"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "resolution",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Official example checks target identity; alias chains and cycles remain unreviewed."
+      },
+      "tests": [
+        {
+          "case": "IMP-006",
+          "checks": [
+            "clean",
+            "alias"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "alias",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Official example checks target identity; alias chains and cycles remain unreviewed."
+    },
+    {
+      "id": "TYPING-CROSS-DIALECT",
+      "obligation": "Resolve a SysML usage type declared in a supplied KerML file.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-7.6.3",
+        "KERML-CLAUSE-7.3.4.3"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "resolution",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "The selected classifier works across dialects; this is not all typing compatibility."
+      },
+      "tests": [
+        {
+          "case": "TYPE-001",
+          "checks": [
+            "clean",
+            "cross-dialect"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "cross-dialect",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "The selected classifier works across dialects; this is not all typing compatibility."
+    },
+    {
+      "id": "TYPING-MISSING",
+      "obligation": "Report an unresolved written type without inventing a target.",
+      "category": "standard",
+      "sources": [
+        "KERML-CLAUSE-8.2.3.5"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "resolution",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Reports an unresolved reference. No claim about every validation consequence of the missing type."
+      },
+      "tests": [
+        {
+          "case": "TYPE-002",
+          "checks": [
+            "syntax",
+            "missing",
+            "reported"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "missing",
+              "status": "pass"
+            },
+            {
+              "id": "reported",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Reports an unresolved reference. No claim about every validation consequence of the missing type."
+    },
+    {
+      "id": "TYPING-KIND",
+      "obligation": "Reject an incompatible explicit type for a usage.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-7.6.3"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "typing",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "The current check emits a generic semantic error. It is not evidence that a particular named metamodel constraint is exhaustively implemented."
+      },
+      "tests": [
+        {
+          "case": "TYPE-003",
+          "checks": [
+            "syntax",
+            "kind-rule"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "kind-rule",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "The current check emits a generic semantic error. It is not evidence that a particular named metamodel constraint is exhaustively implemented."
+    },
+    {
+      "id": "LIBRARY-RESOLUTION",
+      "obligation": "Resolve a bundled scalar library definition.",
+      "category": "standard",
+      "sources": [
+        "KERML-CLAUSE-9.1",
+        "SYSML-CLAUSE-9.1"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "resolution",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "One scalar reference is checked. Library conformance, normative identities, domain libraries and all library functions are unqualified."
+      },
+      "tests": [
+        {
+          "case": "TYPE-004",
+          "checks": [
+            "clean",
+            "stdlib"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "stdlib",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "One scalar reference is checked. Library conformance, normative identities, domain libraries and all library functions are unqualified."
+    },
+    {
+      "id": "INHERITANCE-DIAMOND",
+      "obligation": "Return the common inherited feature once in a diamond hierarchy.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-7.6.2",
+        "KERML-CLAUSE-7.3.2.3"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "graph",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "No qualification of conflicting redefinitions, all inherited memberships or implicit specializations."
+      },
+      "tests": [
+        {
+          "case": "SPEC-001",
+          "checks": [
+            "clean",
+            "diamond",
+            "owned"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "diamond",
+              "status": "pass"
+            },
+            {
+              "id": "owned",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "No qualification of conflicting redefinitions, all inherited memberships or implicit specializations."
+    },
+    {
+      "id": "INHERITANCE-COMPLETENESS",
+      "obligation": "Keep inherited-member uncertainty explicit when declared heritage is missing.",
+      "category": "product",
+      "sources": [
+        "SYSML-CLAUSE-7.6.2"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "graph",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Completeness flags are our API policy. These regressions are not counted as proof of a named normative constraint."
+      },
+      "tests": [
+        {
+          "case": "SPEC-002",
+          "checks": [
+            "syntax",
+            "missing-base",
+            "incomplete",
+            "capability-diagnostic"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "missing-base",
+              "status": "pass"
+            },
+            {
+              "id": "incomplete",
+              "status": "pass"
+            },
+            {
+              "id": "capability-diagnostic",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "SPEC-003",
+          "checks": [
+            "syntax",
+            "Derived",
+            "Leaf",
+            "x",
+            "independent"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "Derived",
+              "status": "pass"
+            },
+            {
+              "id": "Leaf",
+              "status": "pass"
+            },
+            {
+              "id": "x",
+              "status": "pass"
+            },
+            {
+              "id": "independent",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Completeness flags are our API policy. These regressions are not counted as proof of a named normative constraint."
+    },
+    {
+      "id": "SUBSETTING-TARGET",
+      "obligation": "Resolve the intended subsetted feature and preserve a missing target.",
+      "category": "standard",
+      "sources": [
+        "KERML-CLAUSE-7.3.4.4"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "resolution",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Target identity is tested; value containment, direction, multiplicity and featuring-type conformance are not."
+      },
+      "tests": [
+        {
+          "case": "SUB-001",
+          "checks": [
+            "clean",
+            "subset"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "subset",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "SUB-002",
+          "checks": [
+            "syntax",
+            "missing"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "missing",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Target identity is tested; value containment, direction, multiplicity and featuring-type conformance are not."
+    },
+    {
+      "id": "REDEFINITION-TARGET",
+      "obligation": "Resolve a redefining feature and replace the inherited predecessor in the member query.",
+      "category": "standard",
+      "sources": [
+        "KERML-CLAUSE-7.3.4.5"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "graph",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "The positive and negative cases cover selected lookup/replacement behavior, not every redefinition constraint."
+      },
+      "tests": [
+        {
+          "case": "REDEF-001",
+          "checks": [
+            "clean",
+            "redefined",
+            "replacement"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "redefined",
+              "status": "pass"
+            },
+            {
+              "id": "replacement",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "REDEF-002",
+          "checks": [
+            "syntax",
+            "missing"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "missing",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "The positive and negative cases cover selected lookup/replacement behavior, not every redefinition constraint."
+    },
+    {
+      "id": "MULTIPLICITY-LITERAL",
+      "obligation": "Preserve literal multiplicity bounds and diagnose a reversed interval.",
+      "category": "standard",
+      "sources": [
+        "KERML-CLAUSE-7.3.4.2",
+        "SYSML-CLAUSE-7.6.3"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "multiplicities",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Literal query only. Symbolic bounds, default bounds, lower-level metamodel structure and all bound constraints remain unqualified."
+      },
+      "tests": [
+        {
+          "case": "MULT-001",
+          "checks": [
+            "clean",
+            "optional",
+            "fixed",
+            "unbounded"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "optional",
+              "status": "pass"
+            },
+            {
+              "id": "fixed",
+              "status": "pass"
+            },
+            {
+              "id": "unbounded",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-002",
+          "checks": [
+            "syntax",
+            "reversed-range"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "reversed-range",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Literal query only. Symbolic bounds, default bounds, lower-level metamodel structure and all bound constraints remain unqualified."
+    },
+    {
+      "id": "PORT-CONJUGATED-NAME",
+      "obligation": "Preserve conjugated spelling and resolve the referenced original port definition.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-7.12.3"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "resolution",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "This is written-reference evidence. Construction of conjugated metaclasses and direction/flow reversal have no mapped tests."
+      },
+      "tests": [
+        {
+          "case": "PORT-001",
+          "checks": [
+            "clean",
+            "conjugation"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "conjugation",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "PORT-002",
+          "checks": [
+            "syntax",
+            "conjugation"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "conjugation",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "This is written-reference evidence. Construction of conjugated metaclasses and direction/flow reversal have no mapped tests."
+    },
+    {
+      "id": "CONNECTION-ENDPOINTS",
+      "obligation": "Preserve connection arity and complete endpoint chains.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-7.6.6",
+        "SYSML-CLAUSE-7.13.2"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "connector-ends",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Broken ends are conservatively unsupported. Flow compatibility, end typing and all connection constraints remain unqualified."
+      },
+      "tests": [
+        {
+          "case": "CONN-001",
+          "checks": [
+            "clean",
+            "ends"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "ends",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "CONN-002",
+          "checks": [
+            "syntax",
+            "ends"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "ends",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "CONN-003",
+          "checks": [
+            "clean",
+            "arity"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "arity",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Broken ends are conservatively unsupported. Flow compatibility, end typing and all connection constraints remain unqualified."
+    },
+    {
+      "id": "SOURCE-NAMES",
+      "obligation": "Accept quoted Unicode names and preserve the source of their references.",
+      "category": "standard",
+      "sources": [
+        "KERML-CLAUSE-8.2.2.3"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "syntax-api",
+          "source-api",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Only name spelling relates to the standard here; byte/UTF-16 coordinate fidelity is a product guarantee."
+      },
+      "tests": [
+        {
+          "case": "SOURCE-001",
+          "checks": [
+            "clean",
+            "name",
+            "bytes-and-utf16"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "name",
+              "status": "pass"
+            },
+            {
+              "id": "bytes-and-utf16",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Only name spelling relates to the standard here; byte/UTF-16 coordinate fidelity is a product guarantee."
+    },
+    {
+      "id": "SOURCE-RECOVERY",
+      "obligation": "Retain usable earlier declarations after malformed input.",
+      "category": "product",
+      "sources": [
+        "KERML-CLAUSE-8.2.2"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "syntax-api",
+          "source-api",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Error recovery policy is a product requirement; the linked clause supplies context, not a recovery conformance rule."
+      },
+      "tests": [
+        {
+          "case": "SOURCE-002",
+          "checks": [
+            "syntax-error",
+            "surviving-node"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax-error",
+              "status": "pass"
+            },
+            {
+              "id": "surviving-node",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Error recovery policy is a product requirement; the linked clause supplies context, not a recovery conformance rule."
+    },
+    {
+      "id": "ROBUSTNESS-CYCLES",
+      "obligation": "Terminate on the selected import and specialization cycles.",
+      "category": "product",
+      "sources": [
+        "KERML-CLAUSE-7.2.5.4",
+        "KERML-CLAUSE-7.3.2.3"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "graph",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Termination and retained declarations do not establish a semantic verdict on cyclic models."
+      },
+      "tests": [
+        {
+          "case": "CYCLE-001",
+          "checks": [
+            "syntax",
+            "reachable"
+          ],
+          "polarity": "robustness",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "reachable",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "CYCLE-002",
+          "checks": [
+            "syntax",
+            "a",
+            "b"
+          ],
+          "polarity": "robustness",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "a",
+              "status": "pass"
+            },
+            {
+              "id": "b",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "Termination and retained declarations do not establish a semantic verdict on cyclic models."
+    },
+    {
+      "id": "MEMBERSHIP-ENUMERATION",
+      "obligation": "Expose namespace memberships, including imported aliases, as query results.",
+      "category": "product",
+      "sources": [
+        "SYSML-CLAUSE-7.5.2",
+        "SYSML-CLAUSE-7.5.3"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "candidate",
+        "evidence": [
+          "engine",
+          "graph",
+          "query",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "unsupported",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "The upstream graph has membership APIs, but our facade exposes a declaration projection. Design and qualify a public membership API."
+      },
+      "tests": [
+        {
+          "case": "IMP-008",
+          "checks": [],
+          "polarity": "positive",
+          "status": "planned",
+          "results": []
+        }
+      ],
+      "limits": "The upstream graph has membership APIs, but our facade exposes a declaration projection. Design and qualify a public membership API."
+    },
+    {
+      "id": "MULTIPLICITY-EXPRESSION",
+      "obligation": "Expose evaluated expression-valued bounds with explicit completeness.",
+      "category": "product",
+      "sources": [
+        "KERML-CLAUSE-7.3.4.2"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "candidate",
+        "evidence": [
+          "engine",
+          "multiplicities",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "unsupported",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "The upstream evaluator is a candidate implementation. The facade has no public bound-evaluation operation."
+      },
+      "tests": [
+        {
+          "case": "MULT-003",
+          "checks": [],
+          "polarity": "positive",
+          "status": "planned",
+          "results": []
+        }
+      ],
+      "limits": "The upstream evaluator is a candidate implementation. The facade has no public bound-evaluation operation."
+    },
+    {
+      "id": "CONF-ABSTRACT-SYSML",
+      "obligation": "Provide the SysML abstract-syntax editing and validation capabilities required for tool conformance.",
+      "category": "conformance-point",
+      "sources": [
+        "SYSML-CLAUSE-2",
+        "SYSML-CLAUSE-8.3"
+      ],
+      "applicability": "full-tool-conformance",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "unsupported",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "The viewer reads selected declarations and does not provide full metamodel CRUD or complete well-formedness validation."
+      },
+      "tests": [],
+      "limits": "The viewer reads selected declarations and does not provide full metamodel CRUD or complete well-formedness validation."
+    },
+    {
+      "id": "CONF-ABSTRACT-KERML",
+      "obligation": "Provide the KerML abstract-syntax editing and validation capabilities required for tool conformance.",
+      "category": "conformance-point",
+      "sources": [
+        "KERML-CLAUSE-2",
+        "KERML-CLAUSE-8.3"
+      ],
+      "applicability": "full-tool-conformance",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "unsupported",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "The public kernel has no general metamodel mutation API and validation coverage is incomplete."
+      },
+      "tests": [],
+      "limits": "The public kernel has no general metamodel mutation API and validation coverage is incomplete."
+    },
+    {
+      "id": "CONF-TEXTUAL",
+      "obligation": "Meet the applicable textual-notation tool-conformance obligations.",
+      "category": "conformance-point",
+      "sources": [
+        "SYSML-CLAUSE-2",
+        "SYSML-CLAUSE-8.2.2",
+        "KERML-CLAUSE-2",
+        "KERML-CLAUSE-8.2"
+      ],
+      "applicability": "full-tool-conformance",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "unsupported",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Read/analysis operations are partial. Full textual create/update/delete operations and complete grammar qualification are absent."
+      },
+      "tests": [],
+      "limits": "Read/analysis operations are partial. Full textual create/update/delete operations and complete grammar qualification are absent."
+    },
+    {
+      "id": "CONF-GRAPHICAL",
+      "obligation": "Meet SysML graphical-notation tool-conformance obligations.",
+      "category": "conformance-point",
+      "sources": [
+        "SYSML-CLAUSE-2",
+        "SYSML-CLAUSE-8.2.3"
+      ],
+      "applicability": "full-tool-conformance",
+      "priority": "P1",
+      "implementation": {
+        "status": "unsupported",
+        "evidence": [
+          "diagram",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "unsupported",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Current cards and edges are a structural overview. Complete standard notation and graphical editing are not implemented."
+      },
+      "tests": [],
+      "limits": "Current cards and edges are a structural overview. Complete standard notation and graphical editing are not implemented."
+    },
+    {
+      "id": "CONF-SEMANTIC",
+      "obligation": "Demonstrate interpretation according to the applicable language semantics.",
+      "category": "conformance-point",
+      "sources": [
+        "SYSML-CLAUSE-2",
+        "SYSML-CLAUSE-8.4",
+        "KERML-CLAUSE-2",
+        "KERML-CLAUSE-8.4"
+      ],
+      "applicability": "full-tool-conformance",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "unsupported",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Name resolution and selected queries do not establish complete semantic conformance. No public execution/simulation API is present."
+      },
+      "tests": [],
+      "limits": "Name resolution and selected queries do not establish complete semantic conformance. No public execution/simulation API is present."
+    },
+    {
+      "id": "CONF-INTERCHANGE",
+      "obligation": "Support normative model interchange for the chosen conformance claim.",
+      "category": "conformance-point",
+      "sources": [
+        "SYSML-CLAUSE-2",
+        "KERML-CLAUSE-2",
+        "KERML-CLAUSE-10"
+      ],
+      "applicability": "full-tool-conformance",
+      "priority": "P1",
+      "implementation": {
+        "status": "candidate",
+        "evidence": [
+          "graph",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "unsupported",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "Our JSON snapshot is a private protocol. The facade does not import/export normative JSON or KPAR archives."
+      },
+      "tests": [],
+      "limits": "Our JSON snapshot is a private protocol. The facade does not import/export normative JSON or KPAR archives."
+    },
+    {
+      "id": "CONF-SYSML-ARCHIVE",
+      "obligation": "Meet the SysML-specific project archive, model-file and metamodel-identification conditions.",
+      "category": "conformance-point",
+      "sources": [
+        "SYSML-CLAUSE-2"
+      ],
+      "applicability": "full-tool-conformance",
+      "priority": "P1",
+      "implementation": {
+        "status": "unsupported",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "api": {
+        "status": "unsupported",
+        "evidence": [
+          "query",
+          "wire"
+        ],
+        "note": "KPAR packaging, archive metadata and normative metamodel identification are not exposed by the application."
+      },
+      "tests": [],
+      "limits": "KPAR packaging, archive metadata and normative metamodel identification are not exposed by the application."
+    }
+  ],
+  "executableCases": 29,
+  "plannedCases": 2,
+  "coveragePercent": null,
+  "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
+  "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
+  "assessmentsSha256": "974bdb806648513bba20a86c03f65db507efb55b1e52e0c614b688792ad0a33a",
+  "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
+  "execution": {
+    "sha256": "6f751ef8a7324b7f12c413fc41b16e48d02cc228599d5e6af5c4c657c9603ba4",
+    "generatedAt": "2026-10-13T02:19:36.845Z",
+    "kernelInputSha256": "2377b6882085725aa7f309508070bc21547c9298f2540cd10a1749f6f6fd56cd",
+    "binarySha256": "bad192e5f6755b559b233b2a15051f350a52d9392a744ad1e386c7a71c3d56c1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c",
+    "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
+    "counts": {
+      "pass": 29,
+      "known-gap": 0,
+      "planned": 2,
+      "fail": 0
+    }
+  }
+}

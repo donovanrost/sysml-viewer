@@ -17,6 +17,11 @@ Kernel qualification adds a [public contract review](docs/kernel-contract.md),
 syntax-only checking. The [dependency upgrade process](docs/dependency-upgrades.md)
 defines how to preserve that evidence across engine/library changes.
 
+The [standards requirements inventory](docs/requirements.md) indexes the full clause
+structure, grammar, metamodel rules and normative companion artifacts. Its
+[searchable browser](docs/requirements.html) separates indexed source units from
+bounded implementation/API evidence; it makes no full-conformance percentage claim.
+
 ## Build and run
 
 Development requires Node.js 24, Rust installed through rustup, and the
@@ -110,9 +115,11 @@ node tools/rust.mjs clippy --locked --workspace --all-targets --all-features -- 
 npm run format:check
 npm run contract:check
 npm run conformance:check
+npm run requirements:check
 npm run kernel:test
 npm test
 npm run conformance
+npm run requirements:report
 npm run build
 npm run benchmark
 ```

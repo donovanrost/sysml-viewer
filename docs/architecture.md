@@ -7,6 +7,9 @@ complete language or graphical-notation conformance.
 The [public contract review](kernel-contract.md) defines supported operations and
 compatibility policy. The [executable matrix](conformance.md) records bounded
 standards coverage; [qualification evidence](qualification.md) records results.
+The [requirements inventory](requirements.md) indexes all specification clauses and
+formal source units, with separate implementation, API and test evidence. Indexed
+units and partially tested clauses are never promoted to full conformance.
 
 ## Dependency direction
 

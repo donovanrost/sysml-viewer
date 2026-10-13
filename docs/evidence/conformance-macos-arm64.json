@@ -1,7 +1,10 @@
 {
-  "generatedAt": "2026-10-13T01:29:16.848Z",
+  "generatedAt": "2026-10-13T02:19:36.845Z",
   "platform": "darwin",
   "arch": "arm64",
+  "kernelInputSha256": "2377b6882085725aa7f309508070bc21547c9298f2540cd10a1749f6f6fd56cd",
+  "buildPerformed": true,
+  "binarySha256": "bad192e5f6755b559b233b2a15051f350a52d9392a744ad1e386c7a71c3d56c1",
   "schemaVersion": 1,
   "engineVersion": "open-mbee/0.10.2@821221767c3c",
   "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
@@ -20,7 +23,7 @@
         "tests/conformance/fixtures/catalog.sysml": "eca432564be7438a0e1e93b62d957598d440a8a86d52518f1fe434bc09331be6",
         "tests/conformance/fixtures/imp-001.sysml": "c00509ea643b8f05e2813a3ce39744140bd36bf9b19cbd89859c8e87bfa0ce25"
       },
-      "elapsedMs": 1513,
+      "elapsedMs": 1730,
       "checks": [
         {
           "id": "clean",
@@ -39,7 +42,7 @@
         "tests/conformance/fixtures/catalog.sysml": "eca432564be7438a0e1e93b62d957598d440a8a86d52518f1fe434bc09331be6",
         "tests/conformance/fixtures/imp-002.sysml": "4b403a0ff5e0d359250e6f68b82d259d368bfff16a5d1eca62b59d547bbbd108"
       },
-      "elapsedMs": 1398,
+      "elapsedMs": 1327,
       "checks": [
         {
           "id": "syntax",
@@ -61,7 +64,7 @@
       "files": {
         "tests/conformance/fixtures/imp-003.sysml": "b47952c3a3ad0be91bd6174509f49ead9012eb1b14ab8739de0f453970b6e70b"
       },
-      "elapsedMs": 1355,
+      "elapsedMs": 1363,
       "checks": [
         {
           "id": "syntax",
@@ -83,7 +86,7 @@
       "files": {
         "tests/conformance/fixtures/imp-004.sysml": "f96c5f28dc07c1001acd09c8522ebe6cbb158c49547c0d54ec07233b507457c5"
       },
-      "elapsedMs": 1319,
+      "elapsedMs": 1418,
       "checks": [
         {
           "id": "clean",
@@ -101,7 +104,7 @@
       "files": {
         "tests/conformance/fixtures/imp-005.sysml": "501f783085dbf700c3ae3ab5ba7867ce5f69069dc78c573e11209bcc2f712a72"
       },
-      "elapsedMs": 1328,
+      "elapsedMs": 1993,
       "checks": [
         {
           "id": "syntax",
@@ -123,7 +126,7 @@
       "files": {
         "tests/conformance/upstream/AliasImport.sysml": "b243243ba39ca49c9ad53521418513ea3111b4e6be864023dfa1bb921baf96e2"
       },
-      "elapsedMs": 1324,
+      "elapsedMs": 1392,
       "checks": [
         {
           "id": "clean",
@@ -141,7 +144,7 @@
       "files": {
         "tests/conformance/upstream/PrivateImportTest.sysml": "5111a800ab20f0018277bef5b4ed9d055327d03ac8afbdea2c2d3e5713113007"
       },
-      "elapsedMs": 1318,
+      "elapsedMs": 1381,
       "checks": [
         {
           "id": "syntax",
@@ -164,7 +167,7 @@
         "tests/conformance/fixtures/kernel-types.kerml": "8c7e8e352c78db7526134f4ea5870bfcc31f6cdce8eef554897c4b5d699bc502",
         "tests/conformance/fixtures/type-001.sysml": "2301ad9a7b681414e014bfa7a5e0bda8eacbaf26f402a4e91c655b73b45fd614"
       },
-      "elapsedMs": 1306,
+      "elapsedMs": 1359,
       "checks": [
         {
           "id": "clean",
@@ -182,7 +185,7 @@
       "files": {
         "tests/conformance/fixtures/type-002.sysml": "6fc3e465a0378de4409a4712fca09fe551b3441c2f0dc0cffe8de0fb1d42c8dd"
       },
-      "elapsedMs": 1316,
+      "elapsedMs": 1351,
       "checks": [
         {
           "id": "syntax",
@@ -204,7 +207,7 @@
       "files": {
         "tests/conformance/fixtures/type-003.sysml": "c3d91d3eeda512a4d9713259954b96f5d43ff366a280c84018d1456486d4e1b6"
       },
-      "elapsedMs": 1402,
+      "elapsedMs": 1346,
       "checks": [
         {
           "id": "syntax",
@@ -222,7 +225,7 @@
       "files": {
         "tests/conformance/fixtures/type-004.sysml": "a5b233eb65d735d4e6c6f99685f7b7a4a883da578af598a3015a9dcc8484adac"
       },
-      "elapsedMs": 1318,
+      "elapsedMs": 1461,
       "checks": [
         {
           "id": "clean",
@@ -240,7 +243,7 @@
       "files": {
         "tests/conformance/fixtures/spec-001.sysml": "104d99bc99d66f49f98456f0502acdb2207db04a3b1881e9148a1a9fa4317b30"
       },
-      "elapsedMs": 1333,
+      "elapsedMs": 1340,
       "checks": [
         {
           "id": "clean",
@@ -262,7 +265,7 @@
       "files": {
         "tests/conformance/fixtures/spec-002.sysml": "35d10c036152bdc7211750a2415fc50981cfe12d733773e40f394e6ffb596aed"
       },
-      "elapsedMs": 1339,
+      "elapsedMs": 1340,
       "checks": [
         {
           "id": "syntax",
@@ -288,7 +291,7 @@
       "files": {
         "tests/conformance/fixtures/spec-003.sysml": "31e0bf1f6e8603975d2b72f9b9d375889b56dc2607f64764fb046aa419740f02"
       },
-      "elapsedMs": 1331,
+      "elapsedMs": 1341,
       "checks": [
         {
           "id": "syntax",
@@ -318,7 +321,7 @@
       "files": {
         "tests/conformance/fixtures/sub-001.sysml": "460969728212d35c3ddea0e0b9f973e6391ea7b84bbbc73bf1a69cd1407dce29"
       },
-      "elapsedMs": 1322,
+      "elapsedMs": 1346,
       "checks": [
         {
           "id": "clean",
@@ -336,7 +339,7 @@
       "files": {
         "tests/conformance/fixtures/sub-002.sysml": "4106782cec961295224a366c64d6b2b5109f4acdf5410d1974e2a80b3f4c9380"
       },
-      "elapsedMs": 1308,
+      "elapsedMs": 1351,
       "checks": [
         {
           "id": "syntax",
@@ -354,7 +357,7 @@
       "files": {
         "tests/conformance/fixtures/redef-001.sysml": "a1dfb49761ab6ac121449b0bcd4cfa90cc9eb80b3fe87694bf3946fd0734d329"
       },
-      "elapsedMs": 1397,
+      "elapsedMs": 1348,
       "checks": [
         {
           "id": "clean",
@@ -376,7 +379,7 @@
       "files": {
         "tests/conformance/fixtures/redef-002.sysml": "3667569752b49815ad7d441214dd7425d1ca5d7a9d27c173c98b4f64ca5aaffd"
       },
-      "elapsedMs": 1362,
+      "elapsedMs": 1368,
       "checks": [
         {
           "id": "syntax",
@@ -394,7 +397,7 @@
       "files": {
         "tests/conformance/fixtures/mult-001.sysml": "6d80714dcb3c4517c1d1fc5647631fdcfc00df1763db9d9b0b78a6e01f73e8d9"
       },
-      "elapsedMs": 1338,
+      "elapsedMs": 1448,
       "checks": [
         {
           "id": "clean",
@@ -420,7 +423,7 @@
       "files": {
         "tests/conformance/fixtures/mult-002.sysml": "b62a2973c488e51b535af399898498870725ad65b06957f24e183432cc2a92a6"
       },
-      "elapsedMs": 1507,
+      "elapsedMs": 1347,
       "checks": [
         {
           "id": "syntax",
@@ -438,7 +441,7 @@
       "files": {
         "tests/conformance/fixtures/port-001.sysml": "65bc6e78d2732c401d2efb461f453421464e3724013b291cf23ecc39695cd011"
       },
-      "elapsedMs": 1360,
+      "elapsedMs": 1369,
       "checks": [
         {
           "id": "clean",
@@ -456,7 +459,7 @@
       "files": {
         "tests/conformance/fixtures/port-002.sysml": "b71fda2b582ab0b86b25dac8ba52925179e418b1f16428c21f1cc3d9e411dadc"
       },
-      "elapsedMs": 1313,
+      "elapsedMs": 1374,
       "checks": [
         {
           "id": "syntax",
@@ -474,7 +477,7 @@
       "files": {
         "tests/conformance/fixtures/conn-001.sysml": "02362e5c2d07b5aee5cf9e4554b97e6c0aa91124b982c513a86a4e8057461b5e"
       },
-      "elapsedMs": 1341,
+      "elapsedMs": 1421,
       "checks": [
         {
           "id": "clean",
@@ -492,7 +495,7 @@
       "files": {
         "tests/conformance/fixtures/conn-002.sysml": "a893967d876835da80b46b359476d5ca84ab49bc5c6fd77068f15d58810f30f9"
       },
-      "elapsedMs": 1346,
+      "elapsedMs": 1465,
       "checks": [
         {
           "id": "syntax",
@@ -510,7 +513,7 @@
       "files": {
         "tests/conformance/fixtures/conn-003.sysml": "b6cb21d52654f0fcadd6786398ec9cd5bae0a2d5c73c08ada6db6310fcb00680"
       },
-      "elapsedMs": 1434,
+      "elapsedMs": 1370,
       "checks": [
         {
           "id": "clean",
@@ -528,7 +531,7 @@
       "files": {
         "tests/conformance/fixtures/source-001.sysml": "93cd61e2ef9ab252d159aa4ddd1d68b92ced8bd56e5e970fa2092fd331ee3e11"
       },
-      "elapsedMs": 1334,
+      "elapsedMs": 1406,
       "checks": [
         {
           "id": "clean",
@@ -550,7 +553,7 @@
       "files": {
         "tests/conformance/fixtures/source-002.sysml": "06fd81bcc8f6cfd6c4392b4bc83719caa5a241e4660e17c336f0fe5b99652285"
       },
-      "elapsedMs": 1340,
+      "elapsedMs": 1352,
       "checks": [
         {
           "id": "syntax-error",
@@ -568,7 +571,7 @@
       "files": {
         "tests/conformance/fixtures/cycle-001.sysml": "5a4e5747ae73f0fc0a4cc4218bc62156b94218c1ac20f3a3423f2ed7725f53fe"
       },
-      "elapsedMs": 1339,
+      "elapsedMs": 1346,
       "checks": [
         {
           "id": "syntax",
@@ -586,7 +589,7 @@
       "files": {
         "tests/conformance/fixtures/cycle-002.sysml": "7001ff2663a326d9a0fb9a060a9ba6e148c18797699e791898c96f23be59e81f"
       },
-      "elapsedMs": 1323,
+      "elapsedMs": 1368,
       "checks": [
         {
           "id": "syntax",

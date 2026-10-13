@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
 import { cargo, root } from './rust.mjs';
 import { validateMatrix, assessCase, matrixMarkdown } from './lib/conformance.mjs';
+import { kernelInputHash } from './lib/kernel-inputs.mjs';
 
 const matrix = JSON.parse(readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'));
 validateMatrix(matrix);
@@ -28,6 +29,7 @@ for (const file of provenance.files)
     `Modified upstream fixture ${file.path}`,
   );
 if (process.argv.includes('--check-docs')) process.exit(0);
+const kernelInputSha256 = kernelInputHash(root);
 if (!process.argv.includes('--no-build'))
   cargo(['build', '--locked', '--release', '-p', 'sysml-cli']);
 const binary = join(
@@ -115,6 +117,9 @@ writeFileSync(
       generatedAt: new Date().toISOString(),
       platform: process.platform,
       arch: process.arch,
+      kernelInputSha256,
+      buildPerformed: !process.argv.includes('--no-build'),
+      binarySha256: hash(readFileSync(binary)),
       ...metadata,
       matrixSha256: hash(readFileSync(join(root, 'tests/conformance/matrix.json'))),
       counts,
@@ -125,4 +130,9 @@ writeFileSync(
   ) + '\n',
 );
 console.log(JSON.stringify(counts));
+assert.equal(
+  kernelInputHash(root),
+  kernelInputSha256,
+  'Qualification inputs changed during execution',
+);
 if (counts.fail) process.exitCode = 1;

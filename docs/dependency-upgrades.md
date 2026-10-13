@@ -36,6 +36,11 @@ automatic background update or a replacement of failing expected results.
    named assertion, issue identifier and explanation; a crash, timeout or unrelated
    failure cannot inherit that exemption. Remove a resolved gap after reviewing the
    fix and retaining its regression case.
+   Run `npm run requirements:check` and review changed implementation mappings
+   before refreshing their hashes in `standards/assessments.json`. Run
+   `npm run requirements:report` against the new matrix execution. Specification
+   source pins are separate from toolkit/library pins; follow the
+   [inventory extraction procedure](requirements.md) if changing the normative baseline.
 8. Update `public/third-party-notices.txt`, qualification evidence and decision
    notes, then commit the upgrade as a reviewable change. Public release additionally
    requires choosing the project's own license and completing distribution setup.

@@ -21,7 +21,10 @@
     "desktop:build": "node tools/desktop.mjs build",
     "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "format": "prettier --write src tests \"tools/**/*.mjs\"",
-    "format:check": "prettier --check src tests \"tools/**/*.mjs\""
+    "format:check": "prettier --check src tests \"tools/**/*.mjs\"",
+    "requirements:check": "node tools/requirements.mjs",
+    "requirements:docs": "node tools/requirements.mjs --write-docs",
+    "requirements:report": "node tools/requirements.mjs --conformance target/conformance/report.json"
   },
   "dependencies": {
     "@tauri-apps/api": "~2.11.0",

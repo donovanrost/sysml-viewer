@@ -45,15 +45,19 @@ jobs:
       - run: npm run format:check
       - run: npm run contract:check
       - run: npm run conformance:check
+      - run: npm run requirements:check
       - run: npm run kernel:test
       - run: npm test
       - run: npm run conformance
+      - run: npm run requirements:report
       - name: Upload conformance evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: conformance-${{ runner.os }}
-          path: target/conformance/report.json
+          path: |
+            target/conformance/report.json
+            target/requirements/report.json
           if-no-files-found: ignore
       - name: Build macOS app
         if: runner.os == 'macOS'

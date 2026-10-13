@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "extraction": {
+    "pypdf": "6.10.0",
+    "pdftotext": "26.01.0"
+  },
+  "sources": {
+    "sysml-pdf": {
+      "standard": "sysml",
+      "version": "2.0",
+      "document": "formal/2026-03-02",
+      "url": "https://www.omg.org/spec/SysML/2.0/Language/PDF",
+      "cacheFile": "sysml.pdf",
+      "sha256": "46e6c0476a6f1f34f367d57e039d56659bff75e41d2e4b3d37ca4cadea84a83a",
+      "bytes": 3804140,
+      "pages": 691
+    },
+    "sysml-xmi": {
+      "standard": "sysml",
+      "version": "2.0",
+      "document": "ptc/25-02-15",
+      "url": "https://www.omg.org/spec/SysML/20250201/SysML.xmi",
+      "cacheFile": "sysml.xmi",
+      "sha256": "caa65d54f56798bf7582d173f7567e1eea37a49c45984f8bd7df145011cf8c6f",
+      "bytes": 1135635
+    },
+    "kerml-pdf": {
+      "standard": "kerml",
+      "version": "1.0",
+      "document": "formal/2026-03-01",
+      "url": "https://www.omg.org/spec/KerML/1.0/PDF",
+      "cacheFile": "kerml.pdf",
+      "sha256": "3bcc96f989bfa9d05cd28e026df3351b795fe8d494187b87bff3db7d96373697",
+      "bytes": 1821407,
+      "pages": 454
+    },
+    "kerml-xmi": {
+      "standard": "kerml",
+      "version": "1.0",
+      "document": "ptc/25-04-04",
+      "url": "https://www.omg.org/spec/KerML/20250201/KerML.xmi",
+      "cacheFile": "kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+      "bytes": 962254
+    },
+    "sysml-systems": {
+      "standard": "sysml",
+      "version": "2.0",
+      "document": "ptc/25-04-24",
+      "url": "https://www.omg.org/spec/SysML/20250201/Systems-Library.kpar",
+      "cacheFile": "sysml-systems.kpar",
+      "sha256": "df7d8b2c6e08232ca7ce123a63148949c383fcbeaeba8d89c27ceece43793a1f",
+      "bytes": 27577
+    },
+    "sysml-analysis": {
+      "standard": "sysml",
+      "version": "2.0",
+      "document": "ptc/25-04-25",
+      "url": "https://www.omg.org/spec/SysML/20250201/Analysis-Domain-Library.kpar",
+      "cacheFile": "sysml-Analysis-Domain.kpar",
+      "sha256": "96f0230cd7091faa2d27345b7f7748e0249fb42cfbdc48265ce6e82d6ecc1b38",
+      "bytes": 6035
+    },
+    "sysml-cause-and-effect": {
+      "standard": "sysml",
+      "version": "2.0",
+      "document": "ptc/25-04-26",
+      "url": "https://www.omg.org/spec/SysML/20250201/Cause-and-Effect-Domain-Library.kpar",
+      "cacheFile": "sysml-Cause-and-Effect-Domain.kpar",
+      "sha256": "c097c70232b8c9d38acbc92b402d8caa3b67f4d847dade0f29994164a4e25e94",
+      "bytes": 3135
+    },
+    "sysml-geometry": {
+      "standard": "sysml",
+      "version": "2.0",
+      "document": "ptc/25-04-27",
+      "url": "https://www.omg.org/spec/SysML/20250201/Geometry-Domain-Library.kpar",
+      "cacheFile": "sysml-Geometry-Domain.kpar",
+      "sha256": "9cc40d628dfe8717b79af74297a7115103e3469708a54221cac0e42344ed8427",
+      "bytes": 7169
+    },
+    "sysml-metadata": {
+      "standard": "sysml",
+      "version": "2.0",
+      "document": "ptc/25-04-28",
+      "url": "https://www.omg.org/spec/SysML/20250201/Metadata-Domain-Library.kpar",
+      "cacheFile": "sysml-Metadata-Domain.kpar",
+      "sha256": "5c51cd3b21b60c89742dbba0f59f25bdbc34224d05e32975d77bb93092458b9b",
+      "bytes": 4573
+    },
+    "sysml-quantities-and-units": {
+      "standard": "sysml",
+      "version": "2.0",
+      "document": "ptc/25-04-29",
+      "url": "https://www.omg.org/spec/SysML/20250201/Quantities-and-Units-Domain-Library.kpar",
+      "cacheFile": "sysml-Quantities-and-Units-Domain.kpar",
+      "sha256": "81a6e7264a9f287e482ec5b35f8ef98725b81f393e0b2e82dae3599511c0adc7",
+      "bytes": 154748
+    },
+    "sysml-requirement-derivation": {
+      "standard": "sysml",
+      "version": "2.0",
+      "document": "ptc/25-04-30",
+      "url": "https://www.omg.org/spec/SysML/20250201/Requirement-Derivation-Domain-Library.kpar",
+      "cacheFile": "sysml-Requirement-Derivation-Domain.kpar",
+      "sha256": "a136e72ac6afbd96ede220cfec77fd54c75242d577d3f5ab9e5278b25baee6e5",
+      "bytes": 2650
+    },
+    "kerml-semantic": {
+      "standard": "kerml",
+      "version": "1.0",
+      "document": "ptc/25-04-17",
+      "url": "https://www.omg.org/spec/KerML/20250201/Semantic-Library.kpar",
+      "cacheFile": "kerml-semantic.kpar",
+      "sha256": "6d9e311646a557cb08b64313cab6a7931109751b2ac7fbfcefad5c2216a6167b",
+      "bytes": 33031
+    },
+    "kerml-data-type": {
+      "standard": "kerml",
+      "version": "1.0",
+      "document": "ptc/25-04-18",
+      "url": "https://www.omg.org/spec/KerML/20250201/Data-Type-Library.kpar",
+      "cacheFile": "kerml-Data-Type.kpar",
+      "sha256": "957e4ff5c60f7fc5eedaf0b6d4f776856061c0aa7a424e260eeccb8d6ed7bfbd",
+      "bytes": 4260
+    },
+    "kerml-function": {
+      "standard": "kerml",
+      "version": "1.0",
+      "document": "ptc/25-04-19",
+      "url": "https://www.omg.org/spec/KerML/20250201/Function-Library.kpar",
+      "cacheFile": "kerml-Function.kpar",
+      "sha256": "a8319da3ab1d8ffc0f390ea1aef29d85a00451655c41a9267ce396845c2b1c8d",
+      "bytes": 15929
+    },
+    "sysml-schema": {
+      "standard": "sysml",
+      "version": "2.0",
+      "document": "ptc/25-04-32",
+      "url": "https://www.omg.org/spec/SysML/20250201/SysML.json",
+      "cacheFile": "sysml-schema.json",
+      "sha256": "bb0d8af159cf2cbe4a0df4ed6b903505a57e33d047068e5a50a7008a18d546c5",
+      "bytes": 3875821
+    },
+    "kerml-schema": {
+      "standard": "kerml",
+      "version": "1.0",
+      "document": "ptc/25-04-21",
+      "url": "https://www.omg.org/spec/KerML/20250201/KerML.json",
+      "cacheFile": "kerml-schema.json",
+      "sha256": "e454fe4b7c04f3d95874b6c1a4e6ef056ea5874c71fd3d17e3180319c2f58ab2",
+      "bytes": 1240573
+    },
+    "kerml-interchange-schema": {
+      "standard": "kerml",
+      "version": "1.0",
+      "document": "ptc/25-04-20",
+      "url": "https://www.omg.org/spec/KerML/20250201/KerML-Model-Interchange.json",
+      "cacheFile": "kerml-interchange-schema.json",
+      "sha256": "c94b43f0f634902e9e1043498449fccde492b13bad1ccaed8289de7ecbf03bb6",
+      "bytes": 2398
+    }
+  }
+}
