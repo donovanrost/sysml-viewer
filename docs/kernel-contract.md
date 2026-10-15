@@ -94,13 +94,19 @@ Static package-owned attributes can supply checked bounds through aliases,
 reference chains and numeric operators (`+`, `-`, `*`, `/`, `%`, `^`), including
 nested and unary expressions. Conditional providers support static Boolean tests,
 aliases and nested conditionals, plus ordered comparisons (`<`, `<=`, `>`, `>=`)
-between finite exact integers and rationals. They evaluate only the selected branch
-after proving argument eligibility. Comparisons preserve exact arithmetic
+between finite exact integers and rationals. Equality and sameness (`==`, `!=`,
+`===`, `!==`) support Boolean pairs and exact numeric pairs. Boolean operators
+include eager `not`, `xor`, `&`, `|` and conditional `and`, `or`, `implies`.
+Conditional branches and deferred logical operands execute only when selected,
+after every argument retains complete eligibility and reciprocal ownership proof.
+A skipped operand may be unbound or undefined, but cannot have malformed evidence
+or recursive/ineligible dependencies. Required conditions must be Boolean. Comparisons preserve exact arithmetic
 intermediates, including rationals whose numerator exceeds i128; exported endpoints
 still require a nonnegative signed-128-bit integer. Boolean results cannot become
 numeric endpoints. Unselected unbound values or arithmetic errors are not executed.
-Unsupported featuring, variation, equality/logical predicates, approximate numbers,
-quantities and other control operators remain unknown. Canonical unresolved classifier bases retain independent arithmetic
+Unsupported featuring, variation, cross-domain equality, nulls, sequences, strings,
+occurrence identity, approximate numbers, quantities and other control operators
+remain unknown. Evaluated cardinality does not certify whole-model type validity. Canonical unresolved classifier bases retain independent arithmetic
 and conditional proofs when source/target evidence is consistent. Direct and transitive
 dependents remain incomplete; malformed relationships and other unsupported dynamic
 families can still prevent publication. Within a single cardinality query, related
@@ -109,7 +115,7 @@ remain independently checked. Checked callee signatures also share evidence, whi
 every invocation and constructor argument list is validated separately. First range,
 alias and repeated-endpoint queries over the full pinned library are covered after
 implied relationships are published. Other entry paths and larger compositions can
-still reach `workLimit`. See KERNEL-003/004/005/006/007 in
+still reach `workLimit`. See KERNEL-003/004/005/006/007/008 in
 [foundation qualification](foundation-qualification.md).
 
 `membersAvailable: false` describes a navigation record. It must not be read as an

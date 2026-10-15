@@ -301,6 +301,59 @@ original upstream bytes. Other predicates, equality, logical control, units,
 sequences, arbitrary user functions and general contextual execution remain open.
 This qualifies the bounded provider path, not complete expression semantics.
 
+## KERNEL-008: scalar equality and Boolean predicates
+
+The `.9` baseline returned unknown bounds for `if 2 == 2 ? 7 else 9`,
+`if true and false ? 7 else 9` and `if not false ? 7 else 9`. The checked provider
+now resolves equality/sameness through BaseFunctions, eager Boolean operators
+through DataFunctions, and conditional logical operators through ControlFunctions.
+Every selected function must retain its exact loaded-library identity and current
+input bindings. Earlier-package absence is proved only where required; equality
+continues to select BaseFunctions when DataFunctions contains a specialization.
+
+KerML 1.0 §8.2.5.8.1 Table 5 and §8.3.4.8.17 specify operator mapping and lookup.
+Sections 9.4.2.2 and 9.4.5.2 supply equality and Boolean signatures. Section
+8.4.4.9.6 and §9.4.17.2 specify that `and`, `or` and `implies` pass their second
+operand as an Expression. The implementation uses a shared three-variant control
+rule during certification and execution. It checks eligibility and reciprocal
+wrapper ownership even when that operand is skipped, while avoiding execution of
+an unneeded value. It does not cache computed results or increase resource limits.
+The source authority remains the [pinned KerML specification](https://www.omg.org/spec/KerML/1.0).
+
+MULT-026 covers `==`, `!=`, `===` and `!==` for Boolean and finite exact numeric
+pairs, including rational equivalence, adjacent integers above 2^53, arithmetic
+beyond i128 and aliases. Sameness and equality coincide only for these admitted
+data values; occurrence identity is outside this certificate. MULT-027 covers all
+truth-table rows for eager `&`, `|`, `xor` and conditional `and`, `or`, `implies`,
+as well as `not`, nested predicates, aliases and skipped unavailable/undefined
+operands. MULT-028 refuses mixed domains, approximate/string/null/infinite values,
+required missing operands, undefined/excessive arithmetic, recursive eligibility,
+invalid Boolean operands and Boolean cardinality endpoints. Required operands
+never turn into default Boolean values.
+
+Private dependency regressions cover all eleven operators in canonical and legacy
+graphs, changed formal inputs, work exhaustion, earlier-package shadow/import/
+alias ambiguity, user-defined lookalikes and later-package specializations.
+Deferred-operand tests retain unknown results after wrapper ownership, metadata,
+kind or condition edits, and reselect from current graph values before publication.
+Public Rust round-trip tests and native/WASM snapshots exercise the same results.
+
+The combined native/WASM integration workspace initially exceeded the unchanged
+10-million-step publication allowance: standalone cases passed while existing
+arithmetic, conditional and comparison bounds became unknown. Operator selection
+now shares complete direct-name and loaded-library identity projections within the
+existing source/publication-stamped batch. It still validates every namespace
+relationship, distinguishes ambiguous names from certified absence, and discards
+projections after source, visibility, ownership, metadata or publication changes.
+No value results are cached. The integration test retains all earlier and new
+fixtures together, including the additional unresolved-import workspace.
+
+Four existing reversible patches carry KERNEL-008. The engine advances to `.10`;
+snapshot schema 3 and package version 0.3.0 remain unchanged. Strings, sequences,
+null/coalescing semantics, occurrence identity, units, arbitrary function dispatch
+and general contextual execution remain open. An evaluated bound does not prove
+that every expression or the enclosing model is well typed.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -328,11 +381,11 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **75 passing conformance cases**, **no
-known-gap cases**, and **no planned cases in the current matrix**. All **44 Rust kernel tests**,
-**32 Node tests**, and **227 dependency proof tests** pass.
+On macOS arm64, the completed run has **78 passing conformance cases**, **no
+known-gap cases**, and **no planned cases in the current matrix**. All **46 Rust kernel tests**,
+**33 Node tests**, and **232 dependency proof tests** pass.
 The dependency suites cover type relations (41), model-level evaluability (33),
-cardinality (24), invocation bindings (16), constructor bindings (16), dynamic graph
+cardinality (26), invocation bindings (19), constructor bindings (16), dynamic graph
 (17), dynamic invocations (25), owned results (4), end constancy (10) and checked
 namespace operations (41). The corpus and the 32 import-rule partitions are included
 in the Rust suite, not additional independently qualified specification counts.
@@ -344,35 +397,45 @@ pass. The saved [matrix execution](evidence/conformance-macos-arm64.json) and
 [requirements execution](evidence/requirements-macos-arm64.json) record the current
 source, patch and fixture fingerprints. Windows/Linux execution remains pending CI.
 
-The latest [ordered-predicate benchmark](evidence/benchmark-comparisons-macos-arm64.json)
-records three fresh processes per native/WASM workload, for 60 successful samples.
-All repeated native and WASM snapshots agree exactly. Every ordered-predicate
-sample passes all 26 MULT-024 assertions, alongside the retained compound-range
-and isolation assertions and seven other workloads.
+The complete [scalar-predicate benchmark rerun](evidence/benchmark-predicates-macos-arm64.json)
+records three fresh processes per native/WASM workload, for 72 successful samples.
+All repeated native and WASM snapshots agree exactly. Every equality sample passes
+all 30 MULT-026 assertions; every Boolean sample passes all 36 MULT-027 assertions.
+The ordered-predicate, compound-range and isolation assertions and seven other
+workloads remain included.
 
 | Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
 | --- | ---: | ---: | ---: |
-| Ordered predicates | 2,988 | 3,394 | 431.1/371.9 |
-| Compound ranges | 2,326 | 3,354 | 420.1/357.1 |
-| Independent bounds with missing base | 2,051 | 2,505 | 424.0/351.8 |
-| Imported memberships | 1,977 | 2,415 | 424.7/341.7 |
-| Viewer example | 2,027 | 2,488 | 428.6/361.3 |
-| Attribute providers | 2,063 | 2,502 | 434.2/344.1 |
-| Arithmetic providers | 2,156 | 2,595 | 427.8/367.1 |
-| Conditional providers | 2,157 | 2,632 | 438.0/360.8 |
-| 100 usages | 2,036 | 2,466 | 416.3/351.9 |
-| 1,000 usages | 2,338 | 2,646 | 440.3/374.1 |
+| Scalar equality | 2,522 | 3,049 | 432.5/358.3 |
+| Boolean predicates | 2,671 | 3,171 | 417.1/364.8 |
+| Ordered predicates | 2,471 | 3,020 | 408.1/357.5 |
+| Compound ranges | 2,132 | 2,542 | 408.7/352.9 |
+| Independent bounds with missing base | 2,174 | 2,527 | 408.0/347.2 |
+| Imported memberships | 1,982 | 2,396 | 413.8/343.8 |
+| Viewer example | 1,967 | 2,435 | 413.9/359.7 |
+| Attribute providers | 2,025 | 2,512 | 418.8/351.0 |
+| Arithmetic providers | 2,100 | 2,595 | 424.7/358.2 |
+| Conditional providers | 2,130 | 2,577 | 431.7/362.3 |
+| 100 usages | 2,005 | 2,430 | 425.3/359.3 |
+| 1,000 usages | 2,300 | 2,618 | 427.8/375.9 |
 
 The earlier `.6` isolation run had an initial native sample time out at 60
 seconds; a direct retry completed in 3.2 seconds, and its full 48-sample rerun
 passed. The cause of that earlier timeout remains unresolved. No timeout occurred
 in the recorded `.7`, `.8` or `.9` runs.
 
+The [initial `.10` attempt](evidence/benchmark-predicates-initial-macos-arm64.json) stopped
+after 45 successful samples when the first attribute-provider WASM sample exceeded 60 seconds.
+It also retained an 18,985 ms Boolean WASM sample (the other two took 4,100 and 3,329 ms).
+Three direct attribute-provider retries completed in 2,628, 2,537 and 2,480 ms with identical
+snapshots. The separate complete 72-sample rerun is tabulated above. The initial timeout
+remains unexplained; these results do not establish a stable latency bound.
+
 Measurements include startup, bundled-library analysis and serialization. They are
 observations on this Mac, not cross-platform latency guarantees. Canonical
 preparation is a whole-model pass. The facade runs its model scan before projecting
 cardinality; the separate direct-query regression exercises the first-query budget.
-Compared with the retained [signature-reuse run](evidence/benchmark-signatures-macos-arm64.json),
+Compared with the retained [ordered-predicate run](evidence/benchmark-comparisons-macos-arm64.json),
 these uncontrolled runs do not isolate incremental query cost or establish a
 regression budget. Large import-heavy production models and incremental performance
 remain open engineering work.

@@ -21,22 +21,22 @@
       "reason": "Audit featuring evidence for static package-owned AttributeUsage providers, retaining checked ownership, explicit/inverse featuring, variable/variant exclusion, stale-evidence and work-budget guards. MULT-010 is the original full-library regression. Canonical graph publication for arithmetic is a facade responsibility."
     },
     {
-      "id": "KERNEL-003/007",
+      "id": "KERNEL-003/007/008",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
       "patch": "patches/0003-checked-conditional-bindings.patch",
-      "sha256": "58298f1c2c8ac336aaba2fa3df776a013829a4dc258363d04a1956cc8028abf6",
+      "sha256": "c9db5b39c1bbab561d10f634618d4480ca0d7f659aca68eccd5963f128e04fd1",
       "baseSha256": "a42417413b22fa9aaa2cf67dc7127cbf2d69c55a1657e302d0b9a3314cd7dbb0",
-      "resultSha256": "487f599c49c1d29faab393fb3c78d4592a22079aac80a6a914f1cf30fbbd9885",
-      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-007 admits designated DataFunctions ordered predicates over finite exact integers and rationals through the existing canonical binding certificate. Boolean endpoints, nonnumeric/approximate operands, unavailable values, stale publication and exhausted work remain unknown. MULT-024/025 cover truth tables, precision and negative boundaries."
+      "resultSha256": "fdff798a3f91341dc59b4d5d8d85bdd324a76f4df33cb3396446879690755aa7",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-007 admits designated DataFunctions ordered predicates over finite exact integers and rationals through the existing canonical binding certificate. Boolean endpoints, nonnumeric/approximate operands, unavailable values, stale publication and exhausted work remain unknown. MULT-024/025 cover truth tables, precision and negative boundaries. KERNEL-008 admits exact scalar equality and Boolean predicates through designated BaseFunctions, DataFunctions and ControlFunctions bindings. Deferred logical operands retain complete ownership/eligibility proof, while execution follows strict Boolean short-circuit rules. MULT-026/027/028 cover exact values, truth tables, eager/deferred operands and explicit unknown boundaries. Stamped namespace-name projections amortize operator selection across a mixed workspace without changing the cumulative work limit or visibility/identity guards."
     },
     {
-      "id": "KERNEL-003",
+      "id": "KERNEL-003/008",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs",
       "patch": "patches/0004-designated-operator-cache.patch",
-      "sha256": "e0069e86d2356c9acd421d528bd0fac106aa30fcefa9ccbbb0d1468b0f83597a",
+      "sha256": "1107f8d14fd6a08466b867f09cf77c4adbcacfc07bb80e58db121882fa5f30e1",
       "baseSha256": "0a900848b5d128403be09b8d97d8543124f37609925dab0982c3dac0f9f0aa49",
-      "resultSha256": "f66871f1bb4ddac9adc989c7af28b5ffdc49c10a68f2ba007001f713933d7a9f",
-      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results."
+      "resultSha256": "1287cfc82d06b938e47e8dcaf779aee807f57aebd024f90f28a013aaebefc690",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-008 admits exact scalar equality and Boolean predicates through designated BaseFunctions, DataFunctions and ControlFunctions bindings. Deferred logical operands retain complete ownership/eligibility proof, while execution follows strict Boolean short-circuit rules. MULT-026/027/028 cover exact values, truth tables, eager/deferred operands and explicit unknown boundaries. Stamped namespace-name projections amortize operator selection across a mixed workspace without changing the cumulative work limit or visibility/identity guards."
     },
     {
       "id": "KERNEL-003/005/006",
@@ -48,22 +48,22 @@
       "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates. KERNEL-006 reuses checked callee signatures within the eligibility batch through the existing constructor/invocation evidence provider; every supplied binding is independently checked and the unchanged cumulative allowance still bounds cold and warm queries."
     },
     {
-      "id": "KERNEL-003/005/007",
+      "id": "KERNEL-003/005/007/008",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
       "patch": "patches/0006-checked-conditional-cardinality.patch",
-      "sha256": "1911bc19d32f3db86de18677a99e5761c4cdd6f9a293c284cb41d1a25a88ce03",
+      "sha256": "648323547e272a9ca7ffefa1ec6c7702783a86d6f7ccacb031248f2a0222761f",
       "baseSha256": "bbfb520a8321275808a0ba832e00ab4470218ae2ebc9e80a874fa8dfad6f29c4",
-      "resultSha256": "b4cb85804fa0a03af775b4f3683594229f8354575542bcf29d2711a7198c0204",
-      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates. KERNEL-007 admits designated DataFunctions ordered predicates over finite exact integers and rationals through the existing canonical binding certificate. Boolean endpoints, nonnumeric/approximate operands, unavailable values, stale publication and exhausted work remain unknown. MULT-024/025 cover truth tables, precision and negative boundaries."
+      "resultSha256": "5c36dc7ed2e2181befd542471348c0c38e21030175da838242313bc9632584bb",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates. KERNEL-007 admits designated DataFunctions ordered predicates over finite exact integers and rationals through the existing canonical binding certificate. Boolean endpoints, nonnumeric/approximate operands, unavailable values, stale publication and exhausted work remain unknown. MULT-024/025 cover truth tables, precision and negative boundaries. KERNEL-008 admits exact scalar equality and Boolean predicates through designated BaseFunctions, DataFunctions and ControlFunctions bindings. Deferred logical operands retain complete ownership/eligibility proof, while execution follows strict Boolean short-circuit rules. MULT-026/027/028 cover exact values, truth tables, eager/deferred operands and explicit unknown boundaries. Stamped namespace-name projections amortize operator selection across a mixed workspace without changing the cumulative work limit or visibility/identity guards."
     },
     {
-      "id": "KERNEL-003/007",
+      "id": "KERNEL-003/007/008",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs",
       "patch": "patches/0007-exact-conditional-execution.patch",
-      "sha256": "6e51077b722844c1524f4bc5de7a8dd904a6c72f720a2b8281719e6bfab729e5",
+      "sha256": "17a58111caf2b836941e2385765ae00fdeb935d1317248b447802a159e5ece54",
       "baseSha256": "00d3fe66bae837b67ba53e1f177ccd53c8c089513e8354f4a5208f8abf9841ae",
-      "resultSha256": "e063692dd3a249033592149004d019c99fc82ff71f748d5b8d7a42f23315743c",
-      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-007 admits designated DataFunctions ordered predicates over finite exact integers and rationals through the existing canonical binding certificate. Boolean endpoints, nonnumeric/approximate operands, unavailable values, stale publication and exhausted work remain unknown. MULT-024/025 cover truth tables, precision and negative boundaries."
+      "resultSha256": "b61c361766e45b0f08268316ef1617a296481c0c1567a143be041b3013faf275",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-007 admits designated DataFunctions ordered predicates over finite exact integers and rationals through the existing canonical binding certificate. Boolean endpoints, nonnumeric/approximate operands, unavailable values, stale publication and exhausted work remain unknown. MULT-024/025 cover truth tables, precision and negative boundaries. KERNEL-008 admits exact scalar equality and Boolean predicates through designated BaseFunctions, DataFunctions and ControlFunctions bindings. Deferred logical operands retain complete ownership/eligibility proof, while execution follows strict Boolean short-circuit rules. MULT-026/027/028 cover exact values, truth tables, eager/deferred operands and explicit unknown boundaries. Stamped namespace-name projections amortize operator selection across a mixed workspace without changing the cumulative work limit or visibility/identity guards."
     },
     {
       "id": "KERNEL-004",

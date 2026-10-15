@@ -1056,9 +1056,30 @@ pub(crate) fn implicit_open_multiplicity(model: &mut ResolvedModel, e: ElementRe
 #[derive(Default)]
 pub(crate) struct CheckedMultiplicityExpressions {
     pub(crate) operators: HashMap<usize, (BinaryOp, Vec<usize>)>,
+    pub(crate) negations: HashMap<usize, usize>,
+    pub(crate) logical_controls: HashMap<usize, (CheckedLogicalOperator, usize, usize)>,
     pub(crate) conditionals: HashMap<usize, (usize, usize, usize)>,
     pub(crate) references: HashMap<usize, (usize, usize, usize)>,
     pub(crate) universal_relationships: HashSet<usize>,
+}
+
+/// The Boolean control functions share a deferred second operand, but differ
+/// in which first value makes that operand unnecessary. Use this rule in both
+/// execution certification and execution, without caching a computed value.
+#[derive(Clone, Copy)]
+pub(crate) enum CheckedLogicalOperator {
+    And,
+    Or,
+    Implies,
+}
+impl CheckedLogicalOperator {
+    pub(crate) fn short_circuit(self, first: bool) -> Option<bool> {
+        match (self, first) {
+            (Self::And, false) => Some(false),
+            (Self::Or, true) | (Self::Implies, false) => Some(true),
+            _ => None,
+        }
+    }
 }
 
 /// Select a conditional branch with the same exact, bounded graph evaluator.
@@ -2105,6 +2126,30 @@ impl Evaluator<'_> {
                 self.certified_multiplicity_value(value, context, operators, depth + 1)
             }
             "OperatorExpression" => {
+                if let Some(&operand) = operators.negations.get(&e) {
+                    let Value::Boolean(value) =
+                        self.certified_multiplicity_value(operand, context, operators, depth + 1)?
+                    else {
+                        return None;
+                    };
+                    return Some(Value::Boolean(!value));
+                }
+                if let Some(&(operator, first, second)) = operators.logical_controls.get(&e) {
+                    let Value::Boolean(first) =
+                        self.certified_multiplicity_value(first, context, operators, depth + 1)?
+                    else {
+                        return None;
+                    };
+                    if let Some(result) = operator.short_circuit(first) {
+                        return Some(Value::Boolean(result));
+                    }
+                    let Value::Boolean(second) =
+                        self.certified_multiplicity_value(second, context, operators, depth + 1)?
+                    else {
+                        return None;
+                    };
+                    return Some(Value::Boolean(second));
+                }
                 if let Some(&(test, when_true, when_false)) = operators.conditionals.get(&e) {
                     let Value::Boolean(condition) =
                         self.certified_multiplicity_value(test, context, operators, depth + 1)?
@@ -2137,6 +2182,40 @@ impl Evaluator<'_> {
                 }
                 let second =
                     self.certified_multiplicity_value(operands[1], context, operators, depth + 1)?;
+                if matches!(
+                    operator,
+                    BinaryOp::Eq | BinaryOp::NotEq | BinaryOp::Same | BinaryOp::NotSame
+                ) {
+                    // Same and equality coincide for the admitted data values.
+                    // Occurrence identity, null, sequences, quantities and
+                    // approximate values require separate execution evidence.
+                    let equal = match (&first, &second) {
+                        (Value::Boolean(a), Value::Boolean(b)) => a == b,
+                        (
+                            Value::Integer(_) | Value::Rational(_),
+                            Value::Integer(_) | Value::Rational(_),
+                        ) => compare(&first, &second).ok()?.is_eq(),
+                        _ => return None,
+                    };
+                    return Some(Value::Boolean(
+                        if matches!(operator, BinaryOp::NotEq | BinaryOp::NotSame) {
+                            !equal
+                        } else {
+                            equal
+                        },
+                    ));
+                }
+                if matches!(operator, BinaryOp::AndAmp | BinaryOp::OrBar | BinaryOp::Xor) {
+                    let (Value::Boolean(first), Value::Boolean(second)) = (first, second) else {
+                        return None;
+                    };
+                    return Some(Value::Boolean(match operator {
+                        BinaryOp::AndAmp => first & second,
+                        BinaryOp::OrBar => first | second,
+                        BinaryOp::Xor => first ^ second,
+                        _ => unreachable!(),
+                    }));
+                }
                 if matches!(
                     operator,
                     BinaryOp::Lt | BinaryOp::LtEq | BinaryOp::Gt | BinaryOp::GtEq

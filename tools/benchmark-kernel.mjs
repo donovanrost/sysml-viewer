@@ -26,6 +26,16 @@ if (process.argv.includes('--wasm-child')) {
     `target/release/sysml-inspect${process.platform === 'win32' ? '.exe' : ''}`,
   );
   const scenarios = [
+    ...[
+      ['scalar-equality', '026'],
+      ['logical-predicates', '027'],
+    ].map(([name, id]) => ({
+      name,
+      text: readFileSync(join(root, `tests/conformance/fixtures/mult-${id}.sysml`), 'utf8'),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === `MULT-${id}`).checks,
+    })),
     {
       name: 'ordered-predicates',
       text: readFileSync(join(root, 'tests/conformance/fixtures/mult-024.sysml'), 'utf8'),

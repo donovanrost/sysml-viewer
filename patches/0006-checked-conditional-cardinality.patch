@@ -1,9 +1,11 @@
 diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
 --- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
 +++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
-@@ -787,15 +787,44 @@
+@@ -786,16 +786,70 @@
+     context: Option<usize>,
      steps: &mut usize,
  ) -> Result<crate::eval::CheckedMultiplicityExpressions, CardinalityIssue> {
++    use crate::eval::CheckedLogicalOperator;
      use sysmlv2_syntax::ast::BinaryOp;
 +    enum Task {
 +        Visit(usize),
@@ -12,6 +14,12 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
 +            test: usize,
 +            when_true: usize,
 +            when_false: usize,
++        },
++        Logical {
++            expression: usize,
++            operator: CheckedLogicalOperator,
++            first: usize,
++            second: usize,
 +        },
 +    }
      charge(steps, roots.len())?;
@@ -44,11 +52,29 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
 +                pending.push(Task::Visit(if condition { when_true } else { when_false }));
 +                continue;
 +            }
++            Task::Logical {
++                expression,
++                operator,
++                first,
++                second,
++            } => {
++                let condition = crate::eval::checked_multiplicity_condition(
++                    &mut r.b, first, context, &operators, steps,
++                )
++                .ok_or(CardinalityIssue::UnsupportedBound)?;
++                operators
++                    .logical_controls
++                    .insert(expression, (operator, first, second));
++                if operator.short_circuit(condition).is_none() {
++                    pending.push(Task::Visit(second));
++                }
++                continue;
++            }
 +        };
          if !seen.insert(expression) {
              continue;
          }
-@@ -811,10 +840,10 @@
+@@ -811,10 +865,10 @@
          // not its separate model-level classification. Other expression kinds
          // retain the existing model-level admission requirement.
          if r.b.elements[expression].ty != "FeatureReferenceExpression" {
@@ -61,7 +87,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
              "FeatureReferenceExpression" => {
                  certify_reference_domain(&r.b, &raw, expression, steps)?;
                  // The referenced Feature is the first non-parameter member,
-@@ -840,7 +869,7 @@
+@@ -840,7 +894,7 @@
                      .owner_elem(target)
                      .is_none_or(|owner| !conforms(r.b.elements[owner].ty, "Type"))
                  {
@@ -70,7 +96,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
                  } else {
                      let receiver = context
                          .and_then(|scope| r.b.scope_owner(scope))
-@@ -881,7 +910,7 @@
+@@ -881,7 +935,7 @@
                  operators
                      .references
                      .insert(expression, (target, selected, value));
@@ -79,16 +105,17 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
                  continue;
              }
              "OperatorExpression" => {}
-@@ -892,6 +921,30 @@
+@@ -892,19 +946,99 @@
          let arguments = report
              .arguments
              .map_err(|_| CardinalityIssue::UnsupportedBound)?;
+-        let operator = match r.b.elements[expression]
 +        if r.b.elements[expression]
-+            .props
-+            .get("operator")
-+            .and_then(|v| v.as_str())
+             .props
+             .get("operator")
+             .and_then(|v| v.as_str())
 +            == Some("if")
-+        {
+         {
 +            // Eligibility was proved for the complete argument list above.
 +            // Execution certification follows only the selected branch; an
 +            // unselected, well-formed branch may have no executable value.
@@ -107,10 +134,46 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
 +            pending.push(Task::Visit(test));
 +            continue;
 +        }
-         let operator = match r.b.elements[expression]
-             .props
-             .get("operator")
-@@ -903,6 +956,10 @@
++        let spelling = r.b.elements[expression]
++            .props
++            .get("operator")
++            .and_then(|v| v.as_str());
++        if spelling == Some("not") {
++            if arguments.inputs.len() != 1 || arguments.bindings.len() != 1 {
++                return Err(CardinalityIssue::UnsupportedBound);
++            }
++            let operand = arguments.bindings[0].value.0;
++            operators.negations.insert(expression, operand);
++            pending.push(Task::Visit(operand));
++            continue;
++        }
++        let logical = match spelling {
++            Some("and") => Some(CheckedLogicalOperator::And),
++            Some("or") => Some(CheckedLogicalOperator::Or),
++            Some("implies") => Some(CheckedLogicalOperator::Implies),
++            _ => None,
++        };
++        if let Some(operator) = logical {
++            if arguments.inputs.len() != 2 || arguments.bindings.len() != 2 {
++                return Err(CardinalityIssue::UnsupportedBound);
++            }
++            let first = arguments.bindings[0].value.0;
++            // Even a skipped argument must retain its complete reciprocal
++            // Expression wrapper and model-level eligibility evidence.
++            let second = conditional_operand(&r.b, &raw, arguments.bindings[1].value.0, steps)?;
++            pending.push(Task::Logical {
++                expression,
++                operator,
++                first,
++                second,
++            });
++            pending.push(Task::Visit(first));
++            continue;
++        }
++        let operator = match spelling {
+             Some("+") => BinaryOp::Add,
+             Some("-") => BinaryOp::Sub,
+             Some("*") => BinaryOp::Mul,
              Some("/") => BinaryOp::Div,
              Some("%") => BinaryOp::Rem,
              Some("^" | "**") => BinaryOp::Pow,
@@ -118,10 +181,32 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
 +            Some("<=") => BinaryOp::LtEq,
 +            Some(">") => BinaryOp::Gt,
 +            Some(">=") => BinaryOp::GtEq,
++            Some("==") => BinaryOp::Eq,
++            Some("!=") => BinaryOp::NotEq,
++            Some("===") => BinaryOp::Same,
++            Some("!==") => BinaryOp::NotSame,
++            Some("&") => BinaryOp::AndAmp,
++            Some("|") => BinaryOp::OrBar,
++            Some("xor") => BinaryOp::Xor,
              _ => return Err(CardinalityIssue::UnsupportedBound),
          };
++        if matches!(
++            operator,
++            BinaryOp::Eq
++                | BinaryOp::NotEq
++                | BinaryOp::Same
++                | BinaryOp::NotSame
++                | BinaryOp::AndAmp
++                | BinaryOp::OrBar
++                | BinaryOp::Xor
++        ) && arguments.inputs.len() != 2
++        {
++            return Err(CardinalityIssue::UnsupportedBound);
++        }
          charge(steps, arguments.bindings.len())?;
-@@ -916,10 +973,53 @@
+         let operands: Vec<_> = arguments
+             .bindings
+@@ -916,10 +1050,53 @@
          {
              return Err(CardinalityIssue::UnsupportedBound);
          }
@@ -132,9 +217,9 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
      Ok(operators)
 +}
 +
-+/// A canonical conditional argument owns a reference to an Expression. Do not
++/// A canonical deferred argument owns a reference to an Expression. Do not
 +/// reinterpret a plain Feature reference, missing wrapper or broken reciprocal
-+/// membership as a deferred expression. Both branches require this evidence.
++/// membership as a deferred expression. Even skipped operands require this evidence.
 +fn conditional_operand(
 +    b: &Builder,
 +    raw: &StoredStructure,
@@ -176,7 +261,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
  }
  
  /// A contextual reference replaces only the model-level eligibility predicate,
-@@ -972,9 +1072,10 @@
+@@ -972,9 +1149,10 @@
  fn require_model_level_value(
      r: &mut ResolvedModel,
      expression: usize,
@@ -188,14 +273,14 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
      *steps = proof.steps;
      if proof.classification == super::ModelLevelEvaluability::Evaluable {
          Ok(())
-@@ -1003,6 +1104,154 @@
+@@ -1003,6 +1181,231 @@
      fn bounds(r: &mut ResolvedModel, name: &str) -> Result<CardinalityBounds, CardinalityIssue> {
          let e = r.resolve_qualified(name).unwrap();
          r.cardinality_report(e).bounds
 +    }
 +    fn conditional_model() -> Model {
 +        let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
-+        m.add_library_source("conditional-library.kerml", "standard library package Base {classifier Anything; feature things:Anything;} standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;} standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;} standard library package ControlFunctions {function 'if' {in test; in expr thenValue {return r;} in expr elseValue {return r;} return result;}} ");
++        m.add_library_source("conditional-library.kerml", "standard library package Base {classifier Anything; feature things:Anything;} standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;} standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;} standard library package ControlFunctions {function 'and' {in x; in expr y {return r;} return r;} function 'or' {in x; in expr y {return r;} return r;} function 'implies' {in x; in expr y {return r;} return r;} function 'if' {in test; in expr thenValue {return r;} in expr elseValue {return r;} return result;}} ");
 +        let unit = m.add_source(
 +            "conditional.kerml",
 +            "feature n = if true ? 3 else 4; feature slots[n];",
@@ -209,6 +294,83 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
 +        r.implied_relationships(slots);
 +        assert_eq!(r.cardinality_report(slots).bounds.unwrap().size(), Some(3));
 +        (r, slots)
++    }
++    fn logical_fixture(operator: &str, first: bool) -> (ResolvedModel, ElementRef, ElementRef) {
++        let mut m = conditional_model();
++        let unit = m.add_source("logical.kerml", &format!("feature missing; feature testValue = {first} {operator} missing; feature count = if testValue ? 7 else 9; feature predicateSlots[count];"));
++        assert!(unit.diagnostics.is_empty(), "{:?}", unit.diagnostics);
++        let mut r = ResolvedModel::build(&m);
++        let slots = r.resolve_qualified("predicateSlots").unwrap();
++        let call = r
++            .user_elements()
++            .find(|e| {
++                r.b.elements[e.0]
++                    .props
++                    .get("operator")
++                    .and_then(|v| v.as_str())
++                    == Some(operator)
++            })
++            .unwrap();
++        (r, slots, call)
++    }
++    #[test]
++    fn logical_controls_require_current_reciprocal_skipped_operand_evidence() {
++        for (operator, first, expected) in
++            [("and", false, 9), ("or", true, 7), ("implies", false, 7)]
++        {
++            for mutation in 0..4 {
++                let (mut r, slots, call) = logical_fixture(operator, first);
++                r.implied_relationships(slots);
++                assert_eq!(
++                    r.cardinality_report(slots).bounds.unwrap().size(),
++                    Some(expected)
++                );
++                let exhausted = r.cardinality_report_with_budget(slots, crate::eval::MAX_STEPS);
++                assert_eq!(exhausted.bounds, Err(CardinalityIssue::WorkLimit));
++                assert!(exhausted.multiplicities.is_empty());
++                let bindings = r
++                    .invocation_binding_report(call)
++                    .arguments
++                    .unwrap()
++                    .bindings;
++                let wrapper = bindings[1].value.0;
++                let raw = StoredStructure::for_query(&mut r.b, &mut 0).unwrap();
++                let child = conditional_operand(&r.b, &raw, wrapper, &mut 0).unwrap();
++                match mutation {
++                    0 => r.b.elements[child].owning_relationship = None,
++                    1 => {
++                        r.b.metadata_of.insert(wrapper, vec![wrapper]);
++                    }
++                    2 => {
++                        r.b.elements[bindings[0].value.0]
++                            .props
++                            .insert("value", json!(!first));
++                    }
++                    _ => {
++                        r.b.elements[wrapper].ty = "LiteralBoolean";
++                    }
++                }
++                let result = r.cardinality_report(slots);
++                assert!(result.bounds.is_err(), "{operator}, mutation {mutation}");
++                assert!(result.multiplicities.is_empty());
++            }
++        }
++    }
++    #[test]
++    fn logical_controls_reselect_using_graph_values_before_publication() {
++        for (operator, first) in [("and", false), ("or", true), ("implies", false)] {
++            let (mut r, slots, _) = logical_fixture(operator, first);
++            // The added predicate contains the last authored Boolean; its
++            // enclosing conditional tests a reference, not another literal.
++            let literal = r
++                .user_elements()
++                .filter(|&e| r.element_type(e) == "LiteralBoolean")
++                .last()
++                .unwrap();
++            r.b.elements[literal.0].props.insert("value", json!(!first));
++            r.implied_relationships(slots);
++            assert!(r.cardinality_report(slots).bounds.is_err(), "{operator}");
++        }
 +    }
 +    fn ordered_fixture() -> (ResolvedModel, ElementRef, ElementRef) {
 +        let mut m = conditional_model();

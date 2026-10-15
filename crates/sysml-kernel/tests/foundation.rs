@@ -642,3 +642,149 @@ fn ordered_predicates_preserve_exact_values_and_guards_after_round_trip() {
         );
     }
 }
+
+fn predicate_snapshot() -> &'static Snapshot {
+    static VALUE: OnceLock<Snapshot> = OnceLock::new();
+    VALUE.get_or_init(|| {
+        let original = analyze(vec![
+            document(
+                "equality.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-026.sysml"),
+            ),
+            document(
+                "logic.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-027.sysml"),
+            ),
+            document(
+                "guards.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-028.sysml"),
+            ),
+        ]);
+        assert!(!original
+            .diagnostics
+            .iter()
+            .any(|d| matches!(d.stage, Stage::Syntax)));
+        serde_json::from_str(&serde_json::to_string(&original).unwrap()).unwrap()
+    })
+}
+#[test]
+fn equality_and_logical_predicates_preserve_exact_truth_tables_after_round_trip() {
+    let q = predicate_snapshot().queries().unwrap();
+    for (name, value) in [
+        ("EqualityPredicates::eqEqual", "7"),
+        ("EqualityPredicates::eqUnequal", "9"),
+        ("EqualityPredicates::eqTrue", "7"),
+        ("EqualityPredicates::eqFalse", "9"),
+        ("EqualityPredicates::eqRational", "7"),
+        ("EqualityPredicates::eqLarge", "9"),
+        ("EqualityPredicates::neEqual", "9"),
+        ("EqualityPredicates::neUnequal", "7"),
+        ("EqualityPredicates::neTrue", "9"),
+        ("EqualityPredicates::neFalse", "7"),
+        ("EqualityPredicates::neRational", "9"),
+        ("EqualityPredicates::neLarge", "7"),
+        ("EqualityPredicates::sameEqual", "7"),
+        ("EqualityPredicates::sameUnequal", "9"),
+        ("EqualityPredicates::sameTrue", "7"),
+        ("EqualityPredicates::sameFalse", "9"),
+        ("EqualityPredicates::sameRational", "7"),
+        ("EqualityPredicates::sameLarge", "9"),
+        ("EqualityPredicates::differentEqual", "9"),
+        ("EqualityPredicates::differentUnequal", "7"),
+        ("EqualityPredicates::differentTrue", "9"),
+        ("EqualityPredicates::differentFalse", "7"),
+        ("EqualityPredicates::differentRational", "9"),
+        ("EqualityPredicates::differentLarge", "7"),
+        ("EqualityPredicates::integerRational", "7"),
+        ("EqualityPredicates::wideExact", "7"),
+        ("EqualityPredicates::closeRational", "9"),
+        ("EqualityPredicates::signed", "7"),
+        ("EqualityPredicates::viaAlias", "7"),
+        ("LogicalPredicates::negateTrue", "9"),
+        ("LogicalPredicates::negateFalse", "7"),
+        ("LogicalPredicates::conjunction00", "9"),
+        ("LogicalPredicates::conjunction01", "9"),
+        ("LogicalPredicates::conjunction10", "9"),
+        ("LogicalPredicates::conjunction11", "7"),
+        ("LogicalPredicates::disjunction00", "9"),
+        ("LogicalPredicates::disjunction01", "7"),
+        ("LogicalPredicates::disjunction10", "7"),
+        ("LogicalPredicates::disjunction11", "7"),
+        ("LogicalPredicates::exclusive00", "9"),
+        ("LogicalPredicates::exclusive01", "7"),
+        ("LogicalPredicates::exclusive10", "7"),
+        ("LogicalPredicates::exclusive11", "9"),
+        ("LogicalPredicates::and00", "9"),
+        ("LogicalPredicates::and01", "9"),
+        ("LogicalPredicates::and10", "9"),
+        ("LogicalPredicates::and11", "7"),
+        ("LogicalPredicates::or00", "9"),
+        ("LogicalPredicates::or01", "7"),
+        ("LogicalPredicates::or10", "7"),
+        ("LogicalPredicates::or11", "7"),
+        ("LogicalPredicates::implies00", "7"),
+        ("LogicalPredicates::implies01", "7"),
+        ("LogicalPredicates::implies10", "9"),
+        ("LogicalPredicates::implies11", "7"),
+        ("LogicalPredicates::skipAnd", "9"),
+        ("LogicalPredicates::skipOr", "7"),
+        ("LogicalPredicates::skipImplies", "7"),
+        ("LogicalPredicates::skipAndDivision", "9"),
+        ("LogicalPredicates::skipOrDivision", "7"),
+        ("LogicalPredicates::skipImpliesDivision", "7"),
+        ("LogicalPredicates::nested", "7"),
+        ("LogicalPredicates::combined", "7"),
+        ("LogicalPredicates::viaAlias", "7"),
+    ] {
+        let e = q.find(name)[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Evaluated {
+                lower: value.into(),
+                upper: Some(value.into()),
+            },
+            "{name}"
+        );
+    }
+}
+#[test]
+fn predicate_guards_preserve_unknown_for_required_or_unsupported_values() {
+    let q = predicate_snapshot().queries().unwrap();
+    for (name, reason) in [
+        ("mixedEquality", CardinalityIssue::UnsupportedBound),
+        ("mixedInequality", CardinalityIssue::UnsupportedBound),
+        ("mixedSame", CardinalityIssue::UnsupportedBound),
+        ("mixedNotSame", CardinalityIssue::UnsupportedBound),
+        ("realEquality", CardinalityIssue::UnsupportedBound),
+        ("infinityEquality", CardinalityIssue::UnsupportedBound),
+        ("stringEquality", CardinalityIssue::UnsupportedBound),
+        ("nullEquality", CardinalityIssue::UnsupportedBound),
+        ("missingEquality", CardinalityIssue::IncompleteProvider),
+        ("undefinedEquality", CardinalityIssue::UnsupportedBound),
+        ("excessiveEquality", CardinalityIssue::UnsupportedBound),
+        ("notNumber", CardinalityIssue::UnsupportedBound),
+        ("andNumber", CardinalityIssue::UnsupportedBound),
+        ("orNumber", CardinalityIssue::UnsupportedBound),
+        ("xorNumber", CardinalityIssue::UnsupportedBound),
+        ("eagerAnd", CardinalityIssue::IncompleteProvider),
+        ("eagerOr", CardinalityIssue::IncompleteProvider),
+        ("eagerXor", CardinalityIssue::IncompleteProvider),
+        ("neededAnd", CardinalityIssue::IncompleteProvider),
+        ("neededOr", CardinalityIssue::IncompleteProvider),
+        ("neededImplies", CardinalityIssue::IncompleteProvider),
+        ("badFirst", CardinalityIssue::UnsupportedBound),
+        ("badSecond", CardinalityIssue::UnsupportedBound),
+        ("eagerDivision", CardinalityIssue::UnsupportedBound),
+        ("selectedDivision", CardinalityIssue::UnsupportedBound),
+        ("recursive", CardinalityIssue::UnsupportedBound),
+        ("booleanBound", CardinalityIssue::UnsupportedBound),
+        ("logicalBound", CardinalityIssue::UnsupportedBound),
+    ] {
+        let e = q.find(&format!("PredicateGuards::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Unknown { reason },
+            "{name}"
+        );
+    }
+}

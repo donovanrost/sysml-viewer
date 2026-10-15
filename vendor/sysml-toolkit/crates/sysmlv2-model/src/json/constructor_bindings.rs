@@ -168,6 +168,7 @@ pub(super) struct ConstructorBatchEvidence {
     stamp: Option<Stamp>,
     features: HashMap<usize, super::TypeFeatures>,
     operator_targets: HashMap<&'static str, usize>,
+    operator_names: super::invocation_bindings::DesignatedOperatorNames,
     relations: super::type_relations::TypeRelations,
 }
 fn projection_work(features: &super::TypeFeatures) -> usize {
@@ -208,6 +209,7 @@ impl ConstructorBatchEvidence {
                 .saturating_add(self.operator_targets.capacity()),
         )?;
         self.relations.reset_with_budget(steps).ok_or(WorkLimit)?;
+        self.operator_names.clear(steps).map_err(|_| WorkLimit)?;
         self.features = HashMap::new();
         self.operator_targets = HashMap::new();
         self.stamp = Some(Stamp::capture_builder(b));
@@ -225,7 +227,12 @@ impl ConstructorBatchEvidence {
             charge(steps, 1).ok()?;
             return Some(target);
         }
-        let target = super::invocation_bindings::designated_operator_target(b, receiver, steps)?;
+        let target = super::invocation_bindings::designated_operator_target(
+            b,
+            receiver,
+            steps,
+            &mut self.operator_names,
+        )?;
         self.align(b, steps).ok()?;
         self.operator_targets.insert(operator, target);
         Some(target)

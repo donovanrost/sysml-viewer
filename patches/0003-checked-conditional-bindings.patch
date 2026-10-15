@@ -25,7 +25,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
  /// Shared exact loaded-library identity used by the evaluator's designated
 -/// Function lookup. Only ordinary numeric operators enter this bounded domain.
 -pub(super) fn numeric_operator_name(b: &super::Builder, receiver: usize) -> Option<&'static str> {
-+/// Function lookup. Numeric operators and the conditional test enter this bounded domain.
++/// Function lookup. Only explicitly admitted operators enter this bounded domain.
 +pub(super) fn designated_operator_name(
 +    b: &super::Builder,
 +    receiver: usize,
@@ -33,7 +33,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
      if b.graph_format != crate::model::GraphFormat::CanonicalV3
          || b.elements.get(receiver)?.ty != "OperatorExpression"
      {
-@@ -400,15 +403,20 @@
+@@ -400,15 +403,32 @@
          "/" => "/",
          "%" => "%",
          "^" => "^",
@@ -41,6 +41,17 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
 +        "<=" => "<=",
 +        ">" => ">",
 +        ">=" => ">=",
++        "==" => "==",
++        "!=" => "!=",
++        "===" => "===",
++        "!==" => "!==",
++        "not" => "not",
++        "xor" => "xor",
++        "&" => "&",
++        "|" => "|",
++        "and" => "and",
++        "or" => "or",
++        "implies" => "implies",
 +        "if" => "if",
          _ => return None,
      })
@@ -50,22 +61,23 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
      b: &mut super::Builder,
      receiver: usize,
      steps: &mut usize,
++    names: &mut DesignatedOperatorNames,
  ) -> Option<usize> {
 -    let operator = numeric_operator_name(b, receiver)?;
 +    let operator = designated_operator_name(b, receiver)?;
      let raw = StoredStructure::for_query(b, steps)?;
      if !raw.ids_unique || raw.annotations_incomplete || b.metadata_associations_incomplete {
          return None;
-@@ -419,13 +427,17 @@
+@@ -419,58 +439,149 @@
      // absence certificate, or enters its unbudgeted import/alias traversal.
      charge(steps, b.unit_starts.len()).ok()?;
      let roots: Vec<_> = b.unit_starts.iter().map(|&(root, _)| root).collect();
 -    let mut base = None;
 -    let mut data = None;
-+    let packages: &[&str] = if operator == "if" {
-+        &["BaseFunctions", "DataFunctions", "ControlFunctions"]
-+    } else {
-+        &["BaseFunctions", "DataFunctions"]
++    let packages: &[&str] = match operator {
++        "==" | "!=" | "===" | "!==" => &["BaseFunctions"],
++        "if" | "and" | "or" | "implies" => &["BaseFunctions", "DataFunctions", "ControlFunctions"],
++        _ => &["BaseFunctions", "DataFunctions"],
 +    };
 +    let mut selected = vec![None; packages.len()];
      for root in roots {
@@ -73,11 +85,12 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
              return None;
          }
 -        for (name, selected) in [("BaseFunctions", &mut base), ("DataFunctions", &mut data)] {
+-            if let Some(found) = direct_designated_member(b, &raw, root, name, false, steps)? {
 +        for (name, selected) in packages.iter().zip(&mut selected) {
-             if let Some(found) = direct_designated_member(b, &raw, root, name, false, steps)? {
++            if let Some(found) = names.member(b, &raw, root, name, false, steps)? {
                  if selected.replace(found).is_some() {
                      return None;
-@@ -433,25 +445,26 @@
+                 }
              }
          }
      }
@@ -90,7 +103,9 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
 +    // A compatibility resolver miss is not evidence for skipping an import/alias.
 +    for package in selected[..selected.len() - 1].iter().flatten().copied() {
 +        if !matches!(b.elements[package].ty, "Package" | "LibraryPackage")
-+            || direct_designated_member(b, &raw, package, operator, true, steps)?.is_some()
++            || names
++                .member(b, &raw, package, operator, true, steps)?
++                .is_some()
          {
              return None;
          }
@@ -102,18 +117,171 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
          return None;
      }
 -    let target = direct_designated_member(b, &raw, data, operator, true, steps)??;
-+    let target = direct_designated_member(b, &raw, package, operator, true, steps)??;
-+    let package_name = *packages.last()?;
-     charge(steps, b.lib_qnames.len()).ok()?;
-     let mut names = b
-         .lib_qnames
-         .iter()
+-    charge(steps, b.lib_qnames.len()).ok()?;
+-    let mut names = b
+-        .lib_qnames
+-        .iter()
 -        .filter(|(_, name)| name.as_slice() == ["DataFunctions", operator]);
-+        .filter(|(_, name)| name.as_slice() == [package_name, operator]);
-     let (id, _) = names.next()?;
-     (target < b.lib_boundary
-         && b.elements[target].ty == "Function"
-@@ -554,6 +567,81 @@
+-    let (id, _) = names.next()?;
+-    (target < b.lib_boundary
+-        && b.elements[target].ty == "Function"
+-        && *id == b.elements[target].id
+-        && names.next().is_none())
+-    .then_some(target)
++    let target = names.member(b, &raw, package, operator, true, steps)??;
++    let package_name = *packages.last()?;
++    let id = names.library_identity(b, package_name, operator, steps)?;
++    (target < b.lib_boundary && b.elements[target].ty == "Function" && id == b.elements[target].id)
++        .then_some(target)
++}
++
++/// Successful complete direct-name projections, scoped to ConstructorBatchEvidence's
++/// source/publication stamp. Every namespace relationship is audited once per
++/// visibility context; later operators reuse that exact absence/identity proof.
++#[derive(Default)]
++pub(super) struct DesignatedOperatorNames {
++    namespaces: HashMap<(usize, bool), HashMap<String, Option<usize>>>,
++    retained_work: usize,
++    library: Option<HashMap<&'static str, HashMap<String, Option<uuid::Uuid>>>>,
++}
++impl DesignatedOperatorNames {
++    pub(super) fn clear(&mut self, steps: &mut usize) -> Result<(), InvocationBindingIssue> {
++        charge(steps, self.retained_work)?;
++        *self = Self::default();
++        Ok(())
++    }
++    fn library_identity(
++        &mut self,
++        b: &super::Builder,
++        package: &str,
++        operator: &str,
++        steps: &mut usize,
++    ) -> Option<uuid::Uuid> {
++        charge(steps, operator.len().saturating_add(1)).ok()?;
++        if self.library.is_none() {
++            charge(steps, b.lib_qnames.len()).ok()?;
++            let mut library: HashMap<_, HashMap<String, Option<uuid::Uuid>>> = HashMap::new();
++            for (id, name) in &b.lib_qnames {
++                let [package, operator] = name.as_slice() else {
++                    continue;
++                };
++                let package = match package.as_str() {
++                    "BaseFunctions" => "BaseFunctions",
++                    "DataFunctions" => "DataFunctions",
++                    "ControlFunctions" => "ControlFunctions",
++                    _ => continue,
++                };
++                charge(steps, operator.len().saturating_add(1)).ok()?;
++                library
++                    .entry(package)
++                    .or_default()
++                    .entry(operator.clone())
++                    .and_modify(|previous| *previous = None)
++                    .or_insert(Some(*id));
++            }
++            let mut retained = library.capacity();
++            for names in library.values() {
++                retained = retained.saturating_add(names.capacity());
++                for name in names.keys() {
++                    retained = retained.saturating_add(name.len());
++                }
++            }
++            charge(steps, retained).ok()?;
++            self.retained_work = self.retained_work.saturating_add(retained);
++            self.library = Some(library);
++        }
++        self.library
++            .as_ref()?
++            .get(package)?
++            .get(operator)
++            .copied()
++            .flatten()
++    }
++    fn member(
++        &mut self,
++        b: &super::Builder,
++        raw: &StoredStructure,
++        owner: usize,
++        name: &str,
++        external: bool,
++        steps: &mut usize,
++    ) -> Option<Option<usize>> {
++        charge(steps, name.len().saturating_add(1)).ok()?;
++        if let std::collections::hash_map::Entry::Vacant(entry) =
++            self.namespaces.entry((owner, external))
++        {
++            let names = direct_designated_names(b, raw, owner, external, steps)?;
++            let mut retained = names.capacity().saturating_add(1);
++            for name in names.keys() {
++                retained = retained.saturating_add(name.len());
++            }
++            charge(steps, retained).ok()?;
++            self.retained_work = self.retained_work.saturating_add(retained);
++            entry.insert(names);
++        }
++        // Absent is certified empty; an ambiguous declared name is unknown.
++        match self.namespaces[&(owner, external)].get(name) {
++            None => Some(None),
++            Some(Some(member)) => Some(Some(*member)),
++            Some(None) => None,
++        }
++    }
+ }
+ 
+ /// A deliberately narrow, complete subset of Namespace name selection. Public
+ /// imports and aliases need the contextual provider and remain qualified here.
+ /// Valid private imports cannot contribute an externally visible member.
+-fn direct_designated_member(
++fn direct_designated_names(
+     b: &super::Builder,
+     raw: &StoredStructure,
+     owner: usize,
+-    name: &str,
+     external: bool,
+     steps: &mut usize,
+-) -> Option<Option<usize>> {
++) -> Option<HashMap<String, Option<usize>>> {
+     if !raw.membership_domains(b, steps)?.owner_complete(owner)
+         || !raw.import_domains(b, steps)?.owner_complete(owner)
+         || raw.metadata_annotation_targets.contains(&owner)
+@@ -481,7 +592,7 @@
+     let relationships = semantic_ownership::owned_relationships(b, owner)?;
+     charge(steps, relationships.len()).ok()?;
+     let mut seen = HashSet::new();
+-    let mut result = None;
++    let mut result = HashMap::new();
+     for relationship in relationships.iter() {
+         if !seen.insert(relationship)
+             || semantic_ownership::checked_relationship_carrier(b, raw, relationship, steps)?
+@@ -527,19 +638,22 @@
+         }
+         let row = &b.elements[member];
+         let mut named = false;
+-        let mut matches = false;
+         for key in ["declaredName", "declaredShortName"] {
+             if let Some(value) = row.props.get(key).filter(|v| !v.is_null()) {
+                 let value = value.as_str()?;
+                 charge(steps, value.len()).ok()?;
+                 named = true;
+-                matches |= value == name;
++                result
++                    .entry(value.to_owned())
++                    .and_modify(|previous| {
++                        if *previous != Some(member) {
++                            *previous = None;
++                        }
++                    })
++                    .or_insert(Some(member));
+             }
+         }
+         if !named && conforms(row.ty, "Feature") {
+-            return None;
+-        }
+-        if matches && result.replace(member).is_some() {
+             return None;
+         }
+     }
+@@ -554,6 +668,330 @@
          model::{GraphFormat, Model},
      };
      const LIB: &str = "standard library package Base {classifier Anything; feature things:Anything;} standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;} standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;}";
@@ -192,10 +360,259 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
 +            );
 +        }
 +    }
++    const PREDICATES: &[(&str, &str)] = &[
++        ("==", "BaseFunctions"),
++        ("!=", "BaseFunctions"),
++        ("===", "BaseFunctions"),
++        ("!==", "BaseFunctions"),
++        ("not", "DataFunctions"),
++        ("xor", "DataFunctions"),
++        ("&", "DataFunctions"),
++        ("|", "DataFunctions"),
++        ("and", "ControlFunctions"),
++        ("or", "ControlFunctions"),
++        ("implies", "ControlFunctions"),
++    ];
++    fn predicate_fixture(
++        operator: &str,
++        package: &str,
++        format: GraphFormat,
++        extra: &str,
++        library: bool,
++    ) -> (ResolvedModel, ElementRef) {
++        let mut m = Model::with_graph_format(format);
++        m.add_library_source("base.kerml", LIB);
++        let parameters = if operator == "not" {
++            "in x;"
++        } else if package == "ControlFunctions" {
++            "in x; in expr y {return r;}"
++        } else {
++            "in x; in y;"
++        };
++        let definition = format!(
++            "standard library package {package} {{function '{operator}' {{{parameters} return r;}}}}"
++        );
++        let unit = if library {
++            m.add_library_source("predicate.kerml", &definition)
++        } else {
++            m.add_source("predicate.kerml", &definition)
++        };
++        assert!(unit.diagnostics.is_empty(), "{:?}", unit.diagnostics);
++        let unit = m.add_library_source("extra.kerml", extra);
++        assert!(unit.diagnostics.is_empty(), "{:?}", unit.diagnostics);
++        let expression = if operator == "not" {
++            "not true".into()
++        } else {
++            format!("true {operator} false")
++        };
++        let unit = m.add_source("call.kerml", &format!("feature n = {expression};"));
++        assert!(unit.diagnostics.is_empty(), "{:?}", unit.diagnostics);
++        let r = ResolvedModel::build(&m);
++        let call = r
++            .user_elements()
++            .find(|&e| r.element_type(e) == "OperatorExpression")
++            .unwrap();
++        (r, call)
++    }
++    #[test]
++    fn predicate_bindings_require_canonical_publication_and_current_inputs() {
++        for &(operator, package) in PREDICATES {
++            for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
++                let (mut r, call) = predicate_fixture(operator, package, format, "", true);
++                assert!(r.invocation_binding_report(call).arguments.is_err());
++                r.implied_relationships(call);
++                if format == GraphFormat::LegacyV2 {
++                    assert!(r.invocation_binding_report(call).arguments.is_err());
++                    continue;
++                }
++                let report = r.invocation_binding_report(call).arguments.unwrap();
++                assert_eq!(
++                    report.callee,
++                    r.resolve_qualified(&format!("{package}::'{operator}'"))
++                        .unwrap()
++                );
++                assert_eq!(report.bindings.len(), if operator == "not" { 1 } else { 2 });
++                assert_eq!(
++                    report.bindings.iter().map(|b| b.input).collect::<Vec<_>>(),
++                    report.inputs
++                );
++                if package == "ControlFunctions" {
++                    assert_eq!(
++                        r.element_type(report.bindings[1].value),
++                        "FeatureReferenceExpression"
++                    );
++                }
++                assert_eq!(
++                    r.invocation_binding_report_with_budget(call, crate::eval::MAX_STEPS)
++                        .arguments,
++                    Err(WorkLimit)
++                );
++                r.b.elements[report.inputs[0].0]
++                    .props
++                    .insert("direction", serde_json::json!("out"));
++                assert!(r.invocation_binding_report(call).arguments.is_err());
++            }
++        }
++    }
++    #[test]
++    fn predicate_designation_checks_precedence_and_loaded_library_identity() {
++        for &(operator, package) in PREDICATES {
++            let mut rejected = vec![format!(
++                "standard library package {package} {{function '{operator}' {{in x; return r;}}}}"
++            )];
++            let earlier: &[&str] = match package {
++                "BaseFunctions" => &[],
++                "DataFunctions" => &["BaseFunctions"],
++                _ => &["BaseFunctions", "DataFunctions"],
++            };
++            for earlier in earlier {
++                rejected.push(format!("standard library package {earlier} {{function '{operator}' {{in x; return r;}}}}"));
++                rejected.push(format!("standard library package {earlier} {{alias '{operator}' for Missing::unknown;}}"));
++                rejected.push(format!(
++                    "standard library package {earlier} {{public import Missing::*;}}"
++                ));
++            }
++            for extra in rejected {
++                let (mut r, call) =
++                    predicate_fixture(operator, package, GraphFormat::CanonicalV3, &extra, true);
++                r.implied_relationships(call);
++                assert!(
++                    r.invocation_binding_report(call).arguments.is_err(),
++                    "{operator}: {extra}"
++                );
++            }
++            let (mut r, call) =
++                predicate_fixture(operator, package, GraphFormat::CanonicalV3, "", false);
++            r.implied_relationships(call);
++            assert!(
++                r.invocation_binding_report(call).arguments.is_err(),
++                "non-library {operator}"
++            );
++        }
++        // Equality selects BaseFunctions even when a later library package
++        // contains its specialization, as the real Function Library does.
++        for operator in ["==", "!=", "===", "!=="] {
++            let extra = format!(
++                "standard library package DataFunctions {{function '{operator}' {{in x; in y; return r;}}}}"
++            );
++            let (mut r, call) = predicate_fixture(
++                operator,
++                "BaseFunctions",
++                GraphFormat::CanonicalV3,
++                &extra,
++                true,
++            );
++            r.implied_relationships(call);
++            let report = r.invocation_binding_report(call).arguments.unwrap();
++            assert_eq!(
++                report.callee,
++                r.resolve_qualified(&format!("BaseFunctions::'{operator}'"))
++                    .unwrap()
++            );
++        }
++    }
++    #[test]
++    fn mixed_operator_names_share_only_current_complete_namespace_proofs() {
++        for mode in 0..6 {
++            let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++            m.add_library_source("base.kerml", LIB);
++            m.add_library_source("names.kerml", "standard library package Safe {} standard library package BaseFunctions {function '==' {in x; in y; return r;} function '!=' {in x; in y; return r;}} standard library package DataFunctions {private import Safe::*; function 'not' {in x; return r;} function 'xor' {in x; in y; return r;}}");
++            m.add_source("operators.kerml", "feature a=true == false; feature b=true != false; feature c=not true; feature d=true xor false;");
++            assert!(!m.has_errors());
++            let mut r = ResolvedModel::build(&m);
++            let calls: Vec<_> = r
++                .user_elements()
++                .filter(|&e| r.element_type(e) == "OperatorExpression")
++                .collect();
++            assert_eq!(calls.len(), 4);
++            let mut batch = super::super::constructor_bindings::ConstructorBatchEvidence::default();
++            let mut targets = Vec::new();
++            for (index, call) in calls.iter().enumerate() {
++                let mut warm = 0;
++                let target = batch.operator_target(&mut r.b, call.0, &mut warm).unwrap();
++                targets.push(target);
++                if index == 1 {
++                    // This spelling was not cached: only the complete namespace
++                    // and library identity projections can be reused here.
++                    let mut cold = 0;
++                    assert_eq!(
++                        super::super::constructor_bindings::ConstructorBatchEvidence::default()
++                            .operator_target(&mut r.b, call.0, &mut cold),
++                        Some(target)
++                    );
++                    assert!(warm < cold);
++                }
++            }
++            assert!(
++                batch
++                    .operator_target(&mut r.b, calls[1].0, &mut { crate::eval::MAX_STEPS })
++                    .is_none()
++            );
++            let mut selected = 1;
++            match mode {
++                0 => {
++                    r.b.elements[targets[0]]
++                        .props
++                        .insert("declaredName", serde_json::json!("!="));
++                }
++                1 => {
++                    let membership = r.b.elements[targets[1]].owning_relationship.unwrap();
++                    r.b.elements[membership]
++                        .props
++                        .insert("visibility", serde_json::json!("private"));
++                }
++                2 => {
++                    let membership = r.b.elements[targets[1]].owning_relationship.unwrap();
++                    let wrong_id = r.b.elements[targets[0]].id;
++                    r.b.elements[membership].props.insert(
++                        "owningRelatedElement",
++                        serde_json::json!({"@id":wrong_id.to_string()}),
++                    );
++                }
++                3 => {
++                    let import =
++                        r.b.elements
++                            .iter()
++                            .position(|e| conforms(e.ty, "Import"))
++                            .unwrap();
++                    r.b.elements[import]
++                        .props
++                        .insert("visibility", serde_json::json!("public"));
++                    selected = 3;
++                }
++                4 => {
++                    r.b.metadata_of
++                        .entry(targets[1])
++                        .or_default()
++                        .push(targets[0]);
++                    r.b.metadata_association_generation = Some(std::sync::Arc::new(()));
++                }
++                _ => {
++                    // A publication revision invalidates positive AND absence
++                    // projections, even when the authored rows do not change.
++                    r.implied_relationships(calls[0]);
++                    assert_eq!(
++                        batch.operator_target(&mut r.b, calls[1].0, &mut 0),
++                        Some(targets[1])
++                    );
++                    r.b.elements[targets[0]]
++                        .props
++                        .insert("declaredName", serde_json::json!("!="));
++                }
++            }
++            assert!(
++                batch
++                    .operator_target(&mut r.b, calls[selected].0, &mut 0)
++                    .is_none(),
++                "mutation {mode}"
++            );
++        }
++    }
++
      fn fixture(source: &str, format: GraphFormat) -> (ResolvedModel, ElementRef) {
          let mut m = Model::with_graph_format(format);
          assert!(
-@@ -616,102 +704,109 @@
+@@ -616,102 +1054,109 @@
  
      #[test]
      fn numeric_operator_bindings_require_canonical_shared_publication() {

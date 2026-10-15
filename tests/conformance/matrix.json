@@ -3166,6 +3166,756 @@
           "reason": "unsupportedBound"
         }
       ]
+    },
+    {
+      "id": "MULT-026",
+      "area": "multiplicity",
+      "purpose": "Checked scalar equality and sameness preserve exact integer/rational values, Boolean equality and aliases.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-026.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "eqEqual",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::eqEqual",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "eqUnequal",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::eqUnequal",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "eqTrue",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::eqTrue",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "eqFalse",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::eqFalse",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "eqRational",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::eqRational",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "eqLarge",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::eqLarge",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "neEqual",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::neEqual",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "neUnequal",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::neUnequal",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "neTrue",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::neTrue",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "neFalse",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::neFalse",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "neRational",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::neRational",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "neLarge",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::neLarge",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "sameEqual",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::sameEqual",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "sameUnequal",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::sameUnequal",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "sameTrue",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::sameTrue",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "sameFalse",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::sameFalse",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "sameRational",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::sameRational",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "sameLarge",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::sameLarge",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "differentEqual",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::differentEqual",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "differentUnequal",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::differentUnequal",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "differentTrue",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::differentTrue",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "differentFalse",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::differentFalse",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "differentRational",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::differentRational",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "differentLarge",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::differentLarge",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "integerRational",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::integerRational",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "wideExact",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::wideExact",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "closeRational",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::closeRational",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "signed",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::signed",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "viaAlias",
+          "op": "cardinality",
+          "owner": "EqualityPredicates::viaAlias",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        }
+      ]
+    },
+    {
+      "id": "MULT-027",
+      "area": "multiplicity",
+      "purpose": "Boolean predicates preserve eager and conditional truth tables, strict tests, deferred operand selection and nested expressions.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-027.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "negateTrue",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::negateTrue",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "negateFalse",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::negateFalse",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "conjunction00",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::conjunction00",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "conjunction01",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::conjunction01",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "conjunction10",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::conjunction10",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "conjunction11",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::conjunction11",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "disjunction00",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::disjunction00",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "disjunction01",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::disjunction01",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "disjunction10",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::disjunction10",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "disjunction11",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::disjunction11",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "exclusive00",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::exclusive00",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "exclusive01",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::exclusive01",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "exclusive10",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::exclusive10",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "exclusive11",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::exclusive11",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "and00",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::and00",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "and01",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::and01",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "and10",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::and10",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "and11",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::and11",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "or00",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::or00",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "or01",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::or01",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "or10",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::or10",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "or11",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::or11",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "implies00",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::implies00",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "implies01",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::implies01",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "implies10",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::implies10",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "implies11",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::implies11",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "skipAnd",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::skipAnd",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "skipOr",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::skipOr",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "skipImplies",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::skipImplies",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "skipAndDivision",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::skipAndDivision",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "skipOrDivision",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::skipOrDivision",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "skipImpliesDivision",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::skipImpliesDivision",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "nested",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::nested",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "combined",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::combined",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "viaAlias",
+          "op": "cardinality",
+          "owner": "LogicalPredicates::viaAlias",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        }
+      ]
+    },
+    {
+      "id": "MULT-028",
+      "area": "multiplicity",
+      "purpose": "Predicate proofs refuse unsupported value domains, unavailable required operands, recursive eligibility, invalid Boolean operands and nonnumeric endpoints.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-028.sysml"],
+      "checks": [
+        {
+          "id": "mixedEquality",
+          "op": "cardinality",
+          "owner": "PredicateGuards::mixedEquality",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "mixedInequality",
+          "op": "cardinality",
+          "owner": "PredicateGuards::mixedInequality",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "mixedSame",
+          "op": "cardinality",
+          "owner": "PredicateGuards::mixedSame",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "mixedNotSame",
+          "op": "cardinality",
+          "owner": "PredicateGuards::mixedNotSame",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "realEquality",
+          "op": "cardinality",
+          "owner": "PredicateGuards::realEquality",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "infinityEquality",
+          "op": "cardinality",
+          "owner": "PredicateGuards::infinityEquality",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "stringEquality",
+          "op": "cardinality",
+          "owner": "PredicateGuards::stringEquality",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "nullEquality",
+          "op": "cardinality",
+          "owner": "PredicateGuards::nullEquality",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "missingEquality",
+          "op": "cardinality",
+          "owner": "PredicateGuards::missingEquality",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "undefinedEquality",
+          "op": "cardinality",
+          "owner": "PredicateGuards::undefinedEquality",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "excessiveEquality",
+          "op": "cardinality",
+          "owner": "PredicateGuards::excessiveEquality",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "notNumber",
+          "op": "cardinality",
+          "owner": "PredicateGuards::notNumber",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "andNumber",
+          "op": "cardinality",
+          "owner": "PredicateGuards::andNumber",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "orNumber",
+          "op": "cardinality",
+          "owner": "PredicateGuards::orNumber",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "xorNumber",
+          "op": "cardinality",
+          "owner": "PredicateGuards::xorNumber",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "eagerAnd",
+          "op": "cardinality",
+          "owner": "PredicateGuards::eagerAnd",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "eagerOr",
+          "op": "cardinality",
+          "owner": "PredicateGuards::eagerOr",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "eagerXor",
+          "op": "cardinality",
+          "owner": "PredicateGuards::eagerXor",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "neededAnd",
+          "op": "cardinality",
+          "owner": "PredicateGuards::neededAnd",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "neededOr",
+          "op": "cardinality",
+          "owner": "PredicateGuards::neededOr",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "neededImplies",
+          "op": "cardinality",
+          "owner": "PredicateGuards::neededImplies",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "badFirst",
+          "op": "cardinality",
+          "owner": "PredicateGuards::badFirst",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "badSecond",
+          "op": "cardinality",
+          "owner": "PredicateGuards::badSecond",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "eagerDivision",
+          "op": "cardinality",
+          "owner": "PredicateGuards::eagerDivision",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "selectedDivision",
+          "op": "cardinality",
+          "owner": "PredicateGuards::selectedDivision",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "recursive",
+          "op": "cardinality",
+          "owner": "PredicateGuards::recursive",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "booleanBound",
+          "op": "cardinality",
+          "owner": "PredicateGuards::booleanBound",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "logicalBound",
+          "op": "cardinality",
+          "owner": "PredicateGuards::logicalBound",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "natural-required",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "multiplicity bound must be a Natural number"
+        }
+      ]
     }
   ]
 }

@@ -1,17 +1,17 @@
 diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs
-index 4147abe..598dd8d 100644
 --- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs
 +++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs
-@@ -167,7 +167,7 @@ impl ResolvedModel {
+@@ -167,7 +167,8 @@
  pub(super) struct ConstructorBatchEvidence {
      stamp: Option<Stamp>,
      features: HashMap<usize, super::TypeFeatures>,
 -    numeric_targets: HashMap<&'static str, usize>,
 +    operator_targets: HashMap<&'static str, usize>,
++    operator_names: super::invocation_bindings::DesignatedOperatorNames,
      relations: super::type_relations::TypeRelations,
  }
  fn projection_work(features: &super::TypeFeatures) -> usize {
-@@ -205,29 +205,29 @@ impl ConstructorBatchEvidence {
+@@ -205,29 +206,35 @@
              steps,
              self.features
                  .capacity()
@@ -19,6 +19,7 @@ index 4147abe..598dd8d 100644
 +                .saturating_add(self.operator_targets.capacity()),
          )?;
          self.relations.reset_with_budget(steps).ok_or(WorkLimit)?;
++        self.operator_names.clear(steps).map_err(|_| WorkLimit)?;
          self.features = HashMap::new();
 -        self.numeric_targets = HashMap::new();
 +        self.operator_targets = HashMap::new();
@@ -41,7 +42,12 @@ index 4147abe..598dd8d 100644
              return Some(target);
          }
 -        let target = super::invocation_bindings::numeric_operator_target(b, receiver, steps)?;
-+        let target = super::invocation_bindings::designated_operator_target(b, receiver, steps)?;
++        let target = super::invocation_bindings::designated_operator_target(
++            b,
++            receiver,
++            steps,
++            &mut self.operator_names,
++        )?;
          self.align(b, steps).ok()?;
 -        self.numeric_targets.insert(operator, target);
 +        self.operator_targets.insert(operator, target);

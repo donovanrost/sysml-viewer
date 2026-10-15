@@ -1,0 +1,361 @@
+{
+  "recordedAt": "2026-10-15T04:29:22.743Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.10",
+  "kernelInputSha256": "41ed92af27dc2b0f77e2d44369b4caacd29303163d6bc8ef01644e63faee8ed4",
+  "binarySha256": "67760cfa0f4467e9557a08b7691e15ee2e0b674c0e279b80e7b2972a5c2388c9",
+  "wasmSha256": "8653c1872f6e66dcf89648e5cbd1dd4c7296e28220738557174f194c0096ac07",
+  "status": "incomplete",
+  "completedSamples": [
+    {
+      "scenario": "scalar-equality",
+      "mode": "native",
+      "sample": 1,
+      "elapsedMs": 2994,
+      "peakRssMiBReported": 399.6
+    },
+    {
+      "scenario": "scalar-equality",
+      "mode": "native",
+      "sample": 2,
+      "elapsedMs": 4359,
+      "peakRssMiBReported": 364.5
+    },
+    {
+      "scenario": "scalar-equality",
+      "mode": "native",
+      "sample": 3,
+      "elapsedMs": 2814,
+      "peakRssMiBReported": 387.8
+    },
+    {
+      "scenario": "scalar-equality",
+      "mode": "wasm",
+      "sample": 1,
+      "elapsedMs": 3422,
+      "peakRssMiBReported": 356.8
+    },
+    {
+      "scenario": "scalar-equality",
+      "mode": "wasm",
+      "sample": 2,
+      "elapsedMs": 3495,
+      "peakRssMiBReported": 352.2
+    },
+    {
+      "scenario": "scalar-equality",
+      "mode": "wasm",
+      "sample": 3,
+      "elapsedMs": 3390,
+      "peakRssMiBReported": 353.2
+    },
+    {
+      "scenario": "logical-predicates",
+      "mode": "native",
+      "sample": 1,
+      "elapsedMs": 2858,
+      "peakRssMiBReported": 398.2
+    },
+    {
+      "scenario": "logical-predicates",
+      "mode": "native",
+      "sample": 2,
+      "elapsedMs": 3782,
+      "peakRssMiBReported": 405.7
+    },
+    {
+      "scenario": "logical-predicates",
+      "mode": "native",
+      "sample": 3,
+      "elapsedMs": 2902,
+      "peakRssMiBReported": 379.7
+    },
+    {
+      "scenario": "logical-predicates",
+      "mode": "wasm",
+      "sample": 1,
+      "elapsedMs": 18985,
+      "peakRssMiBReported": 349.1
+    },
+    {
+      "scenario": "logical-predicates",
+      "mode": "wasm",
+      "sample": 2,
+      "elapsedMs": 4100,
+      "peakRssMiBReported": 332.5
+    },
+    {
+      "scenario": "logical-predicates",
+      "mode": "wasm",
+      "sample": 3,
+      "elapsedMs": 3329,
+      "peakRssMiBReported": 325.4
+    },
+    {
+      "scenario": "ordered-predicates",
+      "mode": "native",
+      "sample": 1,
+      "elapsedMs": 3167,
+      "peakRssMiBReported": 383.6
+    },
+    {
+      "scenario": "ordered-predicates",
+      "mode": "native",
+      "sample": 2,
+      "elapsedMs": 3484,
+      "peakRssMiBReported": 372
+    },
+    {
+      "scenario": "ordered-predicates",
+      "mode": "native",
+      "sample": 3,
+      "elapsedMs": 2886,
+      "peakRssMiBReported": 385.5
+    },
+    {
+      "scenario": "ordered-predicates",
+      "mode": "wasm",
+      "sample": 1,
+      "elapsedMs": 3226,
+      "peakRssMiBReported": 355.9
+    },
+    {
+      "scenario": "ordered-predicates",
+      "mode": "wasm",
+      "sample": 2,
+      "elapsedMs": 3118,
+      "peakRssMiBReported": 366.8
+    },
+    {
+      "scenario": "ordered-predicates",
+      "mode": "wasm",
+      "sample": 3,
+      "elapsedMs": 3084,
+      "peakRssMiBReported": 328.5
+    },
+    {
+      "scenario": "compound-ranges",
+      "mode": "native",
+      "sample": 1,
+      "elapsedMs": 2149,
+      "peakRssMiBReported": 424.2
+    },
+    {
+      "scenario": "compound-ranges",
+      "mode": "native",
+      "sample": 2,
+      "elapsedMs": 2177,
+      "peakRssMiBReported": 406.2
+    },
+    {
+      "scenario": "compound-ranges",
+      "mode": "native",
+      "sample": 3,
+      "elapsedMs": 2089,
+      "peakRssMiBReported": 403.8
+    },
+    {
+      "scenario": "compound-ranges",
+      "mode": "wasm",
+      "sample": 1,
+      "elapsedMs": 2594,
+      "peakRssMiBReported": 357.8
+    },
+    {
+      "scenario": "compound-ranges",
+      "mode": "wasm",
+      "sample": 2,
+      "elapsedMs": 2570,
+      "peakRssMiBReported": 349.9
+    },
+    {
+      "scenario": "compound-ranges",
+      "mode": "wasm",
+      "sample": 3,
+      "elapsedMs": 2565,
+      "peakRssMiBReported": 358.9
+    },
+    {
+      "scenario": "isolated-providers",
+      "mode": "native",
+      "sample": 1,
+      "elapsedMs": 2027,
+      "peakRssMiBReported": 406.7
+    },
+    {
+      "scenario": "isolated-providers",
+      "mode": "native",
+      "sample": 2,
+      "elapsedMs": 2057,
+      "peakRssMiBReported": 407.2
+    },
+    {
+      "scenario": "isolated-providers",
+      "mode": "native",
+      "sample": 3,
+      "elapsedMs": 3344,
+      "peakRssMiBReported": 362.8
+    },
+    {
+      "scenario": "isolated-providers",
+      "mode": "wasm",
+      "sample": 1,
+      "elapsedMs": 2570,
+      "peakRssMiBReported": 349.5
+    },
+    {
+      "scenario": "isolated-providers",
+      "mode": "wasm",
+      "sample": 2,
+      "elapsedMs": 2876,
+      "peakRssMiBReported": 350.2
+    },
+    {
+      "scenario": "isolated-providers",
+      "mode": "wasm",
+      "sample": 3,
+      "elapsedMs": 5528,
+      "peakRssMiBReported": 341.6
+    },
+    {
+      "scenario": "import-closures",
+      "mode": "native",
+      "sample": 1,
+      "elapsedMs": 2020,
+      "peakRssMiBReported": 410
+    },
+    {
+      "scenario": "import-closures",
+      "mode": "native",
+      "sample": 2,
+      "elapsedMs": 1976,
+      "peakRssMiBReported": 408.5
+    },
+    {
+      "scenario": "import-closures",
+      "mode": "native",
+      "sample": 3,
+      "elapsedMs": 1990,
+      "peakRssMiBReported": 411.3
+    },
+    {
+      "scenario": "import-closures",
+      "mode": "wasm",
+      "sample": 1,
+      "elapsedMs": 2398,
+      "peakRssMiBReported": 347.6
+    },
+    {
+      "scenario": "import-closures",
+      "mode": "wasm",
+      "sample": 2,
+      "elapsedMs": 2397,
+      "peakRssMiBReported": 335.4
+    },
+    {
+      "scenario": "import-closures",
+      "mode": "wasm",
+      "sample": 3,
+      "elapsedMs": 2407,
+      "peakRssMiBReported": 345.5
+    },
+    {
+      "scenario": "viewer-example",
+      "mode": "native",
+      "sample": 1,
+      "elapsedMs": 2007,
+      "peakRssMiBReported": 404
+    },
+    {
+      "scenario": "viewer-example",
+      "mode": "native",
+      "sample": 2,
+      "elapsedMs": 1960,
+      "peakRssMiBReported": 404.9
+    },
+    {
+      "scenario": "viewer-example",
+      "mode": "native",
+      "sample": 3,
+      "elapsedMs": 2008,
+      "peakRssMiBReported": 400
+    },
+    {
+      "scenario": "viewer-example",
+      "mode": "wasm",
+      "sample": 1,
+      "elapsedMs": 2421,
+      "peakRssMiBReported": 358.3
+    },
+    {
+      "scenario": "viewer-example",
+      "mode": "wasm",
+      "sample": 2,
+      "elapsedMs": 2417,
+      "peakRssMiBReported": 364.9
+    },
+    {
+      "scenario": "viewer-example",
+      "mode": "wasm",
+      "sample": 3,
+      "elapsedMs": 2651,
+      "peakRssMiBReported": 362.7
+    },
+    {
+      "scenario": "attribute-providers",
+      "mode": "native",
+      "sample": 1,
+      "elapsedMs": 2014,
+      "peakRssMiBReported": 416.8
+    },
+    {
+      "scenario": "attribute-providers",
+      "mode": "native",
+      "sample": 2,
+      "elapsedMs": 2050,
+      "peakRssMiBReported": 410.3
+    },
+    {
+      "scenario": "attribute-providers",
+      "mode": "native",
+      "sample": 3,
+      "elapsedMs": 2026,
+      "peakRssMiBReported": 420
+    }
+  ],
+  "failure": {
+    "scenario": "attribute-providers",
+    "mode": "wasm",
+    "sample": 1,
+    "timeoutMs": 60000,
+    "error": "spawnSync /usr/bin/time ETIMEDOUT"
+  },
+  "directRetries": [
+    {
+      "attempt": 1,
+      "elapsedMs": 2628,
+      "status": "pass",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.10",
+      "snapshotSha256": "a61431c63f58f9391415d24943e0645755c9a863f94d06cac9f8a974bf356fa7",
+      "timing": "        2.62 real         3.45 user         0.14 sys\n           363151360  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n               21374  page reclaims\n                1703  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                  88  voluntary context switches\n                5873  involuntary context switches\n         42129741108  instructions retired\n         10984404126  cycles elapsed\n           294265472  peak memory footprint\n"
+    },
+    {
+      "attempt": 2,
+      "elapsedMs": 2537,
+      "status": "pass",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.10",
+      "snapshotSha256": "a61431c63f58f9391415d24943e0645755c9a863f94d06cac9f8a974bf356fa7",
+      "timing": "        2.53 real         3.51 user         0.11 sys\n           361316352  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n               22351  page reclaims\n                  81  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   1  voluntary context switches\n                4036  involuntary context switches\n         41989680326  instructions retired\n         10982349565  cycles elapsed\n           293184448  peak memory footprint\n"
+    },
+    {
+      "attempt": 3,
+      "elapsedMs": 2480,
+      "status": "pass",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.10",
+      "snapshotSha256": "a61431c63f58f9391415d24943e0645755c9a863f94d06cac9f8a974bf356fa7",
+      "timing": "        2.47 real         3.42 user         0.10 sys\n           366936064  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n               22621  page reclaims\n                 165  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                3031  involuntary context switches\n         41984502668  instructions retired\n         10855166020  cycles elapsed\n           290628352  peak memory footprint\n"
+    }
+  ],
+  "limits": "Initial attempt retained in full; timing/RSS for successful samples comes from the benchmark console log (RSS rounded to 0.1 MiB). The timed-out sample emitted no snapshot. Three direct retries returned identical snapshots, checked the alias cardinality, and completed; the timeout cause remains unisolated. A separate full rerun must not erase this failure."
+}

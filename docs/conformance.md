@@ -92,6 +92,9 @@ Clause references identify the source of a test, not complete coverage of that c
 | MULT-023 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Checked range evidence cannot turn missing, fractional, non-Boolean or reversed endpoints into successful intervals. |
 | MULT-024 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Checked ordered predicates preserve integer and rational precision, all four ordering truth tables, alias identity and conditional branch selection. |
 | MULT-025 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Ordered predicate certificates refuse non-exact or nonnumeric operands, unavailable values, undefined arithmetic and Boolean or fractional endpoints. |
+| MULT-026 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Checked scalar equality and sameness preserve exact integer/rational values, Boolean equality and aliases. |
+| MULT-027 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Boolean predicates preserve eager and conditional truth tables, strict tests, deferred operand selection and nested expressions. |
+| MULT-028 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Predicate proofs refuse unsupported value domains, unavailable required operands, recursive eligibility, invalid Boolean operands and nonnumeric endpoints. |
 
 ## Coverage limits
 
