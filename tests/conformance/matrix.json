@@ -3758,8 +3758,9 @@
           "id": "stringEquality",
           "op": "cardinality",
           "owner": "PredicateGuards::stringEquality",
-          "status": "unknown",
-          "reason": "unsupportedBound"
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
         },
         {
           "id": "nullEquality",
@@ -4711,8 +4712,9 @@
           "id": "string",
           "op": "cardinality",
           "owner": "EmptyComparisonGuards::string",
-          "status": "unknown",
-          "reason": "unsupportedBound"
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
         },
         {
           "id": "sequence",
@@ -4755,6 +4757,407 @@
           "owner": "EmptyComparisonGuards::eagerMissing",
           "status": "unknown",
           "reason": "incompleteProvider"
+        },
+        {
+          "id": "natural-required",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "multiplicity bound must be a Natural number"
+        }
+      ]
+    },
+    {
+      "id": "MULT-033",
+      "area": "multiplicity",
+      "purpose": "Checked decoded strings retain exact equality, sameness, concatenation and presence through Unicode, escapes, aliases and lazy controls.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-033.sysml"],
+      "checks": [
+        {
+          "id": "eqEqual",
+          "op": "cardinality",
+          "owner": "StringValues::eqEqual",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "eqCase",
+          "op": "cardinality",
+          "owner": "StringValues::eqCase",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "eqEmpty",
+          "op": "cardinality",
+          "owner": "StringValues::eqEmpty",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "neEqual",
+          "op": "cardinality",
+          "owner": "StringValues::neEqual",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "neCase",
+          "op": "cardinality",
+          "owner": "StringValues::neCase",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "neEmpty",
+          "op": "cardinality",
+          "owner": "StringValues::neEmpty",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "sameEqual",
+          "op": "cardinality",
+          "owner": "StringValues::sameEqual",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "sameCase",
+          "op": "cardinality",
+          "owner": "StringValues::sameCase",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "sameEmpty",
+          "op": "cardinality",
+          "owner": "StringValues::sameEmpty",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "differentEqual",
+          "op": "cardinality",
+          "owner": "StringValues::differentEqual",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "differentCase",
+          "op": "cardinality",
+          "owner": "StringValues::differentCase",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "differentEmpty",
+          "op": "cardinality",
+          "owner": "StringValues::differentEmpty",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "unicode",
+          "op": "cardinality",
+          "owner": "StringValues::unicode",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "distinctUnicode",
+          "op": "cardinality",
+          "owner": "StringValues::distinctUnicode",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "escapedBackslash",
+          "op": "cardinality",
+          "owner": "StringValues::escapedBackslash",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "escapedQuote",
+          "op": "cardinality",
+          "owner": "StringValues::escapedQuote",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "allEscapes",
+          "op": "cardinality",
+          "owner": "StringValues::allEscapes",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "concatenate",
+          "op": "cardinality",
+          "owner": "StringValues::concatenate",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "unicodeConcatenate",
+          "op": "cardinality",
+          "owner": "StringValues::unicodeConcatenate",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "nestedConcatenate",
+          "op": "cardinality",
+          "owner": "StringValues::nestedConcatenate",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "emptyConcatenate",
+          "op": "cardinality",
+          "owner": "StringValues::emptyConcatenate",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "viaAlias",
+          "op": "cardinality",
+          "owner": "StringValues::viaAlias",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "nullRight",
+          "op": "cardinality",
+          "owner": "StringValues::nullRight",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "nullLeft",
+          "op": "cardinality",
+          "owner": "StringValues::nullLeft",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "emptyStringPresent",
+          "op": "cardinality",
+          "owner": "StringValues::emptyStringPresent",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "nullFallback",
+          "op": "cardinality",
+          "owner": "StringValues::nullFallback",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "skipMissing",
+          "op": "cardinality",
+          "owner": "StringValues::skipMissing",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "selectedString",
+          "op": "cardinality",
+          "owner": "StringValues::selectedString",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "logicalSkip",
+          "op": "cardinality",
+          "owner": "StringValues::logicalSkip",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        }
+      ]
+    },
+    {
+      "id": "MULT-034",
+      "area": "multiplicity",
+      "purpose": "Checked strings preserve unknown for unsupported operators, mixed domains, unavailable operands, recursion and nonnumeric endpoints.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-034.sysml"],
+      "checks": [
+        {
+          "id": "stringEndpoint",
+          "op": "cardinality",
+          "owner": "StringGuards::stringEndpoint",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "concatEndpoint",
+          "op": "cardinality",
+          "owner": "StringGuards::concatEndpoint",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "stringCondition",
+          "op": "cardinality",
+          "owner": "StringGuards::stringCondition",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "unaryPlus",
+          "op": "cardinality",
+          "owner": "StringGuards::unaryPlus",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "unaryMinus",
+          "op": "cardinality",
+          "owner": "StringGuards::unaryMinus",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "subtract",
+          "op": "cardinality",
+          "owner": "StringGuards::subtract",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "numberConcat",
+          "op": "cardinality",
+          "owner": "StringGuards::numberConcat",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "boolConcat",
+          "op": "cardinality",
+          "owner": "StringGuards::boolConcat",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "nullConcat",
+          "op": "cardinality",
+          "owner": "StringGuards::nullConcat",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "sequenceConcat",
+          "op": "cardinality",
+          "owner": "StringGuards::sequenceConcat",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "numberEquality",
+          "op": "cardinality",
+          "owner": "StringGuards::numberEquality",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "boolEquality",
+          "op": "cardinality",
+          "owner": "StringGuards::boolEquality",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "missingRight",
+          "op": "cardinality",
+          "owner": "StringGuards::missingRight",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "missingLeft",
+          "op": "cardinality",
+          "owner": "StringGuards::missingLeft",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "selectedMissing",
+          "op": "cardinality",
+          "owner": "StringGuards::selectedMissing",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "recursive",
+          "op": "cardinality",
+          "owner": "StringGuards::recursive",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "less",
+          "op": "cardinality",
+          "owner": "StringGuards::less",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "lessEqual",
+          "op": "cardinality",
+          "owner": "StringGuards::lessEqual",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "greater",
+          "op": "cardinality",
+          "owner": "StringGuards::greater",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "greaterEqual",
+          "op": "cardinality",
+          "owner": "StringGuards::greaterEqual",
+          "status": "unknown",
+          "reason": "unsupportedBound"
         },
         {
           "id": "natural-required",

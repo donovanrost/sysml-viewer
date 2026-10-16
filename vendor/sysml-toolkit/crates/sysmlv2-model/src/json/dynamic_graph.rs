@@ -277,8 +277,7 @@ impl Builder {
             .ok_or(Refusal::WorkLimit)?
         };
         let boundary = self.implied.as_ref().map(|t| t.owned_results_from);
-        let prefix = dynamic_invocations::capture_static_prefix(self, prefix, boundary, steps)?;
-        let plan = dynamic_invocations::prepare_with_workspace(
+        let plan = dynamic_invocations::capture_and_prepare_with_workspace(
             self,
             prefix,
             reserved,

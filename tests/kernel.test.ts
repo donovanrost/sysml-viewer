@@ -33,6 +33,8 @@ for (const name of [
   'mult-030',
   'mult-031',
   'mult-032',
+  'mult-033',
+  'mult-034',
   'imp-020',
 ]) {
   documents.push({
@@ -406,6 +408,8 @@ test('ordered predicates retain exact comparisons and operand guards in both wor
 test('equality and logical predicates preserve values and guards in both workspace contexts', () => {
   for (const state of [snapshot, importGuards]) {
     for (const [qualifiedName, value] of [
+      ['PredicateGuards::stringEquality', '7'],
+      ['EmptyComparisonGuards::string', '7'],
       ['PredicateGuards::nullEquality', '7'],
       ['CoalescingGuards::emptyEquality', '7'],
       ['EqualityPredicates::eqEqual', '7'],
@@ -487,7 +491,6 @@ test('equality and logical predicates preserve values and guards in both workspa
       ['mixedNotSame', 'unsupportedBound'],
       ['realEquality', 'unsupportedBound'],
       ['infinityEquality', 'unsupportedBound'],
-      ['stringEquality', 'unsupportedBound'],
       ['missingEquality', 'incompleteProvider'],
       ['undefinedEquality', 'unsupportedBound'],
       ['excessiveEquality', 'unsupportedBound'],
@@ -642,7 +645,6 @@ test('empty comparisons preserve presence and refuse unavailable operands in bot
       ['overflow', 'unsupportedBound'],
       ['real', 'unsupportedBound'],
       ['infinity', 'unsupportedBound'],
-      ['string', 'unsupportedBound'],
       ['sequence', 'unsupportedBound'],
       ['recursive', 'unsupportedBound'],
       ['booleanEndpoint', 'unsupportedBound'],
@@ -654,6 +656,70 @@ test('empty comparisons preserve presence and refuse unavailable operands in bot
         (e) => e.qualifiedName === `EmptyComparisonGuards::${name}`,
       )!;
       assert.deepEqual(element.cardinality, { status: 'unknown', reason }, name);
+    }
+  }
+});
+
+test('strings preserve decoded values, presence and guards in both workspace contexts', () => {
+  for (const state of [snapshot, importGuards]) {
+    for (const [name, value] of [
+      ['eqEqual', '7'],
+      ['eqCase', '9'],
+      ['eqEmpty', '7'],
+      ['neEqual', '9'],
+      ['neCase', '7'],
+      ['neEmpty', '9'],
+      ['sameEqual', '7'],
+      ['sameCase', '9'],
+      ['sameEmpty', '7'],
+      ['differentEqual', '9'],
+      ['differentCase', '7'],
+      ['differentEmpty', '9'],
+      ['unicode', '7'],
+      ['distinctUnicode', '7'],
+      ['escapedBackslash', '7'],
+      ['escapedQuote', '7'],
+      ['allEscapes', '7'],
+      ['concatenate', '7'],
+      ['unicodeConcatenate', '7'],
+      ['nestedConcatenate', '7'],
+      ['emptyConcatenate', '7'],
+      ['viaAlias', '7'],
+      ['nullRight', '9'],
+      ['nullLeft', '7'],
+      ['emptyStringPresent', '7'],
+      ['nullFallback', '7'],
+      ['skipMissing', '7'],
+      ['selectedString', '7'],
+      ['logicalSkip', '7'],
+    ]) {
+      const e = state.elements.find((e) => e.qualifiedName === `StringValues::${name}`)!;
+      assert.deepEqual(e.cardinality, { status: 'evaluated', lower: value, upper: value }, name);
+    }
+    for (const [name, reason] of [
+      ['stringEndpoint', 'unsupportedBound'],
+      ['concatEndpoint', 'unsupportedBound'],
+      ['stringCondition', 'unsupportedBound'],
+      ['unaryPlus', 'unsupportedBound'],
+      ['unaryMinus', 'unsupportedBound'],
+      ['subtract', 'unsupportedBound'],
+      ['numberConcat', 'unsupportedBound'],
+      ['boolConcat', 'unsupportedBound'],
+      ['nullConcat', 'unsupportedBound'],
+      ['sequenceConcat', 'unsupportedBound'],
+      ['numberEquality', 'unsupportedBound'],
+      ['boolEquality', 'unsupportedBound'],
+      ['missingRight', 'incompleteProvider'],
+      ['missingLeft', 'incompleteProvider'],
+      ['selectedMissing', 'incompleteProvider'],
+      ['recursive', 'unsupportedBound'],
+      ['less', 'unsupportedBound'],
+      ['lessEqual', 'unsupportedBound'],
+      ['greater', 'unsupportedBound'],
+      ['greaterEqual', 'unsupportedBound'],
+    ]) {
+      const e = state.elements.find((e) => e.qualifiedName === `StringGuards::${name}`)!;
+      assert.deepEqual(e.cardinality, { status: 'unknown', reason }, name);
     }
   }
 });

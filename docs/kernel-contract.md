@@ -95,14 +95,17 @@ reference chains and numeric operators (`+`, `-`, `*`, `/`, `%`, `^`), including
 nested and unary expressions. Conditional providers support static Boolean tests,
 aliases and nested conditionals, plus ordered comparisons (`<`, `<=`, `>`, `>=`)
 between finite exact integers and rationals. Equality and sameness (`==`, `!=`,
-`===`, `!==`) support Boolean pairs, exact numeric pairs, explicit empty pairs
+`===`, `!==`) support Boolean pairs, exact numeric pairs, string pairs, explicit empty pairs
 and empty versus an admitted scalar. Empty values compare equal to each other and
 unequal to zero, false and every other admitted present scalar. Both operands must
 execute successfully; an unavailable or failed operand never becomes empty. Boolean operators
 include eager `not`, `xor`, `&`, `|` and conditional `and`, `or`, `implies`.
 Null-coalescing (`??`) selects its deferred fallback only for a certified empty
-`NullExpression` (`null` or `()`). Present zero and Boolean false retain their
-values. Unavailable references and evaluation failures remain unknown, and an
+`NullExpression` (`null` or `()`). Present zero, Boolean false and the empty string retain their
+values. String literals use decoded graph values, preserving Unicode and escapes.
+Binary string concatenation (`+`) and exact string equality/sameness compose with
+aliases and conditional/coalescing providers. Copies, concatenation and comparison
+charge UTF-8 bytes before work against the same cumulative query limit. Unavailable references and evaluation failures remain unknown, and an
 empty result cannot serve as a numeric endpoint. The same argument eligibility,
 identity and reciprocal wrapper requirements apply even to a skipped fallback.
 Arithmetic results must remain exact; approximate overflow/underflow and
@@ -112,9 +115,9 @@ after every argument retains complete eligibility and reciprocal ownership proof
 A skipped operand may be unbound or undefined, but cannot have malformed evidence
 or recursive/ineligible dependencies. Required conditions must be Boolean. Comparisons preserve exact arithmetic
 intermediates, including rationals whose numerator exceeds i128; exported endpoints
-still require a nonnegative signed-128-bit integer. Boolean results cannot become
+still require a nonnegative signed-128-bit integer. Boolean and string results cannot become
 numeric endpoints. Unselected unbound values or arithmetic errors are not executed.
-Unsupported featuring, variation, cross-domain Boolean/numeric equality, nonempty sequences, strings,
+Unsupported featuring, variation, cross-domain Boolean/numeric equality, nonempty sequences, string ordering and mixed-domain string operations,
 occurrence identity, approximate numbers, quantities and other control operators
 remain unknown. Evaluated cardinality does not certify whole-model type validity. Canonical unresolved classifier bases retain independent arithmetic
 and conditional proofs when source/target evidence is consistent. Direct and transitive
@@ -125,7 +128,7 @@ remain independently checked. Checked callee signatures also share evidence, whi
 every invocation and constructor argument list is validated separately. First range,
 alias and repeated-endpoint queries over the full pinned library are covered after
 implied relationships are published. Other entry paths and larger compositions can
-still reach `workLimit`. See KERNEL-003/004/005/006/007/008/009/010 in
+still reach `workLimit`. See KERNEL-003/004/005/006/007/008/009/010/011 in
 [foundation qualification](foundation-qualification.md).
 
 `membersAvailable: false` describes a navigation record. It must not be read as an

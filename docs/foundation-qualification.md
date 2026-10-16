@@ -436,8 +436,48 @@ rows have been prepared. No budget limit or integration fixture was removed.
 
 Five reversible patches carry the evaluator, atomic staging and private tests. The engine
 advances to `.12`; package version 0.3.0 and snapshot schema 3 remain unchanged.
-Strings, nonempty sequences, quantities, approximate values, occurrence identity,
-general function dispatch and whole-model type validity remain unqualified.
+At this milestone, strings, nonempty sequences, quantities, approximate values,
+occurrence identity, general function dispatch and whole-model type validity remain
+unqualified. KERNEL-011 below extends the checked string domain.
+
+## KERNEL-011: decoded string values
+
+The checked evaluator admits decoded graph `LiteralString` values, binary string
+concatenation (`+`), string-pair equality and sameness (`==`, `!=`, `===`, `!==`),
+and comparisons between empty values and strings. An empty string is present;
+it differs from `null` and prevents a coalescing fallback. String results cannot
+become numeric bounds. The implementation follows KerML 7.4.9.2, 7.4.9.5,
+8.2.2.3, 8.2.2.5, 8.3.4.8.14 and 9.4.6.2 in the pinned standard and library.
+
+MULT-033 adds 29 positive providers covering all four comparisons, case and
+character differences, empty strings, Unicode and normative escapes, concatenation,
+aliases and conditional/coalescing/logical composition. MULT-034 adds 20 unknown
+providers covering missing and recursive operands, mixed domains, unsupported
+operators and invalid endpoints. Earlier MULT-028 `stringEquality` and MULT-032
+`string` assertions now expect the correct bound of 7. All earlier guards remain
+in the combined workspace, with and without an unrelated unresolved import.
+
+Private tests inspect decoded graph values, mutate values and property types,
+break reciprocal ownership and add metadata before and after publication.
+They also exhaust the shared work allowance during string copying, concatenation
+and comparison. UTF-8 bytes are charged before allocation or comparison; neither
+large values nor repeated reads obtain a fresh budget. Native round-trip queries
+and exact native/WebAssembly parity exercise the public transport.
+
+The enlarged combined workspace exposed a redundant second static-prefix audit
+inside the same publication transaction. A combined capture-and-prepare path now
+consumes the freshly audited prefix under one exclusive Builder borrow. Capture
+still verifies each physical recipe and adopts its current identity; separate
+entry paths still perform their own identity audit. Existing physical rows use the
+complete raw identity index for collision checks, avoiding a duplicate set of the
+static IDs. Regression tests compare cold/warm paths and exercise remapped IDs,
+malformed rows, collisions and budget exhaustion. The work allowance and complete
+integration corpus remain unchanged. Larger workspaces can still reach the limit.
+
+The engine advances to `.13`; package version 0.3.0 and snapshot schema 3 remain
+unchanged. String ordering, mixed-domain operations, general StringFunctions calls,
+complete lexical conformance, nonempty sequences, quantities, approximate values,
+occurrence identity and whole-model type validity remain unqualified.
 
 ## Remaining foundation work
 
@@ -466,12 +506,12 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **82 passing conformance cases**, **no
-known-gap cases**, and **no planned cases in the current matrix**. All **50 Rust kernel tests**,
-**35 Node tests**, and **244 dependency proof tests** pass.
+On macOS arm64, the completed run has **84 passing conformance cases**, **no
+known-gap cases**, and **no planned cases in the current matrix**. All **52 Rust kernel tests**,
+**36 Node tests**, and **249 dependency proof tests** pass.
 The dependency suites cover type relations (41), model-level evaluability (33),
-cardinality (31), invocation bindings (19), constructor bindings (16), dynamic graph
-(19), dynamic invocations (25), owned results (4), semantic ownership (5), end constancy (10) and checked
+cardinality (34), invocation bindings (19), constructor bindings (16), dynamic graph
+(19), dynamic invocations (27), owned results (4), semantic ownership (5), end constancy (10) and checked
 namespace operations (41). The corpus and the 32 import-rule partitions are included
 in the Rust suite, not additional independently qualified specification counts.
 Native and WebAssembly outputs match exactly.
@@ -482,27 +522,28 @@ pass. The saved [matrix execution](evidence/conformance-macos-arm64.json) and
 [requirements execution](evidence/requirements-macos-arm64.json) record the current
 source, patch and fixture fingerprints. Windows/Linux execution remains pending CI.
 
-The complete [empty-comparison benchmark](evidence/benchmark-empty-comparisons-macos-arm64.json)
-records three fresh processes per native/WASM workload, for 84 successful samples.
-All repeated native and WASM snapshots agree exactly. Every empty-comparison sample
-passes all 37 MULT-031 assertions; all 13 prior workloads remain included.
+The complete [string benchmark](evidence/benchmark-strings-macos-arm64.json)
+records three fresh processes per native/WASM workload, for 90 successful samples.
+All repeated native and WASM snapshots agree exactly. Every string sample
+passes all 30 MULT-033 assertions; all 14 prior workloads remain included.
 
 | Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
 | --- | ---: | ---: | ---: |
-| Empty comparisons | 7,310 | 10,338 | 396.3/359.0 |
-| Null-coalescing | 2,623 | 3,357 | 394.5/350.6 |
-| Scalar equality | 3,718 | 4,880 | 387.7/353.9 |
-| Boolean predicates | 3,568 | 3,590 | 405.9/351.4 |
-| Ordered predicates | 2,819 | 3,292 | 389.6/361.3 |
-| Compound ranges | 2,302 | 2,774 | 390.2/348.5 |
-| Independent bounds with missing base | 2,235 | 2,961 | 389.9/344.8 |
-| Imported memberships | 2,096 | 2,626 | 399.6/338.9 |
-| Viewer example | 2,177 | 2,520 | 411.4/356.6 |
-| Attribute providers | 2,093 | 2,612 | 400.9/349.5 |
-| Arithmetic providers | 2,153 | 2,636 | 399.7/359.4 |
-| Conditional providers | 2,435 | 2,733 | 397.0/364.6 |
-| 100 usages | 2,018 | 2,509 | 413.3/354.7 |
-| 1,000 usages | 2,353 | 2,662 | 417.2/370.0 |
+| Strings | 2,659 | 3,128 | 398.2/362.6 |
+| Empty comparisons | 2,735 | 3,235 | 397.6/360.3 |
+| Null-coalescing | 2,472 | 2,937 | 399.6/370.3 |
+| Scalar equality | 2,620 | 3,117 | 397.8/363.4 |
+| Boolean predicates | 2,744 | 3,258 | 396.7/366.4 |
+| Ordered predicates | 2,536 | 3,028 | 394.3/363.4 |
+| Compound ranges | 2,115 | 2,581 | 399.8/346.8 |
+| Independent bounds with missing base | 2,068 | 2,527 | 392.9/345.8 |
+| Imported memberships | 2,005 | 2,451 | 376.8/341.1 |
+| Viewer example | 2,218 | 2,578 | 381.4/359.0 |
+| Attribute providers | 2,201 | 2,539 | 385.9/350.8 |
+| Arithmetic providers | 2,194 | 2,645 | 392.2/355.4 |
+| Conditional providers | 2,181 | 2,680 | 401.7/363.8 |
+| 100 usages | 2,076 | 2,458 | 397.7/356.6 |
+| 1,000 usages | 2,355 | 2,665 | 396.5/373.3 |
 
 The earlier `.6` isolation run had an initial native sample time out at 60
 seconds; a direct retry completed in 3.2 seconds, and its full 48-sample rerun
@@ -514,14 +555,14 @@ after 45 successful samples when the first attribute-provider WASM sample exceed
 It also retained an 18,985 ms Boolean WASM sample (the other two took 4,100 and 3,329 ms).
 Three direct attribute-provider retries completed in 2,628, 2,537 and 2,480 ms with identical
 snapshots. The separate complete [72-sample rerun](evidence/benchmark-predicates-macos-arm64.json) is retained. The initial timeout
-remains unexplained. No timeout occurred in the `.11` or `.12` runs; these results do not
+remains unexplained. No timeout occurred in the `.11`, `.12` or `.13` runs; these results do not
 establish a stable latency bound.
 
 Measurements include startup, bundled-library analysis and serialization. They are
 observations on this Mac, not cross-platform latency guarantees. Canonical
 preparation is a whole-model pass. The facade runs its model scan before projecting
 cardinality; the separate direct-query regression exercises the first-query budget.
-Compared with the retained [null-coalescing run](evidence/benchmark-coalescing-macos-arm64.json),
+Compared with the retained [empty-comparison run](evidence/benchmark-empty-comparisons-macos-arm64.json),
 these uncontrolled runs do not isolate incremental query cost or establish a
 regression budget. Large import-heavy production models and incremental performance
 remain open engineering work.

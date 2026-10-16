@@ -111,7 +111,7 @@
       "path": "crates/sysml-kernel/tests/foundation.rs",
       "symbol": "fn top_level_import_visibility_checks_both_dialects_kinds_and_nesting",
       "role": "Contract regressions, complete import-predicate input partitions and bundled-library syntax sweep",
-      "sha256": "71f0b6efa01c046003e829d8c5156541bbc7ddca1500deef8e8babaeab7f0c99"
+      "sha256": "350725878bb367508219c5660e843e240cbcd06c13edcd5c0abcdea876eae588"
     },
     "syntax-structure": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
@@ -141,13 +141,13 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
       "symbol": "fn certified_operators(",
       "role": "Checked operand/wrapper certification, Boolean branch selection and retained unknown boundaries; includes private conditional proof regressions.",
-      "sha256": "8ed803f6c3a17995efe57d85d6e76f834a45cd00bd6937df528e7d54fa5de0be"
+      "sha256": "55904e99c8f1a10492d76ae6098135aa883759a5df47feee6e8858dfc1910e8a"
     },
     "checked-bound-execution": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs",
       "symbol": "fn certified_multiplicity_value(",
       "role": "Bounded exact execution over certified identities; conditional branches preserve Boolean typing and lazy evaluation.",
-      "sha256": "2430c7883ff8b6f5dc38866f3771604b1efec5429b19a50c4afa69c9722b816c"
+      "sha256": "6807871d3d5d32007f59e8406b446a0a8afc5ba51e66fa729077369a427e8092"
     },
     "import-api": {
       "path": "crates/sysml-kernel/src/imports.rs",
@@ -171,7 +171,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
       "symbol": "fn consistent_unresolved_source(",
       "role": "Checked localization of canonical unresolved classifier specializations; preserves dependent qualifications, identity, ownership, revision and work guards.",
-      "sha256": "d21425982816889cbce7c1c56cae76f1d9a89f00a81cd38ff731d94418514104"
+      "sha256": "4e02c3ee3a88c75d1b398a91e91fe8bbbf0c71359161a3955171d998db815d96"
     },
     "isolation-tests": {
       "path": "crates/sysml-kernel/tests/isolation.rs",
@@ -195,43 +195,55 @@
       "path": "crates/sysml-kernel/tests/foundation.rs",
       "symbol": "fn ordered_predicates_preserve_exact_values_and_guards_after_round_trip",
       "role": "Exact ordering truth tables, integer/rational precision and rejected operand/endpoint regressions through the public snapshot query after JSON round trip.",
-      "sha256": "71f0b6efa01c046003e829d8c5156541bbc7ddca1500deef8e8babaeab7f0c99"
+      "sha256": "350725878bb367508219c5660e843e240cbcd06c13edcd5c0abcdea876eae588"
     },
     "predicate-tests": {
       "path": "crates/sysml-kernel/tests/foundation.rs",
       "symbol": "fn equality_and_logical_predicates_preserve_exact_truth_tables_after_round_trip",
       "role": "Scalar equality, exact Boolean truth tables, eager/deferred operand evaluation and explicit unknown values through the public query after JSON round trip.",
-      "sha256": "71f0b6efa01c046003e829d8c5156541bbc7ddca1500deef8e8babaeab7f0c99"
+      "sha256": "350725878bb367508219c5660e843e240cbcd06c13edcd5c0abcdea876eae588"
     },
     "coalescing-tests": {
       "path": "crates/sysml-kernel/tests/foundation.rs",
       "symbol": "fn coalescing_preserves_known_empty_and_present_values_after_round_trip(",
       "role": "native round-trip empty/present/null-coalescing values and guarded unknown endpoints",
-      "sha256": "71f0b6efa01c046003e829d8c5156541bbc7ddca1500deef8e8babaeab7f0c99"
+      "sha256": "350725878bb367508219c5660e843e240cbcd06c13edcd5c0abcdea876eae588"
     },
     "checked-prefix-reuse": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
       "symbol": "pub(super) fn prepare_dynamic_graph(",
       "role": "same-transaction static prefix avoids unused name materialization; physical authority and complete recipe checks remain required",
-      "sha256": "e2fd747e87e3ebf39f45b000025d20d7cab98a96cc15681101f05e2dfa5fccc9"
+      "sha256": "01c9aa635ad9d9fb3a7fdaf5d34071b626494a37da1db52eebf020e425ff2478"
     },
     "empty-comparison-tests": {
       "path": "crates/sysml-kernel/tests/foundation.rs",
       "symbol": "fn empty_comparisons_preserve_presence_and_identity_after_round_trip",
       "role": "Native round-trip empty/scalar equality and sameness with explicit unknown operands and endpoint guards.",
-      "sha256": "71f0b6efa01c046003e829d8c5156541bbc7ddca1500deef8e8babaeab7f0c99"
+      "sha256": "350725878bb367508219c5660e843e240cbcd06c13edcd5c0abcdea876eae588"
     },
     "atomic-dynamic-staging": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
       "symbol": "pub(super) fn stage_dynamic_rows(",
       "role": "Complete row preparation before atomic ownership append; late failure preserves independently staged result-family ownership.",
-      "sha256": "e2fd747e87e3ebf39f45b000025d20d7cab98a96cc15681101f05e2dfa5fccc9"
+      "sha256": "01c9aa635ad9d9fb3a7fdaf5d34071b626494a37da1db52eebf020e425ff2478"
     },
     "atomic-ownership-batch": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs",
       "symbol": "pub(super) fn register_relationship_batch(",
       "role": "Bounded all-or-nothing registration, with prior-view preservation and equivalence to individual registration tests.",
       "sha256": "9f724257d0b466612447e7b057b9bb543e47c316e9a763468b51d13ee829fa0a"
+    },
+    "string-tests": {
+      "path": "crates/sysml-kernel/tests/foundation.rs",
+      "symbol": "fn strings_preserve_decoded_values_and_presence_after_round_trip",
+      "role": "Native round-trip decoded string equality, sameness, concatenation and presence, with unknown operands and nonnumeric endpoint guards.",
+      "sha256": "350725878bb367508219c5660e843e240cbcd06c13edcd5c0abcdea876eae588"
+    },
+    "checked-prefix-capture": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
+      "symbol": "pub(super) fn capture_and_prepare_with_workspace(",
+      "role": "Capture and detached planning share an exclusive borrow, avoiding a duplicate prefix audit; warm collisions use the complete checked raw identity index. Cold/warm equivalence and corruption/refusal regressions are retained.",
+      "sha256": "4e02c3ee3a88c75d1b398a91e91fe8bbbf0c71359161a3955171d998db815d96"
     }
   },
   "assessments": [
@@ -1196,7 +1208,12 @@
         "KERML-CLAUSE-9.4.2.2",
         "KERML-CLAUSE-9.4.5.2",
         "KERML-CLAUSE-7.4.9.2",
-        "KERML-CLAUSE-8.3.4.8.16"
+        "KERML-CLAUSE-8.3.4.8.16",
+        "KERML-CLAUSE-7.4.9.5",
+        "KERML-CLAUSE-8.2.2.3",
+        "KERML-CLAUSE-8.2.2.5",
+        "KERML-CLAUSE-8.3.4.8.14",
+        "KERML-CLAUSE-9.4.6.2"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1220,7 +1237,9 @@
           "checked-prefix-reuse",
           "empty-comparison-tests",
           "atomic-dynamic-staging",
-          "atomic-ownership-batch"
+          "atomic-ownership-batch",
+          "string-tests",
+          "checked-prefix-capture"
         ]
       },
       "api": {
@@ -1729,9 +1748,70 @@
             "eagerMissing",
             "natural-required"
           ]
+        },
+        {
+          "case": "MULT-033",
+          "checks": [
+            "eqEqual",
+            "eqCase",
+            "eqEmpty",
+            "neEqual",
+            "neCase",
+            "neEmpty",
+            "sameEqual",
+            "sameCase",
+            "sameEmpty",
+            "differentEqual",
+            "differentCase",
+            "differentEmpty",
+            "unicode",
+            "distinctUnicode",
+            "escapedBackslash",
+            "escapedQuote",
+            "allEscapes",
+            "concatenate",
+            "unicodeConcatenate",
+            "nestedConcatenate",
+            "emptyConcatenate",
+            "viaAlias",
+            "nullRight",
+            "nullLeft",
+            "emptyStringPresent",
+            "nullFallback",
+            "skipMissing",
+            "selectedString",
+            "logicalSkip",
+            "clean"
+          ]
+        },
+        {
+          "case": "MULT-034",
+          "checks": [
+            "stringEndpoint",
+            "concatEndpoint",
+            "stringCondition",
+            "unaryPlus",
+            "unaryMinus",
+            "subtract",
+            "numberConcat",
+            "boolConcat",
+            "nullConcat",
+            "sequenceConcat",
+            "numberEquality",
+            "boolEquality",
+            "missingRight",
+            "missingLeft",
+            "selectedMissing",
+            "recursive",
+            "less",
+            "lessEqual",
+            "greater",
+            "greaterEqual",
+            "natural-required"
+          ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General value equality, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. KERNEL-006 qualifies first direct range, alias and repeated-endpoint queries over the full pinned library after implied relationships are published, without preceding proof queries. Callee signatures share checked evidence; every supplied binding is rechecked. Other cold entry paths and more complex expressions can still exhaust the unchanged allowance; reuse does not qualify every composition or a global cache. KERNEL-007 adds finite exact numeric <, <=, > and >= predicates, with designated function identity and checked positional evidence. MULT-024/025 cover each relation, large integers, exact rationals, aliases, nested/lazy selection and refused operands/endpoints. Approximate real, infinity, quantity, string, sequence and general function comparisons remain unqualified. Arithmetic intermediates can exceed i128 through exact rationals; exported bounds retain the signed-128-bit limit. KERNEL-008 adds equality/sameness (==, !=, ===, !==) for Boolean pairs or finite exact numeric pairs, eager Boolean not/xor/&/| and conditional and/or/implies. All deferred operands retain complete model-level eligibility and reciprocal wrapper evidence; only required values are executed. MULT-026/027/028 cover exact scalar values, all Boolean truth tables, eager versus skipped unavailable values, nested expressions and negative operand/endpoint guards. Cross-domain Boolean/numeric equality, nonempty sequence/string/occurrence values, quantities, approximate numbers and general function dispatch remain unqualified. This is a bounded provider execution certificate, not whole-model type validity. KERNEL-009 adds explicit empty NullExpression values and lazy ?? over the admitted exact scalar domain. MULT-029/030 distinguish null and () from zero, Boolean false, unavailable providers and execution failure, and cover nested composition, aliases, skipped/selected operands and numeric endpoint restrictions. Every operand still requires eligibility and reciprocal deferred-wrapper proof. Approximate arithmetic results, including exponent overflow to infinity and underflow to zero, are refused. Null is an intermediate value, not a numeric endpoint or absence certificate. The combined old/new workspace and unresolved-import variant retain their earlier assertions. Same-transaction static-prefix reuse skips an unused library-name rebuild while preserving physical-authority and recipe checks and the unchanged work allowance. Larger compositions may still exhaust that allowance. KERNEL-010 adds ==, !=, === and !== for explicit empty pairs and empty versus admitted Boolean or exact numeric scalars, with both operands successfully executed before comparison. MULT-031/032 qualify both operand orders, aliases and coalescing/conditional/logical composition, preserving unknown for unavailable operands, failures, unsupported domains and invalid endpoints. Two earlier null-equality expectations now correctly evaluate to 7. Empty comparison does not certify occurrence identity, general sequence equality or whole-model type validity. Dynamic staging prepares all rows before atomic ownership registration and reuses the private result-family ownership view; it no longer clones the complete prefix twice. Late invalid owners, identity changes and exhausted budgets leave the prior view intact. The full integration corpus remains combined and the work allowance is unchanged."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General value equality, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. KERNEL-006 qualifies first direct range, alias and repeated-endpoint queries over the full pinned library after implied relationships are published, without preceding proof queries. Callee signatures share checked evidence; every supplied binding is rechecked. Other cold entry paths and more complex expressions can still exhaust the unchanged allowance; reuse does not qualify every composition or a global cache. KERNEL-007 adds finite exact numeric <, <=, > and >= predicates, with designated function identity and checked positional evidence. MULT-024/025 cover each relation, large integers, exact rationals, aliases, nested/lazy selection and refused operands/endpoints. Approximate real, infinity, quantity, ordered string, sequence and general function comparisons remain unqualified. Arithmetic intermediates can exceed i128 through exact rationals; exported bounds retain the signed-128-bit limit. KERNEL-008 adds equality/sameness (==, !=, ===, !==) for Boolean pairs or finite exact numeric pairs, eager Boolean not/xor/&/| and conditional and/or/implies. All deferred operands retain complete model-level eligibility and reciprocal wrapper evidence; only required values are executed. MULT-026/027/028 cover exact scalar values, all Boolean truth tables, eager versus skipped unavailable values, nested expressions and negative operand/endpoint guards. Cross-domain Boolean/numeric equality, nonempty sequence/occurrence values, quantities, approximate numbers and general function dispatch remain unqualified. This is a bounded provider execution certificate, not whole-model type validity. KERNEL-009 adds explicit empty NullExpression values and lazy ?? over the admitted exact scalar domain. MULT-029/030 distinguish null and () from zero, Boolean false, unavailable providers and execution failure, and cover nested composition, aliases, skipped/selected operands and numeric endpoint restrictions. Every operand still requires eligibility and reciprocal deferred-wrapper proof. Approximate arithmetic results, including exponent overflow to infinity and underflow to zero, are refused. Null is an intermediate value, not a numeric endpoint or absence certificate. The combined old/new workspace and unresolved-import variant retain their earlier assertions. Same-transaction static-prefix reuse skips an unused library-name rebuild while preserving physical-authority and recipe checks and the unchanged work allowance. Larger compositions may still exhaust that allowance. KERNEL-010 adds ==, !=, === and !== for explicit empty pairs and empty versus admitted Boolean or exact numeric scalars, with both operands successfully executed before comparison. MULT-031/032 qualify both operand orders, aliases and coalescing/conditional/logical composition, preserving unknown for unavailable operands, failures, unsupported domains and invalid endpoints. Two earlier null-equality expectations now correctly evaluate to 7. Empty comparison does not certify occurrence identity, general sequence equality or whole-model type validity. Dynamic staging prepares all rows before atomic ownership registration and reuses the private result-family ownership view; it no longer clones the complete prefix twice. Late invalid owners, identity changes and exhausted budgets leave the prior view intact. The full integration corpus remains combined and the work allowance is unchanged. KERNEL-011 adds decoded LiteralString values, string-pair equality and sameness, binary string concatenation and empty-versus-string comparisons. MULT-033/034 qualify Unicode and standard escapes, exact character preservation, aliases and conditional/coalescing/logical composition. An empty string remains present; string values never coerce to numeric endpoints. String copies, concatenation allocation and comparison charge UTF-8 bytes to the unchanged cumulative work allowance. String ordering, mixed-domain operations, general StringFunctions calls, complete lexical conformance and whole-model type validity remain unqualified. The combined publication path consumes its freshly audited static prefix without a redundant second audit, and warm-prefix collision checks use the complete raw identity index. Remapped identities, malformed rows, independent entry paths and work-limit refusals retain explicit regression coverage."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",

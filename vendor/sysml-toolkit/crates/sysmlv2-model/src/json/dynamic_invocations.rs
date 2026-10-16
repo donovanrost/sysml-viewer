@@ -195,7 +195,8 @@ pub(super) fn prepare(
     )
 }
 
-pub(super) fn prepare_with_workspace(
+#[cfg(test)]
+fn prepare_with_workspace(
     b: &mut Builder,
     prefix: Arc<StaticPrefix>,
     reserved: &HashSet<Uuid>,
@@ -212,6 +213,39 @@ pub(super) fn prepare_with_workspace(
         return Err(Refusal::Incomplete);
     }
     validate_fixed_prefix(b, &prefix, &raw, physical_static_end, true, steps)?;
+    prepare_validated_prefix(b, prefix, reserved, raw, steps, workspace)
+}
+
+/// Capture and consume one prefix under the same exclusive Builder borrow.
+/// Capture audits all physical recipes before adopting their current IDs;
+/// StoredStructure proves those IDs unique. No semantic mutation may occur
+/// between that audit and the detached planning below. Other entry paths must
+/// run validate_fixed_prefix independently before calling the private worker.
+pub(super) fn capture_and_prepare_with_workspace(
+    b: &mut Builder,
+    prefix: Arc<StaticPrefix>,
+    reserved: &HashSet<Uuid>,
+    physical_static_end: Option<usize>,
+    steps: &mut usize,
+    workspace: &mut super::positional::PositionalWorkspace,
+) -> Result<Plan, Refusal> {
+    charge(steps, 1)?;
+    if !b.semantic_ready || prefix.authored_end != b.explicit_len() {
+        return Err(Refusal::Incomplete);
+    }
+    let prefix = capture_static_prefix(b, prefix, physical_static_end, steps)?;
+    let raw = StoredStructure::for_query(b, steps).ok_or_else(|| incomplete(steps))?;
+    prepare_validated_prefix(b, prefix, reserved, raw, steps, workspace)
+}
+
+fn prepare_validated_prefix(
+    b: &mut Builder,
+    prefix: Arc<StaticPrefix>,
+    reserved: &HashSet<Uuid>,
+    raw: Arc<StoredStructure>,
+    steps: &mut usize,
+    workspace: &mut super::positional::PositionalWorkspace,
+) -> Result<Plan, Refusal> {
     let revision = b.elements.observe_revision();
     let authored = b.explicit_len();
     charge(steps, b.elements.len())?;
@@ -767,10 +801,14 @@ pub(super) fn prepare_with_workspace(
     incomplete_bases.extend(unresolved_sources);
     incomplete_bases.extend(unadmitted);
     let mut assigned = HashSet::new();
-    for row in &prefix.rows {
-        charge(steps, 1)?;
-        if !assigned.insert(row.id) {
-            return Err(Refusal::Collision);
+    // Warm prefix identities already belong to raw's complete unique-ID index.
+    // Only cold recipes need a second set; every tail ID checks raw below.
+    if b.implied_from.is_none() {
+        for row in &prefix.rows {
+            charge(steps, 1)?;
+            if !assigned.insert(row.id) {
+                return Err(Refusal::Collision);
+            }
         }
     }
     for row in &tail {
@@ -1508,6 +1546,105 @@ mod warm_prefix_tests {
                 .collect();
         r.b.static_specialization_prefix(&names, true, Some(&mut 0))
             .unwrap()
+    }
+    #[test]
+    fn combined_capture_matches_separate_audits_in_cold_and_warm_models() {
+        for warm in [false, true] {
+            let mut r = fixture();
+            if warm {
+                r.ensure_implied();
+                r.discard_owned_result_tail();
+            }
+            let boundary = r.b.implied.as_ref().map(|t| t.owned_results_from);
+            let proposed = predicted(&mut r);
+            let captured = capture_static_prefix(&mut r.b, proposed, boundary, &mut 0).unwrap();
+            let expected = prepare(&mut r.b, captured, &HashSet::new(), boundary, &mut 0).unwrap();
+            let before = r.b.elements.len();
+            let proposed = predicted(&mut r);
+            let actual = capture_and_prepare_with_workspace(
+                &mut r.b,
+                proposed,
+                &HashSet::new(),
+                boundary,
+                &mut 0,
+                &mut Default::default(),
+            )
+            .unwrap();
+            assert_eq!(actual.static_prefix.rows, expected.static_prefix.rows);
+            assert_eq!(actual.tail, expected.tail);
+            assert_eq!(actual.direct_bases, expected.direct_bases);
+            assert_eq!(actual.specializations, expected.specializations);
+            assert_eq!(actual.positional.targets, expected.positional.targets);
+            assert_eq!(actual.positional.incomplete, expected.positional.incomplete);
+            assert_eq!(r.b.elements.len(), before);
+            let collision = HashSet::from([actual.tail[0].id]);
+            let proposed = predicted(&mut r);
+            assert!(matches!(
+                capture_and_prepare_with_workspace(
+                    &mut r.b,
+                    proposed,
+                    &collision,
+                    boundary,
+                    &mut 0,
+                    &mut Default::default(),
+                ),
+                Err(Refusal::Collision)
+            ));
+            let proposed = predicted(&mut r);
+            assert!(matches!(
+                capture_and_prepare_with_workspace(
+                    &mut r.b,
+                    proposed,
+                    &HashSet::new(),
+                    boundary,
+                    &mut { crate::eval::MAX_STEPS },
+                    &mut Default::default(),
+                ),
+                Err(Refusal::WorkLimit)
+            ));
+            assert_eq!(r.b.elements.len(), before);
+        }
+    }
+    #[test]
+    fn combined_capture_preserves_remapped_ids_and_refuses_corrupt_warm_rows() {
+        for mutation in 0..4 {
+            let mut r = fixture();
+            let initial = predicted(&mut r);
+            r.ensure_implied();
+            r.discard_owned_result_tail();
+            let new = Uuid::new_v5(&Uuid::NAMESPACE_OID, b"combined capture override");
+            r.override_ids(&HashMap::from([(initial.rows[0].id, new)]));
+            let mut boundary = r.b.implied.as_ref().unwrap().owned_results_from;
+            let proposed = predicted(&mut r);
+            let index = proposed.authored_end;
+            match mutation {
+                0 => {}
+                1 => {
+                    r.b.elements[index]
+                        .props
+                        .insert("target", serde_json::json!([]));
+                }
+                2 => {
+                    r.b.elements[index].id = r.b.elements[0].id;
+                }
+                _ => boundary += 1,
+            }
+            let before = r.b.elements.len();
+            let result = capture_and_prepare_with_workspace(
+                &mut r.b,
+                proposed,
+                &HashSet::new(),
+                Some(boundary),
+                &mut 0,
+                &mut Default::default(),
+            );
+            if mutation == 0 {
+                assert_eq!(result.unwrap().static_prefix.rows[0].id, new);
+            } else {
+                assert!(result.is_err(), "mutation {mutation}");
+            }
+            assert_eq!(r.b.elements.len(), before);
+        }
     }
     #[test]
     fn public_row_id_override_keeps_physical_static_identity() {

@@ -1629,7 +1629,12 @@
         "KERML-CLAUSE-9.4.2.2",
         "KERML-CLAUSE-9.4.5.2",
         "KERML-CLAUSE-7.4.9.2",
-        "KERML-CLAUSE-8.3.4.8.16"
+        "KERML-CLAUSE-8.3.4.8.16",
+        "KERML-CLAUSE-7.4.9.5",
+        "KERML-CLAUSE-8.2.2.3",
+        "KERML-CLAUSE-8.2.2.5",
+        "KERML-CLAUSE-8.3.4.8.14",
+        "KERML-CLAUSE-9.4.6.2"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1653,7 +1658,9 @@
           "checked-prefix-reuse",
           "empty-comparison-tests",
           "atomic-dynamic-staging",
-          "atomic-ownership-batch"
+          "atomic-ownership-batch",
+          "string-tests",
+          "checked-prefix-capture"
         ]
       },
       "api": {
@@ -3694,9 +3701,282 @@
               "status": "pass"
             }
           ]
+        },
+        {
+          "case": "MULT-033",
+          "checks": [
+            "eqEqual",
+            "eqCase",
+            "eqEmpty",
+            "neEqual",
+            "neCase",
+            "neEmpty",
+            "sameEqual",
+            "sameCase",
+            "sameEmpty",
+            "differentEqual",
+            "differentCase",
+            "differentEmpty",
+            "unicode",
+            "distinctUnicode",
+            "escapedBackslash",
+            "escapedQuote",
+            "allEscapes",
+            "concatenate",
+            "unicodeConcatenate",
+            "nestedConcatenate",
+            "emptyConcatenate",
+            "viaAlias",
+            "nullRight",
+            "nullLeft",
+            "emptyStringPresent",
+            "nullFallback",
+            "skipMissing",
+            "selectedString",
+            "logicalSkip",
+            "clean"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "eqEqual",
+              "status": "pass"
+            },
+            {
+              "id": "eqCase",
+              "status": "pass"
+            },
+            {
+              "id": "eqEmpty",
+              "status": "pass"
+            },
+            {
+              "id": "neEqual",
+              "status": "pass"
+            },
+            {
+              "id": "neCase",
+              "status": "pass"
+            },
+            {
+              "id": "neEmpty",
+              "status": "pass"
+            },
+            {
+              "id": "sameEqual",
+              "status": "pass"
+            },
+            {
+              "id": "sameCase",
+              "status": "pass"
+            },
+            {
+              "id": "sameEmpty",
+              "status": "pass"
+            },
+            {
+              "id": "differentEqual",
+              "status": "pass"
+            },
+            {
+              "id": "differentCase",
+              "status": "pass"
+            },
+            {
+              "id": "differentEmpty",
+              "status": "pass"
+            },
+            {
+              "id": "unicode",
+              "status": "pass"
+            },
+            {
+              "id": "distinctUnicode",
+              "status": "pass"
+            },
+            {
+              "id": "escapedBackslash",
+              "status": "pass"
+            },
+            {
+              "id": "escapedQuote",
+              "status": "pass"
+            },
+            {
+              "id": "allEscapes",
+              "status": "pass"
+            },
+            {
+              "id": "concatenate",
+              "status": "pass"
+            },
+            {
+              "id": "unicodeConcatenate",
+              "status": "pass"
+            },
+            {
+              "id": "nestedConcatenate",
+              "status": "pass"
+            },
+            {
+              "id": "emptyConcatenate",
+              "status": "pass"
+            },
+            {
+              "id": "viaAlias",
+              "status": "pass"
+            },
+            {
+              "id": "nullRight",
+              "status": "pass"
+            },
+            {
+              "id": "nullLeft",
+              "status": "pass"
+            },
+            {
+              "id": "emptyStringPresent",
+              "status": "pass"
+            },
+            {
+              "id": "nullFallback",
+              "status": "pass"
+            },
+            {
+              "id": "skipMissing",
+              "status": "pass"
+            },
+            {
+              "id": "selectedString",
+              "status": "pass"
+            },
+            {
+              "id": "logicalSkip",
+              "status": "pass"
+            },
+            {
+              "id": "clean",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "MULT-034",
+          "checks": [
+            "stringEndpoint",
+            "concatEndpoint",
+            "stringCondition",
+            "unaryPlus",
+            "unaryMinus",
+            "subtract",
+            "numberConcat",
+            "boolConcat",
+            "nullConcat",
+            "sequenceConcat",
+            "numberEquality",
+            "boolEquality",
+            "missingRight",
+            "missingLeft",
+            "selectedMissing",
+            "recursive",
+            "less",
+            "lessEqual",
+            "greater",
+            "greaterEqual",
+            "natural-required"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "stringEndpoint",
+              "status": "pass"
+            },
+            {
+              "id": "concatEndpoint",
+              "status": "pass"
+            },
+            {
+              "id": "stringCondition",
+              "status": "pass"
+            },
+            {
+              "id": "unaryPlus",
+              "status": "pass"
+            },
+            {
+              "id": "unaryMinus",
+              "status": "pass"
+            },
+            {
+              "id": "subtract",
+              "status": "pass"
+            },
+            {
+              "id": "numberConcat",
+              "status": "pass"
+            },
+            {
+              "id": "boolConcat",
+              "status": "pass"
+            },
+            {
+              "id": "nullConcat",
+              "status": "pass"
+            },
+            {
+              "id": "sequenceConcat",
+              "status": "pass"
+            },
+            {
+              "id": "numberEquality",
+              "status": "pass"
+            },
+            {
+              "id": "boolEquality",
+              "status": "pass"
+            },
+            {
+              "id": "missingRight",
+              "status": "pass"
+            },
+            {
+              "id": "missingLeft",
+              "status": "pass"
+            },
+            {
+              "id": "selectedMissing",
+              "status": "pass"
+            },
+            {
+              "id": "recursive",
+              "status": "pass"
+            },
+            {
+              "id": "less",
+              "status": "pass"
+            },
+            {
+              "id": "lessEqual",
+              "status": "pass"
+            },
+            {
+              "id": "greater",
+              "status": "pass"
+            },
+            {
+              "id": "greaterEqual",
+              "status": "pass"
+            },
+            {
+              "id": "natural-required",
+              "status": "pass"
+            }
+          ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General value equality, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. KERNEL-006 qualifies first direct range, alias and repeated-endpoint queries over the full pinned library after implied relationships are published, without preceding proof queries. Callee signatures share checked evidence; every supplied binding is rechecked. Other cold entry paths and more complex expressions can still exhaust the unchanged allowance; reuse does not qualify every composition or a global cache. KERNEL-007 adds finite exact numeric <, <=, > and >= predicates, with designated function identity and checked positional evidence. MULT-024/025 cover each relation, large integers, exact rationals, aliases, nested/lazy selection and refused operands/endpoints. Approximate real, infinity, quantity, string, sequence and general function comparisons remain unqualified. Arithmetic intermediates can exceed i128 through exact rationals; exported bounds retain the signed-128-bit limit. KERNEL-008 adds equality/sameness (==, !=, ===, !==) for Boolean pairs or finite exact numeric pairs, eager Boolean not/xor/&/| and conditional and/or/implies. All deferred operands retain complete model-level eligibility and reciprocal wrapper evidence; only required values are executed. MULT-026/027/028 cover exact scalar values, all Boolean truth tables, eager versus skipped unavailable values, nested expressions and negative operand/endpoint guards. Cross-domain Boolean/numeric equality, nonempty sequence/string/occurrence values, quantities, approximate numbers and general function dispatch remain unqualified. This is a bounded provider execution certificate, not whole-model type validity. KERNEL-009 adds explicit empty NullExpression values and lazy ?? over the admitted exact scalar domain. MULT-029/030 distinguish null and () from zero, Boolean false, unavailable providers and execution failure, and cover nested composition, aliases, skipped/selected operands and numeric endpoint restrictions. Every operand still requires eligibility and reciprocal deferred-wrapper proof. Approximate arithmetic results, including exponent overflow to infinity and underflow to zero, are refused. Null is an intermediate value, not a numeric endpoint or absence certificate. The combined old/new workspace and unresolved-import variant retain their earlier assertions. Same-transaction static-prefix reuse skips an unused library-name rebuild while preserving physical-authority and recipe checks and the unchanged work allowance. Larger compositions may still exhaust that allowance. KERNEL-010 adds ==, !=, === and !== for explicit empty pairs and empty versus admitted Boolean or exact numeric scalars, with both operands successfully executed before comparison. MULT-031/032 qualify both operand orders, aliases and coalescing/conditional/logical composition, preserving unknown for unavailable operands, failures, unsupported domains and invalid endpoints. Two earlier null-equality expectations now correctly evaluate to 7. Empty comparison does not certify occurrence identity, general sequence equality or whole-model type validity. Dynamic staging prepares all rows before atomic ownership registration and reuses the private result-family ownership view; it no longer clones the complete prefix twice. Late invalid owners, identity changes and exhausted budgets leave the prior view intact. The full integration corpus remains combined and the work allowance is unchanged."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General value equality, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. KERNEL-006 qualifies first direct range, alias and repeated-endpoint queries over the full pinned library after implied relationships are published, without preceding proof queries. Callee signatures share checked evidence; every supplied binding is rechecked. Other cold entry paths and more complex expressions can still exhaust the unchanged allowance; reuse does not qualify every composition or a global cache. KERNEL-007 adds finite exact numeric <, <=, > and >= predicates, with designated function identity and checked positional evidence. MULT-024/025 cover each relation, large integers, exact rationals, aliases, nested/lazy selection and refused operands/endpoints. Approximate real, infinity, quantity, ordered string, sequence and general function comparisons remain unqualified. Arithmetic intermediates can exceed i128 through exact rationals; exported bounds retain the signed-128-bit limit. KERNEL-008 adds equality/sameness (==, !=, ===, !==) for Boolean pairs or finite exact numeric pairs, eager Boolean not/xor/&/| and conditional and/or/implies. All deferred operands retain complete model-level eligibility and reciprocal wrapper evidence; only required values are executed. MULT-026/027/028 cover exact scalar values, all Boolean truth tables, eager versus skipped unavailable values, nested expressions and negative operand/endpoint guards. Cross-domain Boolean/numeric equality, nonempty sequence/occurrence values, quantities, approximate numbers and general function dispatch remain unqualified. This is a bounded provider execution certificate, not whole-model type validity. KERNEL-009 adds explicit empty NullExpression values and lazy ?? over the admitted exact scalar domain. MULT-029/030 distinguish null and () from zero, Boolean false, unavailable providers and execution failure, and cover nested composition, aliases, skipped/selected operands and numeric endpoint restrictions. Every operand still requires eligibility and reciprocal deferred-wrapper proof. Approximate arithmetic results, including exponent overflow to infinity and underflow to zero, are refused. Null is an intermediate value, not a numeric endpoint or absence certificate. The combined old/new workspace and unresolved-import variant retain their earlier assertions. Same-transaction static-prefix reuse skips an unused library-name rebuild while preserving physical-authority and recipe checks and the unchanged work allowance. Larger compositions may still exhaust that allowance. KERNEL-010 adds ==, !=, === and !== for explicit empty pairs and empty versus admitted Boolean or exact numeric scalars, with both operands successfully executed before comparison. MULT-031/032 qualify both operand orders, aliases and coalescing/conditional/logical composition, preserving unknown for unavailable operands, failures, unsupported domains and invalid endpoints. Two earlier null-equality expectations now correctly evaluate to 7. Empty comparison does not certify occurrence identity, general sequence equality or whole-model type validity. Dynamic staging prepares all rows before atomic ownership registration and reuses the private result-family ownership view; it no longer clones the complete prefix twice. Late invalid owners, identity changes and exhausted budgets leave the prior view intact. The full integration corpus remains combined and the work allowance is unchanged. KERNEL-011 adds decoded LiteralString values, string-pair equality and sameness, binary string concatenation and empty-versus-string comparisons. MULT-033/034 qualify Unicode and standard escapes, exact character preservation, aliases and conditional/coalescing/logical composition. An empty string remains present; string values never coerce to numeric endpoints. String copies, concatenation allocation and comparison charge UTF-8 bytes to the unchanged cumulative work allowance. String ordering, mixed-domain operations, general StringFunctions calls, complete lexical conformance and whole-model type validity remain unqualified. The combined publication path consumes its freshly audited static prefix without a redundant second audit, and warm-prefix collision checks use the complete raw identity index. Remapped identities, malformed rows, independent entry paths and work-limit refusals retain explicit regression coverage."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",
@@ -4249,24 +4529,24 @@
       "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
     }
   ],
-  "executableCases": 82,
+  "executableCases": 84,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "95c6fa9283612d31cb90ae3bf2e481c783859d0aee3c16a9eb994dd9f15e05dc",
+  "assessmentsSha256": "a8a2786e3d3b92cf83f453936a1e7866f127237b2caf2ab6e0f101ef82f7c242",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "291258549f08ef1f847f5c8d99fbd7ebff8e29b4d6a5e745695048d79689d9cb",
-    "generatedAt": "2026-10-16T02:36:06.792Z",
-    "kernelInputSha256": "f3a6e84d096cf1ce6686359c61a3b7441c3fa29cd011263329f1f1b2094fd384",
-    "binarySha256": "eb013a827db72dfedf2b9e93c32412ba7bee59fa3b6a735e8bef3fb109ea0cad",
+    "sha256": "bcd3cb8b161a9cfe66410dc9c1dc9bbb49f062e8a3ac5576035c1d3d86d4c829",
+    "generatedAt": "2026-10-16T03:28:28.502Z",
+    "kernelInputSha256": "629c42797ddc4bfcd1c3afbf599568841487670e40ee5ed2563b9a3a84e625b4",
+    "binarySha256": "0b50408a2ab4ce4987af3158e23a3fed418eb6d98267d52623363ea96bfd94fe",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.12",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.13",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 82,
+      "pass": 84,
       "known-gap": 0,
       "planned": 0,
       "fail": 0

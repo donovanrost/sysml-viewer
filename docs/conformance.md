@@ -99,6 +99,8 @@ Clause references identify the source of a test, not complete coverage of that c
 | MULT-030 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Null-coalescing refuses unavailable first values, invalid selected fallbacks, ineligible skipped branches, unsupported domains and invalid endpoints; an empty value never becomes zero. |
 | MULT-031 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Checked equality and sameness distinguish explicit emptiness from present Boolean and exact numeric values, with aliases and lazy control composition. |
 | MULT-032 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Empty comparisons require successful execution of both operands; unavailable values, execution failures, unsupported domains and invalid endpoints remain unknown. |
+| MULT-033 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Checked decoded strings retain exact equality, sameness, concatenation and presence through Unicode, escapes, aliases and lazy controls. |
+| MULT-034 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Checked strings preserve unknown for unsupported operators, mixed domains, unavailable operands, recursion and nonnumeric endpoints. |
 
 ## Coverage limits
 

@@ -2122,6 +2122,16 @@ impl Evaluator<'_> {
         }
         match self.b.elements[e].ty {
             "NullExpression" => Some(Value::null()),
+            "LiteralString" => {
+                // Graph literals already contain decoded Unicode values. Charge
+                // bytes before copying; source spelling is not execution evidence.
+                let value = self.b.elements[e].props.get("value")?.as_str()?;
+                self.steps = self.steps.saturating_add(value.len());
+                if self.steps > MAX_STEPS || value.len() > MAX_STRING {
+                    return None;
+                }
+                Some(Value::String(value.to_owned()))
+            }
             "LiteralInfinity" => Some(Value::Real(f64::INFINITY)),
             "LiteralBoolean" => Some(Value::Boolean(
                 self.b.elements[e].props.get("value")?.as_bool()?,
@@ -2233,12 +2243,25 @@ impl Evaluator<'_> {
                         }
                         (
                             Value::Sequence(empty),
-                            Value::Boolean(_) | Value::Integer(_) | Value::Rational(_),
+                            Value::Boolean(_)
+                            | Value::Integer(_)
+                            | Value::Rational(_)
+                            | Value::String(_),
                         )
                         | (
-                            Value::Boolean(_) | Value::Integer(_) | Value::Rational(_),
+                            Value::Boolean(_)
+                            | Value::Integer(_)
+                            | Value::Rational(_)
+                            | Value::String(_),
                             Value::Sequence(empty),
                         ) if empty.is_empty() => false,
+                        (Value::String(a), Value::String(b)) => {
+                            self.steps = self.steps.saturating_add(a.len()).saturating_add(b.len());
+                            if self.steps > MAX_STEPS {
+                                return None;
+                            }
+                            a == b
+                        }
                         (Value::Boolean(a), Value::Boolean(b)) => a == b,
                         (
                             Value::Integer(_) | Value::Rational(_),
@@ -2285,6 +2308,19 @@ impl Evaluator<'_> {
                         BinaryOp::GtEq => !ordering.is_lt(),
                         _ => unreachable!(),
                     }));
+                }
+                if let (BinaryOp::Add, Value::String(a), Value::String(b)) =
+                    (operator, &first, &second)
+                {
+                    let length = a.len().checked_add(b.len())?;
+                    self.steps = self.steps.saturating_add(length);
+                    if self.steps > MAX_STEPS || length > MAX_STRING {
+                        return None;
+                    }
+                    let mut value = String::with_capacity(length);
+                    value.push_str(a);
+                    value.push_str(b);
+                    return Some(Value::String(value));
                 }
                 // The general evaluator may approximate excessive powers or
                 // irrational roots. Such a result is not exact bound evidence,

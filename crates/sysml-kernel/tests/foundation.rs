@@ -671,6 +671,7 @@ fn predicate_snapshot() -> &'static Snapshot {
 fn equality_and_logical_predicates_preserve_exact_truth_tables_after_round_trip() {
     let q = predicate_snapshot().queries().unwrap();
     for (name, value) in [
+        ("PredicateGuards::stringEquality", "7"),
         ("PredicateGuards::nullEquality", "7"),
         ("EqualityPredicates::eqEqual", "7"),
         ("EqualityPredicates::eqUnequal", "9"),
@@ -758,7 +759,6 @@ fn predicate_guards_preserve_unknown_for_required_or_unsupported_values() {
         ("mixedNotSame", CardinalityIssue::UnsupportedBound),
         ("realEquality", CardinalityIssue::UnsupportedBound),
         ("infinityEquality", CardinalityIssue::UnsupportedBound),
-        ("stringEquality", CardinalityIssue::UnsupportedBound),
         ("missingEquality", CardinalityIssue::IncompleteProvider),
         ("undefinedEquality", CardinalityIssue::UnsupportedBound),
         ("excessiveEquality", CardinalityIssue::UnsupportedBound),
@@ -969,6 +969,14 @@ fn empty_comparisons_preserve_presence_and_identity_after_round_trip() {
 #[test]
 fn empty_comparisons_require_both_values_and_preserve_domain_guards() {
     let q = empty_comparison_snapshot().queries().unwrap();
+    let e = q.find("EmptyComparisonGuards::string")[0];
+    assert_eq!(
+        q.cardinality(&e.id).unwrap(),
+        &Cardinality::Evaluated {
+            lower: "7".into(),
+            upper: Some("7".into())
+        }
+    );
     for (name, reason) in [
         ("eqMissingRight", CardinalityIssue::IncompleteProvider),
         ("eqMissingLeft", CardinalityIssue::IncompleteProvider),
@@ -986,7 +994,6 @@ fn empty_comparisons_require_both_values_and_preserve_domain_guards() {
         ("overflow", CardinalityIssue::UnsupportedBound),
         ("real", CardinalityIssue::UnsupportedBound),
         ("infinity", CardinalityIssue::UnsupportedBound),
-        ("string", CardinalityIssue::UnsupportedBound),
         ("sequence", CardinalityIssue::UnsupportedBound),
         ("recursive", CardinalityIssue::UnsupportedBound),
         ("booleanEndpoint", CardinalityIssue::UnsupportedBound),
@@ -995,6 +1002,105 @@ fn empty_comparisons_require_both_values_and_preserve_domain_guards() {
         ("eagerMissing", CardinalityIssue::IncompleteProvider),
     ] {
         let e = q.find(&format!("EmptyComparisonGuards::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Unknown { reason },
+            "{name}"
+        );
+    }
+}
+
+fn string_snapshot() -> &'static Snapshot {
+    static VALUE: OnceLock<Snapshot> = OnceLock::new();
+    VALUE.get_or_init(|| {
+        let original = analyze(vec![
+            document(
+                "strings.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-033.sysml"),
+            ),
+            document(
+                "guards.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-034.sysml"),
+            ),
+        ]);
+        assert!(!original
+            .diagnostics
+            .iter()
+            .any(|d| matches!(d.stage, Stage::Syntax)));
+        serde_json::from_str(&serde_json::to_string(&original).unwrap()).unwrap()
+    })
+}
+#[test]
+fn strings_preserve_decoded_values_and_presence_after_round_trip() {
+    let q = string_snapshot().queries().unwrap();
+    for (name, value) in [
+        ("eqEqual", "7"),
+        ("eqCase", "9"),
+        ("eqEmpty", "7"),
+        ("neEqual", "9"),
+        ("neCase", "7"),
+        ("neEmpty", "9"),
+        ("sameEqual", "7"),
+        ("sameCase", "9"),
+        ("sameEmpty", "7"),
+        ("differentEqual", "9"),
+        ("differentCase", "7"),
+        ("differentEmpty", "9"),
+        ("unicode", "7"),
+        ("distinctUnicode", "7"),
+        ("escapedBackslash", "7"),
+        ("escapedQuote", "7"),
+        ("allEscapes", "7"),
+        ("concatenate", "7"),
+        ("unicodeConcatenate", "7"),
+        ("nestedConcatenate", "7"),
+        ("emptyConcatenate", "7"),
+        ("viaAlias", "7"),
+        ("nullRight", "9"),
+        ("nullLeft", "7"),
+        ("emptyStringPresent", "7"),
+        ("nullFallback", "7"),
+        ("skipMissing", "7"),
+        ("selectedString", "7"),
+        ("logicalSkip", "7"),
+    ] {
+        let e = q.find(&format!("StringValues::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Evaluated {
+                lower: value.into(),
+                upper: Some(value.into())
+            },
+            "{name}"
+        );
+    }
+}
+#[test]
+fn strings_preserve_unknown_operands_and_unsupported_domains() {
+    let q = string_snapshot().queries().unwrap();
+    for (name, reason) in [
+        ("stringEndpoint", CardinalityIssue::UnsupportedBound),
+        ("concatEndpoint", CardinalityIssue::UnsupportedBound),
+        ("stringCondition", CardinalityIssue::UnsupportedBound),
+        ("unaryPlus", CardinalityIssue::UnsupportedBound),
+        ("unaryMinus", CardinalityIssue::UnsupportedBound),
+        ("subtract", CardinalityIssue::UnsupportedBound),
+        ("numberConcat", CardinalityIssue::UnsupportedBound),
+        ("boolConcat", CardinalityIssue::UnsupportedBound),
+        ("nullConcat", CardinalityIssue::UnsupportedBound),
+        ("sequenceConcat", CardinalityIssue::UnsupportedBound),
+        ("numberEquality", CardinalityIssue::UnsupportedBound),
+        ("boolEquality", CardinalityIssue::UnsupportedBound),
+        ("missingRight", CardinalityIssue::IncompleteProvider),
+        ("missingLeft", CardinalityIssue::IncompleteProvider),
+        ("selectedMissing", CardinalityIssue::IncompleteProvider),
+        ("recursive", CardinalityIssue::UnsupportedBound),
+        ("less", CardinalityIssue::UnsupportedBound),
+        ("lessEqual", CardinalityIssue::UnsupportedBound),
+        ("greater", CardinalityIssue::UnsupportedBound),
+        ("greaterEqual", CardinalityIssue::UnsupportedBound),
+    ] {
+        let e = q.find(&format!("StringGuards::{name}"))[0];
         assert_eq!(
             q.cardinality(&e.id).unwrap(),
             &Cardinality::Unknown { reason },

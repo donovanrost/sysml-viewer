@@ -888,7 +888,8 @@ fn certified_operators(
             require_model_level_value(r, expression, &mut eligibility, steps)?;
         }
         match r.b.elements[expression].ty {
-            "NullExpression" | "LiteralInteger" | "LiteralInfinity" | "LiteralBoolean" => continue,
+            "NullExpression" | "LiteralInteger" | "LiteralInfinity" | "LiteralBoolean"
+            | "LiteralString" => continue,
             "FeatureReferenceExpression" => {
                 certify_reference_domain(&r.b, &raw, expression, steps)?;
                 // The referenced Feature is the first non-parameter member,
@@ -1523,6 +1524,135 @@ mod tests {
                 assert!(report.multiplicities.is_empty());
             }
         }
+    }
+    fn string_fixture(expression: &str) -> (ResolvedModel, ElementRef, ElementRef) {
+        let mut m = conditional_model();
+        let library = m.add_library_source("string-library.kerml", "standard library package BaseFunctions {function '==' {in a; in b; return r;}} standard library package DataFunctions {function '+' {in a; in b; return r;}}");
+        assert!(library.diagnostics.is_empty(), "{:?}", library.diagnostics);
+        let unit = m.add_source(
+            "strings.kerml",
+            &format!("feature count = if ({expression}) ? 7 else 9; feature stringSlots[count];"),
+        );
+        assert!(unit.diagnostics.is_empty(), "{:?}", unit.diagnostics);
+        let mut r = ResolvedModel::build(&m);
+        let slots = r.resolve_qualified("stringSlots").unwrap();
+        let call = r
+            .user_elements()
+            .find(|e| {
+                r.b.elements[e.0]
+                    .props
+                    .get("operator")
+                    .and_then(|p| p.as_str())
+                    == Some("==")
+            })
+            .unwrap();
+        (r, slots, call)
+    }
+    #[test]
+    fn string_literals_preserve_decoded_unicode_and_standard_escapes() {
+        let (r, _, _) = string_fixture(r#""海🚢\b\f\t\n\'\"\\" == "x""#);
+        let literal = r
+            .user_elements()
+            .find(|&e| r.element_type(e) == "LiteralString")
+            .unwrap();
+        assert_eq!(
+            r.b.elements[literal.0]
+                .props
+                .get("value")
+                .and_then(|p| p.as_str()),
+            Some("海🚢\u{0008}\u{000c}\t\n'\"\\")
+        );
+    }
+    #[test]
+    fn string_values_require_current_typed_owned_and_unannotated_evidence() {
+        for published in [false, true] {
+            for mutation in 0..4 {
+                let (mut r, slots, _) = string_fixture(r#""abc" == "abc""#);
+                if published {
+                    r.implied_relationships(slots);
+                    assert_eq!(r.cardinality_report(slots).bounds.unwrap().size(), Some(7));
+                }
+                let literal = r
+                    .user_elements()
+                    .find(|&e| r.element_type(e) == "LiteralString")
+                    .unwrap()
+                    .0;
+                match mutation {
+                    0 => {
+                        r.b.elements[literal].props.insert("value", json!("abd"));
+                    }
+                    1 => {
+                        r.b.elements[literal].props.insert("value", json!(7));
+                    }
+                    2 => r.b.elements[literal].owning_relationship = None,
+                    _ => {
+                        r.b.metadata_of.insert(literal, vec![literal]);
+                        r.b.metadata_association_generation = Some(std::sync::Arc::new(()));
+                    }
+                }
+                r.implied_relationships(slots);
+                let report = r.cardinality_report(slots);
+                if !published && mutation == 0 {
+                    assert_eq!(report.bounds.unwrap().size(), Some(9));
+                } else {
+                    assert!(report.bounds.is_err(), "{published} {mutation}");
+                    assert!(report.multiplicities.is_empty());
+                }
+            }
+        }
+    }
+    #[test]
+    fn string_copy_concatenation_and_comparison_share_the_query_work_limit() {
+        for (expression, available) in [(r#"("ab" + "c") == "abc""#, 8), (r#""abc" == "abc""#, 10)]
+        {
+            let (mut r, slots, call) = string_fixture(expression);
+            r.implied_relationships(slots);
+            let operators =
+                certified_operators(&mut r, &HashSet::from([call.0]), None, &mut 0).unwrap();
+            assert_eq!(
+                crate::eval::checked_multiplicity_condition(
+                    &mut r.b, call.0, None, &operators, &mut 0
+                ),
+                Some(true)
+            );
+            let mut steps = crate::eval::MAX_STEPS - available;
+            assert_eq!(
+                crate::eval::checked_multiplicity_condition(
+                    &mut r.b, call.0, None, &operators, &mut steps
+                ),
+                None
+            );
+            assert!(steps > crate::eval::MAX_STEPS, "{expression}");
+        }
+        let (mut r, slots, _) = string_fixture(r#""海" == "海""#);
+        let literals: Vec<_> = r
+            .user_elements()
+            .filter(|&e| r.element_type(e) == "LiteralString")
+            .collect();
+        // A three-byte UTF-8 value cannot be copied with just two units left.
+        let mut steps = crate::eval::MAX_STEPS - 2;
+        assert_eq!(
+            crate::eval::checked_multiplicity_empty(
+                &mut r.b,
+                literals[0].0,
+                None,
+                &Default::default(),
+                &mut steps
+            ),
+            None
+        );
+        assert!(steps > crate::eval::MAX_STEPS);
+        // Each literal fits individually; repeated reads and comparison must
+        // still exhaust the cumulative budget, with no partial bound published.
+        for literal in literals {
+            r.b.elements[literal.0]
+                .props
+                .insert("value", json!("x".repeat(crate::eval::MAX_STEPS / 3)));
+        }
+        r.implied_relationships(slots);
+        let report = r.cardinality_report(slots);
+        assert_eq!(report.bounds, Err(CardinalityIssue::WorkLimit));
+        assert!(report.multiplicities.is_empty());
     }
     fn ordered_fixture() -> (ResolvedModel, ElementRef, ElementRef) {
         let mut m = conditional_model();

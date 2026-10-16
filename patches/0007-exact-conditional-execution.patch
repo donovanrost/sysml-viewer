@@ -66,11 +66,21 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs b/vendor/sysm
  }
  
  /// Read a structurally certified range through the same numeric/receiver evaluator.
-@@ -2065,7 +2121,11 @@
+@@ -2065,7 +2121,21 @@
              return None;
          }
          match self.b.elements[e].ty {
 +            "NullExpression" => Some(Value::null()),
++            "LiteralString" => {
++                // Graph literals already contain decoded Unicode values. Charge
++                // bytes before copying; source spelling is not execution evidence.
++                let value = self.b.elements[e].props.get("value")?.as_str()?;
++                self.steps = self.steps.saturating_add(value.len());
++                if self.steps > MAX_STEPS || value.len() > MAX_STRING {
++                    return None;
++                }
++                Some(Value::String(value.to_owned()))
++            }
              "LiteralInfinity" => Some(Value::Real(f64::INFINITY)),
 +            "LiteralBoolean" => Some(Value::Boolean(
 +                self.b.elements[e].props.get("value")?.as_bool()?,
@@ -78,7 +88,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs b/vendor/sysm
              "LiteralInteger" => Some(Value::Integer(
                  match self.b.elements[e].props.get("value")? {
                      Atom::Number(n) => i128::from(n.as_i64()?),
-@@ -2083,6 +2143,52 @@
+@@ -2083,6 +2153,52 @@
                  self.certified_multiplicity_value(value, context, operators, depth + 1)
              }
              "OperatorExpression" => {
@@ -131,7 +141,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs b/vendor/sysm
                  let (operator, operands) = operators.operators.get(&e)?;
                  let first = self.certified_multiplicity_value(
                      *operands.first()?,
-@@ -2092,7 +2198,14 @@
+@@ -2092,7 +2208,14 @@
                  )?;
                  if operands.len() == 1 {
                      return match operator {
@@ -147,7 +157,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs b/vendor/sysm
                          BinaryOp::Sub => arith(BinaryOp::Sub, Value::Integer(0), first).ok(),
                          _ => None,
                      };
-@@ -2102,7 +2215,84 @@
+@@ -2102,7 +2225,110 @@
                  }
                  let second =
                      self.certified_multiplicity_value(operands[1], context, operators, depth + 1)?;
@@ -170,12 +180,25 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs b/vendor/sysm
 +                        }
 +                        (
 +                            Value::Sequence(empty),
-+                            Value::Boolean(_) | Value::Integer(_) | Value::Rational(_),
++                            Value::Boolean(_)
++                            | Value::Integer(_)
++                            | Value::Rational(_)
++                            | Value::String(_),
 +                        )
 +                        | (
-+                            Value::Boolean(_) | Value::Integer(_) | Value::Rational(_),
++                            Value::Boolean(_)
++                            | Value::Integer(_)
++                            | Value::Rational(_)
++                            | Value::String(_),
 +                            Value::Sequence(empty),
 +                        ) if empty.is_empty() => false,
++                        (Value::String(a), Value::String(b)) => {
++                            self.steps = self.steps.saturating_add(a.len()).saturating_add(b.len());
++                            if self.steps > MAX_STEPS {
++                                return None;
++                            }
++                            a == b
++                        }
 +                        (Value::Boolean(a), Value::Boolean(b)) => a == b,
 +                        (
 +                            Value::Integer(_) | Value::Rational(_),
@@ -222,6 +245,19 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs b/vendor/sysm
 +                        BinaryOp::GtEq => !ordering.is_lt(),
 +                        _ => unreachable!(),
 +                    }));
++                }
++                if let (BinaryOp::Add, Value::String(a), Value::String(b)) =
++                    (operator, &first, &second)
++                {
++                    let length = a.len().checked_add(b.len())?;
++                    self.steps = self.steps.saturating_add(length);
++                    if self.steps > MAX_STEPS || length > MAX_STRING {
++                        return None;
++                    }
++                    let mut value = String::with_capacity(length);
++                    value.push_str(a);
++                    value.push_str(b);
++                    return Some(Value::String(value));
 +                }
 +                // The general evaluator may approximate excessive powers or
 +                // irrational roots. Such a result is not exact bound evidence,
