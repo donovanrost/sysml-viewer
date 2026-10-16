@@ -1,0 +1,229 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/lexer.rs b/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/lexer.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/lexer.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/lexer.rs
+@@ -1,7 +1,7 @@
+ //! Tokenizer for the KerML / SysML v2 textual notation.
+ //!
+-//! Implements the terminal rules of the normative grammars
+-//! (`spec-refs/KerMLExpressions.xtext`):
++//! Implements the shared terminal rules, with whitespace and quoted values
++//! checked against KerML 1.0 8.2.2.1, 8.2.2.3 and 8.2.2.5:
+ //!
+ //! ```text
+ //! DECIMAL_VALUE     : '0'..'9' ('0'..'9')*
+@@ -12,9 +12,12 @@
+ //! REGULAR_COMMENT   : '/*' -> '*/'
+ //! ML_NOTE           : '//*' -> '*/'
+ //! SL_NOTE           : '//' ...to end of line
+-//! WS                : (' '|'\t'|'\r'|'\n')+
+-//! ESCAPE            : '\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\')
++//! WS                : (' '|'\t'|'\u{000C}'|'\r'|'\n')+
++//! ESCAPE            : '\\' ('b'|'t'|'n'|'f'|'"'|'\''|'\\')
+ //! ```
++//!
++//! The quoted-token bodies additionally reject raw control characters (C0/C1).
++//! This does not define an exhaustive Unicode printable-character repertoire.
+ //!
+ //! Note that a real literal like `1.5` is *not* a single token: per the
+ //! grammar it is `DECIMAL '.' DECIMAL`, composed by the parser (which is what
+@@ -108,8 +111,8 @@
+         let start = self.pos;
+         let b = self.bump();
+         match b {
+-            b' ' | b'\t' | b'\r' | b'\n' => {
+-                while matches!(self.peek(0), Some(b' ' | b'\t' | b'\r' | b'\n')) {
++            b' ' | b'\t' | b'\x0c' | b'\r' | b'\n' => {
++                while matches!(self.peek(0), Some(b' ' | b'\t' | b'\x0c' | b'\r' | b'\n')) {
+                     self.pos += 1;
+                 }
+                 Whitespace
+@@ -314,7 +317,7 @@
+                 Some(b'\\') => {
+                     self.pos += 1;
+                     match self.peek(0) {
+-                        Some(b'b' | b't' | b'n' | b'f' | b'r' | b'"' | b'\'' | b'\\') => {
++                        Some(b) if escaped_character(char::from(b)).is_some() => {
+                             self.pos += 1;
+                         }
+                         Some(b) => {
+@@ -337,7 +340,20 @@
+                         TokenKind::String
+                     };
+                 }
+-                Some(_) => self.pos += 1,
++                Some(_) => {
++                    let character_start = self.pos;
++                    let character = self.text[self.pos..].chars().next().unwrap();
++                    self.pos += character.len_utf8();
++                    if character.is_control() {
++                        self.error(
++                            character_start,
++                            format!(
++                                "unescaped control character U+{:04X} in {what}",
++                                u32::from(character)
++                            ),
++                        );
++                    }
++                }
+             }
+         }
+     }
+@@ -374,17 +390,24 @@
+             continue;
+         }
+         match chars.next() {
+-            Some('b') => out.push('\u{0008}'),
+-            Some('t') => out.push('\t'),
+-            Some('n') => out.push('\n'),
+-            Some('f') => out.push('\u{000C}'),
+-            Some('r') => out.push('\r'),
+-            Some(c @ ('"' | '\'' | '\\')) => out.push(c),
+-            Some(c) => out.push(c),
++            Some(c) => out.push(escaped_character(c).unwrap_or(c)),
+             None => {}
+         }
+     }
+     out
++}
++
++/// KerML 8.2.2.3 Table 4. Validation and decoding share this exact set.
++/// LF is the implementation's decoded newline, independent of the host OS.
++fn escaped_character(character: char) -> Option<char> {
++    Some(match character {
++        'b' => '\u{0008}',
++        't' => '\t',
++        'n' => '\n',
++        'f' => '\u{000C}',
++        '"' | '\'' | '\\' => character,
++        _ => return None,
++    })
+ }
+ 
+ /// UTF-8 sequence length from a leading byte (continuation bytes yield 1,
+@@ -398,3 +421,126 @@
+         _ => 1,
+     }
+ }
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    fn covered(source: &str, tokens: &[Token]) {
++        let mut end = 0;
++        for token in tokens {
++            assert_eq!(token.span.start as usize, end);
++            end = token.span.end as usize;
++            assert!(source.is_char_boundary(token.span.start as usize));
++            assert!(source.is_char_boundary(end));
++        }
++        assert_eq!(end, source.len());
++        assert_eq!(tokens.last().unwrap().kind, TokenKind::Eof);
++    }
++
++    #[test]
++    fn form_feed_is_whitespace_but_does_not_terminate_a_line_note() {
++        let source = "a \t\u{000c}\r\nb";
++        let (tokens, diagnostics) = tokenize(source);
++        assert!(diagnostics.is_empty());
++        assert_eq!(
++            tokens.iter().map(|t| t.kind).collect::<Vec<_>>(),
++            [
++                TokenKind::Ident,
++                TokenKind::Whitespace,
++                TokenKind::Ident,
++                TokenKind::Eof
++            ]
++        );
++        assert_eq!(tokens[1].span.slice(source), " \t\u{000c}\r\n");
++        covered(source, &tokens);
++        let source = "// note\u{000c}still note\nnext /*\t\u{0085}\n*/";
++        let (tokens, diagnostics) = tokenize(source);
++        assert!(diagnostics.is_empty());
++        assert_eq!(tokens[0].kind, TokenKind::LineNote);
++        assert_eq!(tokens[0].span.slice(source), "// note\u{000c}still note");
++        covered(source, &tokens);
++    }
++
++    #[test]
++    fn all_table_four_escapes_decode_in_names_and_strings() {
++        for quote in ['\'', '"'] {
++            for (escape, value) in [
++                ('b', '\u{0008}'),
++                ('f', '\u{000c}'),
++                ('t', '\t'),
++                ('n', '\n'),
++                ('\'', '\''),
++                ('"', '"'),
++                ('\\', '\\'),
++            ] {
++                let source = format!("{quote}海🚢\\{escape}{quote}");
++                let (tokens, diagnostics) = tokenize(&source);
++                assert!(diagnostics.is_empty(), "{diagnostics:?}");
++                assert_eq!(
++                    tokens[0].kind,
++                    if quote == '\'' {
++                        TokenKind::UnrestrictedName
++                    } else {
++                        TokenKind::String
++                    }
++                );
++                assert_eq!(unescape(&source), format!("海🚢{value}"));
++                covered(&source, &tokens);
++            }
++        }
++    }
++
++    #[test]
++    fn every_raw_c0_and_c1_control_has_an_exact_utf8_span() {
++        for quote in ['\'', '"'] {
++            for code in (0..=0x1f).chain(0x7f..=0x9f) {
++                let character = char::from_u32(code).unwrap();
++                let source = format!("{quote}海🚢{character}z{quote} next");
++                let (tokens, diagnostics) = tokenize(&source);
++                assert_eq!(diagnostics.len(), 1, "U+{code:04X}");
++                assert!(diagnostics[0].message.contains(&format!("U+{code:04X}")));
++                assert_eq!(diagnostics[0].span.slice(&source), character.to_string());
++                assert_eq!(tokens[2].span.slice(&source), "next");
++                covered(&source, &tokens);
++            }
++        }
++    }
++
++    #[test]
++    fn nonstandard_escapes_are_diagnosed_without_splitting_unicode() {
++        for quote in ['\'', '"'] {
++            for escape in ['r', 'v', 'a', '0', 'u', 'x', '/', '海', '🚢'] {
++                let source = format!("{quote}α\\{escape}{quote} next");
++                let (tokens, diagnostics) = tokenize(&source);
++                assert_eq!(diagnostics.len(), 1, "{source}");
++                assert!(diagnostics[0].message.contains("invalid escape sequence"));
++                assert_eq!(diagnostics[0].span.slice(&source), format!("\\{escape}"));
++                assert_eq!(
++                    unescape(tokens[0].span.slice(&source)),
++                    format!("α{escape}")
++                );
++                covered(&source, &tokens);
++            }
++        }
++    }
++
++    #[test]
++    fn unterminated_quotes_and_trailing_escapes_preserve_complete_coverage() {
++        for quote in ['\'', '"'] {
++            for suffix in ["", "\\", "\\海", "\u{0085}"] {
++                let source = format!("{quote}海🚢{suffix}");
++                let (tokens, diagnostics) = tokenize(&source);
++                assert_eq!(tokens[0].kind, TokenKind::Error);
++                assert!(diagnostics
++                    .iter()
++                    .any(|d| d.message.contains("unterminated")));
++                for diagnostic in diagnostics {
++                    assert!(source.is_char_boundary(diagnostic.span.start as usize));
++                    assert!(source.is_char_boundary(diagnostic.span.end as usize));
++                }
++                covered(&source, &tokens);
++            }
++        }
++    }
++}

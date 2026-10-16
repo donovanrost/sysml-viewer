@@ -34,7 +34,7 @@ All clause/prose decomposition remains pending. No percentage is published.
 
 ## Evidence mapped so far
 
-33 bounded assessments map 84 executable cases and 0 planned cases.
+33 bounded assessments map 88 executable cases and 0 planned cases.
 Linked tests are evidence for the assessment wording only. They do not qualify
 a whole source clause, its descendants, or a named constraint merely because it
 belongs to the same metaclass. Product robustness cases are identified separately.
@@ -72,8 +72,8 @@ belongs to the same metaclass. Product robustness cases are identified separatel
 | NAMESPACE-DISTINGUISHABILITY | standard | partial / partial | 2 / 3 / 0 / 0 | Imported-membership collisions and specialized membership overrides are not exhaustively covered; this is bounded evidence, not qualification of the whole rule. |
 | ROOT-IMPORT-VISIBILITY | standard | partial / partial | 1 / 1 / 0 / 0 | The Rust foundation test additionally exhausts 32 dialect/import-kind/visibility/nesting partitions. Public abstract-syntax import ownership and visibility queries remain unavailable. |
 | INHERITED-ALIAS-REDUCTION | standard | partial / partial | 1 / 0 / 0 / 0 | Only the shared Feature target boundary is tested here; non-Feature aliases are covered by IMP-014. Arbitrary redefinition closure is not qualified. |
-| LEXICAL-NAMES | standard | partial / partial | 2 / 1 / 0 / 0 | These cases do not cover every lexical production, escape, expression literal or grammar alternative. |
-| CARDINALITY-RECOVERY | product | partial / partial | 0 / 1 / 0 / 0 | Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work. |
+| LEXICAL-NAMES | standard | partial / partial | 4 / 3 / 0 / 0 | KERNEL-012 qualifies form-feed token separation and the seven KerML Table 4 escape forms for names and strings in both dialects. Nonstandard escapes, including \r, and all 65 raw C0/C1 controls produce syntax errors with complete Unicode character ranges. LF is the decoded newline representation on every host. Lexer tests retain complete token coverage, EOF/trailing-escape termination and comment boundaries. Public tests check byte/UTF-16 coordinates, following-declaration recovery and conservative workspace cardinality invalidation. Full Unicode printability, arbitrary line-terminator encodings, every numeric terminal and complete lexical/grammar conformance remain unqualified. The formatter and textual editing APIs are outside the current facade contract. |
+| CARDINALITY-RECOVERY | product | partial / partial | 0 / 3 / 0 / 0 | Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work. |
 
 ## Sources and extraction checks
 

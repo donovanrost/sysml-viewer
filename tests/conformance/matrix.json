@@ -159,7 +159,7 @@
     },
     {
       "id": "names",
-      "title": "Lexical names and dialect boundaries",
+      "title": "Lexical syntax and dialect boundaries",
       "clauses": [
         {
           "standard": "SysML 2.0",
@@ -168,9 +168,17 @@
         {
           "standard": "KerML 1.0",
           "section": "8.2.2.3"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "8.2.2.1"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "8.2.2.5"
         }
       ],
-      "uncovered": "These cases exercise reserved, quoted and escaped names; all terminals, escape forms and grammar alternatives remain unqualified."
+      "uncovered": "The cases cover selected names, whitespace, standard escapes and control-character rejection. Complete Unicode printability, all terminals, numeric forms and grammar alternatives remain unqualified."
     }
   ],
   "cases": [
@@ -5165,6 +5173,212 @@
           "stage": "semantic",
           "severity": "error",
           "messageIncludes": "multiplicity bound must be a Natural number"
+        }
+      ]
+    },
+    {
+      "id": "LEX-001",
+      "area": "names",
+      "purpose": "sysml form-feed whitespace and the seven normative string escapes preserve Unicode, references and source ranges.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/lex-001.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "reference",
+          "op": "reference",
+          "owner": "LexicalSysML::x",
+          "kind": "typing",
+          "spelling": "'\u6d77\ud83d\udea2'",
+          "status": "resolved",
+          "target": "LexicalSysML::'\u6d77\ud83d\udea2'"
+        },
+        {
+          "id": "source",
+          "op": "source",
+          "owner": "LexicalSysML::x",
+          "text": "part\fx : '\u6d77\ud83d\udea2';"
+        },
+        {
+          "id": "bound",
+          "op": "cardinality",
+          "owner": "LexicalSysML::fixed",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        }
+      ]
+    },
+    {
+      "id": "LEX-002",
+      "area": "names",
+      "purpose": "kerml form-feed whitespace and the seven normative string escapes preserve Unicode, references and source ranges.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/lex-002.kerml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "reference",
+          "op": "reference",
+          "owner": "LexicalKerML::x",
+          "kind": "typing",
+          "spelling": "'\u6d77\ud83d\udea2'",
+          "status": "resolved",
+          "target": "LexicalKerML::'\u6d77\ud83d\udea2'"
+        },
+        {
+          "id": "source",
+          "op": "source",
+          "owner": "LexicalKerML::x",
+          "text": "feature\fx : '\u6d77\ud83d\udea2';"
+        },
+        {
+          "id": "bound",
+          "op": "cardinality",
+          "owner": "LexicalKerML::fixed",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        }
+      ]
+    },
+    {
+      "id": "LEX-003",
+      "area": "names",
+      "purpose": "sysml rejects nonstandard escapes and raw controls, recovers later declarations and invalidates bounds across the workspace.",
+      "polarity": "negative",
+      "files": [
+        "tests/conformance/fixtures/lex-003.sysml",
+        "tests/conformance/fixtures/lex-005.sysml"
+      ],
+      "checks": [
+        {
+          "id": "cr-escape",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "invalid escape sequence `\\r`"
+        },
+        {
+          "id": "unicode-escape",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "invalid escape sequence `\\\u6d77`"
+        },
+        {
+          "id": "tab",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "unescaped control character U+0009"
+        },
+        {
+          "id": "newline",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "unescaped control character U+000A"
+        },
+        {
+          "id": "c1",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "unescaped control character U+0085"
+        },
+        {
+          "id": "recovered",
+          "op": "element",
+          "name": "InvalidLexicalSysML::recovered",
+          "metaclass": "PartUsage"
+        },
+        {
+          "id": "invalid-bound",
+          "op": "cardinality",
+          "owner": "InvalidLexicalSysML::recovered",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        },
+        {
+          "id": "dependent-bound",
+          "op": "cardinality",
+          "owner": "LexicalDependent::clean",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        }
+      ]
+    },
+    {
+      "id": "LEX-004",
+      "area": "names",
+      "purpose": "kerml rejects nonstandard escapes and raw controls, recovers later declarations and invalidates bounds across the workspace.",
+      "polarity": "negative",
+      "files": [
+        "tests/conformance/fixtures/lex-004.kerml",
+        "tests/conformance/fixtures/lex-005.sysml"
+      ],
+      "checks": [
+        {
+          "id": "cr-escape",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "invalid escape sequence `\\r`"
+        },
+        {
+          "id": "unicode-escape",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "invalid escape sequence `\\\u6d77`"
+        },
+        {
+          "id": "tab",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "unescaped control character U+0009"
+        },
+        {
+          "id": "newline",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "unescaped control character U+000A"
+        },
+        {
+          "id": "c1",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "unescaped control character U+0085"
+        },
+        {
+          "id": "recovered",
+          "op": "element",
+          "name": "InvalidLexicalKerML::recovered",
+          "metaclass": "Feature"
+        },
+        {
+          "id": "invalid-bound",
+          "op": "cardinality",
+          "owner": "InvalidLexicalKerML::recovered",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        },
+        {
+          "id": "dependent-bound",
+          "op": "cardinality",
+          "owner": "LexicalDependent::clean",
+          "status": "unknown",
+          "reason": "invalidSyntax"
         }
       ]
     }

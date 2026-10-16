@@ -26,6 +26,13 @@ if (process.argv.includes('--wasm-child')) {
     `target/release/sysml-inspect${process.platform === 'win32' ? '.exe' : ''}`,
   );
   const scenarios = [
+    {
+      name: 'lexical-boundaries',
+      text: readFileSync(join(root, 'tests/conformance/fixtures/lex-001.sysml'), 'utf8'),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'LEX-001').checks,
+    },
     ...[
       ['strings', '033'],
       ['empty-comparisons', '031'],

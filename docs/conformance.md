@@ -67,9 +67,9 @@ Clause references identify the source of a test, not complete coverage of that c
 | MULT-009 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Syntax recovery cannot erase a malformed bound and claim an implicit singleton. |
 | IMP-020 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Expose checked import closure with alias identity, short names, contextual visibility, re-exports, library targets and proven empty results. |
 | IMP-021 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Distinct inherited memberships of the same Feature are removed by Type::removeRedefinedFeatures; non-Feature aliases use IMP-014. |
-| NAME-001 | Lexical names and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3 | positive | Covered | Quoted names preserve spaces, escaped quotes, Unicode and reserved words through resolution. |
-| NAME-002 | Lexical names and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3 | negative | Covered | Unquoted SysML reserved words are rejected as identifiers and later declarations recover. |
-| NAME-003 | Lexical names and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3 | positive | Covered | A SysML-only keyword remains a legal unquoted KerML identifier. |
+| NAME-001 | Lexical syntax and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3, KerML 1.0 §8.2.2.1, KerML 1.0 §8.2.2.5 | positive | Covered | Quoted names preserve spaces, escaped quotes, Unicode and reserved words through resolution. |
+| NAME-002 | Lexical syntax and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3, KerML 1.0 §8.2.2.1, KerML 1.0 §8.2.2.5 | negative | Covered | Unquoted SysML reserved words are rejected as identifiers and later declarations recover. |
+| NAME-003 | Lexical syntax and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3, KerML 1.0 §8.2.2.1, KerML 1.0 §8.2.2.5 | positive | Covered | A SysML-only keyword remains a legal unquoted KerML identifier. |
 | IMP-022 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Aliases with equal names and unrelated target metaclasses remain distinguishable. |
 | IMP-023 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Alias short-name/long-name collisions of conforming target metaclasses are diagnosed. |
 | MULT-010 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | A literal-valued scalar feature supplies exact multiplicity bounds. |
@@ -101,6 +101,10 @@ Clause references identify the source of a test, not complete coverage of that c
 | MULT-032 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Empty comparisons require successful execution of both operands; unavailable values, execution failures, unsupported domains and invalid endpoints remain unknown. |
 | MULT-033 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | positive | Covered | Checked decoded strings retain exact equality, sameness, concatenation and presence through Unicode, escapes, aliases and lazy controls. |
 | MULT-034 | Multiplicity: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.2 | negative | Covered | Checked strings preserve unknown for unsupported operators, mixed domains, unavailable operands, recursion and nonnumeric endpoints. |
+| LEX-001 | Lexical syntax and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3, KerML 1.0 §8.2.2.1, KerML 1.0 §8.2.2.5 | positive | Covered | sysml form-feed whitespace and the seven normative string escapes preserve Unicode, references and source ranges. |
+| LEX-002 | Lexical syntax and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3, KerML 1.0 §8.2.2.1, KerML 1.0 §8.2.2.5 | positive | Covered | kerml form-feed whitespace and the seven normative string escapes preserve Unicode, references and source ranges. |
+| LEX-003 | Lexical syntax and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3, KerML 1.0 §8.2.2.1, KerML 1.0 §8.2.2.5 | negative | Covered | sysml rejects nonstandard escapes and raw controls, recovers later declarations and invalidates bounds across the workspace. |
+| LEX-004 | Lexical syntax and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3, KerML 1.0 §8.2.2.1, KerML 1.0 §8.2.2.5 | negative | Covered | kerml rejects nonstandard escapes and raw controls, recovers later declarations and invalidates bounds across the workspace. |
 
 ## Coverage limits
 
@@ -114,7 +118,7 @@ Clause references identify the source of a test, not complete coverage of that c
 - **Connections and chains:** Endpoint identity and arity are covered; direction, flow compatibility and connection end conformance need further cases.
 - **Names and source fidelity:** Byte/UTF-16 mapping and recovery are project API guarantees; lexical names are the standards link. No editable CST contract is claimed.
 - **Cyclic input handling:** Termination is an operational guarantee, not a semantic verdict about every cycle. Continuous fuzzing remains separate work.
-- **Lexical names and dialect boundaries:** These cases exercise reserved, quoted and escaped names; all terminals, escape forms and grammar alternatives remain unqualified.
+- **Lexical syntax and dialect boundaries:** The cases cover selected names, whitespace, standard escapes and control-character rejection. Complete Unicode printability, all terminals, numeric forms and grammar alternatives remain unqualified.
 
 ## Known failures and planned work
 

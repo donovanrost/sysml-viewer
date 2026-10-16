@@ -109,6 +109,15 @@
       "baseSha256": "ea4f152587c8abb0e602264bfeddd244719791ec0cf2045270136b9b2e0053ee",
       "resultSha256": "9f724257d0b466612447e7b057b9bb543e47c316e9a763468b51d13ee829fa0a",
       "reason": "KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits."
+    },
+    {
+      "id": "KERNEL-012",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/lexer.rs",
+      "patch": "patches/0013-lexical-whitespace-and-quotes.patch",
+      "sha256": "c55f7826b5d6192eed8883e127ce9d02e021f1a27c82b7ca6f9b1677205da4bc",
+      "baseSha256": "15c778003b360759b95a491a8eb195b37eb85bfdb4d626d86ee7bfec9a044244",
+      "resultSha256": "e99ea6d8807862c2be5b23fe0e9396f7cb1fd5ba50b31823053c2cc7f4197df6",
+      "reason": "KerML 1.0 8.2.2.1/3/5: form feed separates tokens; quoted names and strings share the seven Table 4 escapes and reject raw C0/C1 controls. Unicode diagnostic spans remain character-aligned and scanning retains complete source coverage and later declarations. Full Unicode printability and arbitrary line-terminator encodings remain unqualified. LEX-001\u2013004, native syntax/round-trip checks and five lexer proof tests retain acceptance, refusal and recovery boundaries."
     }
   ]
 }

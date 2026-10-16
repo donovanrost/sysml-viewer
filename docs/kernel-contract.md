@@ -71,6 +71,16 @@ are preserved. Indexed query construction verifies coordinate agreement.
 `SourceIndex::position` is a low-level helper that clamps to the preceding valid
 character boundary (and EOF); checked source queries reject invalid boundaries.
 
+The shared lexer accepts form feed as whitespace in both dialects. Quoted names
+and strings use the seven escapes in KerML 8.2.2.3 Table 4. `\n` decodes to LF on
+every host. Nonstandard escapes (including `\r`) and unescaped C0/C1 controls
+produce syntax errors; diagnostics cover the complete offending character or
+escape. Scanning continues to the closing quote so later declarations remain
+recoverable. Unterminated quoted tokens remain errors through EOF. Raw control
+characters inside comments retain their separate comment rules. Exhaustive Unicode
+printability and every possible line-terminator encoding remain unqualified.
+See KERNEL-012 in [foundation qualification](foundation-qualification.md).
+
 A `Reference` describes a **written name reference**. Its resolved target is what
 that name denotes. For conjugated port typing `~P`, the written spelling includes
 `~`, while the name target is `P`; this is not a promise that it is the complete

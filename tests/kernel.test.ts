@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import init, { analyze } from '../packages/kernel-wasm/sysml_wasm.js';
 import { ViewerModel, sourceOf } from '../src/viewer/model.ts';
 import { diagramEdges } from '../src/viewer/diagram.ts';
+import { assessCase } from '../tools/lib/conformance.mjs';
 import type { Snapshot } from '../src/kernel/generated/Snapshot';
 
 let snapshot: Snapshot;
@@ -41,6 +42,13 @@ for (const name of [
     id: name,
     name: `${name}.sysml`,
     text: readFileSync(new URL(`./conformance/fixtures/${name}.sysml`, import.meta.url), 'utf8'),
+  });
+}
+for (const name of ['lex-001.sysml', 'lex-002.kerml']) {
+  documents.push({
+    id: name,
+    name,
+    text: readFileSync(new URL(`./conformance/fixtures/${name}`, import.meta.url), 'utf8'),
   });
 }
 documents.push({
@@ -721,5 +729,72 @@ test('strings preserve decoded values, presence and guards in both workspace con
       const e = state.elements.find((e) => e.qualifiedName === `StringGuards::${name}`)!;
       assert.deepEqual(e.cardinality, { status: 'unknown', reason }, name);
     }
+  }
+});
+
+test('lexical whitespace and escapes retain source coordinates in both workspace contexts', () => {
+  const matrix = JSON.parse(
+    readFileSync(new URL('./conformance/matrix.json', import.meta.url), 'utf8'),
+  );
+  for (const state of [snapshot, importGuards]) {
+    for (const id of ['LEX-001', 'LEX-002']) {
+      const item = matrix.cases.find((c: { id: string }) => c.id === id);
+      // Other documents intentionally contain independent semantic errors.
+      const checks = item.checks.filter((c: { op: string }) => c.op !== 'noDiagnostics');
+      assert.deepEqual(
+        assessCase(state, { ...item, checks }).filter(
+          (c: { status: string }) => c.status !== 'pass',
+        ),
+        [],
+      );
+      const documentId = id === 'LEX-001' ? 'lex-001.sysml' : 'lex-002.kerml';
+      assert.deepEqual(
+        state.diagnostics.filter((d) => d.source.documentId === documentId),
+        [],
+      );
+    }
+  }
+});
+
+test('lexical diagnostics and recovery match across native and WebAssembly', () => {
+  const documents = ['lex-003.sysml', 'lex-004.kerml', 'lex-005.sysml'].map((name) => ({
+    id: name,
+    name,
+    text: readFileSync(new URL(`./conformance/fixtures/${name}`, import.meta.url), 'utf8'),
+  }));
+  const request = JSON.stringify({ revision: 38, documents });
+  const wasm: Snapshot = JSON.parse(analyze(request));
+  const executable = fileURLToPath(
+    new URL(
+      '../target/release/sysml-inspect' + (process.platform === 'win32' ? '.exe' : ''),
+      import.meta.url,
+    ),
+  );
+  const native = JSON.parse(
+    execFileSync(executable, ['--request-json'], {
+      input: request,
+      encoding: 'utf8',
+      maxBuffer: 10000000,
+    }),
+  );
+  assert.deepEqual(wasm, native);
+  const matrix = JSON.parse(
+    readFileSync(new URL('./conformance/matrix.json', import.meta.url), 'utf8'),
+  );
+  for (const id of ['LEX-003', 'LEX-004']) {
+    const item = matrix.cases.find((c: { id: string }) => c.id === id);
+    assert.deepEqual(
+      assessCase(wasm, item).filter((c: { status: string }) => c.status !== 'pass'),
+      [],
+    );
+  }
+  const diagnostics = wasm.diagnostics.filter((d) => d.stage === 'syntax');
+  assert.equal(diagnostics.length, 10);
+  for (const diagnostic of diagnostics) {
+    const source = documents.find((d) => d.id === diagnostic.source.documentId)!.text;
+    const { start, end } = diagnostic.source;
+    const bytes = Buffer.from(source).subarray(start.byteOffset, end.byteOffset).toString('utf8');
+    assert.equal(source.slice(start.utf16Offset, end.utf16Offset), bytes);
+    assert(['\\r', '\\海', '\t', '\n', '\u0085'].includes(bytes), JSON.stringify(bytes));
   }
 });

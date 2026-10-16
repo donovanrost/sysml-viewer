@@ -28,19 +28,23 @@ try {
     { recursive: true },
   );
   copyFileSync(join(root, 'tools', 'vendor-tests.Cargo.lock'), join(workspace, 'Cargo.lock'));
-  for (const module of [
-    'type_relations',
-    'model_level_evaluability',
-    'cardinality',
-    'invocation_bindings',
-    'constructor_bindings',
-    'dynamic_graph',
-    'dynamic_invocations',
-    'owned_results',
-    'semantic_ownership',
-    'end_constancy',
-    'operations::namespaces',
-  ]) {
+  const suites = [
+    ['sysmlv2-syntax', 'lexer::'],
+    ...[
+      'type_relations',
+      'model_level_evaluability',
+      'cardinality',
+      'invocation_bindings',
+      'constructor_bindings',
+      'dynamic_graph',
+      'dynamic_invocations',
+      'owned_results',
+      'semantic_ownership',
+      'end_constancy',
+      'operations::namespaces',
+    ].map((module) => ['sysmlv2-model', `json::${module}::`]),
+  ];
+  for (const [packageName, filter] of suites) {
     cargo(
       [
         'test',
@@ -49,9 +53,9 @@ try {
         '--manifest-path',
         join(workspace, 'Cargo.toml'),
         '--package',
-        'sysmlv2-model',
+        packageName,
         '--lib',
-        `json::${module}::`,
+        filter,
         '--',
         '--test-threads=1',
       ],

@@ -244,6 +244,18 @@
       "symbol": "pub(super) fn capture_and_prepare_with_workspace(",
       "role": "Capture and detached planning share an exclusive borrow, avoiding a duplicate prefix audit; warm collisions use the complete checked raw identity index. Cold/warm equivalence and corruption/refusal regressions are retained.",
       "sha256": "4e02c3ee3a88c75d1b398a91e91fe8bbbf0c71359161a3955171d998db815d96"
+    },
+    "checked-lexer": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/lexer.rs",
+      "symbol": "fn escaped_character(",
+      "role": "Shared normative escape set, form-feed whitespace, raw C0/C1 refusal and character-aligned diagnostic recovery.",
+      "sha256": "e99ea6d8807862c2be5b23fe0e9396f7cb1fd5ba50b31823053c2cc7f4197df6"
+    },
+    "lexical-tests": {
+      "path": "crates/sysml-kernel/tests/lexical.rs",
+      "symbol": "fn quoted_control_and_escape_diagnostics_keep_exact_byte_and_utf16_ranges",
+      "role": "Both dialects, all 65 C0/C1 controls, standard/nonstandard escapes, UTF-8/UTF-16 ranges, round-trip recovery and workspace bound invalidation.",
+      "sha256": "27fdad1ab2373a3ae11adb676703d2bed62f3f9be7e7d6ef451024195c555d00"
     }
   },
   "assessments": [
@@ -2147,11 +2159,13 @@
     },
     {
       "id": "LEXICAL-NAMES",
-      "obligation": "Resolve quoted names and reject reserved words according to the selected dialect.",
+      "obligation": "Recognize shared lexical whitespace and quoted tokens, resolve quoted names and reject reserved words according to the selected dialect.",
       "category": "standard",
       "sources": [
         "SYSML-CLAUSE-8.2.2.1",
-        "KERML-CLAUSE-8.2.2.3"
+        "KERML-CLAUSE-8.2.2.3",
+        "KERML-CLAUSE-8.2.2.1",
+        "KERML-CLAUSE-8.2.2.5"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -2159,14 +2173,17 @@
         "status": "partial",
         "evidence": [
           "parser",
-          "engine"
+          "engine",
+          "checked-lexer",
+          "lexical-tests"
         ]
       },
       "api": {
         "status": "partial",
         "evidence": [
           "wire",
-          "query"
+          "query",
+          "syntax-api"
         ]
       },
       "tests": [
@@ -2193,9 +2210,53 @@
             "clean",
             "resolved"
           ]
+        },
+        {
+          "case": "LEX-001",
+          "checks": [
+            "clean",
+            "reference",
+            "source",
+            "bound"
+          ]
+        },
+        {
+          "case": "LEX-002",
+          "checks": [
+            "clean",
+            "reference",
+            "source",
+            "bound"
+          ]
+        },
+        {
+          "case": "LEX-003",
+          "checks": [
+            "cr-escape",
+            "unicode-escape",
+            "tab",
+            "newline",
+            "c1",
+            "recovered",
+            "invalid-bound",
+            "dependent-bound"
+          ]
+        },
+        {
+          "case": "LEX-004",
+          "checks": [
+            "cr-escape",
+            "unicode-escape",
+            "tab",
+            "newline",
+            "c1",
+            "recovered",
+            "invalid-bound",
+            "dependent-bound"
+          ]
         }
       ],
-      "limits": "These cases do not cover every lexical production, escape, expression literal or grammar alternative."
+      "limits": "KERNEL-012 qualifies form-feed token separation and the seven KerML Table 4 escape forms for names and strings in both dialects. Nonstandard escapes, including \\r, and all 65 raw C0/C1 controls produce syntax errors with complete Unicode character ranges. LF is the decoded newline representation on every host. Lexer tests retain complete token coverage, EOF/trailing-escape termination and comment boundaries. Public tests check byte/UTF-16 coordinates, following-declaration recovery and conservative workspace cardinality invalidation. Full Unicode printability, arbitrary line-terminator encodings, every numeric terminal and complete lexical/grammar conformance remain unqualified. The formatter and textual editing APIs are outside the current facade contract."
     },
     {
       "id": "CARDINALITY-RECOVERY",
@@ -2210,7 +2271,8 @@
         "status": "partial",
         "evidence": [
           "engine",
-          "cardinality"
+          "cardinality",
+          "lexical-tests"
         ]
       },
       "api": {
@@ -2226,6 +2288,20 @@
           "checks": [
             "syntax",
             "unknown"
+          ]
+        },
+        {
+          "case": "LEX-003",
+          "checks": [
+            "invalid-bound",
+            "dependent-bound"
+          ]
+        },
+        {
+          "case": "LEX-004",
+          "checks": [
+            "invalid-bound",
+            "dependent-bound"
           ]
         }
       ],

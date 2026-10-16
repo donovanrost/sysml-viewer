@@ -4384,11 +4384,13 @@
     },
     {
       "id": "LEXICAL-NAMES",
-      "obligation": "Resolve quoted names and reject reserved words according to the selected dialect.",
+      "obligation": "Recognize shared lexical whitespace and quoted tokens, resolve quoted names and reject reserved words according to the selected dialect.",
       "category": "standard",
       "sources": [
         "SYSML-CLAUSE-8.2.2.1",
-        "KERML-CLAUSE-8.2.2.3"
+        "KERML-CLAUSE-8.2.2.3",
+        "KERML-CLAUSE-8.2.2.1",
+        "KERML-CLAUSE-8.2.2.5"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -4396,14 +4398,17 @@
         "status": "partial",
         "evidence": [
           "parser",
-          "engine"
+          "engine",
+          "checked-lexer",
+          "lexical-tests"
         ]
       },
       "api": {
         "status": "partial",
         "evidence": [
           "wire",
-          "query"
+          "query",
+          "syntax-api"
         ]
       },
       "tests": [
@@ -4478,9 +4483,165 @@
               "status": "pass"
             }
           ]
+        },
+        {
+          "case": "LEX-001",
+          "checks": [
+            "clean",
+            "reference",
+            "source",
+            "bound"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "reference",
+              "status": "pass"
+            },
+            {
+              "id": "source",
+              "status": "pass"
+            },
+            {
+              "id": "bound",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "LEX-002",
+          "checks": [
+            "clean",
+            "reference",
+            "source",
+            "bound"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "reference",
+              "status": "pass"
+            },
+            {
+              "id": "source",
+              "status": "pass"
+            },
+            {
+              "id": "bound",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "LEX-003",
+          "checks": [
+            "cr-escape",
+            "unicode-escape",
+            "tab",
+            "newline",
+            "c1",
+            "recovered",
+            "invalid-bound",
+            "dependent-bound"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "cr-escape",
+              "status": "pass"
+            },
+            {
+              "id": "unicode-escape",
+              "status": "pass"
+            },
+            {
+              "id": "tab",
+              "status": "pass"
+            },
+            {
+              "id": "newline",
+              "status": "pass"
+            },
+            {
+              "id": "c1",
+              "status": "pass"
+            },
+            {
+              "id": "recovered",
+              "status": "pass"
+            },
+            {
+              "id": "invalid-bound",
+              "status": "pass"
+            },
+            {
+              "id": "dependent-bound",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "LEX-004",
+          "checks": [
+            "cr-escape",
+            "unicode-escape",
+            "tab",
+            "newline",
+            "c1",
+            "recovered",
+            "invalid-bound",
+            "dependent-bound"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "cr-escape",
+              "status": "pass"
+            },
+            {
+              "id": "unicode-escape",
+              "status": "pass"
+            },
+            {
+              "id": "tab",
+              "status": "pass"
+            },
+            {
+              "id": "newline",
+              "status": "pass"
+            },
+            {
+              "id": "c1",
+              "status": "pass"
+            },
+            {
+              "id": "recovered",
+              "status": "pass"
+            },
+            {
+              "id": "invalid-bound",
+              "status": "pass"
+            },
+            {
+              "id": "dependent-bound",
+              "status": "pass"
+            }
+          ]
         }
       ],
-      "limits": "These cases do not cover every lexical production, escape, expression literal or grammar alternative."
+      "limits": "KERNEL-012 qualifies form-feed token separation and the seven KerML Table 4 escape forms for names and strings in both dialects. Nonstandard escapes, including \\r, and all 65 raw C0/C1 controls produce syntax errors with complete Unicode character ranges. LF is the decoded newline representation on every host. Lexer tests retain complete token coverage, EOF/trailing-escape termination and comment boundaries. Public tests check byte/UTF-16 coordinates, following-declaration recovery and conservative workspace cardinality invalidation. Full Unicode printability, arbitrary line-terminator encodings, every numeric terminal and complete lexical/grammar conformance remain unqualified. The formatter and textual editing APIs are outside the current facade contract."
     },
     {
       "id": "CARDINALITY-RECOVERY",
@@ -4495,7 +4656,8 @@
         "status": "partial",
         "evidence": [
           "engine",
-          "cardinality"
+          "cardinality",
+          "lexical-tests"
         ]
       },
       "api": {
@@ -4524,29 +4686,67 @@
               "status": "pass"
             }
           ]
+        },
+        {
+          "case": "LEX-003",
+          "checks": [
+            "invalid-bound",
+            "dependent-bound"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "invalid-bound",
+              "status": "pass"
+            },
+            {
+              "id": "dependent-bound",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "LEX-004",
+          "checks": [
+            "invalid-bound",
+            "dependent-bound"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "invalid-bound",
+              "status": "pass"
+            },
+            {
+              "id": "dependent-bound",
+              "status": "pass"
+            }
+          ]
         }
       ],
       "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
     }
   ],
-  "executableCases": 84,
+  "executableCases": 88,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "a8a2786e3d3b92cf83f453936a1e7866f127237b2caf2ab6e0f101ef82f7c242",
+  "assessmentsSha256": "a7b0fcaa7c0a7309c643be09ff2b04727a286348228aeab1142593dc244d2bdd",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "bcd3cb8b161a9cfe66410dc9c1dc9bbb49f062e8a3ac5576035c1d3d86d4c829",
-    "generatedAt": "2026-10-16T03:28:28.502Z",
-    "kernelInputSha256": "629c42797ddc4bfcd1c3afbf599568841487670e40ee5ed2563b9a3a84e625b4",
-    "binarySha256": "0b50408a2ab4ce4987af3158e23a3fed418eb6d98267d52623363ea96bfd94fe",
+    "sha256": "634ac6afd5fa997ee5ddad4fd02d573465a738cd4f6376c0b57feea17d441113",
+    "generatedAt": "2026-10-16T03:52:28.889Z",
+    "kernelInputSha256": "90d718283fb4dee69fbd8f14d22b6d03d1bc3d9c8d63769d771ff5f30fd3cb99",
+    "binarySha256": "ce12b51c7d989968a880255e7d3fea5b4d6a25955b93f082ff9acddcc6284389",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.13",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.14",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 84,
+      "pass": 88,
       "known-gap": 0,
       "planned": 0,
       "fail": 0
