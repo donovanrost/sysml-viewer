@@ -671,6 +671,7 @@ fn predicate_snapshot() -> &'static Snapshot {
 fn equality_and_logical_predicates_preserve_exact_truth_tables_after_round_trip() {
     let q = predicate_snapshot().queries().unwrap();
     for (name, value) in [
+        ("PredicateGuards::nullEquality", "7"),
         ("EqualityPredicates::eqEqual", "7"),
         ("EqualityPredicates::eqUnequal", "9"),
         ("EqualityPredicates::eqTrue", "7"),
@@ -758,7 +759,6 @@ fn predicate_guards_preserve_unknown_for_required_or_unsupported_values() {
         ("realEquality", CardinalityIssue::UnsupportedBound),
         ("infinityEquality", CardinalityIssue::UnsupportedBound),
         ("stringEquality", CardinalityIssue::UnsupportedBound),
-        ("nullEquality", CardinalityIssue::UnsupportedBound),
         ("missingEquality", CardinalityIssue::IncompleteProvider),
         ("undefinedEquality", CardinalityIssue::UnsupportedBound),
         ("excessiveEquality", CardinalityIssue::UnsupportedBound),
@@ -852,6 +852,14 @@ fn coalescing_preserves_known_empty_and_present_values_after_round_trip() {
 #[test]
 fn coalescing_never_converts_unknown_or_invalid_values_to_empty() {
     let q = coalescing_snapshot().queries().unwrap();
+    let e = q.find("CoalescingGuards::emptyEquality")[0];
+    assert_eq!(
+        q.cardinality(&e.id).unwrap(),
+        &Cardinality::Evaluated {
+            lower: "7".into(),
+            upper: Some("7".into())
+        }
+    );
     for (name, reason) in [
         ("overflowEndpoint", CardinalityIssue::UnsupportedBound),
         ("underflowFirst", CardinalityIssue::UnsupportedBound),
@@ -875,10 +883,118 @@ fn coalescing_never_converts_unknown_or_invalid_values_to_empty() {
         ("recursiveSkipped", CardinalityIssue::UnsupportedBound),
         ("emptyUnaryPlus", CardinalityIssue::UnsupportedBound),
         ("emptyArithmetic", CardinalityIssue::UnsupportedBound),
-        ("emptyEquality", CardinalityIssue::UnsupportedBound),
         ("emptyCondition", CardinalityIssue::UnsupportedBound),
     ] {
         let e = q.find(&format!("CoalescingGuards::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Unknown { reason },
+            "{name}"
+        );
+    }
+}
+
+fn empty_comparison_snapshot() -> &'static Snapshot {
+    static VALUE: OnceLock<Snapshot> = OnceLock::new();
+    VALUE.get_or_init(|| {
+        let original = analyze(vec![
+            document(
+                "empty-comparison.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-031.sysml"),
+            ),
+            document(
+                "guards.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-032.sysml"),
+            ),
+        ]);
+        assert!(!original
+            .diagnostics
+            .iter()
+            .any(|d| matches!(d.stage, Stage::Syntax)));
+        serde_json::from_str(&serde_json::to_string(&original).unwrap()).unwrap()
+    })
+}
+#[test]
+fn empty_comparisons_preserve_presence_and_identity_after_round_trip() {
+    let q = empty_comparison_snapshot().queries().unwrap();
+    for (name, value) in [
+        ("eqNull", "7"),
+        ("eqParentheses", "7"),
+        ("eqZeroRight", "9"),
+        ("eqZeroLeft", "9"),
+        ("eqFalseRight", "9"),
+        ("eqFalseLeft", "9"),
+        ("eqRational", "9"),
+        ("neNull", "9"),
+        ("neParentheses", "9"),
+        ("neZeroRight", "7"),
+        ("neZeroLeft", "7"),
+        ("neFalseRight", "7"),
+        ("neFalseLeft", "7"),
+        ("neRational", "7"),
+        ("sameNull", "7"),
+        ("sameParentheses", "7"),
+        ("sameZeroRight", "9"),
+        ("sameZeroLeft", "9"),
+        ("sameFalseRight", "9"),
+        ("sameFalseLeft", "9"),
+        ("sameRational", "9"),
+        ("differentNull", "9"),
+        ("differentParentheses", "9"),
+        ("differentZeroRight", "7"),
+        ("differentZeroLeft", "7"),
+        ("differentFalseRight", "7"),
+        ("differentFalseLeft", "7"),
+        ("differentRational", "7"),
+        ("rationalLeft", "7"),
+        ("aliasEmpty", "7"),
+        ("aliasPresent", "9"),
+        ("conditionalEmpty", "7"),
+        ("coalescedEmpty", "7"),
+        ("coalescedPresent", "7"),
+        ("logicalSkip", "7"),
+        ("fallbackFalse", "9"),
+    ] {
+        let e = q.find(&format!("EmptyComparisons::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Evaluated {
+                lower: value.into(),
+                upper: Some(value.into()),
+            },
+            "{name}"
+        );
+    }
+}
+#[test]
+fn empty_comparisons_require_both_values_and_preserve_domain_guards() {
+    let q = empty_comparison_snapshot().queries().unwrap();
+    for (name, reason) in [
+        ("eqMissingRight", CardinalityIssue::IncompleteProvider),
+        ("eqMissingLeft", CardinalityIssue::IncompleteProvider),
+        ("neMissingRight", CardinalityIssue::IncompleteProvider),
+        ("neMissingLeft", CardinalityIssue::IncompleteProvider),
+        ("sameMissingRight", CardinalityIssue::IncompleteProvider),
+        ("sameMissingLeft", CardinalityIssue::IncompleteProvider),
+        (
+            "differentMissingRight",
+            CardinalityIssue::IncompleteProvider,
+        ),
+        ("differentMissingLeft", CardinalityIssue::IncompleteProvider),
+        ("divisionRight", CardinalityIssue::UnsupportedBound),
+        ("divisionLeft", CardinalityIssue::UnsupportedBound),
+        ("overflow", CardinalityIssue::UnsupportedBound),
+        ("real", CardinalityIssue::UnsupportedBound),
+        ("infinity", CardinalityIssue::UnsupportedBound),
+        ("string", CardinalityIssue::UnsupportedBound),
+        ("sequence", CardinalityIssue::UnsupportedBound),
+        ("recursive", CardinalityIssue::UnsupportedBound),
+        ("booleanEndpoint", CardinalityIssue::UnsupportedBound),
+        ("emptySelected", CardinalityIssue::UnsupportedBound),
+        ("numericCondition", CardinalityIssue::UnsupportedBound),
+        ("eagerMissing", CardinalityIssue::IncompleteProvider),
+    ] {
+        let e = q.find(&format!("EmptyComparisonGuards::{name}"))[0];
         assert_eq!(
             q.cardinality(&e.id).unwrap(),
             &Cardinality::Unknown { reason },

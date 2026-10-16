@@ -4444,26 +4444,29 @@ impl Builder {
         if let Ok(Some(plan)) = &dynamic {
             if !plan.tail.is_empty() {
                 let staged = (|| {
-                    let mut next = ownership
-                        .as_ref()
-                        .unwrap_or(original_view.as_ref())
-                        .clone_with_budget(&mut dynamic_steps)
-                        .ok_or(super::dynamic_invocations::Refusal::WorkLimit)?;
                     let graph =
                         super::dynamic_graph::stage_dynamic_adjacency(plan, &mut dynamic_steps)?;
+                    if ownership.is_none() {
+                        ownership = Some(
+                            original_view
+                                .clone_with_budget(&mut dynamic_steps)
+                                .ok_or(super::dynamic_invocations::Refusal::WorkLimit)?,
+                        );
+                    }
+                    // Row preparation and ownership registration are atomic.
+                    // A refusal retains every independently staged result row.
                     let tail = super::dynamic_graph::stage_dynamic_rows(
                         self,
                         plan,
                         self.elements.len() + rows.len(),
-                        &mut next,
+                        ownership.as_mut().unwrap(),
                         &mut dynamic_steps,
                     )?;
-                    Ok::<_, super::dynamic_invocations::Refusal>((tail, next, graph))
+                    Ok::<_, super::dynamic_invocations::Refusal>((tail, graph))
                 })();
                 match staged {
-                    Ok((tail, next, edges)) => {
+                    Ok((tail, edges)) => {
                         rows.extend(tail);
-                        ownership = Some(next);
                         graph = Some(edges);
                     }
                     Err(reason) => dynamic = Err(reason),

@@ -37,6 +37,7 @@ try {
     'dynamic_graph',
     'dynamic_invocations',
     'owned_results',
+    'semantic_ownership',
     'end_constancy',
     'operations::namespaces',
   ]) {

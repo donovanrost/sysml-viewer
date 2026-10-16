@@ -1,0 +1,108 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs
+@@ -184,6 +184,38 @@
+         Some(())
+     }
+ 
++    /// Append a complete dynamic relationship batch, or leave the view intact.
++    /// All rows have an authored owner that is also their source anchor. Check
++    /// the entire batch and charge both passes before modifying any projection.
++    pub(super) fn register_relationship_batch(
++        &mut self,
++        start: usize,
++        owners: &[usize],
++        steps: &mut usize,
++    ) -> Option<()> {
++        *steps = steps.saturating_add(owners.len().saturating_mul(2).saturating_add(1));
++        if *steps > crate::eval::MAX_STEPS
++            || self.from.checked_add(self.nodes.len()) != Some(start)
++            || start.checked_add(owners.len()).is_none()
++            || owners.iter().any(|&owner| owner >= self.from)
++        {
++            return None;
++        }
++        for (offset, &owner) in owners.iter().enumerate() {
++            self.nodes.push(GeneratedNode {
++                relationship_owner: Some(owner),
++                source_anchor: owner,
++                added_to_source: true,
++                generic_relationship: false,
++            });
++            self.additions
++                .entry(owner)
++                .or_default()
++                .push(start + offset);
++        }
++        Some(())
++    }
++
+     /// Publish only after the complete admitted result subtree is registered.
+     /// This certifies its ownership projection, not other expression obligations.
+     pub(super) fn record_result(
+@@ -331,6 +363,65 @@
+ mod tests {
+     use super::*;
+ 
++    #[test]
++    fn relationship_batch_matches_individual_registration() {
++        let mut batch = SemanticOwnership::new(4);
++        batch.register_generic(4, 0).unwrap();
++        let mut single = batch.clone();
++        let owners = [1, 0, 1, 3];
++        for (offset, &owner) in owners.iter().enumerate() {
++            single
++                .register(5 + offset, Some(owner), owner, true)
++                .unwrap();
++        }
++        batch
++            .register_relationship_batch(5, &owners, &mut 0)
++            .unwrap();
++        assert_eq!(batch.nodes.len(), single.nodes.len());
++        assert_eq!(batch.additions, single.additions);
++        assert_eq!(
++            batch.relationship_owners().collect::<Vec<_>>(),
++            single.relationship_owners().collect::<Vec<_>>()
++        );
++        for row in 4..9 {
++            assert_eq!(batch.source_anchor(row), single.source_anchor(row));
++            assert_eq!(
++                batch.nodes[row - 4].generic_relationship,
++                single.nodes[row - 4].generic_relationship
++            );
++            assert_eq!(
++                batch.nodes[row - 4].added_to_source,
++                single.nodes[row - 4].added_to_source
++            );
++        }
++    }
++    #[test]
++    fn relationship_batch_refuses_late_invalid_owners_and_exhaustion_atomically() {
++        for (start, owners, initial) in [
++            (5, vec![1, 4], 0),
++            (6, vec![1, 0], 0),
++            (5, vec![1, 0], crate::eval::MAX_STEPS - 4),
++        ] {
++            let mut view = SemanticOwnership::new(4);
++            view.register_generic(4, 0).unwrap();
++            let before = view.clone();
++            assert!(
++                view.register_relationship_batch(start, &owners, &mut { initial })
++                    .is_none()
++            );
++            assert_eq!(view.nodes.len(), before.nodes.len());
++            assert_eq!(view.additions, before.additions);
++            assert_eq!(
++                view.relationship_owners().collect::<Vec<_>>(),
++                before.relationship_owners().collect::<Vec<_>>()
++            );
++            assert_eq!(view.source_anchor(4), before.source_anchor(4));
++            assert_eq!(
++                view.nodes[0].generic_relationship,
++                before.nodes[0].generic_relationship
++            );
++        }
++    }
+     #[test]
+     fn generated_nodes_have_distinct_carrier_and_source_roles() {
+         let mut view = SemanticOwnership::new(10);

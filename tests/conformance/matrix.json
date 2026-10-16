@@ -3765,8 +3765,9 @@
           "id": "nullEquality",
           "op": "cardinality",
           "owner": "PredicateGuards::nullEquality",
-          "status": "unknown",
-          "reason": "unsupportedBound"
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
         },
         {
           "id": "missingEquality",
@@ -4266,8 +4267,9 @@
           "id": "emptyEquality",
           "op": "cardinality",
           "owner": "CoalescingGuards::emptyEquality",
-          "status": "unknown",
-          "reason": "unsupportedBound"
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
         },
         {
           "id": "emptyCondition",
@@ -4296,6 +4298,463 @@
           "owner": "CoalescingGuards::irrationalFirst",
           "status": "unknown",
           "reason": "unsupportedBound"
+        },
+        {
+          "id": "natural-required",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "multiplicity bound must be a Natural number"
+        }
+      ]
+    },
+    {
+      "id": "MULT-031",
+      "area": "multiplicity",
+      "purpose": "Checked equality and sameness distinguish explicit emptiness from present Boolean and exact numeric values, with aliases and lazy control composition.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-031.sysml"],
+      "checks": [
+        {
+          "id": "eqNull",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::eqNull",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "eqParentheses",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::eqParentheses",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "eqZeroRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::eqZeroRight",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "eqZeroLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::eqZeroLeft",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "eqFalseRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::eqFalseRight",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "eqFalseLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::eqFalseLeft",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "eqRational",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::eqRational",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "neNull",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::neNull",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "neParentheses",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::neParentheses",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "neZeroRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::neZeroRight",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "neZeroLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::neZeroLeft",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "neFalseRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::neFalseRight",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "neFalseLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::neFalseLeft",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "neRational",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::neRational",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "sameNull",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::sameNull",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "sameParentheses",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::sameParentheses",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "sameZeroRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::sameZeroRight",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "sameZeroLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::sameZeroLeft",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "sameFalseRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::sameFalseRight",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "sameFalseLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::sameFalseLeft",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "sameRational",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::sameRational",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "differentNull",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::differentNull",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "differentParentheses",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::differentParentheses",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "differentZeroRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::differentZeroRight",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "differentZeroLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::differentZeroLeft",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "differentFalseRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::differentFalseRight",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "differentFalseLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::differentFalseLeft",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "differentRational",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::differentRational",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "rationalLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::rationalLeft",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "aliasEmpty",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::aliasEmpty",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "aliasPresent",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::aliasPresent",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "conditionalEmpty",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::conditionalEmpty",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "coalescedEmpty",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::coalescedEmpty",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "coalescedPresent",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::coalescedPresent",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "logicalSkip",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::logicalSkip",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "fallbackFalse",
+          "op": "cardinality",
+          "owner": "EmptyComparisons::fallbackFalse",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        }
+      ]
+    },
+    {
+      "id": "MULT-032",
+      "area": "multiplicity",
+      "purpose": "Empty comparisons require successful execution of both operands; unavailable values, execution failures, unsupported domains and invalid endpoints remain unknown.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-032.sysml"],
+      "checks": [
+        {
+          "id": "eqMissingRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::eqMissingRight",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "eqMissingLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::eqMissingLeft",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "neMissingRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::neMissingRight",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "neMissingLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::neMissingLeft",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "sameMissingRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::sameMissingRight",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "sameMissingLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::sameMissingLeft",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "differentMissingRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::differentMissingRight",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "differentMissingLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::differentMissingLeft",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "divisionRight",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::divisionRight",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "divisionLeft",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::divisionLeft",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "overflow",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::overflow",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "real",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::real",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "infinity",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::infinity",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "string",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::string",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "sequence",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::sequence",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "recursive",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::recursive",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "booleanEndpoint",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::booleanEndpoint",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "emptySelected",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::emptySelected",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "numericCondition",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::numericCondition",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "eagerMissing",
+          "op": "cardinality",
+          "owner": "EmptyComparisonGuards::eagerMissing",
+          "status": "unknown",
+          "reason": "incompleteProvider"
         },
         {
           "id": "natural-required",

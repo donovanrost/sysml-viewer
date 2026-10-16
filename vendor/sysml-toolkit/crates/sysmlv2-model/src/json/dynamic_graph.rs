@@ -298,8 +298,9 @@ impl Builder {
     }
 }
 
-/// Pure row construction. All indices and carriers are validated before the
-/// private view is changed. The caller discards this private staging on failure.
+/// Prepare every row before atomically appending its ownership projection.
+/// Failure leaves the caller's private result-family view unchanged, so the
+/// transaction can reuse that view without cloning its complete static prefix.
 pub(super) fn stage_dynamic_rows(
     b: &Builder,
     plan: &Plan,
@@ -308,6 +309,7 @@ pub(super) fn stage_dynamic_rows(
     steps: &mut usize,
 ) -> Result<Vec<Elem>, Refusal> {
     let mut rows = Vec::new();
+    let mut owners = Vec::new();
     for edge in &plan.tail {
         *steps = steps.saturating_add(16);
         if *steps > crate::eval::MAX_STEPS {
@@ -330,9 +332,7 @@ pub(super) fn stage_dynamic_rows(
             edge.target_key,
             serde_json::json!({"@id":edge.target.to_string()}),
         );
-        ownership
-            .register(start + rows.len(), Some(edge.owner), edge.owner, true)
-            .ok_or(Refusal::Stale)?;
+        owners.push(edge.owner);
         rows.push(Elem {
             ty: edge.kind,
             id: edge.id,
@@ -344,6 +344,13 @@ pub(super) fn stage_dynamic_rows(
             owning_relationship: None,
         });
     }
+    ownership
+        .register_relationship_batch(start, &owners, steps)
+        .ok_or(if *steps > crate::eval::MAX_STEPS {
+            Refusal::WorkLimit
+        } else {
+            Refusal::Stale
+        })?;
     Ok(rows)
 }
 
@@ -359,6 +366,50 @@ mod tests {
         model.add_source("dynamic-graph.kerml", source);
         assert!(!model.has_errors());
         ResolvedModel::build(&model)
+    }
+    #[test]
+    fn dynamic_row_staging_preserves_prior_ownership_on_late_failure() {
+        let mut r = fixture("function F {in p; return result;} feature call=F(1);");
+        let plan =
+            r.b.prepare_dynamic_graph(&HashSet::new(), &mut 0, None)
+                .unwrap()
+                .unwrap();
+        assert!(plan.tail.len() > 1);
+        let end = r.b.explicit_len();
+        let mut original = SemanticOwnership::new(end);
+        original.register_generic(end, 0).unwrap();
+        for failure in 0..4 {
+            let mut candidate = plan.clone();
+            let mut view = original.clone();
+            let mut steps = match failure {
+                1 => crate::eval::MAX_STEPS - 16,
+                3 => crate::eval::MAX_STEPS - 16 * plan.tail.len(),
+                _ => 0,
+            };
+            if failure == 0 {
+                candidate.tail.last_mut().unwrap().owner_id = Uuid::nil();
+            }
+            let start = end + if failure == 2 { 2 } else { 1 };
+            assert!(stage_dynamic_rows(&r.b, &candidate, start, &mut view, &mut steps).is_err());
+            assert_eq!(
+                view.relationship_owners().collect::<Vec<_>>(),
+                original.relationship_owners().collect::<Vec<_>>()
+            );
+            assert_eq!(view.additions(0), original.additions(0));
+            assert!(!view.contains(end + 1));
+            assert_eq!(r.b.elements.len(), end);
+        }
+        let rows = stage_dynamic_rows(&r.b, &plan, end + 1, &mut original, &mut 0).unwrap();
+        assert_eq!(rows.len(), plan.tail.len());
+        for (offset, edge) in plan.tail.iter().enumerate() {
+            assert_eq!(rows[offset].id, edge.id);
+            assert_eq!(
+                original.generated_relationship_owner(end + 1 + offset),
+                Some(edge.owner)
+            );
+            assert_eq!(original.source_anchor(end + 1 + offset), edge.owner);
+        }
+        assert_eq!(r.b.elements.len(), end);
     }
     #[test]
     fn one_snapshot_exposes_dynamic_callee_and_positional_edges() {

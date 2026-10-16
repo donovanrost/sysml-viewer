@@ -147,7 +147,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs b/vendor/sysm
                          BinaryOp::Sub => arith(BinaryOp::Sub, Value::Integer(0), first).ok(),
                          _ => None,
                      };
-@@ -2102,7 +2215,68 @@
+@@ -2102,7 +2215,84 @@
                  }
                  let second =
                      self.certified_multiplicity_value(operands[1], context, operators, depth + 1)?;
@@ -156,10 +156,26 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs b/vendor/sysm
 +                    operator,
 +                    BinaryOp::Eq | BinaryOp::NotEq | BinaryOp::Same | BinaryOp::NotSame
 +                ) {
-+                    // Same and equality coincide for the admitted data values.
-+                    // Occurrence identity, null, sequences, quantities and
++                    // KerML 7.4.9.2: empty operands compare equal; a present
++                    // scalar is distinct from empty. Same and equality coincide
++                    // in this data-only domain. Both operands must first have
++                    // executed successfully: an unavailable value is not null.
++                    // Nonempty sequences, occurrence identity, quantities and
 +                    // approximate values require separate execution evidence.
 +                    let equal = match (&first, &second) {
++                        (Value::Sequence(a), Value::Sequence(b))
++                            if a.is_empty() && b.is_empty() =>
++                        {
++                            true
++                        }
++                        (
++                            Value::Sequence(empty),
++                            Value::Boolean(_) | Value::Integer(_) | Value::Rational(_),
++                        )
++                        | (
++                            Value::Boolean(_) | Value::Integer(_) | Value::Rational(_),
++                            Value::Sequence(empty),
++                        ) if empty.is_empty() => false,
 +                        (Value::Boolean(a), Value::Boolean(b)) => a == b,
 +                        (
 +                            Value::Integer(_) | Value::Rational(_),

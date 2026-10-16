@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-10-16T02:03:30.960Z",
+  "generatedAt": "2026-10-16T02:36:06.792Z",
   "platform": "darwin",
   "arch": "arm64",
-  "kernelInputSha256": "8f8ff052e9e9e3ad9ee27e4f1d40c018f1e13c1026d1dbb3bc6f31bc87a2a7d0",
+  "kernelInputSha256": "f3a6e84d096cf1ce6686359c61a3b7441c3fa29cd011263329f1f1b2094fd384",
   "buildPerformed": true,
-  "binarySha256": "a88dde5412c045a227ea7f0cc937f034f8776f3a678f1c5f0ffb859ce29c9966",
+  "binarySha256": "eb013a827db72dfedf2b9e93c32412ba7bee59fa3b6a735e8bef3fb109ea0cad",
   "schemaVersion": 3,
-  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.11",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.12",
   "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
-  "matrixSha256": "98b448f85cf200481bef2f068cc1d1ce06dbf7d92e19fd14ef2a9f1e3b214633",
+  "matrixSha256": "3e4397d69d3fa246902f83d54d7921d1b3c8a5338643a21d8f045488099a9b6e",
   "counts": {
-    "pass": 80,
+    "pass": 82,
     "known-gap": 0,
     "planned": 0,
     "fail": 0
@@ -23,7 +23,7 @@
         "tests/conformance/fixtures/catalog.sysml": "eca432564be7438a0e1e93b62d957598d440a8a86d52518f1fe434bc09331be6",
         "tests/conformance/fixtures/imp-001.sysml": "c00509ea643b8f05e2813a3ce39744140bd36bf9b19cbd89859c8e87bfa0ce25"
       },
-      "elapsedMs": 2686,
+      "elapsedMs": 2356,
       "checks": [
         {
           "id": "clean",
@@ -42,7 +42,7 @@
         "tests/conformance/fixtures/catalog.sysml": "eca432564be7438a0e1e93b62d957598d440a8a86d52518f1fe434bc09331be6",
         "tests/conformance/fixtures/imp-002.sysml": "4b403a0ff5e0d359250e6f68b82d259d368bfff16a5d1eca62b59d547bbbd108"
       },
-      "elapsedMs": 2209,
+      "elapsedMs": 2060,
       "checks": [
         {
           "id": "syntax",
@@ -64,7 +64,7 @@
       "files": {
         "tests/conformance/fixtures/imp-003.sysml": "b47952c3a3ad0be91bd6174509f49ead9012eb1b14ab8739de0f453970b6e70b"
       },
-      "elapsedMs": 2851,
+      "elapsedMs": 2114,
       "checks": [
         {
           "id": "syntax",
@@ -86,7 +86,7 @@
       "files": {
         "tests/conformance/fixtures/imp-004.sysml": "f96c5f28dc07c1001acd09c8522ebe6cbb158c49547c0d54ec07233b507457c5"
       },
-      "elapsedMs": 3546,
+      "elapsedMs": 2206,
       "checks": [
         {
           "id": "clean",
@@ -104,7 +104,7 @@
       "files": {
         "tests/conformance/fixtures/imp-005.sysml": "501f783085dbf700c3ae3ab5ba7867ce5f69069dc78c573e11209bcc2f712a72"
       },
-      "elapsedMs": 4065,
+      "elapsedMs": 2130,
       "checks": [
         {
           "id": "syntax",
@@ -126,7 +126,7 @@
       "files": {
         "tests/conformance/upstream/AliasImport.sysml": "b243243ba39ca49c9ad53521418513ea3111b4e6be864023dfa1bb921baf96e2"
       },
-      "elapsedMs": 2577,
+      "elapsedMs": 2078,
       "checks": [
         {
           "id": "clean",
@@ -144,7 +144,7 @@
       "files": {
         "tests/conformance/upstream/PrivateImportTest.sysml": "5111a800ab20f0018277bef5b4ed9d055327d03ac8afbdea2c2d3e5713113007"
       },
-      "elapsedMs": 2205,
+      "elapsedMs": 2104,
       "checks": [
         {
           "id": "syntax",
@@ -167,7 +167,7 @@
         "tests/conformance/fixtures/kernel-types.kerml": "8c7e8e352c78db7526134f4ea5870bfcc31f6cdce8eef554897c4b5d699bc502",
         "tests/conformance/fixtures/type-001.sysml": "2301ad9a7b681414e014bfa7a5e0bda8eacbaf26f402a4e91c655b73b45fd614"
       },
-      "elapsedMs": 2586,
+      "elapsedMs": 2279,
       "checks": [
         {
           "id": "clean",
@@ -185,7 +185,7 @@
       "files": {
         "tests/conformance/fixtures/type-002.sysml": "6fc3e465a0378de4409a4712fca09fe551b3441c2f0dc0cffe8de0fb1d42c8dd"
       },
-      "elapsedMs": 3045,
+      "elapsedMs": 2453,
       "checks": [
         {
           "id": "syntax",
@@ -207,7 +207,7 @@
       "files": {
         "tests/conformance/fixtures/type-003.sysml": "c3d91d3eeda512a4d9713259954b96f5d43ff366a280c84018d1456486d4e1b6"
       },
-      "elapsedMs": 2522,
+      "elapsedMs": 2313,
       "checks": [
         {
           "id": "syntax",
@@ -225,7 +225,7 @@
       "files": {
         "tests/conformance/fixtures/type-004.sysml": "a5b233eb65d735d4e6c6f99685f7b7a4a883da578af598a3015a9dcc8484adac"
       },
-      "elapsedMs": 2142,
+      "elapsedMs": 2247,
       "checks": [
         {
           "id": "clean",
@@ -243,7 +243,7 @@
       "files": {
         "tests/conformance/fixtures/spec-001.sysml": "104d99bc99d66f49f98456f0502acdb2207db04a3b1881e9148a1a9fa4317b30"
       },
-      "elapsedMs": 2187,
+      "elapsedMs": 2239,
       "checks": [
         {
           "id": "clean",
@@ -265,7 +265,7 @@
       "files": {
         "tests/conformance/fixtures/spec-002.sysml": "35d10c036152bdc7211750a2415fc50981cfe12d733773e40f394e6ffb596aed"
       },
-      "elapsedMs": 2079,
+      "elapsedMs": 5022,
       "checks": [
         {
           "id": "syntax",
@@ -291,7 +291,7 @@
       "files": {
         "tests/conformance/fixtures/spec-003.sysml": "31e0bf1f6e8603975d2b72f9b9d375889b56dc2607f64764fb046aa419740f02"
       },
-      "elapsedMs": 2072,
+      "elapsedMs": 5605,
       "checks": [
         {
           "id": "syntax",
@@ -321,7 +321,7 @@
       "files": {
         "tests/conformance/fixtures/sub-001.sysml": "460969728212d35c3ddea0e0b9f973e6391ea7b84bbbc73bf1a69cd1407dce29"
       },
-      "elapsedMs": 2106,
+      "elapsedMs": 4176,
       "checks": [
         {
           "id": "clean",
@@ -339,7 +339,7 @@
       "files": {
         "tests/conformance/fixtures/sub-002.sysml": "4106782cec961295224a366c64d6b2b5109f4acdf5410d1974e2a80b3f4c9380"
       },
-      "elapsedMs": 2048,
+      "elapsedMs": 4989,
       "checks": [
         {
           "id": "syntax",
@@ -357,7 +357,7 @@
       "files": {
         "tests/conformance/fixtures/redef-001.sysml": "a1dfb49761ab6ac121449b0bcd4cfa90cc9eb80b3fe87694bf3946fd0734d329"
       },
-      "elapsedMs": 2326,
+      "elapsedMs": 4863,
       "checks": [
         {
           "id": "clean",
@@ -379,7 +379,7 @@
       "files": {
         "tests/conformance/fixtures/redef-002.sysml": "3667569752b49815ad7d441214dd7425d1ca5d7a9d27c173c98b4f64ca5aaffd"
       },
-      "elapsedMs": 2311,
+      "elapsedMs": 7103,
       "checks": [
         {
           "id": "syntax",
@@ -397,7 +397,7 @@
       "files": {
         "tests/conformance/fixtures/mult-001.sysml": "6d80714dcb3c4517c1d1fc5647631fdcfc00df1763db9d9b0b78a6e01f73e8d9"
       },
-      "elapsedMs": 2376,
+      "elapsedMs": 3280,
       "checks": [
         {
           "id": "clean",
@@ -423,7 +423,7 @@
       "files": {
         "tests/conformance/fixtures/mult-002.sysml": "b62a2973c488e51b535af399898498870725ad65b06957f24e183432cc2a92a6"
       },
-      "elapsedMs": 2268,
+      "elapsedMs": 2203,
       "checks": [
         {
           "id": "syntax",
@@ -441,7 +441,7 @@
       "files": {
         "tests/conformance/fixtures/port-001.sysml": "65bc6e78d2732c401d2efb461f453421464e3724013b291cf23ecc39695cd011"
       },
-      "elapsedMs": 2322,
+      "elapsedMs": 5485,
       "checks": [
         {
           "id": "clean",
@@ -459,7 +459,7 @@
       "files": {
         "tests/conformance/fixtures/port-002.sysml": "b71fda2b582ab0b86b25dac8ba52925179e418b1f16428c21f1cc3d9e411dadc"
       },
-      "elapsedMs": 5443,
+      "elapsedMs": 8068,
       "checks": [
         {
           "id": "syntax",
@@ -477,7 +477,7 @@
       "files": {
         "tests/conformance/fixtures/conn-001.sysml": "02362e5c2d07b5aee5cf9e4554b97e6c0aa91124b982c513a86a4e8057461b5e"
       },
-      "elapsedMs": 4111,
+      "elapsedMs": 8224,
       "checks": [
         {
           "id": "clean",
@@ -495,7 +495,7 @@
       "files": {
         "tests/conformance/fixtures/conn-002.sysml": "a893967d876835da80b46b359476d5ca84ab49bc5c6fd77068f15d58810f30f9"
       },
-      "elapsedMs": 4625,
+      "elapsedMs": 4972,
       "checks": [
         {
           "id": "syntax",
@@ -513,7 +513,7 @@
       "files": {
         "tests/conformance/fixtures/conn-003.sysml": "b6cb21d52654f0fcadd6786398ec9cd5bae0a2d5c73c08ada6db6310fcb00680"
       },
-      "elapsedMs": 4784,
+      "elapsedMs": 5281,
       "checks": [
         {
           "id": "clean",
@@ -531,7 +531,7 @@
       "files": {
         "tests/conformance/fixtures/source-001.sysml": "93cd61e2ef9ab252d159aa4ddd1d68b92ced8bd56e5e970fa2092fd331ee3e11"
       },
-      "elapsedMs": 3714,
+      "elapsedMs": 5068,
       "checks": [
         {
           "id": "clean",
@@ -553,7 +553,7 @@
       "files": {
         "tests/conformance/fixtures/source-002.sysml": "06fd81bcc8f6cfd6c4392b4bc83719caa5a241e4660e17c336f0fe5b99652285"
       },
-      "elapsedMs": 2936,
+      "elapsedMs": 4856,
       "checks": [
         {
           "id": "syntax-error",
@@ -571,7 +571,7 @@
       "files": {
         "tests/conformance/fixtures/cycle-001.sysml": "5a4e5747ae73f0fc0a4cc4218bc62156b94218c1ac20f3a3423f2ed7725f53fe"
       },
-      "elapsedMs": 2875,
+      "elapsedMs": 5868,
       "checks": [
         {
           "id": "syntax",
@@ -589,7 +589,7 @@
       "files": {
         "tests/conformance/fixtures/cycle-002.sysml": "7001ff2663a326d9a0fb9a060a9ba6e148c18797699e791898c96f23be59e81f"
       },
-      "elapsedMs": 3388,
+      "elapsedMs": 4740,
       "checks": [
         {
           "id": "syntax",
@@ -611,7 +611,7 @@
       "files": {
         "tests/conformance/fixtures/imp-008.sysml": "a2615a6860a8af8301145e8a88f821354741a16b3cbeeedc1cad6167bba9153a"
       },
-      "elapsedMs": 2876,
+      "elapsedMs": 4676,
       "checks": [
         {
           "id": "clean",
@@ -645,7 +645,7 @@
       "files": {
         "tests/conformance/fixtures/imp-009.sysml": "dda3ec1106b6b1b675ed75c9b731739e304b8de8912f30e40aa1b3c876dda8d8"
       },
-      "elapsedMs": 2260,
+      "elapsedMs": 4527,
       "checks": [
         {
           "id": "clean",
@@ -671,7 +671,7 @@
       "files": {
         "tests/conformance/fixtures/imp-010.sysml": "6eb41259b6f5aae759d94e1f28924659daa397854fed2aa6ecea8f4fd14e6498"
       },
-      "elapsedMs": 2670,
+      "elapsedMs": 4768,
       "checks": [
         {
           "id": "protected",
@@ -697,7 +697,7 @@
       "files": {
         "tests/conformance/fixtures/imp-011.sysml": "f02ae3aa1769d16596db7d1b497faf4e8f41a9d41e0d1788140fd05f52a06416"
       },
-      "elapsedMs": 2355,
+      "elapsedMs": 4475,
       "checks": [
         {
           "id": "nested",
@@ -715,7 +715,7 @@
       "files": {
         "tests/conformance/fixtures/imp-012.sysml": "57d8ea41766e1efde37488ab3888aa3a677836bee9e512120cb901d2f0b72fb5"
       },
-      "elapsedMs": 2442,
+      "elapsedMs": 4303,
       "checks": [
         {
           "id": "clean",
@@ -733,7 +733,7 @@
       "files": {
         "tests/conformance/fixtures/imp-013.sysml": "3ffd047ce6424010ab6a2c46c6329d9f94719b82acc99f6cd5d94d995dd1135a"
       },
-      "elapsedMs": 2367,
+      "elapsedMs": 4744,
       "checks": [
         {
           "id": "unresolved",
@@ -751,7 +751,7 @@
       "files": {
         "tests/conformance/fixtures/imp-014.sysml": "d2321f69645be92cd3aeaa61a093be97943256d8123e93b7ff2fa193eba5c7e7"
       },
-      "elapsedMs": 2660,
+      "elapsedMs": 4347,
       "checks": [
         {
           "id": "clean",
@@ -769,7 +769,7 @@
       "files": {
         "tests/conformance/fixtures/imp-015.sysml": "981fb841dd499cc15602cd64a7ccb229262b344726feb0636cffa007a22bbbb3"
       },
-      "elapsedMs": 2594,
+      "elapsedMs": 4655,
       "checks": [
         {
           "id": "collision",
@@ -783,7 +783,7 @@
       "files": {
         "tests/conformance/fixtures/imp-016.sysml": "87391d34f8675d7c95f37a903722d819315afaee779218b557e27e1ee3278b2e"
       },
-      "elapsedMs": 3645,
+      "elapsedMs": 5412,
       "checks": [
         {
           "id": "clean",
@@ -797,7 +797,7 @@
       "files": {
         "tests/conformance/fixtures/imp-017.sysml": "56a3965e4f9b1e41a7ca4b411b9a50a38d3f488efc753c3606468f82639b4397"
       },
-      "elapsedMs": 4580,
+      "elapsedMs": 4929,
       "checks": [
         {
           "id": "collision",
@@ -811,7 +811,7 @@
       "files": {
         "tests/conformance/fixtures/imp-018.sysml": "6539fdb9595436cb53c00c2620b6430477461c55f416da340ea620eacb54c436"
       },
-      "elapsedMs": 3166,
+      "elapsedMs": 7081,
       "checks": [
         {
           "id": "visibility",
@@ -825,7 +825,7 @@
       "files": {
         "tests/conformance/fixtures/imp-019.sysml": "aaaf05ad17eb41cef3b72e7680a6dca46a9a1b0a1700caf1ace73998a5b53b73"
       },
-      "elapsedMs": 2101,
+      "elapsedMs": 4986,
       "checks": [
         {
           "id": "clean",
@@ -843,7 +843,7 @@
       "files": {
         "tests/conformance/fixtures/mult-003.sysml": "03de768dc2d3a1cd96dc594df4c9e9c984f57408ac1cabc7199925f247b9d70f"
       },
-      "elapsedMs": 4441,
+      "elapsedMs": 7900,
       "checks": [
         {
           "id": "clean",
@@ -873,7 +873,7 @@
       "files": {
         "tests/conformance/fixtures/mult-004.sysml": "2f10563071e1acef1c3550cd43f85a50d73a14101c25d8d00c79eca48bc48d2c"
       },
-      "elapsedMs": 4516,
+      "elapsedMs": 4328,
       "checks": [
         {
           "id": "clean",
@@ -891,7 +891,7 @@
       "files": {
         "tests/conformance/fixtures/mult-005.sysml": "35b13a80ece02bcdc4ce50931e98610b9f277bcb9c5287845032a796ff2bb84d"
       },
-      "elapsedMs": 3012,
+      "elapsedMs": 3369,
       "checks": [
         {
           "id": "clean",
@@ -917,7 +917,7 @@
       "files": {
         "tests/conformance/fixtures/mult-006.sysml": "fc0eade5d9b84d6b8be8e6c12d82a9549c33f7a786e715a95430196ed171a05b"
       },
-      "elapsedMs": 2322,
+      "elapsedMs": 4564,
       "checks": [
         {
           "id": "clean",
@@ -939,7 +939,7 @@
       "files": {
         "tests/conformance/fixtures/mult-007.sysml": "848aba281867153c1e31fde2de598c4409ed97a902c81d84619bc52c6122dfb7"
       },
-      "elapsedMs": 2495,
+      "elapsedMs": 2326,
       "checks": [
         {
           "id": "fractional",
@@ -965,7 +965,7 @@
       "files": {
         "tests/conformance/fixtures/mult-008.sysml": "df4d8beb7150d60ef54618af3b9093ca746d47e301d89ad2ad4f0dd4ab53cca8"
       },
-      "elapsedMs": 2183,
+      "elapsedMs": 2479,
       "checks": [
         {
           "id": "unknown",
@@ -983,7 +983,7 @@
       "files": {
         "tests/conformance/fixtures/mult-009.sysml": "1d20732a16e36fcac3db3f39806ee395ec4c0133946bb140338b624ae6e2d7b0"
       },
-      "elapsedMs": 2221,
+      "elapsedMs": 2673,
       "checks": [
         {
           "id": "syntax",
@@ -1001,7 +1001,7 @@
       "files": {
         "tests/conformance/fixtures/imp-020.sysml": "6824a05454ac46c07bc41372ced3902ffc6760866f36bb9507a969abe0f44835"
       },
-      "elapsedMs": 2955,
+      "elapsedMs": 3582,
       "checks": [
         {
           "id": "clean",
@@ -1035,7 +1035,7 @@
       "files": {
         "tests/conformance/fixtures/imp-021.sysml": "818885142984804af13ac37a8fd4d5b7cc61e9dfd9045184a1040a9ca2563a59"
       },
-      "elapsedMs": 2721,
+      "elapsedMs": 6330,
       "checks": [
         {
           "id": "clean",
@@ -1053,7 +1053,7 @@
       "files": {
         "tests/conformance/fixtures/name-001.sysml": "5ad1713a9332f65b16422acedd77240c60b3c5d67874769f0fbcc6e967301b52"
       },
-      "elapsedMs": 2838,
+      "elapsedMs": 7449,
       "checks": [
         {
           "id": "clean",
@@ -1083,7 +1083,7 @@
       "files": {
         "tests/conformance/fixtures/name-002.sysml": "7db579ccd5f2e2be3822e21b459206223ee894503cec2b762cf997907d8bc6c4"
       },
-      "elapsedMs": 2236,
+      "elapsedMs": 22339,
       "checks": [
         {
           "id": "reserved",
@@ -1101,7 +1101,7 @@
       "files": {
         "tests/conformance/fixtures/name-003.kerml": "4688ffbd699ec1bc3afc7cda6127a6f6586ec03ab3c4b390e124b8a9f99ab4d1"
       },
-      "elapsedMs": 2274,
+      "elapsedMs": 9327,
       "checks": [
         {
           "id": "clean",
@@ -1119,7 +1119,7 @@
       "files": {
         "tests/conformance/fixtures/imp-022.sysml": "4dcecfdfbb466d3bdbe1e87ce3866cdaac0d5823d86118aeb733e98095c9a4e5"
       },
-      "elapsedMs": 2470,
+      "elapsedMs": 9276,
       "checks": [
         {
           "id": "clean",
@@ -1133,7 +1133,7 @@
       "files": {
         "tests/conformance/fixtures/imp-023.sysml": "51bc54b40c728b031231f86a57f7816641f5be650cd2357d08990f2f024a7753"
       },
-      "elapsedMs": 3079,
+      "elapsedMs": 3648,
       "checks": [
         {
           "id": "collision",
@@ -1147,7 +1147,7 @@
       "files": {
         "tests/conformance/fixtures/mult-010.sysml": "34fc51e4c561bb0c5986100a18fa847a035851f71c23781d61886ca6ff0c5129"
       },
-      "elapsedMs": 2937,
+      "elapsedMs": 3004,
       "checks": [
         {
           "id": "clean",
@@ -1165,7 +1165,7 @@
       "files": {
         "tests/conformance/fixtures/mult-011.sysml": "a6bcbd0e9b75901543125a8444e00f5a0c9f3037b2e03b2d2a591ec063311260"
       },
-      "elapsedMs": 2517,
+      "elapsedMs": 3807,
       "checks": [
         {
           "id": "clean",
@@ -1199,7 +1199,7 @@
       "files": {
         "tests/conformance/fixtures/mult-012.sysml": "8afa29fc1a2f5884ddf904bb9cd07b43dcfc5f88800adb0ef9737977017fd4e3"
       },
-      "elapsedMs": 2615,
+      "elapsedMs": 3918,
       "checks": [
         {
           "id": "unvaluedBound",
@@ -1225,7 +1225,7 @@
       "files": {
         "tests/conformance/fixtures/mult-013.sysml": "ed818d0f10f0053a01abb53fb754dded59a03c72457b01761ae0c75df3401148"
       },
-      "elapsedMs": 2746,
+      "elapsedMs": 4856,
       "checks": [
         {
           "id": "clean",
@@ -1275,7 +1275,7 @@
       "files": {
         "tests/conformance/fixtures/mult-014.sysml": "fb8157504e6b2e4a27793dc7dece20c0ccbbda50f0bb7b59d8393545d1b8cd6b"
       },
-      "elapsedMs": 2958,
+      "elapsedMs": 4656,
       "checks": [
         {
           "id": "division",
@@ -1317,7 +1317,7 @@
       "files": {
         "tests/conformance/fixtures/mult-015.sysml": "994dc72b74a3398348de1964d8cc245386ee806b4859d66a5e3006366f977de1"
       },
-      "elapsedMs": 3135,
+      "elapsedMs": 3539,
       "checks": [
         {
           "id": "sized",
@@ -1335,7 +1335,7 @@
       "files": {
         "tests/conformance/fixtures/mult-016.sysml": "ddc43a5090cc66bf9e2b25dd3962269534b41a7f0f1c12ce7bf4f81d75192261"
       },
-      "elapsedMs": 2379,
+      "elapsedMs": 3668,
       "checks": [
         {
           "id": "clean",
@@ -1353,7 +1353,7 @@
       "files": {
         "tests/conformance/fixtures/mult-017.sysml": "17a2314b4f817b2c579d20a0d17a15639500804f8735b3a639fd286eabcaad29"
       },
-      "elapsedMs": 2236,
+      "elapsedMs": 5298,
       "checks": [
         {
           "id": "clean",
@@ -1403,7 +1403,7 @@
       "files": {
         "tests/conformance/fixtures/mult-018.sysml": "bb851b64a8e07318d7e26f0bb5589404284c227e74ba3d33b5b5beb4fffa9cc2"
       },
-      "elapsedMs": 2341,
+      "elapsedMs": 4036,
       "checks": [
         {
           "id": "unavailable",
@@ -1449,7 +1449,7 @@
       "files": {
         "tests/conformance/fixtures/mult-019.sysml": "1aa2ce0161cee91d5603f48ee920055fd0a9aa69731991db245703406a5303a3"
       },
-      "elapsedMs": 2186,
+      "elapsedMs": 2035,
       "checks": [
         {
           "id": "sized",
@@ -1467,7 +1467,7 @@
       "files": {
         "tests/conformance/fixtures/imp-024.sysml": "8b2b635d128bb27f423203e2132b1bca0d22abcd098ec5d6b8d9fe507ef5898b"
       },
-      "elapsedMs": 2040,
+      "elapsedMs": 2105,
       "checks": [
         {
           "id": "cycle",
@@ -1501,7 +1501,7 @@
       "files": {
         "tests/conformance/fixtures/imp-025.sysml": "0147870c9dc466350fe9da1fd65a62958d8f594b7679f6dcfc20844f39116238"
       },
-      "elapsedMs": 2182,
+      "elapsedMs": 2063,
       "checks": [
         {
           "id": "clean",
@@ -1523,7 +1523,7 @@
       "files": {
         "tests/conformance/fixtures/imp-026.sysml": "935bb9c6b7ef023c7c2bf98fb25859d9b7265a78de591656a3d04b74c91ba97e"
       },
-      "elapsedMs": 2144,
+      "elapsedMs": 2044,
       "checks": [
         {
           "id": "missing",
@@ -1565,7 +1565,7 @@
       "files": {
         "tests/conformance/fixtures/imp-027.sysml": "8d92adb27870ed919fbec5fd119cd2376406414e3f3bb0a654f2e0c88faf4313"
       },
-      "elapsedMs": 2042,
+      "elapsedMs": 1966,
       "checks": [
         {
           "id": "syntax",
@@ -1583,7 +1583,7 @@
       "files": {
         "tests/conformance/fixtures/mult-020.sysml": "f1f6f7585f218f232ec79ea4db20af2f9ca712b2f0cacc17e3b358718bbad684"
       },
-      "elapsedMs": 2180,
+      "elapsedMs": 2128,
       "checks": [
         {
           "id": "missing",
@@ -1631,7 +1631,7 @@
         "tests/conformance/fixtures/mult-017.sysml": "17a2314b4f817b2c579d20a0d17a15639500804f8735b3a639fd286eabcaad29",
         "tests/conformance/fixtures/imp-026.sysml": "935bb9c6b7ef023c7c2bf98fb25859d9b7265a78de591656a3d04b74c91ba97e"
       },
-      "elapsedMs": 2654,
+      "elapsedMs": 2682,
       "checks": [
         {
           "id": "missing",
@@ -1721,7 +1721,7 @@
       "files": {
         "tests/conformance/fixtures/mult-022.sysml": "273cd7150203dc63a1540919d3ff1024a3cf94a3ce16d2f26571ccc64d37edb0"
       },
-      "elapsedMs": 3230,
+      "elapsedMs": 2594,
       "checks": [
         {
           "id": "clean",
@@ -1759,7 +1759,7 @@
       "files": {
         "tests/conformance/fixtures/mult-023.sysml": "33ebdb5e0595515b5ba137aec25f4c9406f18e3ca63064546e33b4df7ba42de9"
       },
-      "elapsedMs": 3399,
+      "elapsedMs": 2467,
       "checks": [
         {
           "id": "incomplete",
@@ -1785,7 +1785,7 @@
       "files": {
         "tests/conformance/fixtures/mult-024.sysml": "8ee433e2b4c84910b1f5e1d8d259dcabfacbc15ac8d03af3a18c714f5a02de72"
       },
-      "elapsedMs": 2738,
+      "elapsedMs": 2906,
       "checks": [
         {
           "id": "clean",
@@ -1899,7 +1899,7 @@
       "files": {
         "tests/conformance/fixtures/mult-025.sysml": "8a426ce0bbd79107f33298e0cffd85a00963599f82f56bdea5bd3d34a84a890e"
       },
-      "elapsedMs": 2765,
+      "elapsedMs": 2607,
       "checks": [
         {
           "id": "natural-required",
@@ -1949,7 +1949,7 @@
       "files": {
         "tests/conformance/fixtures/mult-026.sysml": "a24d5de37a2e6b1536d35f4ac4ac42115220f4e6e28fd97c2a348b443bedc95f"
       },
-      "elapsedMs": 3864,
+      "elapsedMs": 5249,
       "checks": [
         {
           "id": "clean",
@@ -2079,7 +2079,7 @@
       "files": {
         "tests/conformance/fixtures/mult-027.sysml": "1f2a3c878e43653337b01cb5e3cc4b98b40d4e4a995be7721185a0055c49b717"
       },
-      "elapsedMs": 2812,
+      "elapsedMs": 5902,
       "checks": [
         {
           "id": "clean",
@@ -2233,7 +2233,7 @@
       "files": {
         "tests/conformance/fixtures/mult-028.sysml": "30bba03e68f062245a17d68603e30f59194d64e918527913445b16ad122a75d2"
       },
-      "elapsedMs": 2771,
+      "elapsedMs": 6484,
       "checks": [
         {
           "id": "mixedEquality",
@@ -2359,7 +2359,7 @@
       "files": {
         "tests/conformance/fixtures/mult-029.sysml": "8b42a990413d65984a5146b9125c5541cfd29ae7a927509a6f4d732b5f75ab80"
       },
-      "elapsedMs": 2584,
+      "elapsedMs": 6174,
       "checks": [
         {
           "id": "literalNull",
@@ -2469,7 +2469,7 @@
       "files": {
         "tests/conformance/fixtures/mult-030.sysml": "53ff5d55b42e70d1790ae91a778525a6e71dc9be2396bd54136d6910002c2cd8"
       },
-      "elapsedMs": 2538,
+      "elapsedMs": 3259,
       "checks": [
         {
           "id": "missingFirst",
@@ -2565,6 +2565,258 @@
         },
         {
           "id": "irrationalFirst",
+          "status": "pass"
+        },
+        {
+          "id": "natural-required",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "MULT-031",
+      "status": "pass",
+      "files": {
+        "tests/conformance/fixtures/mult-031.sysml": "4d34ad6b1dc199dfda82af210bbf37f6a58a47c061bd84c52b7032146d9ba996"
+      },
+      "elapsedMs": 3075,
+      "checks": [
+        {
+          "id": "eqNull",
+          "status": "pass"
+        },
+        {
+          "id": "eqParentheses",
+          "status": "pass"
+        },
+        {
+          "id": "eqZeroRight",
+          "status": "pass"
+        },
+        {
+          "id": "eqZeroLeft",
+          "status": "pass"
+        },
+        {
+          "id": "eqFalseRight",
+          "status": "pass"
+        },
+        {
+          "id": "eqFalseLeft",
+          "status": "pass"
+        },
+        {
+          "id": "eqRational",
+          "status": "pass"
+        },
+        {
+          "id": "neNull",
+          "status": "pass"
+        },
+        {
+          "id": "neParentheses",
+          "status": "pass"
+        },
+        {
+          "id": "neZeroRight",
+          "status": "pass"
+        },
+        {
+          "id": "neZeroLeft",
+          "status": "pass"
+        },
+        {
+          "id": "neFalseRight",
+          "status": "pass"
+        },
+        {
+          "id": "neFalseLeft",
+          "status": "pass"
+        },
+        {
+          "id": "neRational",
+          "status": "pass"
+        },
+        {
+          "id": "sameNull",
+          "status": "pass"
+        },
+        {
+          "id": "sameParentheses",
+          "status": "pass"
+        },
+        {
+          "id": "sameZeroRight",
+          "status": "pass"
+        },
+        {
+          "id": "sameZeroLeft",
+          "status": "pass"
+        },
+        {
+          "id": "sameFalseRight",
+          "status": "pass"
+        },
+        {
+          "id": "sameFalseLeft",
+          "status": "pass"
+        },
+        {
+          "id": "sameRational",
+          "status": "pass"
+        },
+        {
+          "id": "differentNull",
+          "status": "pass"
+        },
+        {
+          "id": "differentParentheses",
+          "status": "pass"
+        },
+        {
+          "id": "differentZeroRight",
+          "status": "pass"
+        },
+        {
+          "id": "differentZeroLeft",
+          "status": "pass"
+        },
+        {
+          "id": "differentFalseRight",
+          "status": "pass"
+        },
+        {
+          "id": "differentFalseLeft",
+          "status": "pass"
+        },
+        {
+          "id": "differentRational",
+          "status": "pass"
+        },
+        {
+          "id": "rationalLeft",
+          "status": "pass"
+        },
+        {
+          "id": "aliasEmpty",
+          "status": "pass"
+        },
+        {
+          "id": "aliasPresent",
+          "status": "pass"
+        },
+        {
+          "id": "conditionalEmpty",
+          "status": "pass"
+        },
+        {
+          "id": "coalescedEmpty",
+          "status": "pass"
+        },
+        {
+          "id": "coalescedPresent",
+          "status": "pass"
+        },
+        {
+          "id": "logicalSkip",
+          "status": "pass"
+        },
+        {
+          "id": "fallbackFalse",
+          "status": "pass"
+        },
+        {
+          "id": "clean",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "MULT-032",
+      "status": "pass",
+      "files": {
+        "tests/conformance/fixtures/mult-032.sysml": "df039f197fa3875595165d11e9b1987e9c8fa500de06312cdcdba1ea4fb66aba"
+      },
+      "elapsedMs": 3558,
+      "checks": [
+        {
+          "id": "eqMissingRight",
+          "status": "pass"
+        },
+        {
+          "id": "eqMissingLeft",
+          "status": "pass"
+        },
+        {
+          "id": "neMissingRight",
+          "status": "pass"
+        },
+        {
+          "id": "neMissingLeft",
+          "status": "pass"
+        },
+        {
+          "id": "sameMissingRight",
+          "status": "pass"
+        },
+        {
+          "id": "sameMissingLeft",
+          "status": "pass"
+        },
+        {
+          "id": "differentMissingRight",
+          "status": "pass"
+        },
+        {
+          "id": "differentMissingLeft",
+          "status": "pass"
+        },
+        {
+          "id": "divisionRight",
+          "status": "pass"
+        },
+        {
+          "id": "divisionLeft",
+          "status": "pass"
+        },
+        {
+          "id": "overflow",
+          "status": "pass"
+        },
+        {
+          "id": "real",
+          "status": "pass"
+        },
+        {
+          "id": "infinity",
+          "status": "pass"
+        },
+        {
+          "id": "string",
+          "status": "pass"
+        },
+        {
+          "id": "sequence",
+          "status": "pass"
+        },
+        {
+          "id": "recursive",
+          "status": "pass"
+        },
+        {
+          "id": "booleanEndpoint",
+          "status": "pass"
+        },
+        {
+          "id": "emptySelected",
+          "status": "pass"
+        },
+        {
+          "id": "numericCondition",
+          "status": "pass"
+        },
+        {
+          "id": "eagerMissing",
           "status": "pass"
         },
         {

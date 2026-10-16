@@ -1426,6 +1426,104 @@ mod tests {
             assert!(r.cardinality_report(slots).bounds.is_err(), "{operator}");
         }
     }
+    fn empty_comparison_fixture(operator: &str) -> (ResolvedModel, ElementRef, ElementRef) {
+        let mut m = conditional_model();
+        let library = m.add_library_source("equality.kerml", &format!(
+            "standard library package BaseFunctions {{function '{operator}' {{in a; in b; return r;}}}}"
+        ));
+        assert!(library.diagnostics.is_empty(), "{:?}", library.diagnostics);
+        let unit = m.add_source(
+            "empty-comparison.kerml",
+            &format!(
+                "feature count = if (null {operator} ()) ? 7 else 9; feature emptySlots[count];"
+            ),
+        );
+        assert!(unit.diagnostics.is_empty(), "{:?}", unit.diagnostics);
+        let mut r = ResolvedModel::build(&m);
+        let slots = r.resolve_qualified("emptySlots").unwrap();
+        let call = r
+            .user_elements()
+            .find(|e| {
+                r.b.elements[e.0]
+                    .props
+                    .get("operator")
+                    .and_then(|p| p.as_str())
+                    == Some(operator)
+            })
+            .unwrap();
+        (r, slots, call)
+    }
+    #[test]
+    fn empty_comparisons_use_current_presence_and_refuse_stale_publication() {
+        for operator in ["==", "!=", "===", "!=="] {
+            let equal = matches!(operator, "==" | "===");
+            for published in [false, true] {
+                let (mut r, slots, call) = empty_comparison_fixture(operator);
+                if published {
+                    r.implied_relationships(slots);
+                    assert_eq!(
+                        r.cardinality_report(slots).bounds.unwrap().size(),
+                        Some(if equal { 7 } else { 9 })
+                    );
+                }
+                let empty = r
+                    .user_elements()
+                    .find(|&e| r.element_type(e) == "NullExpression")
+                    .unwrap();
+                r.b.elements[empty.0].ty = "LiteralInteger";
+                r.b.elements[empty.0].props.insert("value", json!(0));
+                r.implied_relationships(call);
+                r.implied_relationships(slots);
+                let report = r.cardinality_report(slots);
+                if published {
+                    assert_eq!(
+                        report.bounds,
+                        Err(CardinalityIssue::StaleEvidence),
+                        "{operator}"
+                    );
+                    assert!(report.multiplicities.is_empty());
+                } else {
+                    assert_eq!(
+                        report.bounds.unwrap().size(),
+                        Some(if equal { 9 } else { 7 }),
+                        "{operator}"
+                    );
+                }
+            }
+        }
+    }
+    #[test]
+    fn empty_comparisons_retain_operand_ownership_annotation_and_work_guards() {
+        for operator in ["==", "!=", "===", "!=="] {
+            for mutation in 0..4 {
+                let (mut r, slots, call) = empty_comparison_fixture(operator);
+                r.implied_relationships(slots);
+                assert!(r.cardinality_report(slots).bounds.is_ok());
+                let exhausted = r.cardinality_report_with_budget(slots, crate::eval::MAX_STEPS);
+                assert_eq!(exhausted.bounds, Err(CardinalityIssue::WorkLimit));
+                assert!(exhausted.multiplicities.is_empty());
+                let bindings = r
+                    .invocation_binding_report(call)
+                    .arguments
+                    .unwrap()
+                    .bindings;
+                match mutation {
+                    0 | 1 => r.b.elements[bindings[mutation].value.0].owning_relationship = None,
+                    2 => {
+                        let empty = bindings[0].value.0;
+                        r.b.metadata_of.insert(empty, vec![empty]);
+                        r.b.metadata_association_generation = Some(std::sync::Arc::new(()));
+                    }
+                    _ => {
+                        r.b.elements[call.0].props.insert("operator", json!("<"));
+                    }
+                }
+                let report = r.cardinality_report(slots);
+                assert!(report.bounds.is_err(), "{operator} mutation {mutation}");
+                assert!(report.multiplicities.is_empty());
+            }
+        }
+    }
     fn ordered_fixture() -> (ResolvedModel, ElementRef, ElementRef) {
         let mut m = conditional_model();
         m.add_library_source(

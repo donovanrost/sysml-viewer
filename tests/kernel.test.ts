@@ -31,6 +31,8 @@ for (const name of [
   'mult-028',
   'mult-029',
   'mult-030',
+  'mult-031',
+  'mult-032',
   'imp-020',
 ]) {
   documents.push({
@@ -404,6 +406,8 @@ test('ordered predicates retain exact comparisons and operand guards in both wor
 test('equality and logical predicates preserve values and guards in both workspace contexts', () => {
   for (const state of [snapshot, importGuards]) {
     for (const [qualifiedName, value] of [
+      ['PredicateGuards::nullEquality', '7'],
+      ['CoalescingGuards::emptyEquality', '7'],
       ['EqualityPredicates::eqEqual', '7'],
       ['EqualityPredicates::eqUnequal', '9'],
       ['EqualityPredicates::eqTrue', '7'],
@@ -484,7 +488,6 @@ test('equality and logical predicates preserve values and guards in both workspa
       ['realEquality', 'unsupportedBound'],
       ['infinityEquality', 'unsupportedBound'],
       ['stringEquality', 'unsupportedBound'],
-      ['nullEquality', 'unsupportedBound'],
       ['missingEquality', 'incompleteProvider'],
       ['undefinedEquality', 'unsupportedBound'],
       ['excessiveEquality', 'unsupportedBound'],
@@ -570,10 +573,86 @@ test('null-coalescing preserves empty, present and unknown values in both worksp
       ['recursiveSkipped', 'unsupportedBound'],
       ['emptyUnaryPlus', 'unsupportedBound'],
       ['emptyArithmetic', 'unsupportedBound'],
-      ['emptyEquality', 'unsupportedBound'],
       ['emptyCondition', 'unsupportedBound'],
     ]) {
       const element = state.elements.find((e) => e.qualifiedName === `CoalescingGuards::${name}`)!;
+      assert.deepEqual(element.cardinality, { status: 'unknown', reason }, name);
+    }
+  }
+});
+
+test('empty comparisons preserve presence and refuse unavailable operands in both workspace contexts', () => {
+  for (const state of [snapshot, importGuards]) {
+    for (const [name, value] of [
+      ['eqNull', '7'],
+      ['eqParentheses', '7'],
+      ['eqZeroRight', '9'],
+      ['eqZeroLeft', '9'],
+      ['eqFalseRight', '9'],
+      ['eqFalseLeft', '9'],
+      ['eqRational', '9'],
+      ['neNull', '9'],
+      ['neParentheses', '9'],
+      ['neZeroRight', '7'],
+      ['neZeroLeft', '7'],
+      ['neFalseRight', '7'],
+      ['neFalseLeft', '7'],
+      ['neRational', '7'],
+      ['sameNull', '7'],
+      ['sameParentheses', '7'],
+      ['sameZeroRight', '9'],
+      ['sameZeroLeft', '9'],
+      ['sameFalseRight', '9'],
+      ['sameFalseLeft', '9'],
+      ['sameRational', '9'],
+      ['differentNull', '9'],
+      ['differentParentheses', '9'],
+      ['differentZeroRight', '7'],
+      ['differentZeroLeft', '7'],
+      ['differentFalseRight', '7'],
+      ['differentFalseLeft', '7'],
+      ['differentRational', '7'],
+      ['rationalLeft', '7'],
+      ['aliasEmpty', '7'],
+      ['aliasPresent', '9'],
+      ['conditionalEmpty', '7'],
+      ['coalescedEmpty', '7'],
+      ['coalescedPresent', '7'],
+      ['logicalSkip', '7'],
+      ['fallbackFalse', '9'],
+    ]) {
+      const element = state.elements.find((e) => e.qualifiedName === `EmptyComparisons::${name}`)!;
+      assert.deepEqual(
+        element.cardinality,
+        { status: 'evaluated', lower: value, upper: value },
+        name,
+      );
+    }
+    for (const [name, reason] of [
+      ['eqMissingRight', 'incompleteProvider'],
+      ['eqMissingLeft', 'incompleteProvider'],
+      ['neMissingRight', 'incompleteProvider'],
+      ['neMissingLeft', 'incompleteProvider'],
+      ['sameMissingRight', 'incompleteProvider'],
+      ['sameMissingLeft', 'incompleteProvider'],
+      ['differentMissingRight', 'incompleteProvider'],
+      ['differentMissingLeft', 'incompleteProvider'],
+      ['divisionRight', 'unsupportedBound'],
+      ['divisionLeft', 'unsupportedBound'],
+      ['overflow', 'unsupportedBound'],
+      ['real', 'unsupportedBound'],
+      ['infinity', 'unsupportedBound'],
+      ['string', 'unsupportedBound'],
+      ['sequence', 'unsupportedBound'],
+      ['recursive', 'unsupportedBound'],
+      ['booleanEndpoint', 'unsupportedBound'],
+      ['emptySelected', 'unsupportedBound'],
+      ['numericCondition', 'unsupportedBound'],
+      ['eagerMissing', 'incompleteProvider'],
+    ]) {
+      const element = state.elements.find(
+        (e) => e.qualifiedName === `EmptyComparisonGuards::${name}`,
+      )!;
       assert.deepEqual(element.cardinality, { status: 'unknown', reason }, name);
     }
   }
