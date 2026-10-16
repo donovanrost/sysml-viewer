@@ -176,9 +176,17 @@
         {
           "standard": "KerML 1.0",
           "section": "8.2.2.5"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "8.2.2.4"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "8.2.5.8.4"
         }
       ],
-      "uncovered": "The cases cover selected names, whitespace, standard escapes and control-character rejection. Complete Unicode printability, all terminals, numeric forms and grammar alternatives remain unqualified."
+      "uncovered": "The cases cover selected names, whitespace, standard escapes, control-character rejection and decimal/exponential/real syntax boundaries. Full Unicode printability, every lexical/context combination, arbitrary expressions and complete grammar conformance remain unqualified."
     }
   ],
   "cases": [
@@ -5370,6 +5378,216 @@
           "id": "invalid-bound",
           "op": "cardinality",
           "owner": "InvalidLexicalKerML::recovered",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        },
+        {
+          "id": "dependent-bound",
+          "op": "cardinality",
+          "owner": "LexicalDependent::clean",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        }
+      ]
+    },
+    {
+      "id": "LEX-006",
+      "area": "names",
+      "purpose": "sysml numeric forms and intervening trivia preserve exact source ranges; fractional bounds are diagnosed and checked real-valued bounds remain unqualified.",
+      "polarity": "robustness",
+      "files": ["tests/conformance/fixtures/lex-006.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "spaced-source",
+          "op": "source",
+          "owner": "NumericSysML::spaced",
+          "text": "attribute spaced = 1 . 25;"
+        },
+        {
+          "id": "leading-source",
+          "op": "source",
+          "owner": "NumericSysML::leading",
+          "text": "attribute leading = .\f5E+1;"
+        },
+        {
+          "id": "noted-source",
+          "op": "source",
+          "owner": "NumericSysML::noted",
+          "text": "attribute noted = 1 //* \u6d77\ud83d\udea2 */ . // fraction\n        25;"
+        },
+        {
+          "id": "precise-source",
+          "op": "source",
+          "owner": "NumericSysML::precise",
+          "text": "attribute precise = 9007199254740993 . 00000000000000000001;"
+        },
+        {
+          "id": "fixed",
+          "op": "cardinality",
+          "owner": "NumericSysML::fixed",
+          "status": "evaluated",
+          "lower": "12",
+          "upper": "12"
+        },
+        {
+          "id": "realBound",
+          "op": "cardinality",
+          "owner": "NumericSysML::realBound",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "extremeBound",
+          "op": "cardinality",
+          "owner": "NumericSysML::extremeBound",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "fractional-bound",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "multiplicity bound must be a Natural number"
+        }
+      ]
+    },
+    {
+      "id": "LEX-007",
+      "area": "names",
+      "purpose": "kerml numeric forms and intervening trivia preserve exact source ranges; fractional bounds are diagnosed and checked real-valued bounds remain unqualified.",
+      "polarity": "robustness",
+      "files": ["tests/conformance/fixtures/lex-007.kerml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "spaced-source",
+          "op": "source",
+          "owner": "NumericKerML::spaced",
+          "text": "feature spaced = 1 . 25;"
+        },
+        {
+          "id": "leading-source",
+          "op": "source",
+          "owner": "NumericKerML::leading",
+          "text": "feature leading = .\f5E+1;"
+        },
+        {
+          "id": "noted-source",
+          "op": "source",
+          "owner": "NumericKerML::noted",
+          "text": "feature noted = 1 //* \u6d77\ud83d\udea2 */ . // fraction\n        25;"
+        },
+        {
+          "id": "precise-source",
+          "op": "source",
+          "owner": "NumericKerML::precise",
+          "text": "feature precise = 9007199254740993 . 00000000000000000001;"
+        },
+        {
+          "id": "fixed",
+          "op": "cardinality",
+          "owner": "NumericKerML::fixed",
+          "status": "evaluated",
+          "lower": "12",
+          "upper": "12"
+        },
+        {
+          "id": "realBound",
+          "op": "cardinality",
+          "owner": "NumericKerML::realBound",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "extremeBound",
+          "op": "cardinality",
+          "owner": "NumericKerML::extremeBound",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "fractional-bound",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "multiplicity bound must be a Natural number"
+        }
+      ]
+    },
+    {
+      "id": "LEX-008",
+      "area": "names",
+      "purpose": "sysml rejects an incomplete exponent and recovers later declarations while invalidating workspace bounds.",
+      "polarity": "negative",
+      "files": [
+        "tests/conformance/fixtures/lex-008.sysml",
+        "tests/conformance/fixtures/lex-005.sysml"
+      ],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error"
+        },
+        {
+          "id": "recovered",
+          "op": "element",
+          "name": "InvalidNumericSysML::recovered",
+          "metaclass": "PartUsage"
+        },
+        {
+          "id": "invalid-bound",
+          "op": "cardinality",
+          "owner": "InvalidNumericSysML::recovered",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        },
+        {
+          "id": "dependent-bound",
+          "op": "cardinality",
+          "owner": "LexicalDependent::clean",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        }
+      ]
+    },
+    {
+      "id": "LEX-009",
+      "area": "names",
+      "purpose": "kerml rejects an incomplete exponent and recovers later declarations while invalidating workspace bounds.",
+      "polarity": "negative",
+      "files": [
+        "tests/conformance/fixtures/lex-009.kerml",
+        "tests/conformance/fixtures/lex-005.sysml"
+      ],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error"
+        },
+        {
+          "id": "recovered",
+          "op": "element",
+          "name": "InvalidNumericKerML::recovered",
+          "metaclass": "Feature"
+        },
+        {
+          "id": "invalid-bound",
+          "op": "cardinality",
+          "owner": "InvalidNumericKerML::recovered",
           "status": "unknown",
           "reason": "invalidSyntax"
         },

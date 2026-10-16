@@ -118,6 +118,24 @@
       "baseSha256": "15c778003b360759b95a491a8eb195b37eb85bfdb4d626d86ee7bfec9a044244",
       "resultSha256": "e99ea6d8807862c2be5b23fe0e9396f7cb1fd5ba50b31823053c2cc7f4197df6",
       "reason": "KerML 1.0 8.2.2.1/3/5: form feed separates tokens; quoted names and strings share the seven Table 4 escapes and reject raw C0/C1 controls. Unicode diagnostic spans remain character-aligned and scanning retains complete source coverage and later declarations. Full Unicode printability and arbitrary line-terminator encodings remain unqualified. LEX-001\u2013004, native syntax/round-trip checks and five lexer proof tests retain acceptance, refusal and recovery boundaries."
+    },
+    {
+      "id": "KERNEL-013",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs",
+      "patch": "patches/0014-numeric-token-composition.patch",
+      "sha256": "bd716a79f203e756da14352de73218996fd637023c3f3b7efc49775186b995ce",
+      "baseSha256": "c99e341ff258b0b28c29b7e63c83d3c228a58dee6813d2c3a6b73f544ed5645b",
+      "resultSha256": "0b8b608caa7b6f0f7f96b2b97287224237c0e0efd1b7f3c0d4449a3e034318f2",
+      "reason": "KERNEL-013: compose real literal values from their numeric tokens, excluding whitespace and notes while retaining exact original expression spans. KerML 8.2.2.1/4 and 8.2.5.8.4 define token separation and real composition. Decimal digits and exponents remain text with no floating-point conversion. Numeric syntax, AST/lowering regressions and LEX-006\u2013009 retain acceptance, refusal and recovery boundaries."
+    },
+    {
+      "id": "KERNEL-013",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/rational.rs",
+      "patch": "patches/0015-decimal-scale-boundary.patch",
+      "sha256": "1ad209204549671361600519d554bdabd2e02d48307ef927f5f5cca50235210f",
+      "baseSha256": "8ca2a58b89ed29bc8402f2e04b8478aeeaaaab32f50a50975bec21ebeaf09786",
+      "resultSha256": "f21875ae00867390fcf9f90a23346f32437d7cf089d9a961b9e28cf12959c969",
+      "reason": "KERNEL-013: enforce the existing decimal-scale allowance using an inclusive range check instead of signed absolute value, which overflows for i64::MIN. Extreme exponents remain syntactically valid but cannot wrap the exact-decimal reader into an incorrect finite result. Boundary regressions cover both signs, fractional scale adjustment, i64 limits and the unchanged 100000 allowance. This does not qualify real-valued cardinality or general expression evaluation."
     }
   ]
 }

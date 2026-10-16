@@ -1,0 +1,55 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs b/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs
+@@ -1,16 +1,16 @@
+ //! Hand-written recursive-descent parser for the SysML v2 and KerML textual
+ //! notations.
+ //!
+-//! Follows the normative grammars (`spec-refs/SysML.xtext`,
+-//! `spec-refs/KerML.xtext`, `spec-refs/KerMLExpressions.xtext`). Keywords are
++//! Follows the textual grammars, with numeric composition checked against
++//! KerML 1.0 8.2.2.4 and 8.2.5.8.4. The Xtext files are implementation
++//! references, not the normative specification. Keywords are
+ //! matched contextually against `Ident` tokens; per-dialect reserved-word
+ //! sets prevent keywords from being taken as names (per Xtext keyword
+ //! reservation) while leaving the other dialect's keywords usable as
+ //! ordinary names.
+ //!
+-//! Coverage is complete for both dialects: the entire official corpus (345
+-//! files — standard library, training, examples, validation suites) parses
+-//! without diagnostics; `tests/corpus.rs` enforces this. Bodies parse a
++//! Corpus acceptance does not establish complete coverage of either dialect.
++//! Bodies parse a
+ //! *superset* across contexts (e.g. state members are not rejected inside
+ //! plain part bodies) — context validation belongs to a later semantic
+ //! layer, not the parser.
+@@ -5550,6 +5550,7 @@
+ 
+     /// Real/integer literal composition:
+     /// `DECIMAL` | `EXP` | `DECIMAL? '.' (DECIMAL | EXP)`.
++    /// Values contain only numeric token text; spans retain intervening trivia.
+     fn parse_number(&mut self, start: Span) -> Option<Expr> {
+         if self.at(TokenKind::Exp) {
+             let tok = self.bump();
+@@ -5565,7 +5566,7 @@
+                 let frac = self.bump();
+                 let span = start.join(frac.span);
+                 return Some(Expr {
+-                    kind: ExprKind::Literal(Literal::Real(span.slice(self.src).to_string())),
++                    kind: ExprKind::Literal(Literal::Real(format!(".{}", frac.text(self.src)))),
+                     span,
+                 });
+             }
+@@ -5580,7 +5581,11 @@
+             let frac = self.bump();
+             let span = start.join(frac.span);
+             return Some(Expr {
+-                kind: ExprKind::Literal(Literal::Real(span.slice(self.src).to_string())),
++                kind: ExprKind::Literal(Literal::Real(format!(
++                    "{}.{}",
++                    int_tok.text(self.src),
++                    frac.text(self.src)
++                ))),
+                 span,
+             });
+         }

@@ -27,6 +27,13 @@ if (process.argv.includes('--wasm-child')) {
   );
   const scenarios = [
     {
+      name: 'numeric-literals',
+      text: readFileSync(join(root, 'tests/conformance/fixtures/lex-006.sysml'), 'utf8'),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'LEX-006').checks,
+    },
+    {
       name: 'lexical-boundaries',
       text: readFileSync(join(root, 'tests/conformance/fixtures/lex-001.sysml'), 'utf8'),
       checks: JSON.parse(

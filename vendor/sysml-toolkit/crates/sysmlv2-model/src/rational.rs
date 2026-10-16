@@ -39,7 +39,8 @@ enum Repr {
 /// Past it a power reports `None` and callers degrade to an approximate
 /// result instead of allocating without bound.
 pub const MAX_BITS: u64 = 1 << 20;
-/// Largest exponent magnitude accepted by [`Rational::parse_decimal`].
+/// Largest decimal scale magnitude (exponent minus fractional digit count)
+/// accepted by [`Rational::parse_decimal`].
 const MAX_DECIMAL_EXPONENT: i64 = 100_000;
 
 fn fits_small(n: i128, d: i128) -> bool {
@@ -145,7 +146,8 @@ impl Rational {
             return None;
         }
         let scale = exp.checked_sub(frac_part.len() as i64)?;
-        if scale.abs() > MAX_DECIMAL_EXPONENT {
+        // Signed abs would overflow for i64::MIN, admitting a wrapped scale.
+        if !(-MAX_DECIMAL_EXPONENT..=MAX_DECIMAL_EXPONENT).contains(&scale) {
             return None;
         }
         let mut digits = String::with_capacity(int_part.len() + frac_part.len());

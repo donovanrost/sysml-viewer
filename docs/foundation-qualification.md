@@ -514,6 +514,42 @@ The [OMG function-definition issue KERML11-209](https://issues.omg.org/issues/sp
 records missing function-library definitions; implementation choices in those areas
 must be distinguished from normative qualification.
 
+## KERNEL-013: numeric token composition and decimal-scale boundaries
+
+KerML 8.2.2.4 defines decimal and exponential tokens; 8.2.5.8.4 composes a real
+literal from those tokens and a decimal point. Whitespace and notes are ignored
+between tokens. The parser previously retained that trivia inside the literal's
+value: `1 . 25` became the numeric text `1 . 25`, which downstream decimal readers
+could not interpret. The fix composes the value `1.25` from the numeric tokens
+while preserving the complete original expression span. The same rule applies to
+leading-dot forms and fractional tokens containing an exponent. Integer digits, exponent signs and
+arbitrary-precision spelling remain intact without a floating-point conversion.
+Regular comments retain their separate grammatical role and are not stripped as notes.
+
+The exact-decimal reader also previously took the signed absolute value of the
+adjusted scale. For `1e-9223372036854775808`, that overflowed in debug builds and
+wrapped in release builds, allowing an incorrect finite result. An inclusive range
+check now rejects it under the unchanged scale allowance of ±100000. Fractional
+digit adjustment, both signed extremes and the exact allowance boundaries have
+regressions. These are implementation resource boundaries, not new syntax limits.
+
+Three new regression assertions failed before the fixes: internal literal text,
+exact numeric lowering, and the extreme scale guard. The six-test Rust suite adds
+terminal/token-span checks, signs/ranges, malformed forms, both dialects, UTF-16
+coordinates, exact lowering and public snapshot/source recovery. LEX-006/007 keep
+source spans intact, diagnose fractional multiplicities, and retain unknown results
+for checked real-valued bounds. LEX-008/009 reject incomplete exponents and recover
+later declarations. The syntactically valid fixtures join the entire existing
+workspace and its unresolved-import variant.
+Malformed sources exercise the syntax-error boundary separately.
+
+Two reversible patches preserve the original vendor inventory. The rational
+library's 13 tests join the existing dependency qualification suites. Engine `.15`
+retains package version 0.3.0 and schema 3. Public `valueExpression` remains original
+source text; no value evaluation or AST API is added. Numeric/context combinations,
+general real-valued execution, normative interchange, full lexical coverage and
+formatter round-trip behavior remain unqualified.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -541,10 +577,10 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **88 passing conformance cases**, **no
-known-gap cases**, and **no planned cases in the current matrix**. All **55 Rust kernel tests**,
-**38 Node tests**, and **254 dependency proof tests** pass.
-The dependency suites cover lexical boundaries (5), type relations (41), model-level evaluability (33),
+On macOS arm64, the completed run has **92 passing conformance cases**, **no
+known-gap cases**, and **no planned cases in the current matrix**. All **61 Rust kernel tests**,
+**39 Node tests**, and **267 dependency proof tests** pass.
+The dependency suites cover lexical boundaries (5), rational arithmetic (13), type relations (41), model-level evaluability (33),
 cardinality (34), invocation bindings (19), constructor bindings (16), dynamic graph
 (19), dynamic invocations (27), owned results (4), semantic ownership (5), end constancy (10) and checked
 namespace operations (41). The corpus and the 32 import-rule partitions are included
@@ -557,29 +593,41 @@ pass. The saved [matrix execution](evidence/conformance-macos-arm64.json) and
 [requirements execution](evidence/requirements-macos-arm64.json) record the current
 source, patch and fixture fingerprints. Windows/Linux execution remains pending CI.
 
-The complete [lexical benchmark](evidence/benchmark-lexical-macos-arm64.json)
-records three fresh processes per native/WASM workload, for 96 successful samples.
-All repeated native and WASM snapshots agree exactly. Every lexical sample
-passes all four LEX-001 assertions; all 15 prior workloads remain included.
+The [initial `.15` conformance attempt](evidence/conformance-numeric-initial-macos-arm64.json)
+retains 89 passes and three process timeouts (SUB-002, NAME-003 and MULT-026).
+The [power-event record](evidence/conformance-numeric-power-events-macos-arm64.json)
+shows 255-, 901- and 901-second system sleep intervals during those attempts,
+consistent with their prolonged wall-clock durations. All [nine focused retries](evidence/conformance-numeric-retries-macos-arm64.json)
+passed in 2.0–4.1 seconds, with identical snapshots within each case. Subsequent
+validation used a temporary process-scoped sleep assertion, released at completion.
+The 30-second conformance and 60-second benchmark deadlines are unchanged. Earlier unexplained
+benchmark timeouts below remain separate evidence.
+
+The complete [numeric benchmark](evidence/benchmark-numeric-macos-arm64.json)
+records three fresh processes per native/WASM workload, for 102 successful samples.
+All repeated native and WASM snapshots agree exactly. Every numeric sample
+passes all nine LEX-006 assertions; all 16 prior workloads remain included.
+The extreme-scale regression also passes with debug overflow checks enabled.
 
 | Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
 | --- | ---: | ---: | ---: |
-| Lexical boundaries | 2,117 | 2,494 | 388.4/345.1 |
-| Strings | 2,668 | 3,160 | 399.6/359.3 |
-| Empty comparisons | 2,763 | 3,286 | 402.2/364.0 |
-| Null-coalescing | 2,439 | 2,994 | 382.4/360.1 |
-| Scalar equality | 2,593 | 3,126 | 397.4/364.5 |
-| Boolean predicates | 2,737 | 3,272 | 389.9/361.5 |
-| Ordered predicates | 2,533 | 3,402 | 389.4/360.0 |
-| Compound ranges | 2,483 | 2,712 | 391.2/355.0 |
-| Independent bounds with missing base | 2,033 | 2,562 | 400.1/345.5 |
-| Imported memberships | 2,219 | 2,451 | 403.3/345.5 |
-| Viewer example | 2,059 | 2,651 | 400.3/361.8 |
-| Attribute providers | 2,178 | 2,788 | 408.4/345.0 |
-| Arithmetic providers | 2,150 | 3,134 | 406.8/351.7 |
-| Conditional providers | 2,344 | 2,876 | 395.5/359.5 |
-| 100 usages | 2,161 | 2,759 | 390.0/356.8 |
-| 1,000 usages | 2,576 | 3,904 | 401.3/368.1 |
+| Numeric literals | 1,990 | 2,974 | 417.0/339.5 |
+| Lexical boundaries | 2,067 | 2,369 | 398.0/345.5 |
+| Strings | 2,500 | 3,006 | 403.6/366.7 |
+| Empty comparisons | 2,650 | 3,137 | 420.9/367.1 |
+| Null-coalescing | 2,350 | 2,868 | 425.4/366.1 |
+| Scalar equality | 2,476 | 3,002 | 410.7/365.6 |
+| Boolean predicates | 2,578 | 3,103 | 429.6/368.9 |
+| Ordered predicates | 2,413 | 2,910 | 431.2/370.8 |
+| Compound ranges | 2,045 | 2,464 | 402.5/358.5 |
+| Independent bounds with missing base | 1,949 | 2,417 | 403.9/348.5 |
+| Imported memberships | 1,901 | 2,361 | 414.5/346.5 |
+| Viewer example | 1,941 | 2,372 | 418.7/364.0 |
+| Attribute providers | 1,959 | 2,484 | 407.3/357.0 |
+| Arithmetic providers | 2,070 | 2,514 | 416.0/364.6 |
+| Conditional providers | 2,064 | 2,543 | 424.3/363.0 |
+| 100 usages | 1,948 | 2,372 | 436.1/365.3 |
+| 1,000 usages | 2,243 | 2,549 | 444.2/376.3 |
 
 The earlier `.6` isolation run had an initial native sample time out at 60
 seconds; a direct retry completed in 3.2 seconds, and its full 48-sample rerun
@@ -591,14 +639,14 @@ after 45 successful samples when the first attribute-provider WASM sample exceed
 It also retained an 18,985 ms Boolean WASM sample (the other two took 4,100 and 3,329 ms).
 Three direct attribute-provider retries completed in 2,628, 2,537 and 2,480 ms with identical
 snapshots. The separate complete [72-sample rerun](evidence/benchmark-predicates-macos-arm64.json) is retained. The initial timeout
-remains unexplained. No timeout occurred in the `.11` through `.14` runs; these results do not
+remains unexplained. No benchmark timeout occurred in the `.11` through `.15` runs; these results do not
 establish a stable latency bound.
 
 Measurements include startup, bundled-library analysis and serialization. They are
 observations on this Mac, not cross-platform latency guarantees. Canonical
 preparation is a whole-model pass. The facade runs its model scan before projecting
 cardinality; the separate direct-query regression exercises the first-query budget.
-Compared with the retained [string run](evidence/benchmark-strings-macos-arm64.json),
+Compared with the retained [lexical run](evidence/benchmark-lexical-macos-arm64.json),
 these uncontrolled runs do not isolate incremental query cost or establish a
 regression budget. Large import-heavy production models and incremental performance
 remain open engineering work.

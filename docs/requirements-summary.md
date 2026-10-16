@@ -34,7 +34,7 @@ All clause/prose decomposition remains pending. No percentage is published.
 
 ## Evidence mapped so far
 
-33 bounded assessments map 88 executable cases and 0 planned cases.
+34 bounded assessments map 92 executable cases and 0 planned cases.
 Linked tests are evidence for the assessment wording only. They do not qualify
 a whole source clause, its descendants, or a named constraint merely because it
 belongs to the same metaclass. Product robustness cases are identified separately.
@@ -73,7 +73,8 @@ belongs to the same metaclass. Product robustness cases are identified separatel
 | ROOT-IMPORT-VISIBILITY | standard | partial / partial | 1 / 1 / 0 / 0 | The Rust foundation test additionally exhausts 32 dialect/import-kind/visibility/nesting partitions. Public abstract-syntax import ownership and visibility queries remain unavailable. |
 | INHERITED-ALIAS-REDUCTION | standard | partial / partial | 1 / 0 / 0 / 0 | Only the shared Feature target boundary is tested here; non-Feature aliases are covered by IMP-014. Arbitrary redefinition closure is not qualified. |
 | LEXICAL-NAMES | standard | partial / partial | 4 / 3 / 0 / 0 | KERNEL-012 qualifies form-feed token separation and the seven KerML Table 4 escape forms for names and strings in both dialects. Nonstandard escapes, including \r, and all 65 raw C0/C1 controls produce syntax errors with complete Unicode character ranges. LF is the decoded newline representation on every host. Lexer tests retain complete token coverage, EOF/trailing-escape termination and comment boundaries. Public tests check byte/UTF-16 coordinates, following-declaration recovery and conservative workspace cardinality invalidation. Full Unicode printability, arbitrary line-terminator encodings, every numeric terminal and complete lexical/grammar conformance remain unqualified. The formatter and textual editing APIs are outside the current facade contract. |
-| CARDINALITY-RECOVERY | product | partial / partial | 0 / 3 / 0 / 0 | Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work. |
+| CARDINALITY-RECOVERY | product | partial / partial | 0 / 5 / 0 / 0 | Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work. |
+| NUMERIC-LITERALS | standard | partial / partial | 0 / 2 / 2 / 0 | KERNEL-013 covers decimal/exponential terminal boundaries and real-value token composition, leading-dot forms, signed exponents, unary signs, range delimiters, whitespace/notes, malformed forms and recovery in both dialects. Original source, spans and public valueExpression text remain unchanged; internal real values exclude trivia and lowering retains exact digits through JSON number or string representation. A product robustness check rejects scales outside the unchanged +/-100000 conversion allowance, including i64::MIN, without wrapping or panicking. Those resource limits are not language syntax limits. Fractional multiplicities retain their semantic diagnostic. The facade still refuses real-valued and extreme-exponent bounds. This does not qualify all numeric contexts, arbitrary expressions, general real-valued execution, a public value/AST API, normative interchange, full Unicode or complete lexical conformance. |
 
 ## Sources and extraction checks
 

@@ -1,0 +1,501 @@
+{
+  "startedAt": "2026-10-16T09:01:15.545Z",
+  "kernelInputSha256": "9da5df07824f3f91106a46a7bf555b94203578bf5fdc0c5a10891204acbf15ef",
+  "binarySha256": "cc2b853d4c4da4a38d8983428ea54ca87f4255faa99c87be657272a45580a337",
+  "matrixSha256": "c24ea403c363aefb41fad90eafc2cee97de3dcd1a817ff806c6c4a378e74ecee",
+  "timeoutMs": 30000,
+  "sleepAssertion": "caffeinate -is, scoped to validation command",
+  "results": [
+    {
+      "id": "SUB-002",
+      "attempt": 1,
+      "elapsedMs": 2139,
+      "status": "pass",
+      "snapshotSha256": "959f0aff379c8a9a498117f555335f4e345f028cb8e806ea16dc9bbef8391452",
+      "checks": [
+        {
+          "id": "syntax",
+          "status": "pass"
+        },
+        {
+          "id": "missing",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "SUB-002",
+      "attempt": 2,
+      "elapsedMs": 2034,
+      "status": "pass",
+      "snapshotSha256": "959f0aff379c8a9a498117f555335f4e345f028cb8e806ea16dc9bbef8391452",
+      "checks": [
+        {
+          "id": "syntax",
+          "status": "pass"
+        },
+        {
+          "id": "missing",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "SUB-002",
+      "attempt": 3,
+      "elapsedMs": 2728,
+      "status": "pass",
+      "snapshotSha256": "959f0aff379c8a9a498117f555335f4e345f028cb8e806ea16dc9bbef8391452",
+      "checks": [
+        {
+          "id": "syntax",
+          "status": "pass"
+        },
+        {
+          "id": "missing",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "NAME-003",
+      "attempt": 1,
+      "elapsedMs": 2433,
+      "status": "pass",
+      "snapshotSha256": "0240f5729d39723ba95c1eeb7adc6b86f29a203ef2e1329c49f2ca30656e0aa0",
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "resolved",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "NAME-003",
+      "attempt": 2,
+      "elapsedMs": 2392,
+      "status": "pass",
+      "snapshotSha256": "0240f5729d39723ba95c1eeb7adc6b86f29a203ef2e1329c49f2ca30656e0aa0",
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "resolved",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "NAME-003",
+      "attempt": 3,
+      "elapsedMs": 2298,
+      "status": "pass",
+      "snapshotSha256": "0240f5729d39723ba95c1eeb7adc6b86f29a203ef2e1329c49f2ca30656e0aa0",
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "resolved",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "MULT-026",
+      "attempt": 1,
+      "elapsedMs": 4135,
+      "status": "pass",
+      "snapshotSha256": "5cf0c656a52f695c5e04fa3aebf878b033b63cd1ee5f4ee3236649201d1f0a7b",
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "eqEqual",
+          "status": "pass"
+        },
+        {
+          "id": "eqUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "eqTrue",
+          "status": "pass"
+        },
+        {
+          "id": "eqFalse",
+          "status": "pass"
+        },
+        {
+          "id": "eqRational",
+          "status": "pass"
+        },
+        {
+          "id": "eqLarge",
+          "status": "pass"
+        },
+        {
+          "id": "neEqual",
+          "status": "pass"
+        },
+        {
+          "id": "neUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "neTrue",
+          "status": "pass"
+        },
+        {
+          "id": "neFalse",
+          "status": "pass"
+        },
+        {
+          "id": "neRational",
+          "status": "pass"
+        },
+        {
+          "id": "neLarge",
+          "status": "pass"
+        },
+        {
+          "id": "sameEqual",
+          "status": "pass"
+        },
+        {
+          "id": "sameUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "sameTrue",
+          "status": "pass"
+        },
+        {
+          "id": "sameFalse",
+          "status": "pass"
+        },
+        {
+          "id": "sameRational",
+          "status": "pass"
+        },
+        {
+          "id": "sameLarge",
+          "status": "pass"
+        },
+        {
+          "id": "differentEqual",
+          "status": "pass"
+        },
+        {
+          "id": "differentUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "differentTrue",
+          "status": "pass"
+        },
+        {
+          "id": "differentFalse",
+          "status": "pass"
+        },
+        {
+          "id": "differentRational",
+          "status": "pass"
+        },
+        {
+          "id": "differentLarge",
+          "status": "pass"
+        },
+        {
+          "id": "integerRational",
+          "status": "pass"
+        },
+        {
+          "id": "wideExact",
+          "status": "pass"
+        },
+        {
+          "id": "closeRational",
+          "status": "pass"
+        },
+        {
+          "id": "signed",
+          "status": "pass"
+        },
+        {
+          "id": "viaAlias",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "MULT-026",
+      "attempt": 2,
+      "elapsedMs": 2864,
+      "status": "pass",
+      "snapshotSha256": "5cf0c656a52f695c5e04fa3aebf878b033b63cd1ee5f4ee3236649201d1f0a7b",
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "eqEqual",
+          "status": "pass"
+        },
+        {
+          "id": "eqUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "eqTrue",
+          "status": "pass"
+        },
+        {
+          "id": "eqFalse",
+          "status": "pass"
+        },
+        {
+          "id": "eqRational",
+          "status": "pass"
+        },
+        {
+          "id": "eqLarge",
+          "status": "pass"
+        },
+        {
+          "id": "neEqual",
+          "status": "pass"
+        },
+        {
+          "id": "neUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "neTrue",
+          "status": "pass"
+        },
+        {
+          "id": "neFalse",
+          "status": "pass"
+        },
+        {
+          "id": "neRational",
+          "status": "pass"
+        },
+        {
+          "id": "neLarge",
+          "status": "pass"
+        },
+        {
+          "id": "sameEqual",
+          "status": "pass"
+        },
+        {
+          "id": "sameUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "sameTrue",
+          "status": "pass"
+        },
+        {
+          "id": "sameFalse",
+          "status": "pass"
+        },
+        {
+          "id": "sameRational",
+          "status": "pass"
+        },
+        {
+          "id": "sameLarge",
+          "status": "pass"
+        },
+        {
+          "id": "differentEqual",
+          "status": "pass"
+        },
+        {
+          "id": "differentUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "differentTrue",
+          "status": "pass"
+        },
+        {
+          "id": "differentFalse",
+          "status": "pass"
+        },
+        {
+          "id": "differentRational",
+          "status": "pass"
+        },
+        {
+          "id": "differentLarge",
+          "status": "pass"
+        },
+        {
+          "id": "integerRational",
+          "status": "pass"
+        },
+        {
+          "id": "wideExact",
+          "status": "pass"
+        },
+        {
+          "id": "closeRational",
+          "status": "pass"
+        },
+        {
+          "id": "signed",
+          "status": "pass"
+        },
+        {
+          "id": "viaAlias",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "MULT-026",
+      "attempt": 3,
+      "elapsedMs": 2635,
+      "status": "pass",
+      "snapshotSha256": "5cf0c656a52f695c5e04fa3aebf878b033b63cd1ee5f4ee3236649201d1f0a7b",
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "eqEqual",
+          "status": "pass"
+        },
+        {
+          "id": "eqUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "eqTrue",
+          "status": "pass"
+        },
+        {
+          "id": "eqFalse",
+          "status": "pass"
+        },
+        {
+          "id": "eqRational",
+          "status": "pass"
+        },
+        {
+          "id": "eqLarge",
+          "status": "pass"
+        },
+        {
+          "id": "neEqual",
+          "status": "pass"
+        },
+        {
+          "id": "neUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "neTrue",
+          "status": "pass"
+        },
+        {
+          "id": "neFalse",
+          "status": "pass"
+        },
+        {
+          "id": "neRational",
+          "status": "pass"
+        },
+        {
+          "id": "neLarge",
+          "status": "pass"
+        },
+        {
+          "id": "sameEqual",
+          "status": "pass"
+        },
+        {
+          "id": "sameUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "sameTrue",
+          "status": "pass"
+        },
+        {
+          "id": "sameFalse",
+          "status": "pass"
+        },
+        {
+          "id": "sameRational",
+          "status": "pass"
+        },
+        {
+          "id": "sameLarge",
+          "status": "pass"
+        },
+        {
+          "id": "differentEqual",
+          "status": "pass"
+        },
+        {
+          "id": "differentUnequal",
+          "status": "pass"
+        },
+        {
+          "id": "differentTrue",
+          "status": "pass"
+        },
+        {
+          "id": "differentFalse",
+          "status": "pass"
+        },
+        {
+          "id": "differentRational",
+          "status": "pass"
+        },
+        {
+          "id": "differentLarge",
+          "status": "pass"
+        },
+        {
+          "id": "integerRational",
+          "status": "pass"
+        },
+        {
+          "id": "wideExact",
+          "status": "pass"
+        },
+        {
+          "id": "closeRational",
+          "status": "pass"
+        },
+        {
+          "id": "signed",
+          "status": "pass"
+        },
+        {
+          "id": "viaAlias",
+          "status": "pass"
+        }
+      ]
+    }
+  ],
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.15",
+  "finishedAt": "2026-10-16T09:01:39.560Z"
+}

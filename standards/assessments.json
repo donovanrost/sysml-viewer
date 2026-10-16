@@ -63,7 +63,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs",
       "symbol": "pub fn parse_source(",
       "role": "candidate syntax implementation",
-      "sha256": "c99e341ff258b0b28c29b7e63c83d3c228a58dee6813d2c3a6b73f544ed5645b"
+      "sha256": "0b8b608caa7b6f0f7f96b2b97287224237c0e0efd1b7f3c0d4449a3e034318f2"
     },
     "syntax-api": {
       "path": "crates/sysml-kernel/src/syntax.rs",
@@ -256,6 +256,24 @@
       "symbol": "fn quoted_control_and_escape_diagnostics_keep_exact_byte_and_utf16_ranges",
       "role": "Both dialects, all 65 C0/C1 controls, standard/nonstandard escapes, UTF-8/UTF-16 ranges, round-trip recovery and workspace bound invalidation.",
       "sha256": "27fdad1ab2373a3ae11adb676703d2bed62f3f9be7e7d6ef451024195c555d00"
+    },
+    "numeric-parser": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs",
+      "symbol": "fn parse_number(",
+      "role": "Numeric token composition preserves exact spelling independently of whitespace/notes and retains original source spans.",
+      "sha256": "0b8b608caa7b6f0f7f96b2b97287224237c0e0efd1b7f3c0d4449a3e034318f2"
+    },
+    "decimal-reader": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/rational.rs",
+      "symbol": "pub fn parse_decimal(",
+      "role": "Bounded exact-decimal conversion rejects extreme signed scales without absolute-value overflow; the existing 100000 allowance is unchanged.",
+      "sha256": "f21875ae00867390fcf9f90a23346f32437d7cf089d9a961b9e28cf12959c969"
+    },
+    "numeric-tests": {
+      "path": "crates/sysml-kernel/tests/numeric.rs",
+      "symbol": "fn real_values_exclude_trivia_without_losing_source_spans",
+      "role": "Terminal boundaries, numeric AST values, exact lowering, both dialects, source coordinates, extreme scales and facade recovery after JSON round-trip.",
+      "sha256": "3a2339533c0cb6a3e5dfaa1989075b661d2eddf31a301a67c01c619ec7c16723"
     }
   },
   "assessments": [
@@ -2272,7 +2290,8 @@
         "evidence": [
           "engine",
           "cardinality",
-          "lexical-tests"
+          "lexical-tests",
+          "numeric-tests"
         ]
       },
       "api": {
@@ -2303,9 +2322,107 @@
             "invalid-bound",
             "dependent-bound"
           ]
+        },
+        {
+          "case": "LEX-008",
+          "checks": [
+            "invalid-bound",
+            "dependent-bound"
+          ]
+        },
+        {
+          "case": "LEX-009",
+          "checks": [
+            "invalid-bound",
+            "dependent-bound"
+          ]
         }
       ],
       "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
+    },
+    {
+      "id": "NUMERIC-LITERALS",
+      "obligation": "Recognize decimal, exponential and real literal syntax without allowing ignored whitespace or notes to alter the represented numeric value.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.1",
+        "KERML-CLAUSE-8.2.2.1",
+        "KERML-CLAUSE-8.2.2.2",
+        "KERML-CLAUSE-8.2.2.4",
+        "KERML-CLAUSE-8.2.5.8.4",
+        "KERML-GRAMMAR-DECIMAL_VALUE",
+        "KERML-GRAMMAR-EXPONENTIAL_VALUE",
+        "KERML-GRAMMAR-RealValue"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "checked-lexer",
+          "numeric-parser",
+          "decimal-reader",
+          "numeric-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "syntax-api",
+          "source-api",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "LEX-006",
+          "checks": [
+            "clean",
+            "spaced-source",
+            "leading-source",
+            "noted-source",
+            "precise-source",
+            "fixed",
+            "realBound",
+            "extremeBound",
+            "fractional-bound"
+          ]
+        },
+        {
+          "case": "LEX-007",
+          "checks": [
+            "clean",
+            "spaced-source",
+            "leading-source",
+            "noted-source",
+            "precise-source",
+            "fixed",
+            "realBound",
+            "extremeBound",
+            "fractional-bound"
+          ]
+        },
+        {
+          "case": "LEX-008",
+          "checks": [
+            "syntax",
+            "recovered",
+            "invalid-bound",
+            "dependent-bound"
+          ]
+        },
+        {
+          "case": "LEX-009",
+          "checks": [
+            "syntax",
+            "recovered",
+            "invalid-bound",
+            "dependent-bound"
+          ]
+        }
+      ],
+      "limits": "KERNEL-013 covers decimal/exponential terminal boundaries and real-value token composition, leading-dot forms, signed exponents, unary signs, range delimiters, whitespace/notes, malformed forms and recovery in both dialects. Original source, spans and public valueExpression text remain unchanged; internal real values exclude trivia and lowering retains exact digits through JSON number or string representation. A product robustness check rejects scales outside the unchanged +/-100000 conversion allowance, including i64::MIN, without wrapping or panicking. Those resource limits are not language syntax limits. Fractional multiplicities retain their semantic diagnostic. The facade still refuses real-valued and extreme-exponent bounds. This does not qualify all numeric contexts, arbitrary expressions, general real-valued execution, a public value/AST API, normative interchange, full Unicode or complete lexical conformance."
     }
   ]
 }

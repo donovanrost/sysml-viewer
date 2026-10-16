@@ -1,0 +1,31 @@
+{
+  "source": "pmset -g log",
+  "run": "conformance-numeric-initial-macos-arm64.json",
+  "observation": "System sleep intervals coincide with the three prolonged conformance process attempts. This is evidence of interrupted wall-clock measurement, not an instrumented proof of exclusive causality.",
+  "events": [
+    {
+      "case": "SUB-002",
+      "elapsedMs": 255660,
+      "sleepStart": "2026-10-15T22:45:33-06:00",
+      "wakeAt": "2026-10-15T22:49:48-06:00",
+      "sleepDurationSeconds": 255,
+      "reason": "Maintenance Sleep"
+    },
+    {
+      "case": "NAME-003",
+      "elapsedMs": 901790,
+      "sleepStart": "2026-10-15T22:51:21-06:00",
+      "wakeAt": "2026-10-15T23:06:22-06:00",
+      "sleepDurationSeconds": 901,
+      "reason": "Maintenance Sleep"
+    },
+    {
+      "case": "MULT-026",
+      "elapsedMs": 900626,
+      "sleepStart": "2026-10-15T23:07:07-06:00",
+      "wakeAt": "2026-10-15T23:22:08-06:00",
+      "sleepDurationSeconds": 901,
+      "reason": "Maintenance Sleep"
+    }
+  ]
+}

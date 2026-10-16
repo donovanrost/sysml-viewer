@@ -4657,7 +4657,8 @@
         "evidence": [
           "engine",
           "cardinality",
-          "lexical-tests"
+          "lexical-tests",
+          "numeric-tests"
         ]
       },
       "api": {
@@ -4724,29 +4725,271 @@
               "status": "pass"
             }
           ]
+        },
+        {
+          "case": "LEX-008",
+          "checks": [
+            "invalid-bound",
+            "dependent-bound"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "invalid-bound",
+              "status": "pass"
+            },
+            {
+              "id": "dependent-bound",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "LEX-009",
+          "checks": [
+            "invalid-bound",
+            "dependent-bound"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "invalid-bound",
+              "status": "pass"
+            },
+            {
+              "id": "dependent-bound",
+              "status": "pass"
+            }
+          ]
         }
       ],
       "limits": "Conservative workspace-wide invalidation also affects otherwise valid types until syntax errors are fixed; precise dependency-based invalidation remains future work."
+    },
+    {
+      "id": "NUMERIC-LITERALS",
+      "obligation": "Recognize decimal, exponential and real literal syntax without allowing ignored whitespace or notes to alter the represented numeric value.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.1",
+        "KERML-CLAUSE-8.2.2.1",
+        "KERML-CLAUSE-8.2.2.2",
+        "KERML-CLAUSE-8.2.2.4",
+        "KERML-CLAUSE-8.2.5.8.4",
+        "KERML-GRAMMAR-DECIMAL_VALUE",
+        "KERML-GRAMMAR-EXPONENTIAL_VALUE",
+        "KERML-GRAMMAR-RealValue"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "checked-lexer",
+          "numeric-parser",
+          "decimal-reader",
+          "numeric-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "syntax-api",
+          "source-api",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "LEX-006",
+          "checks": [
+            "clean",
+            "spaced-source",
+            "leading-source",
+            "noted-source",
+            "precise-source",
+            "fixed",
+            "realBound",
+            "extremeBound",
+            "fractional-bound"
+          ],
+          "polarity": "robustness",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "spaced-source",
+              "status": "pass"
+            },
+            {
+              "id": "leading-source",
+              "status": "pass"
+            },
+            {
+              "id": "noted-source",
+              "status": "pass"
+            },
+            {
+              "id": "precise-source",
+              "status": "pass"
+            },
+            {
+              "id": "fixed",
+              "status": "pass"
+            },
+            {
+              "id": "realBound",
+              "status": "pass"
+            },
+            {
+              "id": "extremeBound",
+              "status": "pass"
+            },
+            {
+              "id": "fractional-bound",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "LEX-007",
+          "checks": [
+            "clean",
+            "spaced-source",
+            "leading-source",
+            "noted-source",
+            "precise-source",
+            "fixed",
+            "realBound",
+            "extremeBound",
+            "fractional-bound"
+          ],
+          "polarity": "robustness",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "spaced-source",
+              "status": "pass"
+            },
+            {
+              "id": "leading-source",
+              "status": "pass"
+            },
+            {
+              "id": "noted-source",
+              "status": "pass"
+            },
+            {
+              "id": "precise-source",
+              "status": "pass"
+            },
+            {
+              "id": "fixed",
+              "status": "pass"
+            },
+            {
+              "id": "realBound",
+              "status": "pass"
+            },
+            {
+              "id": "extremeBound",
+              "status": "pass"
+            },
+            {
+              "id": "fractional-bound",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "LEX-008",
+          "checks": [
+            "syntax",
+            "recovered",
+            "invalid-bound",
+            "dependent-bound"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "recovered",
+              "status": "pass"
+            },
+            {
+              "id": "invalid-bound",
+              "status": "pass"
+            },
+            {
+              "id": "dependent-bound",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "LEX-009",
+          "checks": [
+            "syntax",
+            "recovered",
+            "invalid-bound",
+            "dependent-bound"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "recovered",
+              "status": "pass"
+            },
+            {
+              "id": "invalid-bound",
+              "status": "pass"
+            },
+            {
+              "id": "dependent-bound",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-013 covers decimal/exponential terminal boundaries and real-value token composition, leading-dot forms, signed exponents, unary signs, range delimiters, whitespace/notes, malformed forms and recovery in both dialects. Original source, spans and public valueExpression text remain unchanged; internal real values exclude trivia and lowering retains exact digits through JSON number or string representation. A product robustness check rejects scales outside the unchanged +/-100000 conversion allowance, including i64::MIN, without wrapping or panicking. Those resource limits are not language syntax limits. Fractional multiplicities retain their semantic diagnostic. The facade still refuses real-valued and extreme-exponent bounds. This does not qualify all numeric contexts, arbitrary expressions, general real-valued execution, a public value/AST API, normative interchange, full Unicode or complete lexical conformance."
     }
   ],
-  "executableCases": 88,
+  "executableCases": 92,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "a7b0fcaa7c0a7309c643be09ff2b04727a286348228aeab1142593dc244d2bdd",
+  "assessmentsSha256": "c3d12625c062fcd357ef765944587104abdec02bb0585b6b9156f59286db4265",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "634ac6afd5fa997ee5ddad4fd02d573465a738cd4f6376c0b57feea17d441113",
-    "generatedAt": "2026-10-16T03:52:28.889Z",
-    "kernelInputSha256": "90d718283fb4dee69fbd8f14d22b6d03d1bc3d9c8d63769d771ff5f30fd3cb99",
-    "binarySha256": "ce12b51c7d989968a880255e7d3fea5b4d6a25955b93f082ff9acddcc6284389",
+    "sha256": "f2dee9cfded444e7ffceef716279870bd01e00e3477b1d9760a3bd01f6ea622a",
+    "generatedAt": "2026-10-16T09:04:46.295Z",
+    "kernelInputSha256": "9da5df07824f3f91106a46a7bf555b94203578bf5fdc0c5a10891204acbf15ef",
+    "binarySha256": "cc2b853d4c4da4a38d8983428ea54ca87f4255faa99c87be657272a45580a337",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.14",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.15",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 88,
+      "pass": 92,
       "known-gap": 0,
       "planned": 0,
       "fail": 0

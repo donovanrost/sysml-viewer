@@ -81,6 +81,15 @@ characters inside comments retain their separate comment rules. Exhaustive Unico
 printability and every possible line-terminator encoding remain unqualified.
 See KERNEL-012 in [foundation qualification](foundation-qualification.md).
 
+Numeric tokens follow the decimal/exponential boundaries of KerML 8.2.2.4.
+Real values are composed from numeric token text, so whitespace and notes around
+the decimal point do not alter the internal value. Original source spans and
+`valueExpression` text retain that trivia. Numeric spelling is never normalized
+through floating-point parsing at this boundary. The exact-decimal reader's
+existing scale allowance remains bounded, including extreme negative exponents;
+refusal there does not make the source syntactically invalid. Real-valued bounds
+remain unqualified and unknown. See KERNEL-013 in the qualification report.
+
 A `Reference` describes a **written name reference**. Its resolved target is what
 that name denotes. For conjugated port typing `~P`, the written spelling includes
 `~`, while the name target is `P`; this is not a promise that it is the complete

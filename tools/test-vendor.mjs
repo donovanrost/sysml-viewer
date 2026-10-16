@@ -30,6 +30,7 @@ try {
   copyFileSync(join(root, 'tools', 'vendor-tests.Cargo.lock'), join(workspace, 'Cargo.lock'));
   const suites = [
     ['sysmlv2-syntax', 'lexer::'],
+    ['sysmlv2-model', 'rational::tests::'],
     ...[
       'type_relations',
       'model_level_evaluability',
