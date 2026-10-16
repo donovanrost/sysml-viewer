@@ -419,6 +419,7 @@ pub(super) fn designated_operator_name(
         "or" => "or",
         "implies" => "implies",
         "if" => "if",
+        "??" => "??",
         _ => return None,
     })
 }
@@ -441,7 +442,9 @@ pub(super) fn designated_operator_target(
     let roots: Vec<_> = b.unit_starts.iter().map(|&(root, _)| root).collect();
     let packages: &[&str] = match operator {
         "==" | "!=" | "===" | "!==" => &["BaseFunctions"],
-        "if" | "and" | "or" | "implies" => &["BaseFunctions", "DataFunctions", "ControlFunctions"],
+        "if" | "and" | "or" | "implies" | "??" => {
+            &["BaseFunctions", "DataFunctions", "ControlFunctions"]
+        }
         _ => &["BaseFunctions", "DataFunctions"],
     };
     let mut selected = vec![None; packages.len()];
@@ -743,7 +746,7 @@ mod tests {
             );
         }
     }
-    const PREDICATES: &[(&str, &str)] = &[
+    const SCALAR_CONTROLS: &[(&str, &str)] = &[
         ("==", "BaseFunctions"),
         ("!=", "BaseFunctions"),
         ("===", "BaseFunctions"),
@@ -755,6 +758,7 @@ mod tests {
         ("and", "ControlFunctions"),
         ("or", "ControlFunctions"),
         ("implies", "ControlFunctions"),
+        ("??", "ControlFunctions"),
     ];
     fn predicate_fixture(
         operator: &str,
@@ -799,7 +803,7 @@ mod tests {
     }
     #[test]
     fn predicate_bindings_require_canonical_publication_and_current_inputs() {
-        for &(operator, package) in PREDICATES {
+        for &(operator, package) in SCALAR_CONTROLS {
             for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
                 let (mut r, call) = predicate_fixture(operator, package, format, "", true);
                 assert!(r.invocation_binding_report(call).arguments.is_err());
@@ -839,7 +843,7 @@ mod tests {
     }
     #[test]
     fn predicate_designation_checks_precedence_and_loaded_library_identity() {
-        for &(operator, package) in PREDICATES {
+        for &(operator, package) in SCALAR_CONTROLS {
             let mut rejected = vec![format!(
                 "standard library package {package} {{function '{operator}' {{in x; return r;}}}}"
             )];

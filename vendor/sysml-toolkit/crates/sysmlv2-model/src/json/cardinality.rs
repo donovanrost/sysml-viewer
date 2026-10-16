@@ -796,6 +796,11 @@ fn certified_operators(
             when_true: usize,
             when_false: usize,
         },
+        Coalesce {
+            expression: usize,
+            first: usize,
+            second: usize,
+        },
         Logical {
             expression: usize,
             operator: CheckedLogicalOperator,
@@ -829,6 +834,21 @@ fn certified_operators(
                     .conditionals
                     .insert(expression, (test, when_true, when_false));
                 pending.push(Task::Visit(if condition { when_true } else { when_false }));
+                continue;
+            }
+            Task::Coalesce {
+                expression,
+                first,
+                second,
+            } => {
+                let empty = crate::eval::checked_multiplicity_empty(
+                    &mut r.b, first, context, &operators, steps,
+                )
+                .ok_or(CardinalityIssue::UnsupportedBound)?;
+                operators.coalescings.insert(expression, (first, second));
+                if empty {
+                    pending.push(Task::Visit(second));
+                }
                 continue;
             }
             Task::Logical {
@@ -868,7 +888,7 @@ fn certified_operators(
             require_model_level_value(r, expression, &mut eligibility, steps)?;
         }
         match r.b.elements[expression].ty {
-            "LiteralInteger" | "LiteralInfinity" | "LiteralBoolean" => continue,
+            "NullExpression" | "LiteralInteger" | "LiteralInfinity" | "LiteralBoolean" => continue,
             "FeatureReferenceExpression" => {
                 certify_reference_domain(&r.b, &raw, expression, steps)?;
                 // The referenced Feature is the first non-parameter member,
@@ -981,6 +1001,22 @@ fn certified_operators(
             let operand = arguments.bindings[0].value.0;
             operators.negations.insert(expression, operand);
             pending.push(Task::Visit(operand));
+            continue;
+        }
+        if spelling == Some("??") {
+            if arguments.inputs.len() != 2 || arguments.bindings.len() != 2 {
+                return Err(CardinalityIssue::UnsupportedBound);
+            }
+            let first = arguments.bindings[0].value.0;
+            // The complete argument list is eligible, including a skipped
+            // fallback; its deferred wrapper must also remain reciprocal.
+            let second = conditional_operand(&r.b, &raw, arguments.bindings[1].value.0, steps)?;
+            pending.push(Task::Coalesce {
+                expression,
+                first,
+                second,
+            });
+            pending.push(Task::Visit(first));
             continue;
         }
         let logical = match spelling {
@@ -1184,7 +1220,7 @@ mod tests {
     }
     fn conditional_model() -> Model {
         let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
-        m.add_library_source("conditional-library.kerml", "standard library package Base {classifier Anything; feature things:Anything;} standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;} standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;} standard library package ControlFunctions {function 'and' {in x; in expr y {return r;} return r;} function 'or' {in x; in expr y {return r;} return r;} function 'implies' {in x; in expr y {return r;} return r;} function 'if' {in test; in expr thenValue {return r;} in expr elseValue {return r;} return result;}} ");
+        m.add_library_source("conditional-library.kerml", "standard library package Base {classifier Anything; feature things:Anything;} standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;} standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;} standard library package ControlFunctions {function '??' {in x; in expr y {return r;} return r;} function 'and' {in x; in expr y {return r;} return r;} function 'or' {in x; in expr y {return r;} return r;} function 'implies' {in x; in expr y {return r;} return r;} function 'if' {in test; in expr thenValue {return r;} in expr elseValue {return r;} return result;}} ");
         let unit = m.add_source(
             "conditional.kerml",
             "feature n = if true ? 3 else 4; feature slots[n];",
@@ -1198,6 +1234,120 @@ mod tests {
         r.implied_relationships(slots);
         assert_eq!(r.cardinality_report(slots).bounds.unwrap().size(), Some(3));
         (r, slots)
+    }
+    fn coalescing_fixture(first: &str, second: &str) -> (ResolvedModel, ElementRef, ElementRef) {
+        let mut m = conditional_model();
+        let unit = m.add_source("coalescing.kerml", &format!(
+            "feature missing; feature count = {first} ?? {second}; feature coalescingSlots[count];"
+        ));
+        assert!(unit.diagnostics.is_empty(), "{:?}", unit.diagnostics);
+        let mut r = ResolvedModel::build(&m);
+        let slots = r.resolve_qualified("coalescingSlots").unwrap();
+        let call = r
+            .user_elements()
+            .find(|e| {
+                r.b.elements[e.0]
+                    .props
+                    .get("operator")
+                    .and_then(|v| v.as_str())
+                    == Some("??")
+            })
+            .unwrap();
+        (r, slots, call)
+    }
+    #[test]
+    fn coalescing_requires_current_reciprocal_skipped_operand_evidence() {
+        for mutation in 0..4 {
+            let (mut r, slots, call) = coalescing_fixture("7", "missing");
+            r.implied_relationships(slots);
+            assert_eq!(r.cardinality_report(slots).bounds.unwrap().size(), Some(7));
+            let exhausted = r.cardinality_report_with_budget(slots, crate::eval::MAX_STEPS);
+            assert_eq!(exhausted.bounds, Err(CardinalityIssue::WorkLimit));
+            assert!(exhausted.multiplicities.is_empty());
+            let bindings = r
+                .invocation_binding_report(call)
+                .arguments
+                .unwrap()
+                .bindings;
+            let wrapper = bindings[1].value.0;
+            let raw = StoredStructure::for_query(&mut r.b, &mut 0).unwrap();
+            let child = conditional_operand(&r.b, &raw, wrapper, &mut 0).unwrap();
+            match mutation {
+                0 => r.b.elements[child].owning_relationship = None,
+                1 => {
+                    r.b.metadata_of.insert(wrapper, vec![wrapper]);
+                    r.b.metadata_association_generation = Some(std::sync::Arc::new(()));
+                }
+                2 => r.b.elements[wrapper].ty = "NullExpression",
+                _ => r.b.elements[bindings[0].value.0].ty = "NullExpression",
+            }
+            let report = r.cardinality_report(slots);
+            assert!(report.bounds.is_err(), "mutation {mutation}");
+            assert!(report.multiplicities.is_empty());
+        }
+    }
+    #[test]
+    fn coalescing_reselects_before_publication_and_refuses_stale_published_values() {
+        for published in [false, true] {
+            for (first, expected) in [("null", 7), ("7", 4)] {
+                let (mut r, slots, call) = coalescing_fixture(first, "4");
+                if published {
+                    r.implied_relationships(slots);
+                    assert_eq!(
+                        r.cardinality_report(slots).bounds.unwrap().size(),
+                        Some(if first == "null" { 4 } else { 7 })
+                    );
+                }
+                let literal = r
+                    .user_elements()
+                    .find(|&e| {
+                        r.element_type(e)
+                            == if first == "null" {
+                                "NullExpression"
+                            } else {
+                                "LiteralInteger"
+                            }
+                            && r.b.elements[e.0]
+                                .props
+                                .get("value")
+                                .is_none_or(|v| matches!(v, crate::properties::Atom::Number(n) if n.as_i64() == Some(7)))
+                    })
+                    .unwrap();
+                r.b.elements[literal.0].ty = if first == "null" {
+                    "LiteralInteger"
+                } else {
+                    "NullExpression"
+                };
+                r.b.elements[literal.0].props.insert("value", json!(7));
+                r.implied_relationships(call);
+                r.implied_relationships(slots);
+                let report = r.cardinality_report(slots);
+                if published {
+                    assert_eq!(report.bounds, Err(CardinalityIssue::StaleEvidence));
+                    assert!(report.multiplicities.is_empty());
+                } else {
+                    assert_eq!(report.bounds.unwrap().size(), Some(expected), "{first}");
+                }
+            }
+        }
+    }
+    #[test]
+    fn explicit_empty_expression_keeps_annotation_guards() {
+        let (mut r, slots, call) = coalescing_fixture("null", "4");
+        r.implied_relationships(slots);
+        assert_eq!(r.cardinality_report(slots).bounds.unwrap().size(), Some(4));
+        let first = r
+            .invocation_binding_report(call)
+            .arguments
+            .unwrap()
+            .bindings[0]
+            .value
+            .0;
+        r.b.metadata_of.insert(first, vec![first]);
+        r.b.metadata_association_generation = Some(std::sync::Arc::new(()));
+        let report = r.cardinality_report(slots);
+        assert!(report.bounds.is_err());
+        assert!(report.multiplicities.is_empty());
     }
     fn logical_fixture(operator: &str, first: bool) -> (ResolvedModel, ElementRef, ElementRef) {
         let mut m = conditional_model();

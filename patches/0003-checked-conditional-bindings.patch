@@ -33,7 +33,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
      if b.graph_format != crate::model::GraphFormat::CanonicalV3
          || b.elements.get(receiver)?.ty != "OperatorExpression"
      {
-@@ -400,15 +403,32 @@
+@@ -400,15 +403,33 @@
          "/" => "/",
          "%" => "%",
          "^" => "^",
@@ -53,6 +53,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
 +        "or" => "or",
 +        "implies" => "implies",
 +        "if" => "if",
++        "??" => "??",
          _ => return None,
      })
  }
@@ -68,7 +69,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
      let raw = StoredStructure::for_query(b, steps)?;
      if !raw.ids_unique || raw.annotations_incomplete || b.metadata_associations_incomplete {
          return None;
-@@ -419,58 +439,149 @@
+@@ -419,58 +440,151 @@
      // absence certificate, or enters its unbudgeted import/alias traversal.
      charge(steps, b.unit_starts.len()).ok()?;
      let roots: Vec<_> = b.unit_starts.iter().map(|&(root, _)| root).collect();
@@ -76,7 +77,9 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
 -    let mut data = None;
 +    let packages: &[&str] = match operator {
 +        "==" | "!=" | "===" | "!==" => &["BaseFunctions"],
-+        "if" | "and" | "or" | "implies" => &["BaseFunctions", "DataFunctions", "ControlFunctions"],
++        "if" | "and" | "or" | "implies" | "??" => {
++            &["BaseFunctions", "DataFunctions", "ControlFunctions"]
++        }
 +        _ => &["BaseFunctions", "DataFunctions"],
 +    };
 +    let mut selected = vec![None; packages.len()];
@@ -244,7 +247,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
      if !raw.membership_domains(b, steps)?.owner_complete(owner)
          || !raw.import_domains(b, steps)?.owner_complete(owner)
          || raw.metadata_annotation_targets.contains(&owner)
-@@ -481,7 +592,7 @@
+@@ -481,7 +595,7 @@
      let relationships = semantic_ownership::owned_relationships(b, owner)?;
      charge(steps, relationships.len()).ok()?;
      let mut seen = HashSet::new();
@@ -253,7 +256,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
      for relationship in relationships.iter() {
          if !seen.insert(relationship)
              || semantic_ownership::checked_relationship_carrier(b, raw, relationship, steps)?
-@@ -527,19 +638,22 @@
+@@ -527,19 +641,22 @@
          }
          let row = &b.elements[member];
          let mut named = false;
@@ -281,7 +284,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
              return None;
          }
      }
-@@ -554,6 +668,330 @@
+@@ -554,6 +671,331 @@
          model::{GraphFormat, Model},
      };
      const LIB: &str = "standard library package Base {classifier Anything; feature things:Anything;} standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;} standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;}";
@@ -360,7 +363,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
 +            );
 +        }
 +    }
-+    const PREDICATES: &[(&str, &str)] = &[
++    const SCALAR_CONTROLS: &[(&str, &str)] = &[
 +        ("==", "BaseFunctions"),
 +        ("!=", "BaseFunctions"),
 +        ("===", "BaseFunctions"),
@@ -372,6 +375,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
 +        ("and", "ControlFunctions"),
 +        ("or", "ControlFunctions"),
 +        ("implies", "ControlFunctions"),
++        ("??", "ControlFunctions"),
 +    ];
 +    fn predicate_fixture(
 +        operator: &str,
@@ -416,7 +420,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
 +    }
 +    #[test]
 +    fn predicate_bindings_require_canonical_publication_and_current_inputs() {
-+        for &(operator, package) in PREDICATES {
++        for &(operator, package) in SCALAR_CONTROLS {
 +            for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
 +                let (mut r, call) = predicate_fixture(operator, package, format, "", true);
 +                assert!(r.invocation_binding_report(call).arguments.is_err());
@@ -456,7 +460,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
 +    }
 +    #[test]
 +    fn predicate_designation_checks_precedence_and_loaded_library_identity() {
-+        for &(operator, package) in PREDICATES {
++        for &(operator, package) in SCALAR_CONTROLS {
 +            let mut rejected = vec![format!(
 +                "standard library package {package} {{function '{operator}' {{in x; return r;}}}}"
 +            )];
@@ -612,7 +616,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
      fn fixture(source: &str, format: GraphFormat) -> (ResolvedModel, ElementRef) {
          let mut m = Model::with_graph_format(format);
          assert!(
-@@ -616,102 +1054,109 @@
+@@ -616,102 +1058,109 @@
  
      #[test]
      fn numeric_operator_bindings_require_canonical_shared_publication() {

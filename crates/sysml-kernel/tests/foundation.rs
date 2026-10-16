@@ -788,3 +788,101 @@ fn predicate_guards_preserve_unknown_for_required_or_unsupported_values() {
         );
     }
 }
+
+fn coalescing_snapshot() -> &'static Snapshot {
+    static VALUE: OnceLock<Snapshot> = OnceLock::new();
+    VALUE.get_or_init(|| {
+        let original = analyze(vec![
+            document(
+                "coalescing.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-029.sysml"),
+            ),
+            document(
+                "guards.sysml",
+                include_str!("../../../tests/conformance/fixtures/mult-030.sysml"),
+            ),
+        ]);
+        assert!(!original
+            .diagnostics
+            .iter()
+            .any(|d| matches!(d.stage, Stage::Syntax)));
+        serde_json::from_str(&serde_json::to_string(&original).unwrap()).unwrap()
+    })
+}
+#[test]
+fn coalescing_preserves_known_empty_and_present_values_after_round_trip() {
+    let q = coalescing_snapshot().queries().unwrap();
+    for (name, value) in [
+        ("literalNull", "7"),
+        ("emptyParentheses", "7"),
+        ("presentInteger", "3"),
+        ("presentZero", "0"),
+        ("falsePresent", "9"),
+        ("truePresent", "7"),
+        ("nullBoolean", "7"),
+        ("rationalPresent", "7"),
+        ("viaAlias", "7"),
+        ("viaValueAlias", "3"),
+        ("nestedEmpty", "7"),
+        ("nestedFallback", "7"),
+        ("conditionalEmpty", "7"),
+        ("conditionalPresent", "3"),
+        ("skippedMissing", "3"),
+        ("skippedDivision", "3"),
+        ("skippedOverflow", "3"),
+        ("skippedReal", "3"),
+        ("skippedNull", "3"),
+        ("arithmeticFallback", "7"),
+        ("composedArithmetic", "7"),
+        ("composedLogical", "7"),
+        ("largeExact", "9007199254740993"),
+        ("conditionalSkip", "7"),
+    ] {
+        let e = q.find(&format!("CoalescingValues::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Evaluated {
+                lower: value.into(),
+                upper: Some(value.into()),
+            },
+            "{name}"
+        );
+    }
+}
+#[test]
+fn coalescing_never_converts_unknown_or_invalid_values_to_empty() {
+    let q = coalescing_snapshot().queries().unwrap();
+    for (name, reason) in [
+        ("overflowEndpoint", CardinalityIssue::UnsupportedBound),
+        ("underflowFirst", CardinalityIssue::UnsupportedBound),
+        ("irrationalFirst", CardinalityIssue::UnsupportedBound),
+        ("missingFirst", CardinalityIssue::IncompleteProvider),
+        ("selectedMissing", CardinalityIssue::IncompleteProvider),
+        ("undefinedFirst", CardinalityIssue::UnsupportedBound),
+        ("selectedDivision", CardinalityIssue::UnsupportedBound),
+        ("overflowFirst", CardinalityIssue::UnsupportedBound),
+        ("bothEmpty", CardinalityIssue::UnsupportedBound),
+        ("bareEmpty", CardinalityIssue::UnsupportedBound),
+        ("booleanEndpoint", CardinalityIssue::UnsupportedBound),
+        ("fractionalEndpoint", CardinalityIssue::UnsupportedBound),
+        ("negativeEndpoint", CardinalityIssue::UnsupportedBound),
+        ("realFirst", CardinalityIssue::UnsupportedBound),
+        ("selectedReal", CardinalityIssue::UnsupportedBound),
+        ("stringFirst", CardinalityIssue::UnsupportedBound),
+        ("sequenceFirst", CardinalityIssue::UnsupportedBound),
+        ("selectedSequence", CardinalityIssue::UnsupportedBound),
+        ("recursiveFirst", CardinalityIssue::UnsupportedBound),
+        ("recursiveSkipped", CardinalityIssue::UnsupportedBound),
+        ("emptyUnaryPlus", CardinalityIssue::UnsupportedBound),
+        ("emptyArithmetic", CardinalityIssue::UnsupportedBound),
+        ("emptyEquality", CardinalityIssue::UnsupportedBound),
+        ("emptyCondition", CardinalityIssue::UnsupportedBound),
+    ] {
+        let e = q.find(&format!("CoalescingGuards::{name}"))[0];
+        assert_eq!(
+            q.cardinality(&e.id).unwrap(),
+            &Cardinality::Unknown { reason },
+            "{name}"
+        );
+    }
+}

@@ -29,6 +29,8 @@ for (const name of [
   'mult-026',
   'mult-027',
   'mult-028',
+  'mult-029',
+  'mult-030',
   'imp-020',
 ]) {
   documents.push({
@@ -506,6 +508,73 @@ test('equality and logical predicates preserve values and guards in both workspa
     ]) {
       const e = state.elements.find((e) => e.qualifiedName === `PredicateGuards::${name}`)!;
       assert.deepEqual(e.cardinality, { status: 'unknown', reason }, name);
+    }
+  }
+});
+
+test('null-coalescing preserves empty, present and unknown values in both workspace contexts', () => {
+  for (const state of [snapshot, importGuards]) {
+    for (const [name, value] of [
+      ['literalNull', '7'],
+      ['emptyParentheses', '7'],
+      ['presentInteger', '3'],
+      ['presentZero', '0'],
+      ['falsePresent', '9'],
+      ['truePresent', '7'],
+      ['nullBoolean', '7'],
+      ['rationalPresent', '7'],
+      ['viaAlias', '7'],
+      ['viaValueAlias', '3'],
+      ['nestedEmpty', '7'],
+      ['nestedFallback', '7'],
+      ['conditionalEmpty', '7'],
+      ['conditionalPresent', '3'],
+      ['skippedMissing', '3'],
+      ['skippedDivision', '3'],
+      ['skippedOverflow', '3'],
+      ['skippedReal', '3'],
+      ['skippedNull', '3'],
+      ['arithmeticFallback', '7'],
+      ['composedArithmetic', '7'],
+      ['composedLogical', '7'],
+      ['largeExact', '9007199254740993'],
+      ['conditionalSkip', '7'],
+    ]) {
+      const element = state.elements.find((e) => e.qualifiedName === `CoalescingValues::${name}`)!;
+      assert.deepEqual(
+        element.cardinality,
+        { status: 'evaluated', lower: value, upper: value },
+        name,
+      );
+    }
+    for (const [name, reason] of [
+      ['overflowEndpoint', 'unsupportedBound'],
+      ['underflowFirst', 'unsupportedBound'],
+      ['irrationalFirst', 'unsupportedBound'],
+      ['missingFirst', 'incompleteProvider'],
+      ['selectedMissing', 'incompleteProvider'],
+      ['undefinedFirst', 'unsupportedBound'],
+      ['selectedDivision', 'unsupportedBound'],
+      ['overflowFirst', 'unsupportedBound'],
+      ['bothEmpty', 'unsupportedBound'],
+      ['bareEmpty', 'unsupportedBound'],
+      ['booleanEndpoint', 'unsupportedBound'],
+      ['fractionalEndpoint', 'unsupportedBound'],
+      ['negativeEndpoint', 'unsupportedBound'],
+      ['realFirst', 'unsupportedBound'],
+      ['selectedReal', 'unsupportedBound'],
+      ['stringFirst', 'unsupportedBound'],
+      ['sequenceFirst', 'unsupportedBound'],
+      ['selectedSequence', 'unsupportedBound'],
+      ['recursiveFirst', 'unsupportedBound'],
+      ['recursiveSkipped', 'unsupportedBound'],
+      ['emptyUnaryPlus', 'unsupportedBound'],
+      ['emptyArithmetic', 'unsupportedBound'],
+      ['emptyEquality', 'unsupportedBound'],
+      ['emptyCondition', 'unsupportedBound'],
+    ]) {
+      const element = state.elements.find((e) => e.qualifiedName === `CoalescingGuards::${name}`)!;
+      assert.deepEqual(element.cardinality, { status: 'unknown', reason }, name);
     }
   }
 });

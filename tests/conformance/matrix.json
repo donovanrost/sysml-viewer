@@ -3916,6 +3916,395 @@
           "messageIncludes": "multiplicity bound must be a Natural number"
         }
       ]
+    },
+    {
+      "id": "MULT-029",
+      "area": "multiplicity",
+      "purpose": "Checked null-coalescing distinguishes explicit emptiness from present exact scalars, preserves identity and composes with conditional, logical and arithmetic providers.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/mult-029.sysml"],
+      "checks": [
+        {
+          "id": "literalNull",
+          "op": "cardinality",
+          "owner": "CoalescingValues::literalNull",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "emptyParentheses",
+          "op": "cardinality",
+          "owner": "CoalescingValues::emptyParentheses",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "presentInteger",
+          "op": "cardinality",
+          "owner": "CoalescingValues::presentInteger",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "presentZero",
+          "op": "cardinality",
+          "owner": "CoalescingValues::presentZero",
+          "status": "evaluated",
+          "lower": "0",
+          "upper": "0"
+        },
+        {
+          "id": "falsePresent",
+          "op": "cardinality",
+          "owner": "CoalescingValues::falsePresent",
+          "status": "evaluated",
+          "lower": "9",
+          "upper": "9"
+        },
+        {
+          "id": "truePresent",
+          "op": "cardinality",
+          "owner": "CoalescingValues::truePresent",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "nullBoolean",
+          "op": "cardinality",
+          "owner": "CoalescingValues::nullBoolean",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "rationalPresent",
+          "op": "cardinality",
+          "owner": "CoalescingValues::rationalPresent",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "viaAlias",
+          "op": "cardinality",
+          "owner": "CoalescingValues::viaAlias",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "viaValueAlias",
+          "op": "cardinality",
+          "owner": "CoalescingValues::viaValueAlias",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "nestedEmpty",
+          "op": "cardinality",
+          "owner": "CoalescingValues::nestedEmpty",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "nestedFallback",
+          "op": "cardinality",
+          "owner": "CoalescingValues::nestedFallback",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "conditionalEmpty",
+          "op": "cardinality",
+          "owner": "CoalescingValues::conditionalEmpty",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "conditionalPresent",
+          "op": "cardinality",
+          "owner": "CoalescingValues::conditionalPresent",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "skippedMissing",
+          "op": "cardinality",
+          "owner": "CoalescingValues::skippedMissing",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "skippedDivision",
+          "op": "cardinality",
+          "owner": "CoalescingValues::skippedDivision",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "skippedOverflow",
+          "op": "cardinality",
+          "owner": "CoalescingValues::skippedOverflow",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "skippedReal",
+          "op": "cardinality",
+          "owner": "CoalescingValues::skippedReal",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "skippedNull",
+          "op": "cardinality",
+          "owner": "CoalescingValues::skippedNull",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "arithmeticFallback",
+          "op": "cardinality",
+          "owner": "CoalescingValues::arithmeticFallback",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "composedArithmetic",
+          "op": "cardinality",
+          "owner": "CoalescingValues::composedArithmetic",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "composedLogical",
+          "op": "cardinality",
+          "owner": "CoalescingValues::composedLogical",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "largeExact",
+          "op": "cardinality",
+          "owner": "CoalescingValues::largeExact",
+          "status": "evaluated",
+          "lower": "9007199254740993",
+          "upper": "9007199254740993"
+        },
+        {
+          "id": "conditionalSkip",
+          "op": "cardinality",
+          "owner": "CoalescingValues::conditionalSkip",
+          "status": "evaluated",
+          "lower": "7",
+          "upper": "7"
+        },
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        }
+      ]
+    },
+    {
+      "id": "MULT-030",
+      "area": "multiplicity",
+      "purpose": "Null-coalescing refuses unavailable first values, invalid selected fallbacks, ineligible skipped branches, unsupported domains and invalid endpoints; an empty value never becomes zero.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/mult-030.sysml"],
+      "checks": [
+        {
+          "id": "missingFirst",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::missingFirst",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "selectedMissing",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::selectedMissing",
+          "status": "unknown",
+          "reason": "incompleteProvider"
+        },
+        {
+          "id": "undefinedFirst",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::undefinedFirst",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "selectedDivision",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::selectedDivision",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "overflowFirst",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::overflowFirst",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "bothEmpty",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::bothEmpty",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "bareEmpty",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::bareEmpty",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "booleanEndpoint",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::booleanEndpoint",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "fractionalEndpoint",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::fractionalEndpoint",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "negativeEndpoint",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::negativeEndpoint",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "realFirst",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::realFirst",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "selectedReal",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::selectedReal",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "stringFirst",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::stringFirst",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "sequenceFirst",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::sequenceFirst",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "selectedSequence",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::selectedSequence",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "recursiveFirst",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::recursiveFirst",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "recursiveSkipped",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::recursiveSkipped",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "emptyUnaryPlus",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::emptyUnaryPlus",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "emptyArithmetic",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::emptyArithmetic",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "emptyEquality",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::emptyEquality",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "emptyCondition",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::emptyCondition",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "overflowEndpoint",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::overflowEndpoint",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "underflowFirst",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::underflowFirst",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "irrationalFirst",
+          "op": "cardinality",
+          "owner": "CoalescingGuards::irrationalFirst",
+          "status": "unknown",
+          "reason": "unsupportedBound"
+        },
+        {
+          "id": "natural-required",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "multiplicity bound must be a Natural number"
+        }
+      ]
     }
   ]
 }

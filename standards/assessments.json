@@ -111,7 +111,7 @@
       "path": "crates/sysml-kernel/tests/foundation.rs",
       "symbol": "fn top_level_import_visibility_checks_both_dialects_kinds_and_nesting",
       "role": "Contract regressions, complete import-predicate input partitions and bundled-library syntax sweep",
-      "sha256": "55ee3adc40f926468766f8bd4064b0cd9b522a92f79618a49fa73bbb010741f5"
+      "sha256": "9e939a65f0fd5bbf165abca2bbc1deb53a959b8195d9325d8ce3978552afe82b"
     },
     "syntax-structure": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
@@ -135,19 +135,19 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
       "symbol": "pub fn invocation_binding_report(",
       "role": "Checked canonical callee/input/argument identity mapping; requires current shared publication and retains incomplete-provider failures.",
-      "sha256": "fdff798a3f91341dc59b4d5d8d85bdd324a76f4df33cb3396446879690755aa7"
+      "sha256": "347315b2cc847cce1de85562d71864d12c128a11da10b2969bf70b4a648ac525"
     },
     "checked-bound-expressions": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
       "symbol": "fn certified_operators(",
       "role": "Checked operand/wrapper certification, Boolean branch selection and retained unknown boundaries; includes private conditional proof regressions.",
-      "sha256": "5c36dc7ed2e2181befd542471348c0c38e21030175da838242313bc9632584bb"
+      "sha256": "ee323cf509bfef82fb8af0c83e9062f7d8573f9ad63369694e0fe986c7a59f87"
     },
     "checked-bound-execution": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs",
       "symbol": "fn certified_multiplicity_value(",
       "role": "Bounded exact execution over certified identities; conditional branches preserve Boolean typing and lazy evaluation.",
-      "sha256": "b61c361766e45b0f08268316ef1617a296481c0c1567a143be041b3013faf275"
+      "sha256": "ba68578a03043d395500205ac4e15a2cb7f4e87d225fe17a01b101e5b80944de"
     },
     "import-api": {
       "path": "crates/sysml-kernel/src/imports.rs",
@@ -195,13 +195,25 @@
       "path": "crates/sysml-kernel/tests/foundation.rs",
       "symbol": "fn ordered_predicates_preserve_exact_values_and_guards_after_round_trip",
       "role": "Exact ordering truth tables, integer/rational precision and rejected operand/endpoint regressions through the public snapshot query after JSON round trip.",
-      "sha256": "55ee3adc40f926468766f8bd4064b0cd9b522a92f79618a49fa73bbb010741f5"
+      "sha256": "9e939a65f0fd5bbf165abca2bbc1deb53a959b8195d9325d8ce3978552afe82b"
     },
     "predicate-tests": {
       "path": "crates/sysml-kernel/tests/foundation.rs",
       "symbol": "fn equality_and_logical_predicates_preserve_exact_truth_tables_after_round_trip",
       "role": "Scalar equality, exact Boolean truth tables, eager/deferred operand evaluation and explicit unknown values through the public query after JSON round trip.",
-      "sha256": "55ee3adc40f926468766f8bd4064b0cd9b522a92f79618a49fa73bbb010741f5"
+      "sha256": "9e939a65f0fd5bbf165abca2bbc1deb53a959b8195d9325d8ce3978552afe82b"
+    },
+    "coalescing-tests": {
+      "path": "crates/sysml-kernel/tests/foundation.rs",
+      "symbol": "fn coalescing_preserves_known_empty_and_present_values_after_round_trip(",
+      "role": "native round-trip empty/present/null-coalescing values and guarded unknown endpoints",
+      "sha256": "9e939a65f0fd5bbf165abca2bbc1deb53a959b8195d9325d8ce3978552afe82b"
+    },
+    "checked-prefix-reuse": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
+      "symbol": "pub(super) fn prepare_dynamic_graph(",
+      "role": "same-transaction static prefix avoids unused name materialization; physical authority and complete recipe checks remain required",
+      "sha256": "36628204740a98c90eacb5720071af5322396666805a89348a6e4c8348ef3570"
     }
   },
   "assessments": [
@@ -1164,7 +1176,9 @@
         "KERML-CLAUSE-9.4.11.2",
         "KERML-CLAUSE-8.2.5.8.1",
         "KERML-CLAUSE-9.4.2.2",
-        "KERML-CLAUSE-9.4.5.2"
+        "KERML-CLAUSE-9.4.5.2",
+        "KERML-CLAUSE-7.4.9.2",
+        "KERML-CLAUSE-8.3.4.8.16"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1183,7 +1197,9 @@
           "checked-eligibility-batch",
           "cold-query-tests",
           "ordered-predicate-tests",
-          "predicate-tests"
+          "predicate-tests",
+          "coalescing-tests",
+          "checked-prefix-reuse"
         ]
       },
       "api": {
@@ -1564,9 +1580,69 @@
             "logicalBound",
             "natural-required"
           ]
+        },
+        {
+          "case": "MULT-029",
+          "checks": [
+            "literalNull",
+            "emptyParentheses",
+            "presentInteger",
+            "presentZero",
+            "falsePresent",
+            "truePresent",
+            "nullBoolean",
+            "rationalPresent",
+            "viaAlias",
+            "viaValueAlias",
+            "nestedEmpty",
+            "nestedFallback",
+            "conditionalEmpty",
+            "conditionalPresent",
+            "skippedMissing",
+            "skippedDivision",
+            "skippedOverflow",
+            "skippedReal",
+            "skippedNull",
+            "arithmeticFallback",
+            "composedArithmetic",
+            "composedLogical",
+            "largeExact",
+            "conditionalSkip",
+            "clean"
+          ]
+        },
+        {
+          "case": "MULT-030",
+          "checks": [
+            "missingFirst",
+            "selectedMissing",
+            "undefinedFirst",
+            "selectedDivision",
+            "overflowFirst",
+            "bothEmpty",
+            "bareEmpty",
+            "booleanEndpoint",
+            "fractionalEndpoint",
+            "negativeEndpoint",
+            "realFirst",
+            "selectedReal",
+            "stringFirst",
+            "sequenceFirst",
+            "selectedSequence",
+            "recursiveFirst",
+            "recursiveSkipped",
+            "emptyUnaryPlus",
+            "emptyArithmetic",
+            "emptyEquality",
+            "emptyCondition",
+            "overflowEndpoint",
+            "underflowFirst",
+            "irrationalFirst",
+            "natural-required"
+          ]
         }
       ],
-      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General value equality, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. KERNEL-006 qualifies first direct range, alias and repeated-endpoint queries over the full pinned library after implied relationships are published, without preceding proof queries. Callee signatures share checked evidence; every supplied binding is rechecked. Other cold entry paths and more complex expressions can still exhaust the unchanged allowance; reuse does not qualify every composition or a global cache. KERNEL-007 adds finite exact numeric <, <=, > and >= predicates, with designated function identity and checked positional evidence. MULT-024/025 cover each relation, large integers, exact rationals, aliases, nested/lazy selection and refused operands/endpoints. Approximate real, infinity, quantity, string, sequence and general function comparisons remain unqualified. Arithmetic intermediates can exceed i128 through exact rationals; exported bounds retain the signed-128-bit limit. KERNEL-008 adds equality/sameness (==, !=, ===, !==) for Boolean pairs or finite exact numeric pairs, eager Boolean not/xor/&/| and conditional and/or/implies. All deferred operands retain complete model-level eligibility and reciprocal wrapper evidence; only required values are executed. MULT-026/027/028 cover exact scalar values, all Boolean truth tables, eager versus skipped unavailable values, nested expressions and negative operand/endpoint guards. Cross-domain equality, null/sequence/string/occurrence values, quantities, approximate numbers and general function dispatch remain unqualified. This is a bounded provider execution certificate, not whole-model type validity."
+      "limits": "Static package providers support checked arithmetic and conditionals with Boolean literals, references and nested tests. MULT-016 now passes; selected branches preserve exact bounds and unselected unbound/undefined values are not executed. Unavailable or non-Boolean conditions, invalid selected values, recursive/ineligible branches and shadowed designated operators remain unknown. General value equality, other control operators, direct function execution and all contextual/evaluation semantics remain unqualified. MULT-020/021 retain independent exact arithmetic and conditional bounds alongside unresolved classifier bases; direct and transitive dependents remain incomplete. Malformed relationship evidence, dependent dynamic families and other unqualified configurations can still prevent shared publication. This is bounded proof isolation, not complete execution or general incremental analysis. MULT-022/023 qualify combined arithmetic/conditional range endpoints, aliases, repeated providers and invalid endpoints using checked evidence shared within one query. KERNEL-006 qualifies first direct range, alias and repeated-endpoint queries over the full pinned library after implied relationships are published, without preceding proof queries. Callee signatures share checked evidence; every supplied binding is rechecked. Other cold entry paths and more complex expressions can still exhaust the unchanged allowance; reuse does not qualify every composition or a global cache. KERNEL-007 adds finite exact numeric <, <=, > and >= predicates, with designated function identity and checked positional evidence. MULT-024/025 cover each relation, large integers, exact rationals, aliases, nested/lazy selection and refused operands/endpoints. Approximate real, infinity, quantity, string, sequence and general function comparisons remain unqualified. Arithmetic intermediates can exceed i128 through exact rationals; exported bounds retain the signed-128-bit limit. KERNEL-008 adds equality/sameness (==, !=, ===, !==) for Boolean pairs or finite exact numeric pairs, eager Boolean not/xor/&/| and conditional and/or/implies. All deferred operands retain complete model-level eligibility and reciprocal wrapper evidence; only required values are executed. MULT-026/027/028 cover exact scalar values, all Boolean truth tables, eager versus skipped unavailable values, nested expressions and negative operand/endpoint guards. Cross-domain and null equality, nonempty sequence/string/occurrence values, quantities, approximate numbers and general function dispatch remain unqualified. This is a bounded provider execution certificate, not whole-model type validity. KERNEL-009 adds explicit empty NullExpression values and lazy ?? over the admitted exact scalar domain. MULT-029/030 distinguish null and () from zero, Boolean false, unavailable providers and execution failure, and cover nested composition, aliases, skipped/selected operands and numeric endpoint restrictions. Every operand still requires eligibility and reciprocal deferred-wrapper proof. Approximate arithmetic results, including exponent overflow to infinity and underflow to zero, are refused. Null is an intermediate value, not a numeric endpoint or absence certificate. The combined old/new workspace and unresolved-import variant retain their earlier assertions. Same-transaction static-prefix reuse skips an unused library-name rebuild while preserving physical-authority and recipe checks and the unchanged work allowance. Larger compositions may still exhaust that allowance."
     },
     {
       "id": "CONF-ABSTRACT-SYSML",

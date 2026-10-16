@@ -1057,6 +1057,7 @@ pub(crate) fn implicit_open_multiplicity(model: &mut ResolvedModel, e: ElementRe
 pub(crate) struct CheckedMultiplicityExpressions {
     pub(crate) operators: HashMap<usize, (BinaryOp, Vec<usize>)>,
     pub(crate) negations: HashMap<usize, usize>,
+    pub(crate) coalescings: HashMap<usize, (usize, usize)>,
     pub(crate) logical_controls: HashMap<usize, (CheckedLogicalOperator, usize, usize)>,
     pub(crate) conditionals: HashMap<usize, (usize, usize, usize)>,
     pub(crate) references: HashMap<usize, (usize, usize, usize)>,
@@ -1098,6 +1099,21 @@ pub(crate) fn checked_multiplicity_condition(
         Value::Boolean(value) => Some(value),
         _ => None,
     }
+}
+
+/// Known emptiness selects a coalescing fallback. Failed or unavailable
+/// evaluation remains None, never an empty value.
+pub(crate) fn checked_multiplicity_empty(
+    b: &mut Builder,
+    expression: usize,
+    context: Option<usize>,
+    operators: &CheckedMultiplicityExpressions,
+    steps: &mut usize,
+) -> Option<bool> {
+    let mut evaluator = checked_multiplicity_evaluator(b, *steps);
+    let result = evaluator.certified_multiplicity_value(expression, context, operators, 0);
+    *steps = evaluator.steps;
+    Some(result?.is_null())
 }
 
 /// Read a structurally certified range through the same numeric/receiver evaluator.
@@ -2105,6 +2121,7 @@ impl Evaluator<'_> {
             return None;
         }
         match self.b.elements[e].ty {
+            "NullExpression" => Some(Value::null()),
             "LiteralInfinity" => Some(Value::Real(f64::INFINITY)),
             "LiteralBoolean" => Some(Value::Boolean(
                 self.b.elements[e].props.get("value")?.as_bool()?,
@@ -2126,6 +2143,15 @@ impl Evaluator<'_> {
                 self.certified_multiplicity_value(value, context, operators, depth + 1)
             }
             "OperatorExpression" => {
+                if let Some(&(first, second)) = operators.coalescings.get(&e) {
+                    let first =
+                        self.certified_multiplicity_value(first, context, operators, depth + 1)?;
+                    return if first.is_null() {
+                        self.certified_multiplicity_value(second, context, operators, depth + 1)
+                    } else {
+                        Some(first)
+                    };
+                }
                 if let Some(&operand) = operators.negations.get(&e) {
                     let Value::Boolean(value) =
                         self.certified_multiplicity_value(operand, context, operators, depth + 1)?
@@ -2172,7 +2198,14 @@ impl Evaluator<'_> {
                 )?;
                 if operands.len() == 1 {
                     return match operator {
-                        BinaryOp::Add => Some(first),
+                        BinaryOp::Add
+                            if matches!(
+                                first,
+                                Value::Integer(_) | Value::Rational(_) | Value::Real(_)
+                            ) =>
+                        {
+                            Some(first)
+                        }
                         BinaryOp::Sub => arith(BinaryOp::Sub, Value::Integer(0), first).ok(),
                         _ => None,
                     };
@@ -2237,7 +2270,13 @@ impl Evaluator<'_> {
                         _ => unreachable!(),
                     }));
                 }
-                arith(*operator, first, second).ok()
+                // The general evaluator may approximate excessive powers or
+                // irrational roots. Such a result is not exact bound evidence,
+                // even when it rounds to zero or overflows to infinity.
+                match arith(*operator, first, second).ok()? {
+                    value @ (Value::Integer(_) | Value::Rational(_)) => Some(value),
+                    _ => None,
+                }
             }
             _ => None,
         }

@@ -27,6 +27,7 @@ if (process.argv.includes('--wasm-child')) {
   );
   const scenarios = [
     ...[
+      ['null-coalescing', '029'],
       ['scalar-equality', '026'],
       ['logical-predicates', '027'],
     ].map(([name, id]) => ({

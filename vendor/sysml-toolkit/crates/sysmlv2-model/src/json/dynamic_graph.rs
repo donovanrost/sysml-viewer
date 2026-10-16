@@ -231,31 +231,6 @@ impl Builder {
         }) {
             return Ok(None);
         }
-        for (_, parts) in &self.lib_qnames {
-            *steps = steps.saturating_add(1);
-            for part in parts {
-                *steps = steps.saturating_add(part.len());
-            }
-            if *steps > crate::eval::MAX_STEPS {
-                return Err(Refusal::WorkLimit);
-            }
-        }
-        for name in self.external_implied_names.keys() {
-            *steps = steps.saturating_add(name.len().saturating_add(1));
-            if *steps > crate::eval::MAX_STEPS {
-                return Err(Refusal::WorkLimit);
-            }
-        }
-        let names: HashMap<_, _> = self
-            .lib_qnames
-            .iter()
-            .map(|(id, parts)| (parts.join("::"), *id))
-            .chain(
-                self.external_implied_names
-                    .iter()
-                    .map(|(name, id)| (name.clone(), *id)),
-            )
-            .collect();
         let metadata = self.metadata_association_generation.clone();
         let mut positional_workspace = super::positional::PositionalWorkspace::default();
         let prefix = if let Some(prefix) = produced_prefix {
@@ -266,6 +241,33 @@ impl Builder {
             }
             prefix
         } else {
+            // Name materialization is needed only when constructing a prefix.
+            // A same-transaction producer already supplied those recipes.
+            for (_, parts) in &self.lib_qnames {
+                *steps = steps.saturating_add(1);
+                for part in parts {
+                    *steps = steps.saturating_add(part.len());
+                }
+                if *steps > crate::eval::MAX_STEPS {
+                    return Err(Refusal::WorkLimit);
+                }
+            }
+            for name in self.external_implied_names.keys() {
+                *steps = steps.saturating_add(name.len().saturating_add(1));
+                if *steps > crate::eval::MAX_STEPS {
+                    return Err(Refusal::WorkLimit);
+                }
+            }
+            let names: HashMap<_, _> = self
+                .lib_qnames
+                .iter()
+                .map(|(id, parts)| (parts.join("::"), *id))
+                .chain(
+                    self.external_implied_names
+                        .iter()
+                        .map(|(name, id)| (name.clone(), *id)),
+                )
+                .collect();
             self.static_specialization_prefix_with_workspace(
                 &names,
                 self.external_implied_names.is_empty(),
@@ -725,6 +727,72 @@ mod replay_tests {
         }
     }
     #[test]
+    fn supplied_static_prefix_preserves_plan_budget_and_staleness_guards() {
+        for format in [
+            crate::model::GraphFormat::LegacyV2,
+            crate::model::GraphFormat::CanonicalV3,
+        ] {
+            let mut model = Model::with_graph_format(format);
+            model.add_library_source("bases.kerml", LIB);
+            model.add_source("dynamic.kerml", USER);
+            let mut r = ResolvedModel::build(&model);
+            let call = r
+                .user_elements()
+                .find(|&e| r.element_type(e) == "InvocationExpression")
+                .unwrap();
+            let epoch = r.b.publication.revision();
+            let length = r.b.elements.len();
+            let mut rebuilt_steps = 0;
+            let rebuilt =
+                r.b.prepare_dynamic_graph(&HashSet::new(), &mut rebuilt_steps, None)
+                    .unwrap()
+                    .unwrap();
+            let prefix = Arc::clone(&rebuilt.static_prefix);
+            let mut supplied_steps = 0;
+            let supplied =
+                r.b.prepare_dynamic_graph(
+                    &HashSet::new(),
+                    &mut supplied_steps,
+                    Some(Arc::clone(&prefix)),
+                )
+                .unwrap()
+                .unwrap();
+            assert_eq!(supplied.tail, rebuilt.tail);
+            assert_eq!(supplied.direct_bases, rebuilt.direct_bases);
+            assert_eq!(supplied.added_bases, rebuilt.added_bases);
+            assert_eq!(supplied.affected_owners, rebuilt.affected_owners);
+            assert_eq!(supplied.incomplete_bases, rebuilt.incomplete_bases);
+            assert_eq!(supplied.specializations, rebuilt.specializations);
+            assert_eq!(supplied.positional.targets, rebuilt.positional.targets);
+            assert_eq!(
+                supplied.positional.incomplete,
+                rebuilt.positional.incomplete
+            );
+            assert!(supplied_steps < rebuilt_steps);
+            assert_eq!(length, r.b.elements.len());
+            assert!(epoch.same_as(&r.b.publication.revision()));
+            assert!(matches!(
+                r.b.prepare_dynamic_graph(
+                    &HashSet::new(),
+                    &mut { crate::eval::MAX_STEPS },
+                    Some(Arc::clone(&prefix))
+                ),
+                Err(Refusal::WorkLimit)
+            ));
+            assert!(r.b.implied.is_none());
+            assert!(r.b.dynamic_graph.is_none());
+            r.implied_relationships(call);
+            let f = r.resolve_qualified("F").unwrap();
+            r.b.elements[f.0]
+                .props
+                .insert("declaredName", serde_json::json!("G"));
+            assert!(matches!(
+                r.b.prepare_dynamic_graph(&HashSet::new(), &mut 0, Some(prefix)),
+                Err(Refusal::Stale)
+            ));
+        }
+    }
+    #[test]
     fn identity_binding_gain_rebuilds_common_tail_and_keeps_static_handles() {
         let target = Uuid::new_v5(&Uuid::NAMESPACE_OID, b"dynamic bound callee");
         let mut model = Model::new();
@@ -1085,9 +1153,18 @@ mod refusal_tests {
             .user_elements()
             .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
             .unwrap();
-        // Charge concrete input-string work before cloning the name table. This
-        // reaches the real transaction's dynamic refusal independently of the
-        // result family's untouched full admission allowance.
+        // Warm reconstruction has no same-transaction prefix. It must still
+        // charge concrete string work before materializing its name table.
+        // Start with the same external-library mode, publish, then discard the
+        // mutable tail so the real transaction exercises that reconstruction.
+        r.b.external_implied_names
+            .insert("Unused".into(), Uuid::nil());
+        r.implied_relationships(call);
+        assert_eq!(
+            r.b.dynamic_graph.as_ref().unwrap().outcome,
+            Outcome::Accepted
+        );
+        r.discard_owned_result_tail();
         r.b.external_implied_names
             .insert("X".repeat(crate::eval::MAX_STEPS), Uuid::nil());
         r.implied_relationships(call);
