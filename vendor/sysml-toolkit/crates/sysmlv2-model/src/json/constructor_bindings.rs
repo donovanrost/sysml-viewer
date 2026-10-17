@@ -5,7 +5,10 @@ use super::{
     type_relations,
 };
 use crate::metaclass::conforms;
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 /// A supplied argument and the exact public feature it directly redefines.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -163,31 +166,15 @@ impl ResolvedModel {
 }
 /// Query-local successful Type projections shared across one constructor batch.
 /// A source/publication change discards the complete cache before any reuse.
+/// Immutable projections are shared within the batch. Callers charge traversal
+/// and copy only the vectors their public reports actually retain.
 #[derive(Default)]
 pub(super) struct ConstructorBatchEvidence {
     stamp: Option<Stamp>,
-    features: HashMap<usize, super::TypeFeatures>,
+    features: HashMap<usize, Arc<super::TypeFeatures>>,
     operator_targets: HashMap<&'static str, usize>,
     operator_names: super::invocation_bindings::DesignatedOperatorNames,
     relations: super::type_relations::TypeRelations,
-}
-fn projection_work(features: &super::TypeFeatures) -> usize {
-    [
-        features.owned_memberships.len(),
-        features.inherited_memberships.len(),
-        features.owned_feature_memberships.len(),
-        features.feature_memberships.len(),
-        features.features.len(),
-        features.inherited_features.len(),
-        features.inputs.len(),
-        features.outputs.len(),
-        features.directed_features.len(),
-        features.end_features.len(),
-        features.memberships.as_ref().map_or(0, Vec::len),
-        features.members.as_ref().map_or(0, Vec::len),
-    ]
-    .into_iter()
-    .fold(1usize, usize::saturating_add)
 }
 impl ConstructorBatchEvidence {
     fn align(
@@ -242,11 +229,11 @@ impl ConstructorBatchEvidence {
         b: &mut super::Builder,
         callee: usize,
         steps: &mut usize,
-    ) -> Result<super::TypeFeatures, ConstructorBindingIssue> {
+    ) -> Result<Arc<super::TypeFeatures>, ConstructorBindingIssue> {
         self.align(b, steps)?;
+        charge(steps, 1)?;
         if let Some(features) = self.features.get(&callee) {
-            charge(steps, projection_work(features))?;
-            return Ok(features.clone());
+            return Ok(Arc::clone(features));
         }
         let result = b.checked_type_features_with_relations(callee, steps, &mut self.relations);
         // Even a failed projection may have prepared semantic state. Facts
@@ -254,8 +241,9 @@ impl ConstructorBatchEvidence {
         // projections themselves are never memoized.
         self.align(b, steps)?;
         let features = result.map_err(IncompleteFeatures)?;
-        charge(steps, projection_work(&features))?;
-        self.features.insert(callee, features.clone());
+        charge(steps, 1)?;
+        let features = Arc::new(features);
+        self.features.insert(callee, Arc::clone(&features));
         Ok(features)
     }
 }
@@ -299,7 +287,8 @@ impl super::Builder {
             steps,
         )
         .ok_or(InvalidRelationship)?;
-        let features = batch.features(self, callee, steps)?.features;
+        let projection = batch.features(self, callee, steps)?;
+        let features = &projection.features;
         // Callee preparation may change shared semantic state. Capture all local
         // evidence afterward and recheck the selector against this same snapshot.
         let raw = StoredStructure::for_query(self, steps).ok_or(IncompleteProvider)?;
@@ -343,7 +332,7 @@ impl super::Builder {
         let stamp = Stamp::capture_builder(self);
         charge(steps, features.len())?;
         let mut public_features = Vec::new();
-        for feature in features {
+        for &feature in features {
             let membership = self.elements[feature.0]
                 .owning_relationship
                 .ok_or(InvalidRelationship)?;
@@ -637,9 +626,8 @@ impl super::Builder {
         steps: &mut usize,
         batch: &mut ConstructorBatchEvidence,
     ) -> Result<Vec<ConstructorDefaultBinding>, ConstructorBindingIssue> {
-        let features = batch
-            .features(self, arguments.instantiated_type.0, steps)?
-            .features;
+        let projection = batch.features(self, arguments.instantiated_type.0, steps)?;
+        let features = &projection.features;
         let retained = self
             .retained_typing_edges(steps)
             .ok_or(IncompleteProvider)?;
@@ -657,7 +645,7 @@ impl super::Builder {
         let supplied: HashSet<_> = arguments.bindings.iter().map(|b| b.feature.0).collect();
         let mut defaults = Vec::new();
         let mut memo = HashMap::new();
-        for feature in features {
+        for &feature in features {
             charge(steps, 1)?;
             if supplied.contains(&feature.0) {
                 continue;
@@ -1306,6 +1294,40 @@ mod tests {
                 &mut batch
             )
             .is_err()
+        );
+    }
+    #[test]
+    fn shared_projections_preserve_work_limits_and_prior_snapshot_values() {
+        let (mut r, _) = fixture(
+            "class C {feature a;} feature x=new C(1);",
+            GraphFormat::CanonicalV3,
+        );
+        let callee = r.resolve_qualified("C").unwrap().0;
+        let mut batch = ConstructorBatchEvidence::default();
+        let first = batch.features(&mut r.b, callee, &mut 0).unwrap();
+        assert!(first.inputs.is_empty());
+        let mut remaining = crate::eval::MAX_STEPS - 1;
+        let shared = batch.features(&mut r.b, callee, &mut remaining).unwrap();
+        assert_eq!(remaining, crate::eval::MAX_STEPS);
+        assert!(Arc::ptr_eq(&first, &shared));
+        assert!(matches!(
+            batch.features(&mut r.b, callee, &mut remaining),
+            Err(WorkLimit)
+        ));
+        assert!(Arc::ptr_eq(
+            &first,
+            &batch.features(&mut r.b, callee, &mut 0).unwrap()
+        ));
+        let feature = first.features[0];
+        r.b.elements[feature.0]
+            .props
+            .insert("direction", serde_json::json!("in"));
+        let changed = batch.features(&mut r.b, callee, &mut 0).unwrap();
+        assert_eq!(changed.inputs, vec![feature]);
+        assert!(!Arc::ptr_eq(&first, &changed));
+        assert!(
+            first.inputs.is_empty(),
+            "a retained projection is immutable"
         );
     }
     #[test]

@@ -113,6 +113,8 @@ Clause references identify the source of a test, not complete coverage of that c
 | LEX-011 | Lexical syntax and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3, KerML 1.0 §8.2.2.1, KerML 1.0 §8.2.2.5, KerML 1.0 §8.2.2.4, KerML 1.0 §8.2.5.8.4 | positive | Covered | kerml quoted reserved names and short aliases resolve; case and dialect boundaries remain distinct. |
 | LEX-012 | Lexical syntax and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3, KerML 1.0 §8.2.2.1, KerML 1.0 §8.2.2.5, KerML 1.0 §8.2.2.4, KerML 1.0 §8.2.5.8.4 | negative | Covered | sysml rejects a bare reserved short name, recovers the next declaration and invalidates workspace bounds. |
 | LEX-013 | Lexical syntax and dialect boundaries: SysML 2.0 §8.2.2.1, KerML 1.0 §8.2.2.3, KerML 1.0 §8.2.2.1, KerML 1.0 §8.2.2.5, KerML 1.0 §8.2.2.4, KerML 1.0 §8.2.5.8.4 | negative | Covered | kerml rejects a bare reserved short name, recovers the next declaration and invalidates workspace bounds. |
+| CONN-004 | Connections and chains: SysML 2.0 §7.6.6, SysML 2.0 §7.13.2 | negative | Covered | SysML endpoint uncertainty follows each end ownership subtree; missing, ambiguous, chained, n-ary, body-error and flow cases preserve independent resolved ends. |
+| CONN-005 | Connections and chains: SysML 2.0 §7.6.6, SysML 2.0 §7.13.2 | negative | Covered | KerML connector chains retain healthy peers independently of broken ends, end multiplicities or unrelated body errors. |
 
 ## Coverage limits
 

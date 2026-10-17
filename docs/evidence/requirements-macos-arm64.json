@@ -1071,7 +1071,9 @@
       "category": "standard",
       "sources": [
         "SYSML-CLAUSE-7.6.6",
-        "SYSML-CLAUSE-7.13.2"
+        "SYSML-CLAUSE-7.13.2",
+        "SYSML-CLAUSE-8.2.2.13.1",
+        "KERML-CLAUSE-8.3.4.5.3"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -1080,7 +1082,9 @@
         "evidence": [
           "engine",
           "connector-ends",
-          "wire"
+          "wire",
+          "endpoint-isolation",
+          "endpoint-tests"
         ]
       },
       "api": {
@@ -1089,7 +1093,7 @@
           "query",
           "wire"
         ],
-        "note": "Broken ends are conservatively unsupported. Flow compatibility, end typing and all connection constraints remain unqualified."
+        "note": "Resolution is per endpoint. Broken or ambiguous end subtrees remain conservatively unsupported, and retained chain prefixes are not successful targets. Resolution does not certify connection validity."
       },
       "tests": [
         {
@@ -1148,9 +1152,132 @@
               "status": "pass"
             }
           ]
+        },
+        {
+          "case": "CONN-004",
+          "checks": [
+            "syntax",
+            "missing",
+            "ambiguous",
+            "missingFirst",
+            "missingLast",
+            "deepMissing",
+            "missingMiddle",
+            "bodyError",
+            "triple",
+            "endBound",
+            "healthy",
+            "ambiguous-end",
+            "flow-broken",
+            "flow-healthy"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "missing",
+              "status": "pass"
+            },
+            {
+              "id": "ambiguous",
+              "status": "pass"
+            },
+            {
+              "id": "missingFirst",
+              "status": "pass"
+            },
+            {
+              "id": "missingLast",
+              "status": "pass"
+            },
+            {
+              "id": "deepMissing",
+              "status": "pass"
+            },
+            {
+              "id": "missingMiddle",
+              "status": "pass"
+            },
+            {
+              "id": "bodyError",
+              "status": "pass"
+            },
+            {
+              "id": "triple",
+              "status": "pass"
+            },
+            {
+              "id": "endBound",
+              "status": "pass"
+            },
+            {
+              "id": "healthy",
+              "status": "pass"
+            },
+            {
+              "id": "ambiguous-end",
+              "status": "pass"
+            },
+            {
+              "id": "flow-broken",
+              "status": "pass"
+            },
+            {
+              "id": "flow-healthy",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "CONN-005",
+          "checks": [
+            "syntax",
+            "missing",
+            "broken",
+            "bodyError",
+            "bound",
+            "triple",
+            "healthy"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "missing",
+              "status": "pass"
+            },
+            {
+              "id": "broken",
+              "status": "pass"
+            },
+            {
+              "id": "bodyError",
+              "status": "pass"
+            },
+            {
+              "id": "bound",
+              "status": "pass"
+            },
+            {
+              "id": "triple",
+              "status": "pass"
+            },
+            {
+              "id": "healthy",
+              "status": "pass"
+            }
+          ]
         }
       ],
-      "limits": "Broken ends are conservatively unsupported. Flow compatibility, end typing and all connection constraints remain unqualified."
+      "limits": "KERNEL-015 isolates uncertainty to each end ownership subtree. A broken peer or unrelated connection-body member no longer masks a fully resolved end. Missing first/middle/last links, ambiguous names, n-ary ends, KerML connectors and split flow prefix/redefinition ownership have regression cases. Unresolved multiplicity references inside an end still conservatively block that end; implicit ends remain unsupported. Source references and diagnostics remain separate evidence, and endpoint display spelling can still represent a retained prefix rather than full original source. An ownership index visits each marked node once, with shared-ancestor and cycle-termination checks. Native/WASM tests retain the full previous mixed corpus and unresolved-import variant; CONN-004 fills the last available document slot in the 32-document guard workspace, and CONN-005 is additionally tested in a two-dialect parity request. This is bounded target projection, not qualification of whole-model validity, all contextual name resolution, flow compatibility, end typing, connector constraints, complete graphical notation or every syntax-recovery shape. Mixed-workspace qualification also requires sharing immutable checked callee projections to avoid repeated copies within the unchanged work allowance; this preserves existing arithmetic and predicate evidence without expanding their semantic scope."
     },
     {
       "id": "SOURCE-NAMES",
@@ -5180,24 +5307,24 @@
       "limits": "KERNEL-014 checks all 128 SysML and 101 KerML reserved-word entries through five syntax contexts: long names, short names, alias names, alias targets and qualified expression references. Tests cover quoting, upper-case and identifier suffix/prefix boundaries, the other dialect's vocabulary, Unicode diagnostic coordinates, constructor AST distinction, public query/JSON round-trip and syntax recovery. The existing reservation of new is retained as an explicit compatibility policy: it is missing from both published lists but used by the constructor production; OMG SYSML21-641 and KERML11-200 remain open at the 2026-10-17 review. That ambiguity is not claimed as normative qualification. The four public cases exercise representative reference-resolution and recovery contexts, not every keyword in every semantic context. Full grammar, contextual name resolution, Unicode printability, formatter/editing and constructor execution remain unqualified. No production parser behavior or engine version changes in this increment."
     }
   ],
-  "executableCases": 96,
+  "executableCases": 98,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "dc3195153ecb07206edbaffb29c6e48068400888279468a13b1f1882879feee1",
+  "assessmentsSha256": "604db6748125fd1039d897031b4de1288d8ed642a570f8d4494eca507bda1ca9",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "de0a643a1e8a69114fcca85c10168801ee5e1f3200d57676d9ec679f894ed6ac",
-    "generatedAt": "2026-10-17T06:50:26.579Z",
-    "kernelInputSha256": "69af955e2750afdb66c4cb63ffd020f424fbdf032c6825a26ca1404db5e06116",
-    "binarySha256": "cc2b853d4c4da4a38d8983428ea54ca87f4255faa99c87be657272a45580a337",
+    "sha256": "56a19f071856ee5c2b70ec125fc1416bab40575871fa2c4f40c63694007db6b9",
+    "generatedAt": "2026-10-17T21:13:54.491Z",
+    "kernelInputSha256": "7f73cc2634117980053e893c88c671c862ed3e78bd83ff4ea38e3d69b6c606ae",
+    "binarySha256": "e5bc708260ecee09588653f22f4b54a778704cba8022d1616bc674e7d84daa70",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.15",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 96,
+      "pass": 98,
       "known-gap": 0,
       "planned": 0,
       "fail": 0

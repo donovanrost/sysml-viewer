@@ -27,7 +27,7 @@
       "path": "crates/sysml-kernel/src/engine.rs",
       "symbol": "pub fn analyze(",
       "role": "facade implementation",
-      "sha256": "35fa7b4ae21d4e43755b1c5f717e624e528499ef7968f1565931009ac149c03c"
+      "sha256": "237438a98c0cda465cbd0b146dd37f2c3dc118fc2066cfc74777b797e9ddb422"
     },
     "query": {
       "path": "crates/sysml-kernel/src/query.rs",
@@ -135,7 +135,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
       "symbol": "pub fn invocation_binding_report(",
       "role": "Checked canonical callee/input/argument identity mapping; requires current shared publication and retains incomplete-provider failures.",
-      "sha256": "347315b2cc847cce1de85562d71864d12c128a11da10b2969bf70b4a648ac525"
+      "sha256": "8329c60723149b689537a7f5afcf251396c196c71742102703cf20ab492dd015"
     },
     "checked-bound-expressions": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
@@ -286,6 +286,18 @@
       "symbol": "fn every_reserved_word_requires_quotes_in_identification_aliases_and_references",
       "role": "Complete specified-keyword vocabulary across five name contexts, dialect/case boundaries, diagnostic spans, constructor policy and public snapshot round-trip",
       "sha256": "36acbd663a6eb5a819c8156db8c2a4d26c53e0b415820c678b5a344de60d5a24"
+    },
+    "endpoint-isolation": {
+      "path": "crates/sysml-kernel/src/connections.rs",
+      "symbol": "pub(crate) fn unresolved_subtrees",
+      "role": "Per-analysis ownership index of unresolved carriers; isolates endpoint uncertainty without following semantic targets",
+      "sha256": "f2379ace8a25271902c904c0bea5f4371c1142970002e0f36243b62fd4bb22dd"
+    },
+    "endpoint-tests": {
+      "path": "crates/sysml-kernel/tests/connections.rs",
+      "symbol": "fn broken_and_ambiguous_ends_do_not_hide_resolved_peers",
+      "role": "Native full-library regression coverage for endpoint uncertainty, deep chains, body errors, flows, n-ary connectors and snapshot query round-trip",
+      "sha256": "0b9cb205e078fee0f6e3ebda2400b8df57339376aa8ab599b87b05153f45b596"
     }
   },
   "assessments": [
@@ -956,7 +968,9 @@
       "category": "standard",
       "sources": [
         "SYSML-CLAUSE-7.6.6",
-        "SYSML-CLAUSE-7.13.2"
+        "SYSML-CLAUSE-7.13.2",
+        "SYSML-CLAUSE-8.2.2.13.1",
+        "KERML-CLAUSE-8.3.4.5.3"
       ],
       "applicability": "current-product",
       "priority": "P0",
@@ -965,7 +979,9 @@
         "evidence": [
           "engine",
           "connector-ends",
-          "wire"
+          "wire",
+          "endpoint-isolation",
+          "endpoint-tests"
         ]
       },
       "api": {
@@ -974,7 +990,7 @@
           "query",
           "wire"
         ],
-        "note": "Broken ends are conservatively unsupported. Flow compatibility, end typing and all connection constraints remain unqualified."
+        "note": "Resolution is per endpoint. Broken or ambiguous end subtrees remain conservatively unsupported, and retained chain prefixes are not successful targets. Resolution does not certify connection validity."
       },
       "tests": [
         {
@@ -997,9 +1013,40 @@
             "clean",
             "arity"
           ]
+        },
+        {
+          "case": "CONN-004",
+          "checks": [
+            "syntax",
+            "missing",
+            "ambiguous",
+            "missingFirst",
+            "missingLast",
+            "deepMissing",
+            "missingMiddle",
+            "bodyError",
+            "triple",
+            "endBound",
+            "healthy",
+            "ambiguous-end",
+            "flow-broken",
+            "flow-healthy"
+          ]
+        },
+        {
+          "case": "CONN-005",
+          "checks": [
+            "syntax",
+            "missing",
+            "broken",
+            "bodyError",
+            "bound",
+            "triple",
+            "healthy"
+          ]
         }
       ],
-      "limits": "Broken ends are conservatively unsupported. Flow compatibility, end typing and all connection constraints remain unqualified."
+      "limits": "KERNEL-015 isolates uncertainty to each end ownership subtree. A broken peer or unrelated connection-body member no longer masks a fully resolved end. Missing first/middle/last links, ambiguous names, n-ary ends, KerML connectors and split flow prefix/redefinition ownership have regression cases. Unresolved multiplicity references inside an end still conservatively block that end; implicit ends remain unsupported. Source references and diagnostics remain separate evidence, and endpoint display spelling can still represent a retained prefix rather than full original source. An ownership index visits each marked node once, with shared-ancestor and cycle-termination checks. Native/WASM tests retain the full previous mixed corpus and unresolved-import variant; CONN-004 fills the last available document slot in the 32-document guard workspace, and CONN-005 is additionally tested in a two-dialect parity request. This is bounded target projection, not qualification of whole-model validity, all contextual name resolution, flow compatibility, end typing, connector constraints, complete graphical notation or every syntax-recovery shape. Mixed-workspace qualification also requires sharing immutable checked callee projections to avoid repeated copies within the unchanged work allowance; this preserves existing arithmetic and predicate evidence without expanding their semantic scope."
     },
     {
       "id": "SOURCE-NAMES",

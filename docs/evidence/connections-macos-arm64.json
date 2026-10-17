@@ -1,0 +1,120 @@
+{
+  "generatedAt": "2026-10-17T21:20:30.431281+00:00",
+  "platform": "darwin",
+  "arch": "arm64",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+  "kernelInputSha256": "7f73cc2634117980053e893c88c671c862ed3e78bd83ff4ea38e3d69b6c606ae",
+  "inputs": {
+    "crates/sysml-kernel/src/connections.rs": "f2379ace8a25271902c904c0bea5f4371c1142970002e0f36243b62fd4bb22dd",
+    "crates/sysml-kernel/src/engine.rs": "237438a98c0cda465cbd0b146dd37f2c3dc118fc2066cfc74777b797e9ddb422",
+    "crates/sysml-kernel/tests/connections.rs": "0b9cb205e078fee0f6e3ebda2400b8df57339376aa8ab599b87b05153f45b596",
+    "tests/kernel.test.ts": "8b1f1dcacc5053640a75b5c1f4e6ac0cf8510ab1f98bf33ed1a6315bbe86155f",
+    "tests/conformance/matrix.json": "1208c19e450c587d94181b586ed1780ae2ba67807093023d2bf281692c19c105",
+    "standards/assessments.json": "604db6748125fd1039d897031b4de1288d8ed642a570f8d4494eca507bda1ca9",
+    "tools/benchmark-kernel.mjs": "54434ce6883e12db503742bb46ce04eb6858eda55238790c682d5a3c9b3b6106",
+    "patches/manifest.json": "3436066d028e421f38379570f4d2b0fe357c91ada27918be32ecada7700cebee",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs": "c85c9f315ecc5214fa624e720e493d15622f822a6410e47c33726d7cb5fc9d50",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs": "8329c60723149b689537a7f5afcf251396c196c71742102703cf20ab492dd015"
+  },
+  "passing": {
+    "conformance": 98,
+    "rust": 73,
+    "node": 41,
+    "vendor": 268,
+    "benchmarkSamples": 108
+  },
+  "baseline": {
+    "generatedAt": "2026-10-17T20:40:10.244Z",
+    "baselineCommit": "fd96890",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.15",
+    "binarySha256": "cc2b853d4c4da4a38d8983428ea54ca87f4255faa99c87be657272a45580a337",
+    "file": "tests/conformance/fixtures/conn-002.sysml",
+    "sourceSha256": "a893967d876835da80b46b359476d5ca84ab49bc5c6fd77068f15d58810f30f9",
+    "source": "package Wiring { part host { part a; part b; connection wire connect a.missing to b; } }",
+    "ends": [
+      {
+        "chain": [
+          "Wiring::host::a"
+        ],
+        "spelling": "a",
+        "resolution": {
+          "status": "unsupported",
+          "reason": "Connection contains an unresolved or ambiguous reference; endpoint completeness is not established."
+        }
+      },
+      {
+        "chain": [
+          "Wiring::host::b"
+        ],
+        "spelling": "b",
+        "resolution": {
+          "status": "unsupported",
+          "reason": "Connection contains an unresolved or ambiguous reference; endpoint completeness is not established."
+        }
+      }
+    ]
+  },
+  "after": {
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+    "binarySha256": "e5bc708260ecee09588653f22f4b54a778704cba8022d1616bc674e7d84daa70",
+    "sourceSha256": "a893967d876835da80b46b359476d5ca84ab49bc5c6fd77068f15d58810f30f9",
+    "ends": [
+      {
+        "chain": [
+          "Wiring::host::a"
+        ],
+        "spelling": "a",
+        "resolution": {
+          "status": "unsupported",
+          "reason": "Connection end contains an unresolved or ambiguous reference; endpoint completeness is not established."
+        }
+      },
+      {
+        "chain": [
+          "Wiring::host::b"
+        ],
+        "spelling": "b",
+        "resolution": {
+          "status": "resolved",
+          "targetId": "s1:e91561"
+        }
+      }
+    ],
+    "conformance": {
+      "id": "CONN-002",
+      "status": "pass",
+      "files": {
+        "tests/conformance/fixtures/conn-002.sysml": "a893967d876835da80b46b359476d5ca84ab49bc5c6fd77068f15d58810f30f9"
+      },
+      "elapsedMs": 2003,
+      "checks": [
+        {
+          "id": "syntax",
+          "status": "pass"
+        },
+        {
+          "id": "ends",
+          "status": "pass"
+        }
+      ]
+    }
+  },
+  "initialIntegration": {
+    "path": "docs/evidence/connections-initial-integration-macos-arm64.json",
+    "sha256": "d5d226e255656a713f7cb392c0a18fb9afa80ceadbd29123c4da0ad83a078877"
+  },
+  "scope": "KERNEL-015 isolates unresolved-reference ownership per connector end. Broken or ambiguous end subtrees and partial chains remain unsupported; healthy peers and ends independent of unrelated body errors remain resolved. The facade schema is unchanged. Two existing reversible vendor patches share immutable checked callee projections within the stamped batch, preserving the original work allowance and complete mixed corpus.",
+  "validation": [
+    "Rust formatting",
+    "Clippy -D warnings",
+    "Prettier",
+    "TypeScript",
+    "Generated contract consistency",
+    "Vendor source/patch verification",
+    "Native/WASM parity for the full existing mixed corpus and its 32-document unresolved-import variant",
+    "Two-dialect endpoint and viewer parity checks",
+    "macOS arm64 app and DMG build"
+  ],
+  "limits": "This qualifies selected endpoint projection, not connector validity, end typing, flow compatibility, every syntax-recovery shape, full graphical notation or full language coverage. Unresolved end multiplicities still conservatively block their end, implicit ends remain unsupported, and display spelling may retain a partial chain. Windows/Linux execution remains pending CI.",
+  "sleepPrevention": "Temporary process-scoped caffeinate assertions; deadlines and system settings unchanged."
+}

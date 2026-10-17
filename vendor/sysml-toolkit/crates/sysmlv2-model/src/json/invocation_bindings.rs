@@ -141,7 +141,7 @@ impl super::Builder {
                 super::ConstructorBindingIssue::WorkLimit => WorkLimit,
                 _ => IncompleteProvider,
             })?;
-        let inputs = features.inputs;
+        let inputs = &features.inputs;
         if operator {
             // The admitted generic parameter rule pairs direct owned slots;
             // inherited-only or interleaved-output signatures stay qualified.
@@ -155,7 +155,7 @@ impl super::Builder {
                 let membership = self.elements[feature.0].owning_relationship;
                 !membership.is_some_and(|m| self.elements[m].ty == "ReturnParameterMembership")
             });
-            for input in &inputs {
+            for input in inputs {
                 let membership = self.elements[input.0]
                     .owning_relationship
                     .ok_or(InvalidRelationship)?;
@@ -371,14 +371,14 @@ impl super::Builder {
                 return Err(DuplicateArgument);
             }
         }
-        charge(steps, inputs.len())?;
+        charge(steps, inputs.len().saturating_mul(2))?;
         let bindings = inputs.iter().filter_map(|i| mapped.remove(&i.0)).collect();
         if !stamp.current_builder(self) {
             return Err(StaleEvidence);
         }
         Ok(InvocationBindings {
             callee: ElementRef(callee),
-            inputs,
+            inputs: inputs.clone(),
             bindings,
         })
     }

@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-10-17T21:03:28.300734+00:00",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+  "kernelInputSha256": "ada8803596ffdedbe9ed2f8bdfe46fa3fd1d4d893f36fc34332ad98d3a55d479",
+  "counts": {
+    "pass": 33,
+    "fail": 8,
+    "total": 41
+  },
+  "failures": [
+    "canonical arithmetic bindings agree across native and WebAssembly without rounding or defaults",
+    "conditional bounds agree across native and WebAssembly with lazy branches and strict Boolean tests",
+    "compound ranges retain exact endpoints and negative guards across native and WebAssembly",
+    "ordered predicates retain exact comparisons and operand guards in both workspace contexts",
+    "equality and logical predicates preserve values and guards in both workspace contexts",
+    "null-coalescing preserves empty, present and unknown values in both workspace contexts",
+    "empty comparisons preserve presence and refuse unavailable operands in both workspace contexts",
+    "strings preserve decoded values, presence and guards in both workspace contexts"
+  ],
+  "initialLogSha256": "6f95a5892ea85c33029823dcf3aa56e2a20dad60cdcfdd15d664716583c4e37e",
+  "corpusFile": "tests/kernel.test.ts",
+  "corpusSha256": "8b1f1dcacc5053640a75b5c1f4e6ac0cf8510ab1f98bf33ed1a6315bbe86155f",
+  "observation": "Adding the complete CONN-004 fixture to the previous mixed corpus caused checked arithmetic and predicate bounds to become unsupportedBound. Native/WASM snapshots still agreed. Diagnostic instrumentation of a disposable vendor copy showed dynamic publication exhausting the unchanged 10000000-step work allowance.",
+  "repair": "Share immutable TypeFeatures in the existing stamped constructor/invocation batch, avoid full projection copies per invocation, retain traversal and output-copy charges, and rerun the unchanged combined corpus. No fixture was removed or work allowance raised.",
+  "qualification": "This records the initial failed integration attempt; final qualification is recorded separately in connections-macos-arm64.json."
+}

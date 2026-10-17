@@ -588,6 +588,60 @@ representative semantic contexts; the exhaustive vocabulary tests are syntax
 checks, not all contextual name-resolution rules. Complete grammar, Unicode
 printability, constructor execution and formatter/editing behavior remain open.
 
+## KERNEL-015: isolate connection-end uncertainty
+
+A missing or ambiguous reference anywhere inside a connector previously made
+**every** end unsupported. For `connect a.missing to b`, the safe refusal of the
+partial `a` chain also hid the independently resolved `b` end. A missing type on an
+unrelated member in the connection body similarly hid two valid endpoints.
+
+The facade now indexes unresolved reference carriers and their owning ancestors
+once per analysis, then checks each end feature's own subtree. Synthesized chain
+features and flow-end redefinitions are reached through ownership; referenced
+semantic targets are not followed. Shared ancestry is visited once, and a visited
+set also bounds unexpected ownership cycles. The private index has tests for a
+10,000-node spine shared by 10,000 unresolved carriers and for empty/cyclic input.
+This avoids the former per-connector scan of every unresolved source span.
+
+The first three public regressions failed before the change and pass afterward.
+Four full-library Rust tests cover absent first/middle/last links, deep retained
+prefixes, ambiguous names, n-ary ends, body errors, unresolved end multiplicities,
+flow prefix/redefinition ownership, implicit ends and JSON/query round-trip.
+CONN-002 now expects its healthy second end to resolve; the broken first end
+remains unsupported. CONN-004 and CONN-005 add 21 assertions across SysML and KerML.
+No other earlier matrix expectation changes.
+
+CONN-004 joins the complete existing native/WASM integration corpus. Its
+unresolved-import variant now uses all 32 supported document slots. Both dialects
+also run together in a separate parity request, including CONN-005. Viewer tests
+check that a healthy peer still has a visible card, an unsupported partial end
+never supplies a card, and unrelated body errors do not erase resolved edges.
+N-ary rendering retains its explicit unavailable status.
+
+This is a projection improvement, not a claim that the connector is semantically
+valid. An unresolved reference anywhere within an end, including its multiplicity,
+still conservatively blocks that end. Partial chains remain navigation evidence;
+their display spelling may be a prefix rather than the complete written source.
+Implicit ends remain unsupported. Flow compatibility, end typing, the full
+connector constraints, all contextual resolution and every syntax-recovery shape
+remain unqualified. KerML 8.3.4.5.3 and SysML 8.2.2.13.1 establish the separate
+end/reference structure; the uncertainty boundary is an explicit product policy.
+
+The first combined integration run exposed eight arithmetic/predicate failures:
+canonical publication exceeded its 10-million-step allowance after adding the
+connector fixture. The [initial integration record](evidence/connections-initial-integration-macos-arm64.json)
+retains that failure. Complete checked callee projections were copied for every
+invocation, including vectors the consumer never needed. The existing stamped
+constructor/invocation batch now shares immutable projections. Consumers still
+charge every traversal and copy the vectors retained in their public reports.
+Mutation invalidates the batch; a new dependency test covers budget exhaustion,
+retry, same-length edits and unchanged previously retained projections. The full
+corpus and the original work allowance remain intact.
+
+Engine `.16` retains schema 3 and package version 0.3.0. Endpoint policy stays in
+the reusable Rust facade. Two existing reversible dependency patches record the
+projection-sharing change; no UI language rules are added.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -615,16 +669,17 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **96 passing conformance cases**, **no
-known-gap cases**, and **no planned cases in the current matrix**. All **67 Rust kernel tests**,
-**40 Node tests**, and **267 dependency proof tests** pass.
+On macOS arm64, the completed run has **98 passing conformance cases**, **no
+known-gap cases**, and **no planned cases in the current matrix**. All **73 Rust kernel tests**,
+**41 Node tests**, and **268 dependency proof tests** pass.
 The dependency suites cover lexical boundaries (5), rational arithmetic (13), type relations (41), model-level evaluability (33),
-cardinality (34), invocation bindings (19), constructor bindings (16), dynamic graph
+cardinality (34), invocation bindings (19), constructor bindings (17), dynamic graph
 (19), dynamic invocations (27), owned results (4), semantic ownership (5), end constancy (10) and checked
 namespace operations (41). The corpus and the 32 import-rule partitions are included
 in the Rust suite, not additional independently qualified specification counts.
-Native and WebAssembly outputs match exactly. The [KERNEL-014 validation record](evidence/keywords-macos-arm64.json)
-records the vocabulary, test and assessment fingerprints and this increment's scope.
+Native and WebAssembly outputs match exactly. The [KERNEL-015 validation record](evidence/connections-macos-arm64.json)
+records implementation and test fingerprints, the previous CONN-002 behavior and
+this increment's scope. The prior [vocabulary audit](evidence/keywords-macos-arm64.json) remains available.
 
 Rust formatting, Clippy with warnings denied, TypeScript checking, Prettier,
 generated-contract consistency, source/patch verification and inventory checks
@@ -642,31 +697,33 @@ validation used a temporary process-scoped sleep assertion, released at completi
 The 30-second conformance and 60-second benchmark deadlines are unchanged. Earlier unexplained
 benchmark timeouts below remain separate evidence.
 
-The retained KERNEL-013 [numeric benchmark](evidence/benchmark-numeric-macos-arm64.json)
-records three fresh processes per native/WASM workload, for 102 successful samples.
-All repeated native and WASM snapshots agree exactly. Every numeric sample
-passes all nine LEX-006 assertions; all 16 prior workloads remain included.
-The extreme-scale regression also passes with debug overflow checks enabled.
+The complete [connection benchmark](evidence/benchmark-connections-macos-arm64.json)
+records three fresh processes per native/WASM workload, for 108 successful samples.
+All repeated native and WASM snapshots agree exactly. Each connection sample
+passes all 14 CONN-004 assertions; all 17 prior workloads remain included.
+The preceding [numeric benchmark](evidence/benchmark-numeric-macos-arm64.json)
+and KERNEL-013 debug overflow-check evidence remain available.
 
 | Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
 | --- | ---: | ---: | ---: |
-| Numeric literals | 1,990 | 2,974 | 417.0/339.5 |
-| Lexical boundaries | 2,067 | 2,369 | 398.0/345.5 |
-| Strings | 2,500 | 3,006 | 403.6/366.7 |
-| Empty comparisons | 2,650 | 3,137 | 420.9/367.1 |
-| Null-coalescing | 2,350 | 2,868 | 425.4/366.1 |
-| Scalar equality | 2,476 | 3,002 | 410.7/365.6 |
-| Boolean predicates | 2,578 | 3,103 | 429.6/368.9 |
-| Ordered predicates | 2,413 | 2,910 | 431.2/370.8 |
-| Compound ranges | 2,045 | 2,464 | 402.5/358.5 |
-| Independent bounds with missing base | 1,949 | 2,417 | 403.9/348.5 |
-| Imported memberships | 1,901 | 2,361 | 414.5/346.5 |
-| Viewer example | 1,941 | 2,372 | 418.7/364.0 |
-| Attribute providers | 1,959 | 2,484 | 407.3/357.0 |
-| Arithmetic providers | 2,070 | 2,514 | 416.0/364.6 |
-| Conditional providers | 2,064 | 2,543 | 424.3/363.0 |
-| 100 usages | 1,948 | 2,372 | 436.1/365.3 |
-| 1,000 usages | 2,243 | 2,549 | 444.2/376.3 |
+| Connection ends | 2,237 | 2,637 | 387.5/354.4 |
+| Numeric literals | 2,175 | 2,605 | 393.3/350.6 |
+| Lexical boundaries | 2,165 | 2,521 | 394.7/347.6 |
+| Strings | 3,031 | 3,203 | 391.8/361.3 |
+| Empty comparisons | 3,291 | 3,392 | 384.2/368.4 |
+| Null-coalescing | 2,436 | 2,973 | 393.5/361.5 |
+| Scalar equality | 2,961 | 3,181 | 406.9/361.1 |
+| Boolean predicates | 2,754 | 3,256 | 383.2/359.5 |
+| Ordered predicates | 2,578 | 3,299 | 408.3/361.0 |
+| Compound ranges | 2,803 | 4,781 | 387.1/323.5 |
+| Independent bounds with missing base | 2,931 | 3,431 | 387.9/346.8 |
+| Imported memberships | 2,081 | 2,567 | 385.0/342.7 |
+| Viewer example | 2,092 | 2,555 | 390.4/354.8 |
+| Attribute providers | 2,301 | 2,636 | 380.0/340.2 |
+| Arithmetic providers | 2,229 | 3,065 | 385.2/362.3 |
+| Conditional providers | 3,228 | 3,306 | 367.8/352.6 |
+| 100 usages | 2,242 | 2,643 | 397.5/354.3 |
+| 1,000 usages | 2,541 | 2,997 | 413.8/358.3 |
 
 The earlier `.6` isolation run had an initial native sample time out at 60
 seconds; a direct retry completed in 3.2 seconds, and its full 48-sample rerun
@@ -678,22 +735,20 @@ after 45 successful samples when the first attribute-provider WASM sample exceed
 It also retained an 18,985 ms Boolean WASM sample (the other two took 4,100 and 3,329 ms).
 Three direct attribute-provider retries completed in 2,628, 2,537 and 2,480 ms with identical
 snapshots. The separate complete [72-sample rerun](evidence/benchmark-predicates-macos-arm64.json) is retained. The initial timeout
-remains unexplained. No benchmark timeout occurred in the `.11` through `.15` runs; these results do not
+remains unexplained. No benchmark timeout occurred in the `.11` through `.16` runs; these results do not
 establish a stable latency bound.
 
 Measurements include startup, bundled-library analysis and serialization. They are
 observations on this Mac, not cross-platform latency guarantees. Canonical
 preparation is a whole-model pass. The facade runs its model scan before projecting
 cardinality; the separate direct-query regression exercises the first-query budget.
-Compared with the retained [lexical run](evidence/benchmark-lexical-macos-arm64.json),
+Compared with the retained [numeric run](evidence/benchmark-numeric-macos-arm64.json),
 these uncontrolled runs do not isolate incremental query cost or establish a
 regression budget. Large import-heavy production models and incremental performance
 remain open engineering work.
 
-The preceding KERNEL-013 production web build and macOS arm64 app and DMG builds passed.
-KERNEL-014 changes qualification inputs only; it does not repeat performance or packaging measurements.
-The unchanged local app
+The production web build and macOS arm64 app and DMG builds pass. The local app
 is `src-tauri/target/release/bundle/macos/SysML Viewer.app` (11.97 MiB), with a
-4.27 MiB installer under `src-tauri/target/release/bundle/dmg/`. That earlier run
-checked automated viewer integration and packaging; it does not repeat the earlier
+4.27 MiB installer under `src-tauri/target/release/bundle/dmg/`. This run
+checks automated viewer integration and packaging; it does not repeat the earlier
 interactive file-picker/navigation checks or establish Windows/Linux packaging.

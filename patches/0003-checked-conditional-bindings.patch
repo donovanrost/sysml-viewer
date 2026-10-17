@@ -1,4 +1,3 @@
-diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs
 --- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs
 +++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs
 @@ -56,7 +56,7 @@
@@ -19,7 +18,41 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindi
                  .ok_or(UnsupportedConfiguration)?
          } else {
              membership_evidence::first_unowned_member(
-@@ -385,8 +385,11 @@
+@@ -141,7 +141,7 @@
+                 super::ConstructorBindingIssue::WorkLimit => WorkLimit,
+                 _ => IncompleteProvider,
+             })?;
+-        let inputs = features.inputs;
++        let inputs = &features.inputs;
+         if operator {
+             // The admitted generic parameter rule pairs direct owned slots;
+             // inherited-only or interleaved-output signatures stay qualified.
+@@ -155,7 +155,7 @@
+                 let membership = self.elements[feature.0].owning_relationship;
+                 !membership.is_some_and(|m| self.elements[m].ty == "ReturnParameterMembership")
+             });
+-            for input in &inputs {
++            for input in inputs {
+                 let membership = self.elements[input.0]
+                     .owning_relationship
+                     .ok_or(InvalidRelationship)?;
+@@ -371,22 +371,25 @@
+                 return Err(DuplicateArgument);
+             }
+         }
+-        charge(steps, inputs.len())?;
++        charge(steps, inputs.len().saturating_mul(2))?;
+         let bindings = inputs.iter().filter_map(|i| mapped.remove(&i.0)).collect();
+         if !stamp.current_builder(self) {
+             return Err(StaleEvidence);
+         }
+         Ok(InvocationBindings {
+             callee: ElementRef(callee),
+-            inputs,
++            inputs: inputs.clone(),
+             bindings,
+         })
+     }
  }
  
  /// Shared exact loaded-library identity used by the evaluator's designated

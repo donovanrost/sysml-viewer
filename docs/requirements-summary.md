@@ -34,7 +34,7 @@ All clause/prose decomposition remains pending. No percentage is published.
 
 ## Evidence mapped so far
 
-35 bounded assessments map 96 executable cases and 0 planned cases.
+35 bounded assessments map 98 executable cases and 0 planned cases.
 Linked tests are evidence for the assessment wording only. They do not qualify
 a whole source clause, its descendants, or a named constraint merely because it
 belongs to the same metaclass. Product robustness cases are identified separately.
@@ -56,7 +56,7 @@ belongs to the same metaclass. Product robustness cases are identified separatel
 | REDEFINITION-TARGET | standard | partial / partial | 1 / 1 / 0 / 0 | The positive and negative cases cover selected lookup/replacement behavior, not every redefinition constraint. |
 | MULTIPLICITY-LITERAL | standard | partial / partial | 1 / 1 / 0 / 0 | Literal query only. Symbolic bounds, default bounds, lower-level metamodel structure and all bound constraints remain unqualified. |
 | PORT-CONJUGATED-NAME | standard | partial / partial | 1 / 1 / 0 / 0 | This is written-reference evidence. Construction of conjugated metaclasses and direction/flow reversal have no mapped tests. |
-| CONNECTION-ENDPOINTS | standard | partial / partial | 2 / 1 / 0 / 0 | Broken ends are conservatively unsupported. Flow compatibility, end typing and all connection constraints remain unqualified. |
+| CONNECTION-ENDPOINTS | standard | partial / partial | 2 / 3 / 0 / 0 | KERNEL-015 isolates uncertainty to each end ownership subtree. A broken peer or unrelated connection-body member no longer masks a fully resolved end. Missing first/middle/last links, ambiguous names, n-ary ends, KerML connectors and split flow prefix/redefinition ownership have regression cases. Unresolved multiplicity references inside an end still conservatively block that end; implicit ends remain unsupported. Source references and diagnostics remain separate evidence, and endpoint display spelling can still represent a retained prefix rather than full original source. An ownership index visits each marked node once, with shared-ancestor and cycle-termination checks. Native/WASM tests retain the full previous mixed corpus and unresolved-import variant; CONN-004 fills the last available document slot in the 32-document guard workspace, and CONN-005 is additionally tested in a two-dialect parity request. This is bounded target projection, not qualification of whole-model validity, all contextual name resolution, flow compatibility, end typing, connector constraints, complete graphical notation or every syntax-recovery shape. Mixed-workspace qualification also requires sharing immutable checked callee projections to avoid repeated copies within the unchanged work allowance; this preserves existing arithmetic and predicate evidence without expanding their semantic scope. |
 | SOURCE-NAMES | standard | partial / partial | 1 / 0 / 0 / 0 | Only name spelling relates to the standard here; byte/UTF-16 coordinate fidelity is a product guarantee. |
 | SOURCE-RECOVERY | product | partial / partial | 0 / 1 / 0 / 0 | Error recovery policy is a product requirement; the linked clause supplies context, not a recovery conformance rule. |
 | ROBUSTNESS-CYCLES | product | partial / partial | 0 / 0 / 2 / 0 | Termination and retained declarations do not establish a semantic verdict on cyclic models. |

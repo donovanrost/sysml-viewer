@@ -103,6 +103,15 @@ that name denotes. For conjugated port typing `~P`, the written spelling include
 `~`, while the name target is `P`; this is not a promise that it is the complete
 semantic FeatureTyping target after implicit conjugated-definition construction.
 
+Connection endpoints are resolved independently. Unresolved or ambiguous references
+in one end's ownership subtree make that end unsupported, including when the graph
+retains a resolved chain prefix. A broken peer or unrelated member in the
+connection body does not hide an otherwise resolved end. References inside an end's
+multiplicity still conservatively block that end. Implicit ends remain unsupported;
+a resolved endpoint is not a connection-validity certificate. Endpoint display
+spelling can still represent a retained prefix; written references carry their own
+source ranges. See KERNEL-015 in the qualification report.
+
 `cardinality` uses the upstream checked constraint reader. Evaluated integer
 bounds remain exact through JSON and JavaScript, up to the engine's signed 128-bit
 integer limit. Unknown providers, unsupported bounds, cycles and work limits are

@@ -67,6 +67,7 @@ for (const name of [
   'lex-007.kerml',
   'lex-010.sysml',
   'lex-011.kerml',
+  'conn-004.sysml',
 ]) {
   documents.push({
     id: name,
@@ -743,12 +744,20 @@ test('strings preserve decoded values, presence and guards in both workspace con
   }
 });
 
-test('lexical whitespace, numbers, escapes and keyword names retain source and resolution in both workspace contexts', () => {
+test('lexical and connection checks retain source and resolution in both workspace contexts', () => {
   const matrix = JSON.parse(
     readFileSync(new URL('./conformance/matrix.json', import.meta.url), 'utf8'),
   );
   for (const state of [snapshot, importGuards]) {
-    for (const id of ['LEX-001', 'LEX-002', 'LEX-006', 'LEX-007', 'LEX-010', 'LEX-011']) {
+    for (const id of [
+      'LEX-001',
+      'LEX-002',
+      'LEX-006',
+      'LEX-007',
+      'LEX-010',
+      'LEX-011',
+      'CONN-004',
+    ]) {
       const item = matrix.cases.find((c: { id: string }) => c.id === id);
       // Scope diagnostic assertions to this fixture; keep the entire model for queries.
       const documentId = item.files[0].split('/').at(-1);
@@ -838,3 +847,36 @@ for (const { label, fixtures, cases, revision } of [
     }
   });
 }
+
+test('endpoint isolation preserves native/WASM parity and viewer edge selection', () => {
+  const documents = ['conn-004.sysml', 'conn-005.kerml'].map((name) => ({
+    id: name,
+    name,
+    text: readFileSync(new URL(`./conformance/fixtures/${name}`, import.meta.url), 'utf8'),
+  }));
+  const request = JSON.stringify({ revision: 41, documents });
+  const wasm: Snapshot = JSON.parse(analyze(request));
+  assert.deepEqual(wasm, nativeSnapshot(request));
+  const matrix = JSON.parse(
+    readFileSync(new URL('./conformance/matrix.json', import.meta.url), 'utf8'),
+  );
+  for (const id of ['CONN-004', 'CONN-005']) {
+    const item = matrix.cases.find((c: { id: string }) => c.id === id);
+    assert.deepEqual(
+      assessCase(wasm, item).filter((c) => c.status !== 'pass'),
+      [],
+    );
+  }
+  for (const state of [wasm, snapshot, importGuards]) {
+    const view = new ViewerModel(state);
+    const host = view.elements.find((e) => e.qualifiedName === 'ScopedEnds::host')!;
+    const edges = diagramEdges(view, host.id, 'connections', view.members(host.id));
+    assert(edges.some((e) => !e.a && e.b?.name === 'b' && e.status === 'unsupported'));
+    assert(edges.some((e) => e.a?.name === 'a' && !e.b && e.status === 'unsupported'));
+    assert.equal(
+      edges.filter((e) => e.a?.name === 'a' && e.b?.name === 'b' && e.status === 'resolved').length,
+      2,
+    );
+    assert(edges.some((e) => e.status === 'n-ary view unavailable' && !e.a && !e.b));
+  }
+});

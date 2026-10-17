@@ -797,7 +797,7 @@
           "op": "connection",
           "name": "Wiring::host::wire",
           "chains": [["Wiring::host::a"], ["Wiring::host::b"]],
-          "statuses": ["unsupported", "unsupported"]
+          "statuses": ["unsupported", "resolved"]
         }
       ]
     },
@@ -5855,6 +5855,192 @@
           "owner": "LexicalDependent::clean",
           "status": "unknown",
           "reason": "invalidSyntax"
+        }
+      ]
+    },
+    {
+      "id": "CONN-004",
+      "area": "connections",
+      "purpose": "SysML endpoint uncertainty follows each end ownership subtree; missing, ambiguous, chained, n-ary, body-error and flow cases preserve independent resolved ends.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/conn-004.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "missing",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "messageIncludes": "unresolved reference"
+        },
+        {
+          "id": "ambiguous",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "messageIncludes": "ambiguous reference"
+        },
+        {
+          "id": "missingFirst",
+          "op": "connection",
+          "name": "ScopedEnds::host::missingFirst",
+          "chains": [[], ["ScopedEnds::host::b"]],
+          "statuses": ["unsupported", "resolved"]
+        },
+        {
+          "id": "missingLast",
+          "op": "connection",
+          "name": "ScopedEnds::host::missingLast",
+          "chains": [["ScopedEnds::host::a"], ["ScopedEnds::host::b"]],
+          "statuses": ["resolved", "unsupported"]
+        },
+        {
+          "id": "deepMissing",
+          "op": "connection",
+          "name": "ScopedEnds::host::deepMissing",
+          "chains": [
+            ["ScopedEnds::host::a", "ScopedEnds::Branch::leaf"],
+            ["ScopedEnds::host::b", "ScopedEnds::Branch::leaf", "ScopedEnds::Leaf::p"]
+          ],
+          "statuses": ["unsupported", "resolved"]
+        },
+        {
+          "id": "missingMiddle",
+          "op": "connection",
+          "name": "ScopedEnds::host::missingMiddle",
+          "chains": [
+            ["ScopedEnds::host::a"],
+            ["ScopedEnds::host::b", "ScopedEnds::Branch::leaf", "ScopedEnds::Leaf::p"]
+          ],
+          "statuses": ["unsupported", "resolved"]
+        },
+        {
+          "id": "bodyError",
+          "op": "connection",
+          "name": "ScopedEnds::host::bodyError",
+          "chains": [
+            ["ScopedEnds::host::a", "ScopedEnds::Branch::leaf", "ScopedEnds::Leaf::p"],
+            ["ScopedEnds::host::b", "ScopedEnds::Branch::leaf", "ScopedEnds::Leaf::p"]
+          ],
+          "statuses": ["resolved", "resolved"]
+        },
+        {
+          "id": "triple",
+          "op": "connection",
+          "name": "ScopedEnds::host::triple",
+          "chains": [["ScopedEnds::host::a"], ["ScopedEnds::host::b"], ["ScopedEnds::host::c"]],
+          "statuses": ["resolved", "unsupported", "resolved"]
+        },
+        {
+          "id": "endBound",
+          "op": "connection",
+          "name": "ScopedEnds::host::endBound",
+          "chains": [["ScopedEnds::host::a"], ["ScopedEnds::host::b"]],
+          "statuses": ["unsupported", "resolved"]
+        },
+        {
+          "id": "healthy",
+          "op": "connection",
+          "name": "ScopedEnds::host::healthy",
+          "chains": [
+            ["ScopedEnds::host::a", "ScopedEnds::Branch::leaf", "ScopedEnds::Leaf::p"],
+            ["ScopedEnds::host::b", "ScopedEnds::Branch::leaf", "ScopedEnds::Leaf::p"]
+          ],
+          "statuses": ["resolved", "resolved"]
+        },
+        {
+          "id": "ambiguous-end",
+          "op": "connection",
+          "name": "ScopedEnds::ambiguousHost::wire",
+          "chains": [[], ["ScopedEnds::ambiguousHost::good"]],
+          "statuses": ["unsupported", "resolved"]
+        },
+        {
+          "id": "flow-broken",
+          "op": "connection",
+          "name": "FlowEnds::pipes::broken",
+          "chains": [["FlowEnds::pipes::a"], ["FlowEnds::pipes::b", "FlowEnds::Vessel::inlet"]],
+          "statuses": ["unsupported", "resolved"]
+        },
+        {
+          "id": "flow-healthy",
+          "op": "connection",
+          "name": "FlowEnds::pipes::healthy",
+          "chains": [
+            ["FlowEnds::pipes::a", "FlowEnds::Vessel::outlet"],
+            ["FlowEnds::pipes::b", "FlowEnds::Vessel::inlet"]
+          ],
+          "statuses": ["resolved", "resolved"]
+        }
+      ]
+    },
+    {
+      "id": "CONN-005",
+      "area": "connections",
+      "purpose": "KerML connector chains retain healthy peers independently of broken ends, end multiplicities or unrelated body errors.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/conn-005.kerml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "missing",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "messageIncludes": "unresolved reference"
+        },
+        {
+          "id": "broken",
+          "op": "connection",
+          "name": "KerMLEnds::broken",
+          "chains": [
+            ["KerMLEnds::a", "KerMLEnds::Branch::leaf"],
+            ["KerMLEnds::b", "KerMLEnds::Branch::leaf", "KerMLEnds::Leaf::p"]
+          ],
+          "statuses": ["unsupported", "resolved"]
+        },
+        {
+          "id": "bodyError",
+          "op": "connection",
+          "name": "KerMLEnds::bodyError",
+          "chains": [
+            ["KerMLEnds::a", "KerMLEnds::Branch::leaf", "KerMLEnds::Leaf::p"],
+            ["KerMLEnds::b", "KerMLEnds::Branch::leaf", "KerMLEnds::Leaf::p"]
+          ],
+          "statuses": ["resolved", "resolved"]
+        },
+        {
+          "id": "bound",
+          "op": "connection",
+          "name": "KerMLEnds::bound",
+          "chains": [["KerMLEnds::a"], ["KerMLEnds::b"]],
+          "statuses": ["unsupported", "resolved"]
+        },
+        {
+          "id": "triple",
+          "op": "connection",
+          "name": "KerMLEnds::triple",
+          "chains": [
+            ["KerMLEnds::a"],
+            ["KerMLEnds::b"],
+            ["KerMLEnds::a", "KerMLEnds::Branch::leaf", "KerMLEnds::Leaf::p"]
+          ],
+          "statuses": ["resolved", "unsupported", "resolved"]
+        },
+        {
+          "id": "healthy",
+          "op": "connection",
+          "name": "KerMLEnds::healthy",
+          "chains": [
+            ["KerMLEnds::a", "KerMLEnds::Branch::leaf", "KerMLEnds::Leaf::p"],
+            ["KerMLEnds::b", "KerMLEnds::Branch::leaf", "KerMLEnds::Leaf::p"]
+          ],
+          "statuses": ["resolved", "resolved"]
         }
       ]
     }

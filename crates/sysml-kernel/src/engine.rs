@@ -239,6 +239,7 @@ impl Engine {
         let mut visibility_budget = crate::imports::VISIBILITY_QUERY_LIMIT;
         let mut membership_order = Vec::new();
         let mut membership_seen = HashSet::new();
+        let unresolved_subtrees = crate::connections::unresolved_subtrees(&mut graph, &unresolved);
         let mut connections = Vec::new();
         for &e in &declarations {
             checkpoint()?;
@@ -299,17 +300,14 @@ impl Engine {
             );
             membership_queries.insert(e, (owned, inherited));
             if check::metaclass_conforms(graph.element_type(e), "Connector") {
-                let (unit, extent) = graph.member_extent(e).unwrap();
-                let failed = unresolved.iter().any(|r| {
-                    r.unit == unit && extent.start <= r.span.start && r.span.end <= extent.end
-                });
                 let ends = graph.connector_end_targets(e).into_iter().map(|end| {
                     let spelling = end.spelling.clone().unwrap_or_else(|| end.chain.iter().map(|&link| graph.element_effective_name(link).unwrap_or_default()).collect::<Vec<_>>().join("."));
                     for &link in &end.chain { registry.include(link); }
                     // Some upstream chains preserve a resolved prefix after a
-                    // failed last step. Never label that prefix a resolved end.
-                    let resolution = if failed {
-                        Resolution::Unsupported { reason: "Connection contains an unresolved or ambiguous reference; endpoint completeness is not established.".into() }
+                    // failed step. Certify each end independently: a failed
+                    // sibling or unrelated body member cannot taint this end.
+                    let resolution = if unresolved_subtrees.contains(&end.feature) {
+                        Resolution::Unsupported { reason: "Connection end contains an unresolved or ambiguous reference; endpoint completeness is not established.".into() }
                     } else if end.spelling.is_some() { Resolution::Unresolved }
                     else if let Some(&target) = end.chain.last() { Resolution::Resolved { target_id: registry.id(target) } }
                     else { Resolution::Unsupported { reason: "Implicit endpoint is not projected by this API.".into() } };

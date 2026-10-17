@@ -27,6 +27,13 @@ if (process.argv.includes('--wasm-child')) {
   );
   const scenarios = [
     {
+      name: 'connection-ends',
+      text: readFileSync(join(root, 'tests/conformance/fixtures/conn-004.sysml'), 'utf8'),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'CONN-004').checks,
+    },
+    {
       name: 'numeric-literals',
       text: readFileSync(join(root, 'tests/conformance/fixtures/lex-006.sysml'), 'utf8'),
       checks: JSON.parse(
