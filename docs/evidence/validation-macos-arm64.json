@@ -1,0 +1,280 @@
+{
+  "generatedAt": "2026-10-17T23:19:24.609823+00:00",
+  "platform": "darwin",
+  "arch": "arm64",
+  "scope": "KERNEL-017 named validation-rule audit and canonical state subaction codes. KERNEL-018 inherited view rendering validation remains open.",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.18",
+  "kernelInputSha256": "18da269c205184a573c20bfd6716fb18a569864ecad6e2aa33c8e92f5fd3ce1a",
+  "binarySha256": "2ec7e2d9337f1dacc62d7894de77aaeb9e5fb85d3fc02a56600e1ec0854cd126",
+  "inputs": {
+    "crates/sysml-kernel/src/lib.rs": "d2dd60fd97229ccf5bf06e11bb4b584b25ba8dd9132213a646955b627b2cc588",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs": "eeeaf06ea4ad0f8995151df58784521610a26d0841859fd7e32337e9f04d1fca",
+    "patches/manifest.json": "2b33a370de6ac621ad51fe68521253c97ce1e5b14b246462bb1556cf94732fba",
+    "patches/0017-state-subaction-rule-identifiers.patch": "d438e704fde3ae2d28831d9e10ead1526379708720ff87f516db4203b3d316a4",
+    "tools/requirements.mjs": "7450daf904d7963c122a3d443e1cc398814735506937fedd2be257a2c1cb3d0d",
+    "tools/lib/validation-audit.mjs": "869532e3ea3096fa008193cdba3e24badf9701b3e6340dc6df6d259c8b49421b",
+    "tools/lib/conformance.mjs": "62818917aabe4cbb7b3178f253f417e9df40d5c4b4aac569b0efecf5f2304acb",
+    "tools/benchmark-kernel.mjs": "eeb67db20c182721b2f036d2e024ab500c54df100ca662149c5fe92631c36a00",
+    "tests/conformance-runner.test.mjs": "a917c8f1812242d1fc44e5db08cf9cf4cbc0bc082b8ffb4955c2c185f8289d23",
+    "tests/validation-audit.test.mjs": "97c04800d3a80e88682bf582a5d16029e8399610a4cd7fad554e6a7ee4ea3f26",
+    "tests/families.test.ts": "c7b753f11c97f7bf16259fc9c6be5fd88e6c6989f5437f1481cbe5a91bf8092d",
+    "tests/conformance/matrix.json": "bf1de6fda60c7c5d23591f936fd13bd2c2a81002b976f6e095d7a3ada495ade7",
+    "standards/assessments.json": "58eb901e9ca20be5a9be7f6fffcc0cfac0591d02ff0e3166fa7e3c8c47166e86",
+    "tests/conformance/fixtures/state-subactions-positive.sysml": "fcc91f70e87fa2815e2fcdabb3fe09f6646eac58101b2d9f1bcfe7b65fbf18de",
+    "tests/conformance/fixtures/state-subactions-negative.sysml": "50526a015e9c8215e9bf55fab15973b5968a36fb3a5ab8514205f88157d4a223",
+    "tests/conformance/fixtures/view-renderings-positive.sysml": "25e67b92c0b62326f64b4fb8a2950987227d39a96095316a0c79ebbd121c81b6",
+    "tests/conformance/fixtures/view-renderings-owned-negative.sysml": "412fbd5130e9cfe5f3c3e1b3ea7937a5a057719754794bb24dcdb00139a7dc8f",
+    "tests/conformance/fixtures/view-renderings-inherited-negative.sysml": "896fbb5aafaa7725f96abfd2717af19a3ddd5ccd3cc2257cb9e93617da20583f"
+  },
+  "reports": {
+    "docs/evidence/conformance-macos-arm64.json": "327c7bb311253a134edf2edce5f132f295bc1b70030ebfd08b91720bbf1c2991",
+    "docs/evidence/requirements-macos-arm64.json": "84bed307addb9ebab8eac09e05826d16ba64cb804e7da1700efc5f1cb947bde0",
+    "docs/evidence/validation-before-macos-arm64.json": "aa249409ff20dbebebc35c61743b6d4abe010a11cd4a4d238254c72902ec7e12",
+    "docs/evidence/validation-audit.json": "209145e47ebb1e677eef1e102a34063b573bc9fb2f653c3a9adf4c642d980d52",
+    "docs/evidence/benchmark-validation-macos-arm64.json": "e0fd14d5f8f0ea364ea5878c373cb205d45f6334890d955cd660ee4dce8d4ebc"
+  },
+  "passing": {
+    "rust": 77,
+    "vendor": 270,
+    "node": 46,
+    "conformance": 115,
+    "benchmarkSamples": 126
+  },
+  "knownGapCases": 1,
+  "knownGapAssertions": 4,
+  "casesAdded": 5,
+  "assertionsAdded": 52,
+  "assessments": 64,
+  "validationNameInventory": {
+    "rules": 180,
+    "registered": 91,
+    "withSourceMentions": 92,
+    "withoutSourceMentions": 88,
+    "withDirectAssessments": 6,
+    "withoutDirectAssessments": 174,
+    "unmatchedNames": 36
+  },
+  "verification": [
+    {
+      "step": "vendor",
+      "command": [
+        "node",
+        "tools/verify-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.29,
+      "log": "target/body-audit/vendor.log"
+    },
+    {
+      "step": "vendor-tests",
+      "command": [
+        "npm",
+        "run",
+        "vendor:test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 61.16,
+      "log": "target/body-audit/vendor-tests.log"
+    },
+    {
+      "step": "rust-format",
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "fmt",
+        "-p",
+        "sysml-kernel",
+        "-p",
+        "sysml-cli",
+        "-p",
+        "sysml-wasm",
+        "--",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.23,
+      "log": "target/body-audit/rust-format.log"
+    },
+    {
+      "step": "clippy",
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 2.66,
+      "log": "target/body-audit/clippy.log"
+    },
+    {
+      "step": "format",
+      "command": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.79,
+      "log": "target/body-audit/format.log"
+    },
+    {
+      "step": "contract",
+      "command": [
+        "npm",
+        "run",
+        "contract:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 4.17,
+      "log": "target/body-audit/contract.log"
+    },
+    {
+      "step": "matrix-docs",
+      "command": [
+        "npm",
+        "run",
+        "conformance:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.18,
+      "log": "target/body-audit/matrix-docs.log"
+    },
+    {
+      "step": "inventory",
+      "command": [
+        "npm",
+        "run",
+        "requirements:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.27,
+      "log": "target/body-audit/inventory.log"
+    },
+    {
+      "step": "rust-tests",
+      "command": [
+        "npm",
+        "run",
+        "kernel:test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 236.97,
+      "log": "target/body-audit/rust-tests.log"
+    },
+    {
+      "step": "conformance",
+      "command": [
+        "npm",
+        "run",
+        "conformance"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 278.53,
+      "log": "target/body-audit/conformance.log"
+    },
+    {
+      "step": "requirements-report",
+      "command": [
+        "npm",
+        "run",
+        "requirements:report"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.69,
+      "log": "target/body-audit/requirements-report.log"
+    },
+    {
+      "step": "node-tests",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 126.16,
+      "log": "target/body-audit/node-tests.log"
+    },
+    {
+      "step": "benchmark",
+      "command": [
+        "npm",
+        "run",
+        "benchmark"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 324.75,
+      "log": "target/body-audit/benchmark.log"
+    },
+    {
+      "step": "desktop",
+      "command": [
+        "npm",
+        "run",
+        "desktop:build",
+        "--",
+        "--bundles",
+        "app,dmg",
+        "--ci"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 64.27,
+      "log": "target/body-audit/desktop.log"
+    }
+  ],
+  "finalReadOnlyChecks": [
+    {
+      "command": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "exitCode": 0,
+      "output": "\n> sysml-viewer@0.3.0 format:check\n> prettier --check src tests \"tools/**/*.mjs\"\n\nChecking formatting...\nAll matched files use Prettier code style!\n"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "conformance:check"
+      ],
+      "exitCode": 0,
+      "output": "\n> sysml-viewer@0.3.0 conformance:check\n> node tools/conformance.mjs --check-docs\n\n"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "requirements:check"
+      ],
+      "exitCode": 0,
+      "output": "\n> sysml-viewer@0.3.0 requirements:check\n> node tools/requirements.mjs\n\n{\n  \"sourceUnits\": 6167,\n  \"clauses\": 1571,\n  \"grammarProductions\": 620,\n  \"metamodelConstraints\": 724,\n  \"proseCandidates\": 1008,\n  \"libraryModels\": 94,\n  \"schemaDefinitions\": 270,\n  \"assessments\": 64,\n  \"executableCases\": 116,\n  \"plannedCases\": 0,\n  \"coveragePercent\": null,\n  \"reason\": \"Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.\"\n}\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "output": ""
+    }
+  ],
+  "platforms": {
+    "macOS-arm64": "verified",
+    "Windows": "not run",
+    "Linux": "not run"
+  },
+  "artifacts": {
+    "app": "src-tauri/target/release/bundle/macos/SysML Viewer.app",
+    "appBytes": 12550737,
+    "dmg": "src-tauri/target/release/bundle/dmg/SysML Viewer_0.3.0_aarch64.dmg",
+    "dmgBytes": 4481004,
+    "dmgSha256": "a68d5a61e5644a0c2275c24bbdc3b2ca392d3edbb92142cd739e07657c74bdc9"
+  }
+}

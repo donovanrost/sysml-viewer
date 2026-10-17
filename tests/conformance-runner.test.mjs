@@ -11,6 +11,50 @@ const caseWithGap = {
   knownFailures: [{ check: 'target', issue: 'TEST-1', reason: 'Test fixture' }],
 };
 
+test('diagnostic assertions cannot be satisfied by another owner or another document', () => {
+  const source = (documentId, start, end) => ({
+    documentId,
+    start: { byteOffset: start },
+    end: { byteOffset: end },
+  });
+  const check = {
+    id: 'rule',
+    op: 'diagnostic',
+    owner: 'P::Expected',
+    stage: 'semantic',
+    code: 'rule',
+  };
+  const absent = { id: 'clean', op: 'noDiagnostics', owner: check.owner, stage: check.stage };
+  const base = {
+    ...snapshot,
+    elements: [{ id: 'owner', qualifiedName: 'P::Expected', source: source('model', 10, 30) }],
+  };
+  for (const location of [
+    source('peer', 10, 30),
+    source('model', 31, 40),
+    source('model', 9, 20),
+    source('model', 20, 31),
+  ]) {
+    const withPeer = {
+      ...base,
+      diagnostics: [{ stage: 'semantic', code: 'rule', source: location }],
+    };
+    assert.equal(assessCase(withPeer, { checks: [check] })[0].status, 'fail');
+    assert.equal(assessCase(withPeer, { checks: [absent] })[0].status, 'pass');
+  }
+  const withFinding = {
+    ...base,
+    diagnostics: [{ stage: 'semantic', code: 'rule', source: source('model', 10, 30) }],
+  };
+  assert.equal(assessCase(withFinding, { checks: [check] })[0].status, 'pass');
+  assert.equal(assessCase(withFinding, { checks: [absent] })[0].status, 'fail');
+  assert.equal(
+    assessCase(base, { checks: [{ op: 'noDiagnostics', id: 'missing', owner: 'P::Missing' }] })[0]
+      .status,
+    'fail',
+  );
+});
+
 test('coverage catalogue rejects empty cases, unknown operations and orphan gaps', () => {
   validateMatrix(matrix());
   for (const mutate of [

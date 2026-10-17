@@ -27,6 +27,16 @@ if (process.argv.includes('--wasm-child')) {
   );
   const scenarios = [
     {
+      name: 'state-subaction-validation',
+      text: readFileSync(
+        join(root, 'tests/conformance/fixtures/state-subactions-negative.sysml'),
+        'utf8',
+      ),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'STATE-002').checks,
+    },
+    {
       name: 'concern-typing',
       text: readFileSync(join(root, 'tests/conformance/fixtures/type-006.sysml'), 'utf8'),
       checks: JSON.parse(

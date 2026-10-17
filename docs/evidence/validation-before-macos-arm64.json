@@ -1,0 +1,454 @@
+{
+  "version": 1,
+  "scope": "Focused pre-fix probes; existing native binary, not a fresh qualification build.",
+  "buildPerformed": false,
+  "generatedAt": "2026-10-17T22:58:27.986Z",
+  "kernelInputSha256": "ba90d9ed8a59c074770e7f920df41e231614b1ca7f3667268277f797de5b69f0",
+  "binarySha256": "40743c6f14b47684830d468b36f86422344354f1da879f1998b9873ae0772246",
+  "results": [
+    {
+      "id": "STATE-001",
+      "files": {
+        "tests/conformance/fixtures/state-subactions-positive.sysml": "fcc91f70e87fa2815e2fcdabb3fe09f6646eac58101b2d9f1bcfe7b65fbf18de"
+      },
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "Empty",
+          "status": "pass"
+        },
+        {
+          "id": "EntryOnly",
+          "status": "pass"
+        },
+        {
+          "id": "DoOnly",
+          "status": "pass"
+        },
+        {
+          "id": "ExitOnly",
+          "status": "pass"
+        },
+        {
+          "id": "Anonymous",
+          "status": "pass"
+        },
+        {
+          "id": "Named",
+          "status": "pass"
+        },
+        {
+          "id": "Parent",
+          "status": "pass"
+        },
+        {
+          "id": "Child",
+          "status": "pass"
+        },
+        {
+          "id": "instance",
+          "status": "pass"
+        },
+        {
+          "id": "anonymous",
+          "status": "pass"
+        },
+        {
+          "id": "named",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "id": "STATE-002",
+      "files": {
+        "tests/conformance/fixtures/state-subactions-negative.sysml": "50526a015e9c8215e9bf55fab15973b5968a36fb3a5ab8514205f88157d4a223"
+      },
+      "checks": [
+        {
+          "id": "syntax",
+          "status": "pass"
+        },
+        {
+          "id": "structure",
+          "status": "pass"
+        },
+        {
+          "id": "valid-peer",
+          "status": "pass"
+        },
+        {
+          "id": "DuplicateEntry-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "DuplicateEntry-code",
+          "status": "known-gap",
+          "issue": "KERNEL-017",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"DuplicateEntry-code\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"owner\":\"StateSubactionsNegative::DuplicateEntry\",\"code\":\"validateStateDefinitionStateSubactionKind\"}"
+        },
+        {
+          "id": "DuplicateDo-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "DuplicateDo-code",
+          "status": "known-gap",
+          "issue": "KERNEL-017",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"DuplicateDo-code\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"owner\":\"StateSubactionsNegative::DuplicateDo\",\"code\":\"validateStateDefinitionStateSubactionKind\"}"
+        },
+        {
+          "id": "DuplicateExit-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "DuplicateExit-code",
+          "status": "known-gap",
+          "issue": "KERNEL-017",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"DuplicateExit-code\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"owner\":\"StateSubactionsNegative::DuplicateExit\",\"code\":\"validateStateDefinitionStateSubactionKind\"}"
+        },
+        {
+          "id": "duplicateEntry-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "duplicateEntry-code",
+          "status": "known-gap",
+          "issue": "KERNEL-017",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"duplicateEntry-code\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"owner\":\"StateSubactionsNegative::duplicateEntry\",\"code\":\"validateStateUsageStateSubactionKind\"}"
+        },
+        {
+          "id": "duplicateDo-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "duplicateDo-code",
+          "status": "known-gap",
+          "issue": "KERNEL-017",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"duplicateDo-code\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"owner\":\"StateSubactionsNegative::duplicateDo\",\"code\":\"validateStateUsageStateSubactionKind\"}"
+        },
+        {
+          "id": "duplicateExit-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "duplicateExit-code",
+          "status": "known-gap",
+          "issue": "KERNEL-017",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"duplicateExit-code\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"owner\":\"StateSubactionsNegative::duplicateExit\",\"code\":\"validateStateUsageStateSubactionKind\"}"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "validateStateDefinitionSubactionKind",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A state may have at most one subaction of each kind [validateStateDefinitionSubactionKind]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-subactions-negative.sysml",
+            "start": {
+              "byteOffset": 48,
+              "utf16Offset": 48,
+              "line": 2,
+              "column": 15
+            },
+            "end": {
+              "byteOffset": 62,
+              "utf16Offset": 62,
+              "line": 2,
+              "column": 29
+            }
+          }
+        },
+        {
+          "code": "validateStateDefinitionSubactionKind",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A state may have at most one subaction of each kind [validateStateDefinitionSubactionKind]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-subactions-negative.sysml",
+            "start": {
+              "byteOffset": 110,
+              "utf16Offset": 110,
+              "line": 3,
+              "column": 15
+            },
+            "end": {
+              "byteOffset": 121,
+              "utf16Offset": 121,
+              "line": 3,
+              "column": 26
+            }
+          }
+        },
+        {
+          "code": "validateStateDefinitionSubactionKind",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A state may have at most one subaction of each kind [validateStateDefinitionSubactionKind]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-subactions-negative.sysml",
+            "start": {
+              "byteOffset": 163,
+              "utf16Offset": 163,
+              "line": 4,
+              "column": 15
+            },
+            "end": {
+              "byteOffset": 176,
+              "utf16Offset": 176,
+              "line": 4,
+              "column": 28
+            }
+          }
+        },
+        {
+          "code": "validateStateUsageSubactionKind",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A state may have at most one subaction of each kind [validateStateUsageSubactionKind]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-subactions-negative.sysml",
+            "start": {
+              "byteOffset": 203,
+              "utf16Offset": 203,
+              "line": 5,
+              "column": 11
+            },
+            "end": {
+              "byteOffset": 217,
+              "utf16Offset": 217,
+              "line": 5,
+              "column": 25
+            }
+          }
+        },
+        {
+          "code": "validateStateUsageSubactionKind",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A state may have at most one subaction of each kind [validateStateUsageSubactionKind]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-subactions-negative.sysml",
+            "start": {
+              "byteOffset": 246,
+              "utf16Offset": 246,
+              "line": 6,
+              "column": 11
+            },
+            "end": {
+              "byteOffset": 257,
+              "utf16Offset": 257,
+              "line": 6,
+              "column": 22
+            }
+          }
+        },
+        {
+          "code": "validateStateUsageSubactionKind",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A state may have at most one subaction of each kind [validateStateUsageSubactionKind]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-subactions-negative.sysml",
+            "start": {
+              "byteOffset": 295,
+              "utf16Offset": 295,
+              "line": 7,
+              "column": 11
+            },
+            "end": {
+              "byteOffset": 308,
+              "utf16Offset": 308,
+              "line": 7,
+              "column": 24
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "VIEW-001",
+      "files": {
+        "tests/conformance/fixtures/view-renderings-positive.sysml": "25e67b92c0b62326f64b4fb8a2950987227d39a96095316a0c79ebbd121c81b6"
+      },
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "Empty",
+          "status": "pass"
+        },
+        {
+          "id": "Parent",
+          "status": "pass"
+        },
+        {
+          "id": "Child",
+          "status": "pass"
+        },
+        {
+          "id": "instance",
+          "status": "pass"
+        },
+        {
+          "id": "Left",
+          "status": "pass"
+        },
+        {
+          "id": "Right",
+          "status": "pass"
+        },
+        {
+          "id": "Diamond",
+          "status": "pass"
+        },
+        {
+          "id": "diamond",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "id": "VIEW-002",
+      "files": {
+        "tests/conformance/fixtures/view-renderings-owned-negative.sysml": "412fbd5130e9cfe5f3c3e1b3ea7937a5a057719754794bb24dcdb00139a7dc8f"
+      },
+      "checks": [
+        {
+          "id": "syntax",
+          "status": "pass"
+        },
+        {
+          "id": "structure",
+          "status": "pass"
+        },
+        {
+          "id": "valid-peer",
+          "status": "pass"
+        },
+        {
+          "id": "definition",
+          "status": "pass"
+        },
+        {
+          "id": "usage",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "validateViewDefinitionOnlyOneViewRendering",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A view may have at most one rendering [validateViewDefinitionOnlyOnvViewRendering]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-owned-negative.sysml",
+            "start": {
+              "byteOffset": 80,
+              "utf16Offset": 80,
+              "line": 3,
+              "column": 14
+            },
+            "end": {
+              "byteOffset": 89,
+              "utf16Offset": 89,
+              "line": 3,
+              "column": 23
+            }
+          }
+        },
+        {
+          "code": "validateViewUsageOnlyOneViewRendering",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A view may have at most one rendering [validateViewUsageOnlyOneRendering]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-owned-negative.sysml",
+            "start": {
+              "byteOffset": 214,
+              "utf16Offset": 214,
+              "line": 7,
+              "column": 10
+            },
+            "end": {
+              "byteOffset": 223,
+              "utf16Offset": 223,
+              "line": 7,
+              "column": 19
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "VIEW-003",
+      "files": {
+        "tests/conformance/fixtures/view-renderings-inherited-negative.sysml": "896fbb5aafaa7725f96abfd2717af19a3ddd5ccd3cc2257cb9e93617da20583f"
+      },
+      "checks": [
+        {
+          "id": "syntax",
+          "status": "pass"
+        },
+        {
+          "id": "structure",
+          "status": "pass"
+        },
+        {
+          "id": "resolution",
+          "status": "pass"
+        },
+        {
+          "id": "Combined-element",
+          "status": "pass"
+        },
+        {
+          "id": "Combined-code",
+          "status": "known-gap",
+          "issue": "KERNEL-018",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"Combined-code\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"owner\":\"ViewRenderingsInheritedNegative::Combined\",\"code\":\"validateViewDefinitionOnlyOneViewRendering\"}"
+        },
+        {
+          "id": "combined-element",
+          "status": "pass"
+        },
+        {
+          "id": "combined-code",
+          "status": "known-gap",
+          "issue": "KERNEL-018",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"combined-code\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"owner\":\"ViewRenderingsInheritedNegative::combined\",\"code\":\"validateViewUsageOnlyOneViewRendering\"}"
+        },
+        {
+          "id": "LocalAndInherited-element",
+          "status": "pass"
+        },
+        {
+          "id": "LocalAndInherited-code",
+          "status": "known-gap",
+          "issue": "KERNEL-018",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"LocalAndInherited-code\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"owner\":\"ViewRenderingsInheritedNegative::LocalAndInherited\",\"code\":\"validateViewDefinitionOnlyOneViewRendering\"}"
+        },
+        {
+          "id": "localAndInherited-element",
+          "status": "pass"
+        },
+        {
+          "id": "localAndInherited-code",
+          "status": "known-gap",
+          "issue": "KERNEL-018",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"localAndInherited-code\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"owner\":\"ViewRenderingsInheritedNegative::localAndInherited\",\"code\":\"validateViewUsageOnlyOneViewRendering\"}"
+        }
+      ],
+      "diagnostics": []
+    }
+  ],
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.17"
+}

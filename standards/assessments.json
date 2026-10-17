@@ -303,13 +303,19 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
       "symbol": "pub fn validate_semantics_with(",
       "role": "Runs semantic validators including metadata type checks",
-      "sha256": "89e5002bbc63b860c1e1881986268860c24ef01a358133a40f7ae0eade724e77"
+      "sha256": "eeeaf06ea4ad0f8995151df58784521610a26d0841859fd7e32337e9f04d1fca"
     },
     "family-tests": {
       "path": "crates/sysml-kernel/tests/families.rs",
       "symbol": "fn concern_rejections_are_local_and_redundant_specific_types_stay_valid",
       "role": "Source-scoped family typing and cross-dialect regression tests",
       "sha256": "57fc8a5bdf9266a2ebf09e2acd5e1ec5cbca2de8f8d1b42c794c2bfe2af93ee7"
+    },
+    "structural-validation": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+      "symbol": "pub(super) fn validate(",
+      "role": "Owned-membership structural constraint candidates; view inheritance remains incomplete",
+      "sha256": "d5164c5fe6ffd955bf2de70c22e08ff5f87fcc4979e024fe5197f7eafed2ef55"
     }
   },
   "assessments": [
@@ -3960,6 +3966,227 @@
         }
       ],
       "limits": "KERNEL-016 corrects StateUsage/ExhibitStateUsage to allow Behavior and ConcernUsage to require ConcernDefinition. Explicit positive/negative cases and source-scoped Rust diagnostics cover multiple, redundant, incompatible and unresolved types. The facade projects reference identity independently of validity. General implicit/inherited typing, parameter direction exceptions, all derived properties and complete typing constraints remain unqualified."
+    },
+    {
+      "id": "STATE-DEFINITION-SUBACTIONS",
+      "obligation": "A StateDefinition has at most one owned StateSubactionMembership of each kind; duplicate findings identify the pinned rule.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateDefinition-validateStateDefinitionStateSubactionKind"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "structural-validation",
+          "semantic-driver"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-001",
+          "checks": [
+            "clean",
+            "Empty",
+            "EntryOnly",
+            "DoOnly",
+            "ExitOnly",
+            "Anonymous",
+            "Named",
+            "Parent",
+            "Child"
+          ]
+        },
+        {
+          "case": "STATE-002",
+          "checks": [
+            "syntax",
+            "structure",
+            "valid-peer",
+            "DuplicateEntry-rejected",
+            "DuplicateEntry-code",
+            "DuplicateDo-rejected",
+            "DuplicateDo-code",
+            "DuplicateExit-rejected",
+            "DuplicateExit-code"
+          ]
+        }
+      ],
+      "limits": "Separate entry/do/exit duplicates, anonymous/named actions, valid peers and locally repeated inherited kinds are exercised. KERNEL-017 corrects the public rule codes while preserving legacy diagnostic message text. Ownership validity, all action-body alternatives, membership kind exposure, derived state action properties and parallel-state transition rules remain unqualified."
+    },
+    {
+      "id": "STATE-USAGE-SUBACTIONS",
+      "obligation": "A StateUsage has at most one owned StateSubactionMembership of each kind; duplicate findings identify the pinned rule.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateUsage-validateStateUsageStateSubactionKind"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "structural-validation",
+          "semantic-driver"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-001",
+          "checks": [
+            "clean",
+            "instance",
+            "anonymous",
+            "named"
+          ]
+        },
+        {
+          "case": "STATE-002",
+          "checks": [
+            "syntax",
+            "structure",
+            "valid-peer",
+            "duplicateEntry-rejected",
+            "duplicateEntry-code",
+            "duplicateDo-rejected",
+            "duplicateDo-code",
+            "duplicateExit-rejected",
+            "duplicateExit-code"
+          ]
+        }
+      ],
+      "limits": "Separate entry/do/exit duplicates, anonymous/named actions, valid peers and locally repeated inherited kinds are exercised. KERNEL-017 corrects the public rule codes while preserving legacy diagnostic message text. Ownership validity, all action-body alternatives, membership kind exposure, derived state action properties and parallel-state transition rules remain unqualified."
+    },
+    {
+      "id": "VIEW-DEFINITION-RENDERINGS",
+      "obligation": "A ViewDefinition has at most one ViewRenderingMembership among its owned and inherited feature memberships.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-Views-ViewDefinition-validateViewDefinitionOnlyOneViewRendering"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "structural-validation",
+          "semantic-driver"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "VIEW-001",
+          "checks": [
+            "clean",
+            "Empty",
+            "Parent",
+            "Child",
+            "Left",
+            "Right",
+            "Diamond"
+          ]
+        },
+        {
+          "case": "VIEW-002",
+          "checks": [
+            "syntax",
+            "structure",
+            "valid-peer",
+            "definition"
+          ]
+        },
+        {
+          "case": "VIEW-003",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "Combined-element",
+            "Combined-code",
+            "LocalAndInherited-element",
+            "LocalAndInherited-code"
+          ]
+        }
+      ],
+      "limits": "Absent/single, owned duplicates and diamond inheritance have representative cases. KERNEL-018 records missed errors for distinct inherited renderings and local-plus-inherited renderings. Unresolved/cyclic bases, explicit/implicit redefinition, imports, incomplete membership evidence and general view semantics remain unqualified. Legacy message labels already map to canonical public codes."
+    },
+    {
+      "id": "VIEW-USAGE-RENDERINGS",
+      "obligation": "A ViewUsage has at most one ViewRenderingMembership among its owned and inherited feature memberships.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-Views-ViewUsage-validateViewUsageOnlyOneViewRendering"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "structural-validation",
+          "semantic-driver"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "VIEW-001",
+          "checks": [
+            "clean",
+            "instance",
+            "diamond"
+          ]
+        },
+        {
+          "case": "VIEW-002",
+          "checks": [
+            "syntax",
+            "structure",
+            "valid-peer",
+            "usage"
+          ]
+        },
+        {
+          "case": "VIEW-003",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "combined-element",
+            "combined-code",
+            "localAndInherited-element",
+            "localAndInherited-code"
+          ]
+        }
+      ],
+      "limits": "Absent/single, owned duplicates and diamond inheritance have representative cases. KERNEL-018 records missed errors for distinct inherited renderings and local-plus-inherited renderings. Unresolved/cyclic bases, explicit/implicit redefinition, imports, incomplete membership evidence and general view semantics remain unqualified. Legacy message labels already map to canonical public codes."
     }
   ]
 }

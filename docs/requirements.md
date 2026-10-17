@@ -202,10 +202,56 @@ checked. The next audit step is the body/member construction and derived-propert
 boundary, followed by full validation-rule mapping; more nominal declaration
 examples alone cannot close these areas.
 
-The syntax and semantic validators' registries together name 89 of the 180 unique
-`validate...` constraint names in the pinned metamodels. All 89 names match the
-catalogue. This is a candidate-code inventory, not validation coverage:
-registered rules still require independent tests and review, and the 91 remaining
-names may have implementation outside those registries. Derived properties,
-`check...` semantic constraints, operation conditions and prose obligations also
-remain in scope. The registries cannot serve as the completion denominator.
+## Validation-rule audit
+
+The [generated rule audit](validation-audit.md) enumerates all 180 named
+`validate...` constraints in the pinned metamodels. It scans the complete Rust
+source trees of the syntax library, model library and public kernel, fingerprints
+each file, and joins only direct assessment source edges. `requirements:check`
+rejects generated drift and registry names outside the pinned catalogue.
+
+After KERNEL-017, the registries name 91 rules and source text mentions 92. The
+other 88 names were not located by this search. Six rules have direct bounded
+assessments; 174 still need direct obligation review. These are separate measures:
+comments, private tests and registration lists are search hints, and a missing
+name does not establish missing behavior. The 36 labels outside the catalogue
+include deliberate compatibility aliases and checks needing further classification.
+
+The first behavioral review found two concrete issues:
+
+- **KERNEL-017, corrected:** state subaction uniqueness already rejected repeated
+  owned entry/do/exit actions, but the public codes omitted `State` before
+  `SubactionKind`. `STATE-001/002` retain all three kinds on definitions and usages,
+  named and anonymous actions, valid peers, and local actions sharing an inherited
+  kind. Canonical codes now follow the XMI; legacy message text stays compatible.
+- **KERNEL-018, open:** view rendering validation counts only owned memberships.
+  SysML's rules use `featureMembership`, which includes inherited
+  FeatureMemberships under KerML's `deriveTypeFeatureMembership`. `VIEW-003`
+  reproduces four missed errors: two inherited renderings and a local plus an
+  inherited rendering, each on a definition and a usage. `VIEW-001/002` preserve
+  absent/single/diamond cases and owned duplicates. Correct canonical view codes
+  were already supplied by the existing alias mapping.
+
+Diagnostic assertions now support an exact qualified owner and require the
+finding's byte range to be within that owner's source in the same document.
+A failure on a peer cannot satisfy a missing finding. Known gaps are restricted
+to named assertions; crashes, syntax errors and unrelated failures are not waived.
+The [pre-fix probes](evidence/validation-before-macos-arm64.json) retain the actual
+earlier codes and missed findings. They used the existing `.17` executable and
+are explicitly distinguished from the fresh qualification run.
+
+The next implementation priority is KERNEL-018. Its acceptance criteria must also
+cover explicit/implicit redefinition, private memberships, unresolved or cyclic
+bases, and mixed valid/invalid peers. Inherited candidates can be removed by
+redefinition, so counting candidates from an incomplete traversal cannot by itself
+certify a cardinality violation. Two owned renderings remain a definite violation.
+After this fix, continue the body/member and derived-property audit: state action
+slots and membership kinds are still missing from the facade, and state parallel
+transition rules need behavioral review beyond registration-name presence.
+
+For each remaining validation rule, review its XMI expression and prose, locate
+the actual execution path, derive positive/negative partitions, and map exact
+public assertions before making any implementation claim. Derivations, `check...`
+semantic constraints, operation conditions, grammar, libraries, interchange and
+prose remain separate queues. This audit does not close those areas or establish
+a full-spec completion percentage.

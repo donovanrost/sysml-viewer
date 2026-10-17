@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateMatrix } from './lib/conformance.mjs';
@@ -12,6 +12,11 @@ import {
 } from './lib/requirements.mjs';
 import { renderSummary, renderBrowser } from './lib/requirements-docs.mjs';
 import { kernelInputHash } from './lib/kernel-inputs.mjs';
+import {
+  buildValidationAudit,
+  renderValidationAudit,
+  validationScanRoots,
+} from './lib/validation-audit.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const read = (path) => readFileSync(join(root, path));
@@ -25,9 +30,25 @@ const matrix = JSON.parse(matrixBytes);
 validateMatrix(matrix);
 validateInventory({ sources, sourcesBytes, catalogue, assessments, matrix, read });
 const summary = summarize(catalogue, assessments, matrix);
+const rustFiles = (path) =>
+  readdirSync(join(root, path), { withFileTypes: true }).flatMap((entry) => {
+    const child = `${path}/${entry.name}`;
+    if (entry.isDirectory()) return rustFiles(child);
+    assert(entry.isFile(), `Unexpected validation scan input: ${child}`);
+    return entry.name.endsWith('.rs') ? [child] : [];
+  });
+const audit = buildValidationAudit({
+  catalogue,
+  assessments,
+  matrix,
+  read,
+  paths: validationScanRoots.flatMap(rustFiles),
+});
 const generated = {
   'docs/requirements-summary.md': renderSummary(catalogue, assessments, matrix, sources),
   'docs/requirements.html': renderBrowser(catalogue, assessments, matrix, sources),
+  'docs/validation-audit.md': renderValidationAudit(audit, catalogue, sources),
+  'docs/evidence/validation-audit.json': JSON.stringify(audit, null, 2) + '\n',
 };
 for (const [path, value] of Object.entries(generated)) {
   if (process.argv.includes('--write-docs')) writeFileSync(join(root, path), value);

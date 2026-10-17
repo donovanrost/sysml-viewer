@@ -689,6 +689,46 @@ remain open. The [review queue](requirements.md#breadth-audit-declaration-and-ex
 records the next obligations. The existing AST/graph functionality remains a
 candidate outside the reviewed public behavior.
 
+## KERNEL-017: validation audit and state subaction rule identity
+
+The [named-rule audit](validation-audit.md) joins the complete 180-rule pinned
+validation inventory to source search locations, registry declarations and direct
+assessment edges. Its JSON report fingerprints every scanned Rust file. Search
+hits include comments and private tests; the report never promotes them to tested
+implementation. Rules without a name match remain a locate-or-implement queue.
+The inventory gate checks the generated report, and dedicated tests preserve the
+distinction between source mentions, clause mappings, planned tests and execution.
+
+Five new cases review state subaction uniqueness and view rendering multiplicity.
+`STATE-001/002` cover owned entry/do/exit actions on definitions and usages,
+anonymous/named actions, local repetition of inherited kinds and valid peers.
+The prior engine already rejected duplicates, but its public diagnostic codes
+omitted `State` before `SubactionKind`. Patch 0017 maps both old labels to the
+pinned XMI identifiers while retaining existing message text, following the
+existing view-rendering alias policy. Engine `.18` keeps schema 3 and package
+0.3.0; the validation predicates and wire shape are unchanged.
+
+`VIEW-001/002` retain absent/single/diamond-inherited renderings and rejection of
+owned duplicates. `VIEW-003` exposes KERNEL-018: the validator misses multiple
+inherited renderings and local-plus-inherited renderings on both a definition and
+a usage. Its four expected failures remain explicit; they are not counted as
+passing coverage. The XMI uses `featureMembership`, which includes inherited
+FeatureMemberships. Redefinition and incomplete ancestry must be reviewed before
+repairing that predicate. The [pre-fix probes](evidence/validation-before-macos-arm64.json)
+retain actual `.17` outputs for both issues, with the existing-binary limitation.
+
+The acceptance harness now scopes diagnostic presence/absence to a named owner's
+source in the same document. Harness regressions reject findings on peers, other
+documents and overlapping-but-not-contained spans. The family integration corpus
+adds all five cases in both document orders, comparing complete native/WASM
+snapshots and preserving each case's expectations, including named known gaps.
+The benchmark adds the duplicate-subaction case and its canonical-code assertions.
+
+These are four additional bounded rule assessments, not closure of whole state
+or view semantics. Membership kinds and derived state action slots are still
+absent from the facade. The [review plan](requirements.md#validation-rule-audit)
+records these and the remaining validation work.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -716,17 +756,19 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **111 passing conformance cases**, **no
-known-gap cases**, and **no planned cases in the current matrix**. All **77 Rust kernel tests**,
-**42 Node tests**, and **270 dependency proof tests** pass.
+On macOS arm64, the current matrix has **115 passing conformance cases**, **one
+known-gap case** (`VIEW-003`, four KERNEL-018 assertions), and **no planned cases**.
+All **77 Rust kernel tests**, **46 Node tests**, and **270 dependency proof tests** pass.
 The dependency suites cover lexical boundaries (5), rational arithmetic (13), explicit usage typing (2), type relations (41), model-level evaluability (33),
 cardinality (34), invocation bindings (19), constructor bindings (17), dynamic graph
 (19), dynamic invocations (27), owned results (4), semantic ownership (5), end constancy (10) and checked
 namespace operations (41). The corpus and the 32 import-rule partitions are included
 in the Rust suite, not additional independently qualified specification counts.
-Native and WebAssembly outputs match exactly. The [KERNEL-016 validation record](evidence/families-macos-arm64.json)
-records implementation and test fingerprints, the state/concern pre-fix failures,
-and this increment's scope. The prior [connection validation](evidence/connections-macos-arm64.json)
+Native and WebAssembly outputs match exactly, including the known-gap behavior.
+The [KERNEL-017 validation record](evidence/validation-macos-arm64.json) records the
+audit and state diagnostic-code correction. The earlier
+[family validation](evidence/families-macos-arm64.json) retains the state/concern
+typing findings and its original scope. The prior [connection validation](evidence/connections-macos-arm64.json)
 and [vocabulary audit](evidence/keywords-macos-arm64.json) remain available.
 
 Rust formatting, Clippy with warnings denied, TypeScript checking, Prettier,
@@ -745,7 +787,14 @@ validation used a temporary process-scoped sleep assertion, released at completi
 The 30-second conformance and 60-second benchmark deadlines are unchanged. Earlier unexplained
 benchmark timeouts below remain separate evidence.
 
-The [KERNEL-016 benchmark](evidence/benchmark-families-macos-arm64.json) records
+The [KERNEL-017 benchmark](evidence/benchmark-validation-macos-arm64.json) records
+126 successful samples across 21 workloads, retaining all earlier scenarios and
+adding state subaction validation with canonical-code assertions. Native/WASM and
+repeat snapshots agree exactly. The new workload's median is 2,026 ms native and
+2,432 ms WASM, with maximum peak RSS of 391.8 MiB and 353.8 MiB respectively.
+These measurements include fresh process startup and are not latency guarantees.
+
+The earlier [KERNEL-016 benchmark](evidence/benchmark-families-macos-arm64.json) records
 120 successful samples: all 18 earlier workloads plus concern typing and behavior
 declarations, each in three fresh native and three fresh WASM processes. All
 repeats and native/WASM snapshots agree exactly; no timeout occurred. The new

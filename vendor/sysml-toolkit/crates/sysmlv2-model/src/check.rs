@@ -116,7 +116,9 @@ pub const IMPLEMENTED_NORMATIVE_SEMANTIC_RULES: &[&str] = &[
     "validateRequirementVerificationMembershipOwningType",
     "validateSatisfyRequirementUsageReference",
     "validateStateDefinitionParallelSubactions",
+    "validateStateDefinitionStateSubactionKind",
     "validateStateUsageParallelSubactions",
+    "validateStateUsageStateSubactionKind",
     "validateStructureSpecialization",
     "validateSubsettingConstantConformance",
     "validateSubsettingFeaturingTypes",
@@ -314,12 +316,19 @@ pub(crate) fn rule_warning(
 }
 
 /// The identifier of a rule in the spelling the pinned abstract syntax
-/// uses. Two rules reached this implementation through an imported probe
+/// uses. Some rules reached this implementation through an imported probe
 /// suite that names them differently; their messages keep that spelling,
 /// which the imported contracts are keyed by, while the finding carries
 /// the pinned one.
 fn normative_rule(rule: &'static str) -> &'static str {
     match rule {
+        // Local KERNEL-017: the pinned StateDefinition/StateUsage rules
+        // include State before SubactionKind. Preserve legacy message text
+        // while publishing the canonical identifier, as for view renderings.
+        "validateStateDefinitionSubactionKind" => {
+            "validateStateDefinitionStateSubactionKind"
+        }
+        "validateStateUsageSubactionKind" => "validateStateUsageStateSubactionKind",
         "validateViewDefinitionOnlyOnvViewRendering" => {
             "validateViewDefinitionOnlyOneViewRendering"
         }

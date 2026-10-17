@@ -145,6 +145,15 @@
       "baseSha256": "5020939a8d52f435ef42c5d5b5abede799a97d7b7875810e45a1fa3b42930a96",
       "resultSha256": "2659c9ea43e1193aef737894b7d2c01c099687370d820ada5c757a59072bc4e9",
       "reason": "StateUsage and ExhibitStateUsage allow the Behavior range of StateUsage::stateDefinition; ConcernUsage narrows RequirementUsage to ConcernDefinition. Private and public regressions retain invalid/missing type separation, nonredundant type limits, and RequirementUsage acceptance of ConcernDefinition. Normative anchors are the pinned SysML XMI property redefinitions. TYPE-005/006 preserve the pre-fix failures."
+    },
+    {
+      "id": "KERNEL-017",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+      "patch": "patches/0017-state-subaction-rule-identifiers.patch",
+      "sha256": "d438e704fde3ae2d28831d9e10ead1526379708720ff87f516db4203b3d316a4",
+      "baseSha256": "89e5002bbc63b860c1e1881986268860c24ef01a358133a40f7ae0eade724e77",
+      "resultSha256": "eeeaf06ea4ad0f8995151df58784521610a26d0841859fd7e32337e9f04d1fca",
+      "reason": "The pinned StateDefinition/StateUsage StateSubactionKind rule names include State before SubactionKind. Preserve imported-probe message text while publishing canonical diagnostic codes, following existing view aliases. STATE-001/002 cover owned-only uniqueness, each kind, named/anonymous actions, source-scoped findings and valid peers. No validation predicate or wire shape changes."
     }
   ]
 }

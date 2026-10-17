@@ -128,6 +128,11 @@ Clause references identify the source of a test, not complete coverage of that c
 | TYPE-005 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3 | positive | Covered | SysML usages accept permitted KerML classifiers, including states and exhibits typed by Behavior, multiple behaviors and an ActionDefinition |
 | TYPE-006 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3 | negative | Covered | Concern typing requires ConcernDefinition, retains general RequirementUsage compatibility and enforces the existing independent-type limit |
 | TYPE-007 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3 | negative | Covered | Broadening StateUsage to Behavior still rejects data types for states and exhibits and preserves unresolved targets |
+| STATE-001 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | positive | Covered | State subaction uniqueness counts owned memberships: entry, do and exit may coexist and locally repeat inherited kinds. |
+| STATE-002 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | Duplicate owned entry, do and exit subactions are rejected separately on definitions and usages, with the pinned normative rule identifier. |
+| VIEW-001 | View and metadata declarations: SysML 2.0 §8.2.2.26, SysML 2.0 §8.2.2.27 | positive | Covered | Absent, single, inherited and diamond-inherited rendering memberships satisfy the at-most-one constraint. |
+| VIEW-002 | View and metadata declarations: SysML 2.0 §8.2.2.26, SysML 2.0 §8.2.2.27 | negative | Covered | Two owned rendering memberships are rejected on definitions and usages, with canonical codes despite legacy message labels. |
+| VIEW-003 | View and metadata declarations: SysML 2.0 §8.2.2.26, SysML 2.0 §8.2.2.27 | negative | Known gap: KERNEL-018, KERNEL-018, KERNEL-018, KERNEL-018 | The view rendering limit includes inherited feature memberships, both multiple inherited renderings and local-plus-inherited renderings. |
 
 ## Coverage limits
 
@@ -150,6 +155,10 @@ Clause references identify the source of a test, not complete coverage of that c
 
 ## Known failures and planned work
 
+- **KERNEL-018 / VIEW-003 / Combined-code:** The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted.
+- **KERNEL-018 / VIEW-003 / combined-code:** The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted.
+- **KERNEL-018 / VIEW-003 / LocalAndInherited-code:** The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted.
+- **KERNEL-018 / VIEW-003 / localAndInherited-code:** The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted.
 
 The authored fixtures are in `tests/conformance/fixtures`. Official examples are
 copied unchanged from the pinned release; see `tests/conformance/upstream/provenance.json`

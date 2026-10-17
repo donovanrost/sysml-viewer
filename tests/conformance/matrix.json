@@ -8161,6 +8161,408 @@
           "target": "StateTypingGuards::BehaviorType"
         }
       ]
+    },
+    {
+      "id": "STATE-001",
+      "area": "families-behaviors",
+      "purpose": "State subaction uniqueness counts owned memberships: entry, do and exit may coexist and locally repeat inherited kinds.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/state-subactions-positive.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "Empty",
+          "op": "element",
+          "name": "StateSubactionsPositive::Empty",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "EntryOnly",
+          "op": "element",
+          "name": "StateSubactionsPositive::EntryOnly",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "DoOnly",
+          "op": "element",
+          "name": "StateSubactionsPositive::DoOnly",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "ExitOnly",
+          "op": "element",
+          "name": "StateSubactionsPositive::ExitOnly",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Anonymous",
+          "op": "element",
+          "name": "StateSubactionsPositive::Anonymous",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Named",
+          "op": "element",
+          "name": "StateSubactionsPositive::Named",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Parent",
+          "op": "element",
+          "name": "StateSubactionsPositive::Parent",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Child",
+          "op": "element",
+          "name": "StateSubactionsPositive::Child",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "instance",
+          "op": "element",
+          "name": "StateSubactionsPositive::instance",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "anonymous",
+          "op": "element",
+          "name": "StateSubactionsPositive::anonymous",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "named",
+          "op": "element",
+          "name": "StateSubactionsPositive::named",
+          "metaclass": "StateUsage"
+        }
+      ]
+    },
+    {
+      "id": "STATE-002",
+      "area": "families-behaviors",
+      "purpose": "Duplicate owned entry, do and exit subactions are rejected separately on definitions and usages, with the pinned normative rule identifier.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/state-subactions-negative.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "valid-peer",
+          "op": "noDiagnostics",
+          "owner": "StateSubactionsNegative::ValidPeer"
+        },
+        {
+          "id": "DuplicateEntry-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::DuplicateEntry",
+          "messageIncludes": "A state may have at most one subaction of each kind"
+        },
+        {
+          "id": "DuplicateEntry-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::DuplicateEntry",
+          "code": "validateStateDefinitionStateSubactionKind"
+        },
+        {
+          "id": "DuplicateDo-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::DuplicateDo",
+          "messageIncludes": "A state may have at most one subaction of each kind"
+        },
+        {
+          "id": "DuplicateDo-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::DuplicateDo",
+          "code": "validateStateDefinitionStateSubactionKind"
+        },
+        {
+          "id": "DuplicateExit-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::DuplicateExit",
+          "messageIncludes": "A state may have at most one subaction of each kind"
+        },
+        {
+          "id": "DuplicateExit-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::DuplicateExit",
+          "code": "validateStateDefinitionStateSubactionKind"
+        },
+        {
+          "id": "duplicateEntry-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::duplicateEntry",
+          "messageIncludes": "A state may have at most one subaction of each kind"
+        },
+        {
+          "id": "duplicateEntry-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::duplicateEntry",
+          "code": "validateStateUsageStateSubactionKind"
+        },
+        {
+          "id": "duplicateDo-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::duplicateDo",
+          "messageIncludes": "A state may have at most one subaction of each kind"
+        },
+        {
+          "id": "duplicateDo-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::duplicateDo",
+          "code": "validateStateUsageStateSubactionKind"
+        },
+        {
+          "id": "duplicateExit-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::duplicateExit",
+          "messageIncludes": "A state may have at most one subaction of each kind"
+        },
+        {
+          "id": "duplicateExit-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateSubactionsNegative::duplicateExit",
+          "code": "validateStateUsageStateSubactionKind"
+        }
+      ]
+    },
+    {
+      "id": "VIEW-001",
+      "area": "families-views",
+      "purpose": "Absent, single, inherited and diamond-inherited rendering memberships satisfy the at-most-one constraint.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/view-renderings-positive.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "Empty",
+          "op": "element",
+          "name": "ViewRenderingsPositive::Empty",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "Parent",
+          "op": "element",
+          "name": "ViewRenderingsPositive::Parent",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "Child",
+          "op": "element",
+          "name": "ViewRenderingsPositive::Child",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "instance",
+          "op": "element",
+          "name": "ViewRenderingsPositive::instance",
+          "metaclass": "ViewUsage"
+        },
+        {
+          "id": "Left",
+          "op": "element",
+          "name": "ViewRenderingsPositive::Left",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "Right",
+          "op": "element",
+          "name": "ViewRenderingsPositive::Right",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "Diamond",
+          "op": "element",
+          "name": "ViewRenderingsPositive::Diamond",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "diamond",
+          "op": "element",
+          "name": "ViewRenderingsPositive::diamond",
+          "metaclass": "ViewUsage"
+        }
+      ]
+    },
+    {
+      "id": "VIEW-002",
+      "area": "families-views",
+      "purpose": "Two owned rendering memberships are rejected on definitions and usages, with canonical codes despite legacy message labels.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/view-renderings-owned-negative.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "valid-peer",
+          "op": "noDiagnostics",
+          "owner": "ViewRenderingsOwnedNegative::ValidPeer"
+        },
+        {
+          "id": "definition",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingsOwnedNegative::Duplicate",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "usage",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingsOwnedNegative::duplicate",
+          "code": "validateViewUsageOnlyOneViewRendering"
+        }
+      ]
+    },
+    {
+      "id": "VIEW-003",
+      "area": "families-views",
+      "purpose": "The view rendering limit includes inherited feature memberships, both multiple inherited renderings and local-plus-inherited renderings.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/view-renderings-inherited-negative.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "Combined-element",
+          "op": "element",
+          "name": "ViewRenderingsInheritedNegative::Combined",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "Combined-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingsInheritedNegative::Combined",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "combined-element",
+          "op": "element",
+          "name": "ViewRenderingsInheritedNegative::combined",
+          "metaclass": "ViewUsage"
+        },
+        {
+          "id": "combined-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingsInheritedNegative::combined",
+          "code": "validateViewUsageOnlyOneViewRendering"
+        },
+        {
+          "id": "LocalAndInherited-element",
+          "op": "element",
+          "name": "ViewRenderingsInheritedNegative::LocalAndInherited",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "LocalAndInherited-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingsInheritedNegative::LocalAndInherited",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "localAndInherited-element",
+          "op": "element",
+          "name": "ViewRenderingsInheritedNegative::localAndInherited",
+          "metaclass": "ViewUsage"
+        },
+        {
+          "id": "localAndInherited-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingsInheritedNegative::localAndInherited",
+          "code": "validateViewUsageOnlyOneViewRendering"
+        }
+      ],
+      "knownFailures": [
+        {
+          "check": "Combined-code",
+          "issue": "KERNEL-018",
+          "reason": "The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted."
+        },
+        {
+          "check": "combined-code",
+          "issue": "KERNEL-018",
+          "reason": "The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted."
+        },
+        {
+          "check": "LocalAndInherited-code",
+          "issue": "KERNEL-018",
+          "reason": "The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted."
+        },
+        {
+          "check": "localAndInherited-code",
+          "issue": "KERNEL-018",
+          "reason": "The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted."
+        }
+      ]
     }
   ]
 }

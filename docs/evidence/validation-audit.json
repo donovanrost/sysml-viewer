@@ -1,0 +1,4420 @@
+{
+  "version": 1,
+  "scope": "Named validate constraints in the pinned SysML and KerML metamodels only.",
+  "limitations": [
+    "Source mentions include comments and private tests; they are navigation aids, not implementation or execution proof.",
+    "Registry declarations do not certify behavior. Missing names do not prove missing implementations.",
+    "Only direct assessment source edges are listed. Each applies to its stated obligation, not necessarily the whole rule.",
+    "Mapped tests are not execution results. Use the separately verified requirements execution report.",
+    "Derivations, semantic check constraints, operations, grammar, prose, libraries and interchange remain separate review queues."
+  ],
+  "scanRoots": [
+    "vendor/sysml-toolkit/crates/sysmlv2-syntax/src",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src",
+    "crates/sysml-kernel/src"
+  ],
+  "inputs": [
+    {
+      "path": "crates/sysml-kernel/src/bin/export-types.rs",
+      "sha256": "59192adf048f1fc48ebe8029b840c8769cfea795800491c71e9b9b964eaa69f1"
+    },
+    {
+      "path": "crates/sysml-kernel/src/cardinality.rs",
+      "sha256": "32b9c1b7c400fae03ece34cafcc54f021b466f71f8957af1c3f67d01ad7beabb"
+    },
+    {
+      "path": "crates/sysml-kernel/src/connections.rs",
+      "sha256": "f2379ace8a25271902c904c0bea5f4371c1142970002e0f36243b62fd4bb22dd"
+    },
+    {
+      "path": "crates/sysml-kernel/src/engine.rs",
+      "sha256": "237438a98c0cda465cbd0b146dd37f2c3dc118fc2066cfc74777b797e9ddb422"
+    },
+    {
+      "path": "crates/sysml-kernel/src/imports.rs",
+      "sha256": "68952926dbea9f8d36444be31189678b30bb3148aab9a44811ddf8aa342a6f2d"
+    },
+    {
+      "path": "crates/sysml-kernel/src/lib.rs",
+      "sha256": "d2dd60fd97229ccf5bf06e11bb4b584b25ba8dd9132213a646955b627b2cc588"
+    },
+    {
+      "path": "crates/sysml-kernel/src/namespaces.rs",
+      "sha256": "7eedc4eaa7f95ea400cfc3a58e5eb73688358323ce033ddcb4660543021e6002"
+    },
+    {
+      "path": "crates/sysml-kernel/src/query.rs",
+      "sha256": "3b577ba0440e63bc4f9fd35ffb5f87c4fd503b32e3d3867e7ea8c952e107dbb9"
+    },
+    {
+      "path": "crates/sysml-kernel/src/source.rs",
+      "sha256": "924fd77e780e72a29a69af93a3325e4936cbd9b1b4e98aded05a3ff45e9ac386"
+    },
+    {
+      "path": "crates/sysml-kernel/src/syntax.rs",
+      "sha256": "c4db66790746658cce9d7925ee304447a4904fddc6a182839f88d4018a514370"
+    },
+    {
+      "path": "crates/sysml-kernel/src/types.rs",
+      "sha256": "caf41e8d3c0d50a1c30b6a121d08a36c8b2b95f8661a9aef295def7c5a0d5043"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/ambient.rs",
+      "sha256": "48f2fc66aad964cd8426d566b002c54d8b9d4cef4151f2dcbb5ddd1bffee718c"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/cache_codec.rs",
+      "sha256": "a1b0b2552ffc3169ea40be4fe7a1a477edf8f5afda7e1207c63459e29f77e9e0"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/cbor_tables.rs",
+      "sha256": "6d2d09aee6034284e539e0f6f77e6e6e6c0bd3be7121dc2d4be0553fdafb89a1"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+      "sha256": "eeeaf06ea4ad0f8995151df58784521610a26d0841859fd7e32337e9f04d1fca"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+      "sha256": "88c4211d4f3331b13519139e02da09855bc49030aa5f8904c8751b80e7371f67"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/chains.rs",
+      "sha256": "ef6098e3d9523d12250d7994d637c0bf54a3421561bc04899f1b613b5d7dd363"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/connectors.rs",
+      "sha256": "502c233894ca350b37bdf21649571085905ca874b2aae1d48d88715616016dd0"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/dimensions.rs",
+      "sha256": "1d7a97fdf4d73f20d0e1d0585c26d50643bceecc43a9fd8333345a28687be9b9"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/directions.rs",
+      "sha256": "ae117a13ddde48dcc7d0fe23e4ed7ca1269d7649ac8b27809f10e353cdc0a8c8"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/distinguishability.rs",
+      "sha256": "9ad66030c3a776e30dbeca477fcb77b3ff2e8d9311772cc8f7319d0e75c39fa6"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/endpoints.rs",
+      "sha256": "4bf1fbd24a5fce01e1ef4eb6cb17939998db92fca7da9d962328d77ff67cde4e"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+      "sha256": "48e3c05d1784c2ef23e5d034be0aa922a6d1b09691de35dff1d520d7b770c4d1"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/facts.rs",
+      "sha256": "5f039fab5d882b8500eb8ff7fa79ff7ad027010e33b37e8527dd5fec9547bef3"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/facts/id_index.rs",
+      "sha256": "81214bcc17668f2c7d3e0da6f9208a65f97fed9260f6521bc5ae70bcbe004695"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/invocations.rs",
+      "sha256": "0c4fe703525956465dc05c58bacbea9977e14eb408c6aaf3b46e4abb30c2da97"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/multiplicities.rs",
+      "sha256": "7745a8ac4006e8de9d63f3d5bdf2a86431bb73bca7df41a9d604803c15bcd6ae"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/multiplicity_domains.rs",
+      "sha256": "b884653608f2402929ca3716d15134d97f992159bbe65d39e0e13c08bbafb70e"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+      "sha256": "d0a018f9d10fe66510e9266d431063e2fc7f3c51a488c79f4ef2c40a6a18ad50"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/scalars.rs",
+      "sha256": "11eb123ec93c192c152fcd783ad3c7c4c3914921e3738d0cbf13b7cc8eb55f5e"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/specialization.rs",
+      "sha256": "b81915a510504eb4300d75016b7f01a436a5373687ece784c8b51300afe2b180"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+      "sha256": "d5164c5fe6ffd955bf2de70c22e08ff5f87fcc4979e024fe5197f7eafed2ef55"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/typing.rs",
+      "sha256": "2659c9ea43e1193aef737894b7d2c01c099687370d820ada5c757a59072bc4e9"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs",
+      "sha256": "f44ffc9e68a8d3411aa2895da5348d8cfa14b540f723b90ce37ba5458320af5a"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/derived_names.rs",
+      "sha256": "045159243e7a98e31ddd6ef6c8f747655aeb57e45ae8d3f55a8ad416b7f1c89c"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs",
+      "sha256": "6807871d3d5d32007f59e8406b446a0a8afc5ba51e66fa729077369a427e8092"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/eval/report.rs",
+      "sha256": "4919cd5a7fe20f2d7b88140a49e8118f34426f558af637c266565d486f267b00"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/flat.rs",
+      "sha256": "a39edc1b0cb0bdcfef7dbdf7ab48780e576fd1a57c1c45461c756d2da8b0c60f"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/flat/rows.rs",
+      "sha256": "030a871df71d163290e4e80aa847ffe38f1c92b4967ad4fa78837cc1db9f6cd1"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/full.rs",
+      "sha256": "a9aab1ca3446b79b0f9d707f453aff5283eaecfcc8b8a5bea3ed1b77f5c7dd39"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/ids.rs",
+      "sha256": "68a46bb91caaf662edc52fcab9ede311fd0dc2cf22d73614f59e1b93fa2db111"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+      "sha256": "4bcbae4ec8a3fe2847ac48a00b3661fb4c53d8ee0e1dbac8120e089821caa565"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/behavior.rs",
+      "sha256": "7a3f0fdb73646524472412aec7da7b73e0632af0727ee1477f371d14f52320ef"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/callable_bodies.rs",
+      "sha256": "b2a191b5ad91d15402c85ca129cc35804a43e380a2dc63a229fd3133be9285b1"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
+      "sha256": "55904e99c8f1a10492d76ae6098135aa883759a5df47feee6e8858dfc1910e8a"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cases.rs",
+      "sha256": "023bb5cd071c1000161e95f2954dd92b190bf01a98583ffba06f503eddca2668"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/closures.rs",
+      "sha256": "811b32a9e5ca83f4b3752b073f45027bbe10a1034c1a018f8ac13859cb484d81"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs",
+      "sha256": "c85c9f315ecc5214fa624e720e493d15622f822a6410e47c33726d7cb5fc9d50"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/derived.rs",
+      "sha256": "dece28f6c99d8ca59ba2b0e270493701517f819d0d3fae830f9d8a950b3a6844"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/derived_compositions.rs",
+      "sha256": "b4e0267f8296f163226df2c29277e7dd983acfddea007f7fc089d47f42aa7910"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/direction_proof.rs",
+      "sha256": "693294b8ccb6dd16127ebd4df1eb5bc2998b72249f1cc473e427e9b47617a042"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
+      "sha256": "01c9aa635ad9d9fb3a7fdaf5d34071b626494a37da1db52eebf020e425ff2478"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
+      "sha256": "4e02c3ee3a88c75d1b398a91e91fe8bbbf0c71359161a3955171d998db815d96"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/end_constancy.rs",
+      "sha256": "aa3388c25a771fe396aa7639b986774b1e8389a5ccb9ba9660cdb94eb196c22a"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/exposure.rs",
+      "sha256": "69cd63c8bbde247c25f10f9c24f377bd4d59ee150bd3a8e50d9c7470fc5ff46e"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs",
+      "sha256": "46ada2d4023e868e6cbf421c87b2220e5889fbcab57c44b285d535ca5588512c"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs",
+      "sha256": "ac412907c391508980f2f94a86cae968169afe1ddfdec98688b8cc2c12c1382f"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/readiness_tests.rs",
+      "sha256": "17033fd7e9dc6400762d227bbe89cbf2cdfcb74d0fe84566a8f7d5ca5eaa0a4a"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/report.rs",
+      "sha256": "7124d629c1d03e9799b98241c73b911a98a976f954eeb1fb97f68f180d1bfbb2"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/repository_tests.rs",
+      "sha256": "3353c4d825d6e6a7d8d2b62ae0c0f64907054d2bd7569a1c000cc31e21507ab0"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/function_specialization_readiness_tests.rs",
+      "sha256": "758573ebdec47363d9023df01ad4173a2c337444ec7be5f615096eb2e8e7e2be"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/generated_defaults.rs",
+      "sha256": "5f8f573fc7a1198c8c62532c069adc13167df2974934f1b46c43dd978b7fa1c6"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/identity_tables_tests.rs",
+      "sha256": "d7e2f53019066ae37134c7af6fa885d12cc34c984dd6fd8b5e29ff68a4539ef7"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs",
+      "sha256": "b1fc09b8c36591db402bf7715139a09a789e7088b348f179167f379c99ede4e2"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/import_memberships.rs",
+      "sha256": "77c94f982d05938f9ec6521f83fee3d17687a3799575440b337341e307c377cb"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/indexed_reads_tests.rs",
+      "sha256": "300205713fb985c9eab6639aa3ef579a046eb9d4247f6f40c424b92aac069473"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
+      "sha256": "8329c60723149b689537a7f5afcf251396c196c71742102703cf20ab492dd015"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/library_plans.rs",
+      "sha256": "ff2f56111f75969995e7a67a2099eba3fd0788dcc0add7128235196abe39f247"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/literal_inheritance.rs",
+      "sha256": "61423ecb5984eb38ce42cb458f3ef6f0b9be615b05214ccd4bfcba166f90d212"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/local_featuring.rs",
+      "sha256": "a00b11b2db553e10f74459ffa51acc5eb95c6fee7d528457cc681b5bd9d43d18"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_context.rs",
+      "sha256": "a30f1afe26d49593ae3060d1db53bdcaf78d2da4ebf00f4f9c332fba006bee2b"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_evidence.rs",
+      "sha256": "877c113db727185db1a57775c3d78affb5baae5d0a5eab1e51ec3dac74ce454d"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_projection.rs",
+      "sha256": "266786624e02acf6a2e2fa99cc597d3f20bee4042cc497563cc85919270ef274"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/metadata_associations.rs",
+      "sha256": "707c41e870a6ed5391c64689efca161367349e3f249a83a86fe3757ac6a798b0"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability.rs",
+      "sha256": "9d5968b21f6da29cb9425c6019e2d27621a27ff5c3fd5452bf231bb883a5287d"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
+      "sha256": "08f521867657bed8204154c271036b5fdf12db1ea4f71f31e6e256a3dd77f3f3"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/named_argument_index_tests.rs",
+      "sha256": "41a7f9f1e32c2b3719e45f7fd38a865789ea209b655bde7df90bb90a8938e3bf"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/naming.rs",
+      "sha256": "8039c1342662ddd4406a95317286e999744d7c0b0cba75ab4b2b1a97d32519ba"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations.rs",
+      "sha256": "c992c35ef8380b84b48276b98809d874675aff98e943465257bda405c851b8fd"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces.rs",
+      "sha256": "9eb1f8bedba2cfe84f2edfa8291673918d260098096e8e67bf824757e6b95742"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/imports.rs",
+      "sha256": "48fb86bae8e9e8b7f75c7aa0136105ef2c448dd190be5300525960b0b0425db1"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/imports/depth_tests.rs",
+      "sha256": "018a4c31b8f2e22ca17e8afaa876964213fb381c8af193d7863756fea656ec6d"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/recursive_features.rs",
+      "sha256": "adca4fcc827e7a1ce570d4d130101d1f1fc9cf378f6ef63efa815c1d384f4084"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/resolution.rs",
+      "sha256": "4ebf0dcc1381d2972086f0efd3e8f8b1dd74c699e3cd66aeeefcaf3e5a4bc54c"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/type_memberships.rs",
+      "sha256": "caeb10050338a4c5b37fa9736bd658c7ce6738b4f6133d6aa8479c02a0f77d9c"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs",
+      "sha256": "d2b55b221bbbfeab6447cad0a28ab0b49a54b86d221bc7b31eb6767acca38efe"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/parameter_context.rs",
+      "sha256": "a1b17bfe5b31addff7dca8246ef9048737c26e6255e51278cf48282c5db42f54"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/parameters.rs",
+      "sha256": "ea10fe45e48cdb85713845b9a663ff8e35f17bd1818c00fe333d1bf4090f6a4a"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional.rs",
+      "sha256": "845f8d8cc9f26b42933b31a5dd18b2dc109898ae1c3e78df83f78d3a68d5331f"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional_delta.rs",
+      "sha256": "dfc0ccd67f589867e7aa6f4ce1623fc9bf01e28e37e09b0742612758f7db8995"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/provider_completeness.rs",
+      "sha256": "03542460e6a86c5ede42d904490b969a0cce3b57df1490f6f4627c961f241f58"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/provider_completeness/mixed_tests.rs",
+      "sha256": "2e258df325865ee6c533253543cf114fa2e5c854c0f6f5073f6374805f2fabb7"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/provider_completeness/recursive.rs",
+      "sha256": "f778ae56ff90808ab36f6d46be50072d283c1b763128e3c77d3aa2fa9b520d5f"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/provider_completeness/recursive/qualified.rs",
+      "sha256": "0e91ca10fdb93e9cbf3ec484ec10017136a6143eb1e08aa15dd85c148dc9d989"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/provider_completeness/recursive_tests.rs",
+      "sha256": "31e00f760b730149e95acd8887e3d888b3f639ce98ad9bda9594ef32aa1ba036"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/publication.rs",
+      "sha256": "a492ea63c1ceba08bc057ca4eb741bc171d1d1f298c3bf5759691042feb0ef7b"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/recorded_lookup.rs",
+      "sha256": "bd5679463213fb64be33e60869ee661cb874a86b655a3142e1eb3e38e5ce20b5"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/redefinition_provenance.rs",
+      "sha256": "e53538bbb6a62b9bee313adc4aae585389535779a726ddf1992c3311ebfe9436"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/replay_dependencies_tests.rs",
+      "sha256": "ea43ecbc3550dca3262e405b75c6b689eee91943e9d08959f8afff25d728cc1d"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_redefinition.rs",
+      "sha256": "f696d09c9e790c57d256d8a1dde8018718ea0faab6fa65dc1482c2a5b2c5eb23"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/runtime_frames.rs",
+      "sha256": "a883350095730766adf4454fd805e8c3c08ede3e2b448fef273292f057ee8555"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/scope_table.rs",
+      "sha256": "766a883840bc223f1caf862905d00032d0f52cf2acc81b785a557428f9fb1beb"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic.rs",
+      "sha256": "eb1349600fbf45b348bdfec084445511df8d1642de891089e0463608a5997617"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/certified_types.rs",
+      "sha256": "5126f86d4a70d8ce29edd70970fb27844b5ed9f50382be9659139876d0642d3e"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/definition_usage_tests.rs",
+      "sha256": "6c60be88a5b892093242ad4f160618cb3233cc96d3b02b4727697839b9310a00"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/export.rs",
+      "sha256": "f779cbae58324b443b655fbef0f5757416ea7a71a2b603b06bca969906330468"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/type_fidelity_tests.rs",
+      "sha256": "48bb7f1d4b738ebfb23e3a110ee5052d052d614b3b4f0aa4ecdfc6f6430451e4"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_batch.rs",
+      "sha256": "ff8a9b7df21ffac89df8dcf1cc8536055a553250e6c2276ed4b10d3bd71f8d41"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs",
+      "sha256": "9f724257d0b466612447e7b057b9bb543e47c316e9a763468b51d13ee829fa0a"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/settled.rs",
+      "sha256": "f22a80abe0e4f09ec72e7641f58dfb060686f313fd32623327fa1b3530d6d2c6"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs",
+      "sha256": "3a5edc38a13a690e01e7de33fea48e78122c1e2aba043be0ade7e758554577c2"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/succession_endpoints.rs",
+      "sha256": "b9ff85230feb111f904b73d63781375a2f4ca17ad685557f3d64bdec78560c4b"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/supertypes_checked_tests.rs",
+      "sha256": "1d2f3d4f4de4185e4e7e3419d88985b68882f1e52888a782493e41ac19286c27"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_features.rs",
+      "sha256": "25e8b6cf1b7ce551a68170ffd02623e15c80295b94dea1ac6b2d1c94dc733246"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs",
+      "sha256": "6e5e5e1d4d50a65d9a814aa4c6d5ca9243e559db912f91e2b6d188506132043a"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs/authored_dependencies.rs",
+      "sha256": "a92ec83f9b123e55baf1e58d65ba71a9a4b49e39701d81737276b57125122236"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs/import_dependencies.rs",
+      "sha256": "3c92f531f6ec9d03922831075411f0f84df26ea2e132d8cc742503ceb68bf611"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs/parameter_dependencies.rs",
+      "sha256": "6878b05d9b8b0806940d0145f7e80392150c13664ebbe3e9ee5c865706c632ec"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs/visible_dependencies.rs",
+      "sha256": "c73efe0ba477a4938013f89eb2e3bb9540101883a617bb121a46f5062e3d224c"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
+      "sha256": "581edf552f7a33497a0deea3268c912c3b91f255c7f6d3a3624aa5a02ce90925"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/typeops.rs",
+      "sha256": "a4bb8e78f96ac6e9326f119b92f6db04519c299e6db4ce02bfc561a1e8d9597b"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/unused_imports_tests.rs",
+      "sha256": "91c993f99081a001dfb93a6ec7ccb14c624d4c58b46442dc90ce26e47123def6"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/usage_variability.rs",
+      "sha256": "097cb11bb4fb724fc856ad727ac83e0fc308c333e0a338197ac22d21fcf4cf78"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/value_context.rs",
+      "sha256": "2b09c6125f139948d6a038f471469eac9b9abb56a2dcb1a01522503afe474cc3"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/layered.rs",
+      "sha256": "a5f0a9969fe90102e684fdb34de6d88b7a93576d62ae7241d676e72807778272"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/lib.rs",
+      "sha256": "8fdd463a244042651f41c60ba778d5212480869a86a942f2c68e554849be0eae"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/libcache.rs",
+      "sha256": "68af55d3371f627df284a17fad213f898c2988f1c4aefae496dc5067b5617d93"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs",
+      "sha256": "fc7bea90f370cc11a92e2eaadddbcf9650f6312b22ccb6f083e8788d998f89a8"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/loader.rs",
+      "sha256": "4c04dfb8511f8e334c2884bfac74620ecd60149af733111a63d86f533eb61ce2"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/metaclass.rs",
+      "sha256": "5ba0dcd8144f30116c06fc19047c9cffb0e8732a1ef3d0d4c8a203aacc06df7a"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/metaclass_tests.rs",
+      "sha256": "7a42cfe16848891f1491f92fe6936a412af5310b0d5b03cc40a0a8131508ed51"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/metamodel.rs",
+      "sha256": "617e87e7e0d97a8ba76a61d81d5d3813c10e01314a77407e513d3182cbda6d2a"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/migration.rs",
+      "sha256": "8c3893bd18ffac599733977367d9772eb0e77093274625b2b06ba6eb6d714a48"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/model.rs",
+      "sha256": "c87896c867fbcd4a9722aa0ea492f7fa3c93672b7d84cb12693f2ea044a8f9b8"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/operation_catalog.rs",
+      "sha256": "4849445390ff9e03185095bc62116834015cca73f92dd7eee52dc100f6dffadf"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/prepared.rs",
+      "sha256": "4d0bfe1bb7f3b7888959f4b815adfe276e0aa76205f5b21316c41c7024db0763"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/properties.rs",
+      "sha256": "835c99dbaaf1ce0b0ce730132d11c63f71922ba5bc15dd6e3e4b98133eed3a00"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/quantity.rs",
+      "sha256": "121589ad0564b39624304ffbe438a7055bc4447fbfa7d5f7e987494462e57f0b"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/rational.rs",
+      "sha256": "f21875ae00867390fcf9f90a23346f32437d7cf089d9a961b9e28cf12959c969"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/schema_props.rs",
+      "sha256": "c06842d1a95658116519b11bac2a3c2f0efde5e11ae6238102fa46b2dd534da9"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/semantic_catalog.rs",
+      "sha256": "cac930678f5e690178be956463064f6baf40f5334daa74ec3d4c4cdf6b8b21a0"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/semantic_memo.rs",
+      "sha256": "0be725a9ebde1cb3ac9297b3a3b231defce96dc9b8b0e516991d2194951e5078"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/structure.rs",
+      "sha256": "8ee0eb798f22e0f129dd16e61509e2c0b1896d65cb4f14bca28155a79ed35df3"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/ast.rs",
+      "sha256": "a116c9416ebab9735b1a7bb8f96e7ad92798bc7c1d4a326c5eb7a5a8f926e2d8"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+      "sha256": "f34aa7203810104300c28f32e5e61ce0b1b11d899981b964cfd5bafec5eda6ce"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/diag.rs",
+      "sha256": "cfe3667db603aa5f913b278ae5576e368009c89487a8fec6a6397bdcb29ff9f6"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/lexer.rs",
+      "sha256": "e99ea6d8807862c2be5b23fe0e9396f7cb1fd5ba50b31823053c2cc7f4197df6"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/lib.rs",
+      "sha256": "a0e673da5051d3e3eee2247238d6495f98184440f747d073630bbe1792f04bf3"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/name.rs",
+      "sha256": "e0b6ed2c3e0b2058b3e5a1219fad048f9e6334dd0536640042619a095f36f8df"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs",
+      "sha256": "0b8b608caa7b6f0f7f96b2b97287224237c0e0efd1b7f3c0d4449a3e034318f2"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/print.rs",
+      "sha256": "dae05bbb5712de65d4c9e3251b71ff6d41b7393eb966c28711001ff2ce0f60db"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/span.rs",
+      "sha256": "4d2ef475e4a6d7bb01ea7e31396e036c352b3e11e3aaabe37c00523e67d4d9d8"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/token.rs",
+      "sha256": "bb41612d3233bae8d6d0f172a7be8c920a94738690a0a626a8a65eaea2cfc426"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/visit.rs",
+      "sha256": "d31ab84d77e0e6c6cdd8a1ec4fdc929746ac1e2062bbe089e56bb84f3508a420"
+    }
+  ],
+  "structuredInputHashEncoding": "JSON.stringify(parsed input), UTF-8",
+  "catalogueSha256": "141adece74e8e7581cc744729bf2e96356ff2e983204c68f48acae64ea339e35",
+  "assessmentsSha256": "7cdcf1e125ce04b332f101f3ebfbae40b739d36dfb4a313f09782d75d74deebc",
+  "matrixSha256": "82f78ae5e36de0c277c823a2edc1337cc375f5f820027c2ba041c5e425d4da62",
+  "counts": {
+    "rules": 180,
+    "registered": 91,
+    "withSourceMentions": 92,
+    "withoutSourceMentions": 88,
+    "withDirectAssessments": 6,
+    "withoutDirectAssessments": 174,
+    "unmatchedNames": 36
+  },
+  "rules": [
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-AcceptActionUsage-validateAcceptActionUsageParameters",
+      "name": "validateAcceptActionUsageParameters",
+      "standard": "sysml",
+      "owner": "Systems-Actions-AcceptActionUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Requirements-ActorMembership-validateActorMembershipOwningType",
+      "name": "validateActorMembershipOwningType",
+      "standard": "sysml",
+      "owner": "Systems-Requirements-ActorMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Root-Annotations-Annotation-validateAnnotationAnnotatedElementOwnership",
+      "name": "validateAnnotationAnnotatedElementOwnership",
+      "standard": "kerml",
+      "owner": "Root-Annotations-Annotation",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Root-Annotations-Annotation-validateAnnotationAnnotatingElement",
+      "name": "validateAnnotationAnnotatingElement",
+      "standard": "kerml",
+      "owner": "Root-Annotations-Annotation",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Constraints-AssertConstraintUsage-validateAssertConstraintUsageReference",
+      "name": "validateAssertConstraintUsageReference",
+      "standard": "sysml",
+      "owner": "Systems-Constraints-AssertConstraintUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 55
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 410
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-AssignmentActionUsage-validateAssignmentActionUsage",
+      "name": "validateAssignmentActionUsage",
+      "standard": "sysml",
+      "owner": "Systems-Actions-AssignmentActionUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-AssignmentActionUsage-validateAssignmentActionUsageReferent",
+      "name": "validateAssignmentActionUsageReferent",
+      "standard": "sysml",
+      "owner": "Systems-Actions-AssignmentActionUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 56
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 201
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Associations-Association-validateAssociationBinarySpecialization",
+      "name": "validateAssociationBinarySpecialization",
+      "standard": "kerml",
+      "owner": "Kernel-Associations-Association",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 57
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 109
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Associations-Association-validateAssociationEndTypes",
+      "name": "validateAssociationEndTypes",
+      "standard": "kerml",
+      "owner": "Kernel-Associations-Association",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 58
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 621
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Associations-Association-validateAssociationRelatedTypes",
+      "name": "validateAssociationRelatedTypes",
+      "standard": "kerml",
+      "owner": "Kernel-Associations-Association",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 59
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 607
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Associations-Association-validateAssociationStructureIntersection",
+      "name": "validateAssociationStructureIntersection",
+      "standard": "kerml",
+      "owner": "Kernel-Associations-Association",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Attributes-AttributeDefinition-validateAttributeDefinitionFeatures",
+      "name": "validateAttributeDefinitionFeatures",
+      "standard": "sysml",
+      "owner": "Systems-Attributes-AttributeDefinition",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Attributes-AttributeUsage-validateAttributeUsageFeatures",
+      "name": "validateAttributeUsageFeatures",
+      "standard": "sysml",
+      "owner": "Systems-Attributes-AttributeUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Attributes-AttributeUsage-validateAttributeUsageIsReference",
+      "name": "validateAttributeUsageIsReference",
+      "standard": "sysml",
+      "owner": "Systems-Attributes-AttributeUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Behaviors-Behavior-validateBehaviorSpecialization",
+      "name": "validateBehaviorSpecialization",
+      "standard": "kerml",
+      "owner": "Kernel-Behaviors-Behavior",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 60
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 71
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Connectors-BindingConnector-validateBindingConnectorIsBinary",
+      "name": "validateBindingConnectorIsBinary",
+      "standard": "kerml",
+      "owner": "Kernel-Connectors-BindingConnector",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 61
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 88
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Cases-CaseDefinition-validateCaseDefinitionOnlyOneObjective",
+      "name": "validateCaseDefinitionOnlyOneObjective",
+      "standard": "sysml",
+      "owner": "Systems-Cases-CaseDefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 62
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 191
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 30
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 694
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Cases-CaseDefinition-validateCaseDefinitionOnlyOneSubject",
+      "name": "validateCaseDefinitionOnlyOneSubject",
+      "standard": "sysml",
+      "owner": "Systems-Cases-CaseDefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 31
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 693
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Cases-CaseDefinition-validateCaseDefinitionSubjectParameterPosition",
+      "name": "validateCaseDefinitionSubjectParameterPosition",
+      "standard": "sysml",
+      "owner": "Systems-Cases-CaseDefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 32
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 695
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Cases-CaseUsage-validateCaseUsageOnlyOneObjective",
+      "name": "validateCaseUsageOnlyOneObjective",
+      "standard": "sysml",
+      "owner": "Systems-Cases-CaseUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 63
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 196
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 33
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 737
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Cases-CaseUsage-validateCaseUsageOnlyOneSubject",
+      "name": "validateCaseUsageOnlyOneSubject",
+      "standard": "sysml",
+      "owner": "Systems-Cases-CaseUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 34
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 736
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Cases-CaseUsage-validateCaseUsageSubjectParameterPosition",
+      "name": "validateCaseUsageSubjectParameterPosition",
+      "standard": "sysml",
+      "owner": "Systems-Cases-CaseUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 35
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 738
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Classifiers-Classifier-validateClassifierMultiplicityDomain",
+      "name": "validateClassifierMultiplicityDomain",
+      "standard": "kerml",
+      "owner": "Core-Classifiers-Classifier",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Classes-Class-validateClassSpecialization",
+      "name": "validateClassSpecialization",
+      "standard": "kerml",
+      "owner": "Kernel-Classes-Class",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 64
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 61
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-CollectExpression-validateCollectExpressionOperator",
+      "name": "validateCollectExpressionOperator",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-CollectExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Ports-ConjugatedPortDefinition-validateConjugatedPortDefinitionConjugatedPortDefinitionIsEmpty",
+      "name": "validateConjugatedPortDefinitionConjugatedPortDefinitionIsEmpty",
+      "standard": "sysml",
+      "owner": "Systems-Ports-ConjugatedPortDefinition",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Ports-ConjugatedPortDefinition-validateConjugatedPortDefinitionOriginalPortDefinition",
+      "name": "validateConjugatedPortDefinitionOriginalPortDefinition",
+      "standard": "sysml",
+      "owner": "Systems-Ports-ConjugatedPortDefinition",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Connections-ConnectionDefinition-validateConnectionDefinitionIsSufficient",
+      "name": "validateConnectionDefinitionIsSufficient",
+      "standard": "sysml",
+      "owner": "Systems-Connections-ConnectionDefinition",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Connectors-Connector-validateConnectorBinarySpecialization",
+      "name": "validateConnectorBinarySpecialization",
+      "standard": "kerml",
+      "owner": "Kernel-Connectors-Connector",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Connectors-Connector-validateConnectorRelatedFeatures",
+      "name": "validateConnectorRelatedFeatures",
+      "standard": "kerml",
+      "owner": "Kernel-Connectors-Connector",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 65
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 98
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-ConstructorExpression-validateConstructorExpressionNoDuplicateFeatureRedefinition",
+      "name": "validateConstructorExpressionNoDuplicateFeatureRedefinition",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-ConstructorExpression",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 66
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 397
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-ConstructorExpression-validateConstructorExpressionOwnedFeatures",
+      "name": "validateConstructorExpressionOwnedFeatures",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-ConstructorExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-ControlNode-validateControlNodeIncomingSuccessions",
+      "name": "validateControlNodeIncomingSuccessions",
+      "standard": "sysml",
+      "owner": "Systems-Actions-ControlNode",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 67
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 80
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-ControlNode-validateControlNodeIsComposite",
+      "name": "validateControlNodeIsComposite",
+      "standard": "sysml",
+      "owner": "Systems-Actions-ControlNode",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-ControlNode-validateControlNodeOutgoingSuccessions",
+      "name": "validateControlNodeOutgoingSuccessions",
+      "standard": "sysml",
+      "owner": "Systems-Actions-ControlNode",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 68
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 85
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-ControlNode-validateControlNodeOwningType",
+      "name": "validateControlNodeOwningType",
+      "standard": "sysml",
+      "owner": "Systems-Actions-ControlNode",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 69
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 593
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-CrossSubsetting-validateCrossSubsettingCrossedFeature",
+      "name": "validateCrossSubsettingCrossedFeature",
+      "standard": "kerml",
+      "owner": "Core-Features-CrossSubsetting",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 70
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 165
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-CrossSubsetting-validateCrossSubsettingCrossingFeature",
+      "name": "validateCrossSubsettingCrossingFeature",
+      "standard": "kerml",
+      "owner": "Core-Features-CrossSubsetting",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 71
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 149
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-DataTypes-DataType-validateDataTypeSpecialization",
+      "name": "validateDataTypeSpecialization",
+      "standard": "kerml",
+      "owner": "Kernel-DataTypes-DataType",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 72
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 54
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-DecisionNode-validateDecisionNodeIncomingSuccessions",
+      "name": "validateDecisionNodeIncomingSuccessions",
+      "standard": "sysml",
+      "owner": "Systems-Actions-DecisionNode",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 73
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 130
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-DecisionNode-validateDecisionNodeOutgoingSuccessions",
+      "name": "validateDecisionNodeOutgoingSuccessions",
+      "standard": "sysml",
+      "owner": "Systems-Actions-DecisionNode",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 74
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 95
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-DefinitionAndUsage-Definition-validateDefinitionVariationIsAbstract",
+      "name": "validateDefinitionVariationIsAbstract",
+      "standard": "sysml",
+      "owner": "Systems-DefinitionAndUsage-Definition",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-DefinitionAndUsage-Definition-validateDefinitionVariationOwnedFeatureMembership",
+      "name": "validateDefinitionVariationOwnedFeatureMembership",
+      "standard": "sysml",
+      "owner": "Systems-DefinitionAndUsage-Definition",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-DefinitionAndUsage-Definition-validateDefinitionVariationSpecialization",
+      "name": "validateDefinitionVariationSpecialization",
+      "standard": "sysml",
+      "owner": "Systems-DefinitionAndUsage-Definition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 75
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 179
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Packages-ElementFilterMembership-validateElementFilterMembershipConditionIsBoolean",
+      "name": "validateElementFilterMembershipConditionIsBoolean",
+      "standard": "kerml",
+      "owner": "Kernel-Packages-ElementFilterMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Packages-ElementFilterMembership-validateElementFilterMembershipConditionIsModelLevelEvaluable",
+      "name": "validateElementFilterMembershipConditionIsModelLevelEvaluable",
+      "standard": "kerml",
+      "owner": "Kernel-Packages-ElementFilterMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Root-Elements-Element-validateElementIsImpliedIncluded",
+      "name": "validateElementIsImpliedIncluded",
+      "standard": "kerml",
+      "owner": "Root-Elements-Element",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-EndFeatureMembership-validateEndFeatureMembershipIsEnd",
+      "name": "validateEndFeatureMembershipIsEnd",
+      "standard": "kerml",
+      "owner": "Core-Features-EndFeatureMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Enumerations-EnumerationDefinition-validateEnumerationDefinitionIsVariation",
+      "name": "validateEnumerationDefinitionIsVariation",
+      "standard": "sysml",
+      "owner": "Systems-Enumerations-EnumerationDefinition",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Occurrences-EventOccurrenceUsage-validateEventOccurrenceUsageIsReference",
+      "name": "validateEventOccurrenceUsageIsReference",
+      "standard": "sysml",
+      "owner": "Systems-Occurrences-EventOccurrenceUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Occurrences-EventOccurrenceUsage-validateEventOccurrenceUsageReference",
+      "name": "validateEventOccurrenceUsageReference",
+      "standard": "sysml",
+      "owner": "Systems-Occurrences-EventOccurrenceUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-ExhibitStateUsage-validateExhibitStateUsageReference",
+      "name": "validateExhibitStateUsageReference",
+      "standard": "sysml",
+      "owner": "Systems-States-ExhibitStateUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 76
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 403
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Views-Expose-validateExposeIsImportAll",
+      "name": "validateExposeIsImportAll",
+      "standard": "sysml",
+      "owner": "Systems-Views-Expose",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Views-Expose-validateExposeOwningNamespace",
+      "name": "validateExposeOwningNamespace",
+      "standard": "sysml",
+      "owner": "Systems-Views-Expose",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Views-Expose-validateExposeVisibility",
+      "name": "validateExposeVisibility",
+      "standard": "sysml",
+      "owner": "Systems-Views-Expose",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Functions-Expression-validateExpressionResultExpressionMembership",
+      "name": "validateExpressionResultExpressionMembership",
+      "standard": "kerml",
+      "owner": "Kernel-Functions-Expression",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 77
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 459
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Functions-Expression-validateExpressionResultParameterMembership",
+      "name": "validateExpressionResultParameterMembership",
+      "standard": "kerml",
+      "owner": "Kernel-Functions-Expression",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 78
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 479
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-FeatureChainExpression-validateFeatureChainExpressionConformance",
+      "name": "validateFeatureChainExpressionConformance",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-FeatureChainExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-FeatureChainExpression-validateFeatureChainExpressionOperator",
+      "name": "validateFeatureChainExpressionOperator",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-FeatureChainExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureChainingFeatureConformance",
+      "name": "validateFeatureChainingFeatureConformance",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 79
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 206
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureChainingFeatureNotOne",
+      "name": "validateFeatureChainingFeatureNotOne",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 80
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 532
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureChainingFeaturesNotSelf",
+      "name": "validateFeatureChainingFeaturesNotSelf",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 81
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 540
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureConstantIsVariable",
+      "name": "validateFeatureConstantIsVariable",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 82
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 304
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureCrossFeatureSpecialization",
+      "name": "validateFeatureCrossFeatureSpecialization",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 83
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 180
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureCrossFeatureType",
+      "name": "validateFeatureCrossFeatureType",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 84
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 123
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 196
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureEndIsConstant",
+      "name": "validateFeatureEndIsConstant",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureEndMultiplicity",
+      "name": "validateFeatureEndMultiplicity",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureEndNoDirection",
+      "name": "validateFeatureEndNoDirection",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureEndNotDerivedAbstractCompositeOrPortion",
+      "name": "validateFeatureEndNotDerivedAbstractCompositeOrPortion",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureIsVariable",
+      "name": "validateFeatureIsVariable",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 85
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 288
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureMultiplicityDomain",
+      "name": "validateFeatureMultiplicityDomain",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureOwnedCrossSubsetting",
+      "name": "validateFeatureOwnedCrossSubsetting",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 86
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 504
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeatureOwnedReferenceSubsetting",
+      "name": "validateFeatureOwnedReferenceSubsetting",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 87
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 502
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Feature-validateFeaturePortionNotVariable",
+      "name": "validateFeaturePortionNotVariable",
+      "standard": "kerml",
+      "owner": "Core-Features-Feature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 88
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 296
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-FeatureReferenceExpression-validateFeatureReferenceExpressionReferentIsFeature",
+      "name": "validateFeatureReferenceExpressionReferentIsFeature",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-FeatureReferenceExpression",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 89
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 375
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-FeatureReferenceExpression-validateFeatureReferenceExpressionResult",
+      "name": "validateFeatureReferenceExpressionResult",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-FeatureReferenceExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-FeatureValues-FeatureValue-validateFeatureValueIsInitial",
+      "name": "validateFeatureValueIsInitial",
+      "standard": "kerml",
+      "owner": "Kernel-FeatureValues-FeatureValue",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 90
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 313
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-FeatureValues-FeatureValue-validateFeatureValueOverriding",
+      "name": "validateFeatureValueOverriding",
+      "standard": "kerml",
+      "owner": "Kernel-FeatureValues-FeatureValue",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 91
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/distinguishability.rs",
+          "line": 77
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs",
+          "line": 37
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Flows-FlowDefinition-validateFlowDefinitionFlowEnds",
+      "name": "validateFlowDefinitionFlowEnds",
+      "standard": "sysml",
+      "owner": "Systems-Flows-FlowDefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 36
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 709
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Interactions-FlowEnd-validateFlowEndIsEnd",
+      "name": "validateFlowEndIsEnd",
+      "standard": "kerml",
+      "owner": "Kernel-Interactions-FlowEnd",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Interactions-FlowEnd-validateFlowEndNestedFeature",
+      "name": "validateFlowEndNestedFeature",
+      "standard": "kerml",
+      "owner": "Kernel-Interactions-FlowEnd",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Interactions-FlowEnd-validateFlowEndOwningType",
+      "name": "validateFlowEndOwningType",
+      "standard": "kerml",
+      "owner": "Kernel-Interactions-FlowEnd",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Interactions-Flow-validateFlowPayloadFeature",
+      "name": "validateFlowPayloadFeature",
+      "standard": "kerml",
+      "owner": "Kernel-Interactions-Flow",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-ForkNode-validateForkNodeIncomingSuccessions",
+      "name": "validateForkNodeIncomingSuccessions",
+      "standard": "sysml",
+      "owner": "Systems-Actions-ForkNode",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 92
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 126
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-ForLoopActionUsage-validateForLoopActionUsageLoopVariable",
+      "name": "validateForLoopActionUsageLoopVariable",
+      "standard": "sysml",
+      "owner": "Systems-Actions-ForLoopActionUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-ForLoopActionUsage-validateForLoopActionUsageParameters",
+      "name": "validateForLoopActionUsageParameters",
+      "standard": "sysml",
+      "owner": "Systems-Actions-ForLoopActionUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Requirements-FramedConcernMembership-validateFramedConcernMembershipConstraintKind",
+      "name": "validateFramedConcernMembershipConstraintKind",
+      "standard": "sysml",
+      "owner": "Systems-Requirements-FramedConcernMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Functions-Function-validateFunctionResultExpressionMembership",
+      "name": "validateFunctionResultExpressionMembership",
+      "standard": "kerml",
+      "owner": "Kernel-Functions-Function",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 93
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 457
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Functions-Function-validateFunctionResultParameterMembership",
+      "name": "validateFunctionResultParameterMembership",
+      "standard": "kerml",
+      "owner": "Kernel-Functions-Function",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 94
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 477
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-IfActionUsage-validateIfActionUsageParameters",
+      "name": "validateIfActionUsageParameters",
+      "standard": "sysml",
+      "owner": "Systems-Actions-IfActionUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Root-Namespaces-Import-validateImportTopLevelVisibility",
+      "name": "validateImportTopLevelVisibility",
+      "standard": "kerml",
+      "owner": "Root-Namespaces-Import",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 37
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 53
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 61
+        }
+      ],
+      "assessments": [
+        {
+          "id": "ROOT-IMPORT-VISIBILITY",
+          "obligation": "Reject non-private root imports while accepting private imports.",
+          "implementation": "partial",
+          "api": "partial",
+          "limits": "The Rust foundation test additionally exhausts 32 dialect/import-kind/visibility/nesting partitions. Public abstract-syntax import ownership and visibility queries remain unavailable.",
+          "tests": [
+            {
+              "case": "IMP-018",
+              "checks": [
+                "visibility"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "IMP-019",
+              "checks": [
+                "clean",
+                "imported"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            }
+          ]
+        }
+      ],
+      "nextAction": "complete-obligation-review"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-UseCases-IncludeUseCaseUsage-validateIncludeUseCaseUsageReference",
+      "name": "validateIncludeUseCaseUsageReference",
+      "standard": "sysml",
+      "owner": "Systems-UseCases-IncludeUseCaseUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 95
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 404
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-IndexExpression-validateIndexExpressionOperator",
+      "name": "validateIndexExpressionOperator",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-IndexExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-InstantiationExpression-validateInstantiationExpressionInstantiatedType",
+      "name": "validateInstantiationExpressionInstantiatedType",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-InstantiationExpression",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 96
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 386
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-InstantiationExpression-validateInstantiationExpressionResult",
+      "name": "validateInstantiationExpressionResult",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-InstantiationExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-InvocationExpression-validateInvocationExpressionInstantiatedType",
+      "name": "validateInvocationExpressionInstantiatedType",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-InvocationExpression",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 97
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 412
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 509
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-InvocationExpression-validateInvocationExpressionNoDuplicateParameterRedefinition",
+      "name": "validateInvocationExpressionNoDuplicateParameterRedefinition",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-InvocationExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-InvocationExpression-validateInvocationExpressionOwnedFeatures",
+      "name": "validateInvocationExpressionOwnedFeatures",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-InvocationExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-InvocationExpression-validateInvocationExpressionParameterRedefinition",
+      "name": "validateInvocationExpressionParameterRedefinition",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-InvocationExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-JoinNode-validateJoinNodeOutgoingSuccessions",
+      "name": "validateJoinNodeOutgoingSuccessions",
+      "standard": "sysml",
+      "owner": "Systems-Actions-JoinNode",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 98
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 134
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-MergeNode-validateMergeNodeIncomingSuccessions",
+      "name": "validateMergeNodeIncomingSuccessions",
+      "standard": "sysml",
+      "owner": "Systems-Actions-MergeNode",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 99
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 90
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-MergeNode-validateMergeNodeOutgoingSuccessions",
+      "name": "validateMergeNodeOutgoingSuccessions",
+      "standard": "sysml",
+      "owner": "Systems-Actions-MergeNode",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 100
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 138
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-MetadataAccessExpression-validateMetadataAccessExpressionReferencedElement",
+      "name": "validateMetadataAccessExpressionReferencedElement",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-MetadataAccessExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Metadata-MetadataFeature-validateMetadataFeatureAnnotatedElement",
+      "name": "validateMetadataFeatureAnnotatedElement",
+      "standard": "kerml",
+      "owner": "Kernel-Metadata-MetadataFeature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 101
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs",
+          "line": 183
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Metadata-MetadataFeature-validateMetadataFeatureBody",
+      "name": "validateMetadataFeatureBody",
+      "standard": "kerml",
+      "owner": "Kernel-Metadata-MetadataFeature",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 102
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs",
+          "line": 106
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs",
+          "line": 118
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Metadata-MetadataFeature-validateMetadataFeatureMetaclass",
+      "name": "validateMetadataFeatureMetaclass",
+      "standard": "kerml",
+      "owner": "Kernel-Metadata-MetadataFeature",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Metadata-MetadataFeature-validateMetadataFeatureMetaclassNotAbstract",
+      "name": "validateMetadataFeatureMetaclassNotAbstract",
+      "standard": "kerml",
+      "owner": "Kernel-Metadata-MetadataFeature",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Multiplicities-MultiplicityRange-validateMultiplicityRangeBoundResultTypes",
+      "name": "validateMultiplicityRangeBoundResultTypes",
+      "standard": "kerml",
+      "owner": "Kernel-Multiplicities-MultiplicityRange",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Multiplicities-MultiplicityRange-validateMultiplicityRangeBounds",
+      "name": "validateMultiplicityRangeBounds",
+      "standard": "kerml",
+      "owner": "Kernel-Multiplicities-MultiplicityRange",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Root-Namespaces-Namespace-validateNamespaceDistinguishibility",
+      "name": "validateNamespaceDistinguishibility",
+      "standard": "kerml",
+      "owner": "Root-Namespaces-Namespace",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "crates/sysml-kernel/src/namespaces.rs",
+          "line": 64
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 28
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 103
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/distinguishability.rs",
+          "line": 2
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/distinguishability.rs",
+          "line": 48
+        }
+      ],
+      "assessments": [
+        {
+          "id": "NAMESPACE-DISTINGUISHABILITY",
+          "obligation": "Check collisions between comparable member metaclasses, including aliases versus inherited members and short/long-name collisions.",
+          "implementation": "partial",
+          "api": "partial",
+          "limits": "Imported-membership collisions and specialized membership overrides are not exhaustively covered; this is bounded evidence, not qualification of the whole rule.",
+          "tests": [
+            {
+              "case": "IMP-015",
+              "checks": [
+                "collision"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "IMP-016",
+              "checks": [
+                "clean"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "IMP-017",
+              "checks": [
+                "collision"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "IMP-022",
+              "checks": [
+                "clean"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "IMP-023",
+              "checks": [
+                "collision"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            }
+          ]
+        }
+      ],
+      "nextAction": "complete-obligation-review"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Cases-ObjectiveMembership-validateObjectiveMembershipIsComposite",
+      "name": "validateObjectiveMembershipIsComposite",
+      "standard": "sysml",
+      "owner": "Systems-Cases-ObjectiveMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Cases-ObjectiveMembership-validateObjectiveMembershipOwningType",
+      "name": "validateObjectiveMembershipOwningType",
+      "standard": "sysml",
+      "owner": "Systems-Cases-ObjectiveMembership",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 38
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 883
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Occurrences-OccurrenceUsage-validateOccurrenceUsageIndividualDefinition",
+      "name": "validateOccurrenceUsageIndividualDefinition",
+      "standard": "sysml",
+      "owner": "Systems-Occurrences-OccurrenceUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 104
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 329
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Occurrences-OccurrenceUsage-validateOccurrenceUsageIndividualUsage",
+      "name": "validateOccurrenceUsageIndividualUsage",
+      "standard": "sysml",
+      "owner": "Systems-Occurrences-OccurrenceUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 105
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 337
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Occurrences-OccurrenceUsage-validateOccurrenceUsageIsPortion",
+      "name": "validateOccurrenceUsageIsPortion",
+      "standard": "sysml",
+      "owner": "Systems-Occurrences-OccurrenceUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 106
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 352
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Occurrences-OccurrenceUsage-validateOccurrenceUsagePortionKind",
+      "name": "validateOccurrenceUsagePortionKind",
+      "standard": "sysml",
+      "owner": "Systems-Occurrences-OccurrenceUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Behaviors-ParameterMembership-validateParameterMembershipOwningType",
+      "name": "validateParameterMembershipOwningType",
+      "standard": "kerml",
+      "owner": "Kernel-Behaviors-ParameterMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Behaviors-ParameterMembership-validateParameterMembershipParameterDirection",
+      "name": "validateParameterMembershipParameterDirection",
+      "standard": "kerml",
+      "owner": "Kernel-Behaviors-ParameterMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Parts-PartUsage-validatePartUsagePartDefinition",
+      "name": "validatePartUsagePartDefinition",
+      "standard": "sysml",
+      "owner": "Systems-Parts-PartUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-PerformActionUsage-validatePerformActionUsageReference",
+      "name": "validatePerformActionUsageReference",
+      "standard": "sysml",
+      "owner": "Systems-Actions-PerformActionUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 107
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 402
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Ports-PortDefinition-validatePortDefinitionConjugatedPortDefinition",
+      "name": "validatePortDefinitionConjugatedPortDefinition",
+      "standard": "sysml",
+      "owner": "Systems-Ports-PortDefinition",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Ports-PortDefinition-validatePortDefinitionOwnedUsagesNotComposite",
+      "name": "validatePortDefinitionOwnedUsagesNotComposite",
+      "standard": "sysml",
+      "owner": "Systems-Ports-PortDefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 108
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 360
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Ports-PortUsage-validatePortUsageIsReference",
+      "name": "validatePortUsageIsReference",
+      "standard": "sysml",
+      "owner": "Systems-Ports-PortUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 109
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 385
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Ports-PortUsage-validatePortUsageNestedUsagesNotComposite",
+      "name": "validatePortUsageNestedUsagesNotComposite",
+      "standard": "sysml",
+      "owner": "Systems-Ports-PortUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 110
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 361
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Redefinition-validateRedefinitionDirectionConformance",
+      "name": "validateRedefinitionDirectionConformance",
+      "standard": "kerml",
+      "owner": "Core-Features-Redefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 111
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 691
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Redefinition-validateRedefinitionEndConformance",
+      "name": "validateRedefinitionEndConformance",
+      "standard": "kerml",
+      "owner": "Core-Features-Redefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 112
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/distinguishability.rs",
+          "line": 73
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 104
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Redefinition-validateRedefinitionFeaturingTypes",
+      "name": "validateRedefinitionFeaturingTypes",
+      "standard": "kerml",
+      "owner": "Core-Features-Redefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 113
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 96
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 112
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-DefinitionAndUsage-ReferenceUsage-validateReferenceUsageIsReference",
+      "name": "validateReferenceUsageIsReference",
+      "standard": "sysml",
+      "owner": "Systems-DefinitionAndUsage-ReferenceUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Requirements-RequirementConstraintMembership-validateRequirementConstraintMembershipIsComposite",
+      "name": "validateRequirementConstraintMembershipIsComposite",
+      "standard": "sysml",
+      "owner": "Systems-Requirements-RequirementConstraintMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Requirements-RequirementConstraintMembership-validateRequirementConstraintMembershipOwningType",
+      "name": "validateRequirementConstraintMembershipOwningType",
+      "standard": "sysml",
+      "owner": "Systems-Requirements-RequirementConstraintMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Requirements-RequirementDefinition-validateRequirementDefinitionOnlyOneSubject",
+      "name": "validateRequirementDefinitionOnlyOneSubject",
+      "standard": "sysml",
+      "owner": "Systems-Requirements-RequirementDefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 114
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 201
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 39
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 683
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Requirements-RequirementDefinition-validateRequirementDefinitionSubjectParameterPosition",
+      "name": "validateRequirementDefinitionSubjectParameterPosition",
+      "standard": "sysml",
+      "owner": "Systems-Requirements-RequirementDefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 40
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 686
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Requirements-RequirementUsage-validateRequirementUsageOnlyOneSubject",
+      "name": "validateRequirementUsageOnlyOneSubject",
+      "standard": "sysml",
+      "owner": "Systems-Requirements-RequirementUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 115
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 206
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 41
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 722
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Requirements-RequirementUsage-validateRequirementUsageSubjectParameterPosition",
+      "name": "validateRequirementUsageSubjectParameterPosition",
+      "standard": "sysml",
+      "owner": "Systems-Requirements-RequirementUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 42
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 725
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-VerificationCases-RequirementVerificationMembership-validateRequirementVerificationMembershipKind",
+      "name": "validateRequirementVerificationMembershipKind",
+      "standard": "sysml",
+      "owner": "Systems-VerificationCases-RequirementVerificationMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-VerificationCases-RequirementVerificationMembership-validateRequirementVerificationMembershipOwningType",
+      "name": "validateRequirementVerificationMembershipOwningType",
+      "standard": "sysml",
+      "owner": "Systems-VerificationCases-RequirementVerificationMembership",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 116
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 643
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Functions-ResultExpressionMembership-validateResultExpressionMembershipOwningType",
+      "name": "validateResultExpressionMembershipOwningType",
+      "standard": "kerml",
+      "owner": "Kernel-Functions-ResultExpressionMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Functions-ReturnParameterMembership-validateReturnParameterMembershipOwningType",
+      "name": "validateReturnParameterMembershipOwningType",
+      "standard": "kerml",
+      "owner": "Kernel-Functions-ReturnParameterMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Requirements-SatisfyRequirementUsage-validateSatisfyRequirementUsageReference",
+      "name": "validateSatisfyRequirementUsageReference",
+      "standard": "sysml",
+      "owner": "Systems-Requirements-SatisfyRequirementUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 117
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 407
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Expressions-SelectExpression-validateSelectExpressionOperator",
+      "name": "validateSelectExpressionOperator",
+      "standard": "kerml",
+      "owner": "Kernel-Expressions-SelectExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-SendActionUsage-validateSendActionParameters",
+      "name": "validateSendActionParameters",
+      "standard": "sysml",
+      "owner": "Systems-Actions-SendActionUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Types-Specialization-validateSpecificationSpecificNotConjugated",
+      "name": "validateSpecificationSpecificNotConjugated",
+      "standard": "kerml",
+      "owner": "Core-Types-Specialization",
+      "registrations": [],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs",
+          "line": 2472
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Requirements-StakeholderMembership-validateStakeholderMembershipOwningType",
+      "name": "validateStakeholderMembershipOwningType",
+      "standard": "sysml",
+      "owner": "Systems-Requirements-StakeholderMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-StateDefinition-validateStateDefinitionParallelSubactions",
+      "name": "validateStateDefinitionParallelSubactions",
+      "standard": "sysml",
+      "owner": "Systems-States-StateDefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 118
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 579
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-StateDefinition-validateStateDefinitionStateSubactionKind",
+      "name": "validateStateDefinitionStateSubactionKind",
+      "standard": "sysml",
+      "owner": "Systems-States-StateDefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 119
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 329
+        }
+      ],
+      "assessments": [
+        {
+          "id": "STATE-DEFINITION-SUBACTIONS",
+          "obligation": "A StateDefinition has at most one owned StateSubactionMembership of each kind; duplicate findings identify the pinned rule.",
+          "implementation": "partial",
+          "api": "partial",
+          "limits": "Separate entry/do/exit duplicates, anonymous/named actions, valid peers and locally repeated inherited kinds are exercised. KERNEL-017 corrects the public rule codes while preserving legacy diagnostic message text. Ownership validity, all action-body alternatives, membership kind exposure, derived state action properties and parallel-state transition rules remain unqualified.",
+          "tests": [
+            {
+              "case": "STATE-001",
+              "checks": [
+                "clean",
+                "Empty",
+                "EntryOnly",
+                "DoOnly",
+                "ExitOnly",
+                "Anonymous",
+                "Named",
+                "Parent",
+                "Child"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "STATE-002",
+              "checks": [
+                "syntax",
+                "structure",
+                "valid-peer",
+                "DuplicateEntry-rejected",
+                "DuplicateEntry-code",
+                "DuplicateDo-rejected",
+                "DuplicateDo-code",
+                "DuplicateExit-rejected",
+                "DuplicateExit-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            }
+          ]
+        }
+      ],
+      "nextAction": "complete-obligation-review"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-StateSubactionMembership-validateStateSubactionMembershipOwningType",
+      "name": "validateStateSubactionMembershipOwningType",
+      "standard": "sysml",
+      "owner": "Systems-States-StateSubactionMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-StateUsage-validateStateUsageParallelSubactions",
+      "name": "validateStateUsageParallelSubactions",
+      "standard": "sysml",
+      "owner": "Systems-States-StateUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 120
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 581
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-StateUsage-validateStateUsageStateSubactionKind",
+      "name": "validateStateUsageStateSubactionKind",
+      "standard": "sysml",
+      "owner": "Systems-States-StateUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 121
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 331
+        }
+      ],
+      "assessments": [
+        {
+          "id": "STATE-USAGE-SUBACTIONS",
+          "obligation": "A StateUsage has at most one owned StateSubactionMembership of each kind; duplicate findings identify the pinned rule.",
+          "implementation": "partial",
+          "api": "partial",
+          "limits": "Separate entry/do/exit duplicates, anonymous/named actions, valid peers and locally repeated inherited kinds are exercised. KERNEL-017 corrects the public rule codes while preserving legacy diagnostic message text. Ownership validity, all action-body alternatives, membership kind exposure, derived state action properties and parallel-state transition rules remain unqualified.",
+          "tests": [
+            {
+              "case": "STATE-001",
+              "checks": [
+                "clean",
+                "instance",
+                "anonymous",
+                "named"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "STATE-002",
+              "checks": [
+                "syntax",
+                "structure",
+                "valid-peer",
+                "duplicateEntry-rejected",
+                "duplicateEntry-code",
+                "duplicateDo-rejected",
+                "duplicateDo-code",
+                "duplicateExit-rejected",
+                "duplicateExit-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            }
+          ]
+        }
+      ],
+      "nextAction": "complete-obligation-review"
+    },
+    {
+      "sourceId": "KERML-XMI-Kernel-Structures-Structure-validateStructureSpecialization",
+      "name": "validateStructureSpecialization",
+      "standard": "kerml",
+      "owner": "Kernel-Structures-Structure",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 122
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 66
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Requirements-SubjectMembership-validateSubjectMembershipOwningType",
+      "name": "validateSubjectMembershipOwningType",
+      "standard": "sysml",
+      "owner": "Systems-Requirements-SubjectMembership",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_VALIDATION_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 43
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
+          "line": 882
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Subsetting-validateSubsettingConstantConformance",
+      "name": "validateSubsettingConstantConformance",
+      "standard": "kerml",
+      "owner": "Core-Features-Subsetting",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 123
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 121
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Subsetting-validateSubsettingFeaturingTypes",
+      "name": "validateSubsettingFeaturingTypes",
+      "standard": "kerml",
+      "owner": "Core-Features-Subsetting",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 124
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/chains.rs",
+          "line": 10
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 269
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Features-Subsetting-validateSubsettingUniquenessConformance",
+      "name": "validateSubsettingUniquenessConformance",
+      "standard": "kerml",
+      "owner": "Core-Features-Subsetting",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 125
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 135
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipEffectAction",
+      "name": "validateTransitionFeatureMembershipEffectAction",
+      "standard": "sysml",
+      "owner": "Systems-States-TransitionFeatureMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipGuardExpression",
+      "name": "validateTransitionFeatureMembershipGuardExpression",
+      "standard": "sysml",
+      "owner": "Systems-States-TransitionFeatureMembership",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 126
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 315
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipOwningType",
+      "name": "validateTransitionFeatureMembershipOwningType",
+      "standard": "sysml",
+      "owner": "Systems-States-TransitionFeatureMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipTriggerAction",
+      "name": "validateTransitionFeatureMembershipTriggerAction",
+      "standard": "sysml",
+      "owner": "Systems-States-TransitionFeatureMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-TransitionUsage-validateTransitionUsageParameters",
+      "name": "validateTransitionUsageParameters",
+      "standard": "sysml",
+      "owner": "Systems-States-TransitionUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-TransitionUsage-validateTransitionUsageSuccession",
+      "name": "validateTransitionUsageSuccession",
+      "standard": "sysml",
+      "owner": "Systems-States-TransitionUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 127
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 64
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-States-TransitionUsage-validateTransitionUsageTriggerActions",
+      "name": "validateTransitionUsageTriggerActions",
+      "standard": "sysml",
+      "owner": "Systems-States-TransitionUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 128
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 174
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAfterArgument",
+      "name": "validateTriggerInvocationExpressionAfterArgument",
+      "standard": "sysml",
+      "owner": "Systems-Actions-TriggerInvocationExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAtArgument",
+      "name": "validateTriggerInvocationExpressionAtArgument",
+      "standard": "sysml",
+      "owner": "Systems-Actions-TriggerInvocationExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionWhenArgument",
+      "name": "validateTriggerInvocationExpressionWhenArgument",
+      "standard": "sysml",
+      "owner": "Systems-Actions-TriggerInvocationExpression",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Types-Type-validateTypeAtMostOneConjugator",
+      "name": "validateTypeAtMostOneConjugator",
+      "standard": "kerml",
+      "owner": "Core-Types-Type",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Types-Type-validateTypeDifferencingTypesNotSelf",
+      "name": "validateTypeDifferencingTypesNotSelf",
+      "standard": "kerml",
+      "owner": "Core-Types-Type",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 129
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 253
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Types-Type-validateTypeIntersectingTypesNotSelf",
+      "name": "validateTypeIntersectingTypesNotSelf",
+      "standard": "kerml",
+      "owner": "Core-Types-Type",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 130
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 247
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Types-Type-validateTypeOwnedDifferencingNotOne",
+      "name": "validateTypeOwnedDifferencingNotOne",
+      "standard": "kerml",
+      "owner": "Core-Types-Type",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Types-Type-validateTypeOwnedIntersectingNotOne",
+      "name": "validateTypeOwnedIntersectingNotOne",
+      "standard": "kerml",
+      "owner": "Core-Types-Type",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Types-Type-validateTypeOwnedMultiplicity",
+      "name": "validateTypeOwnedMultiplicity",
+      "standard": "kerml",
+      "owner": "Core-Types-Type",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 131
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 495
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Types-Type-validateTypeOwnedUnioningNotOne",
+      "name": "validateTypeOwnedUnioningNotOne",
+      "standard": "kerml",
+      "owner": "Core-Types-Type",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "KERML-XMI-Core-Types-Type-validateTypeUnioningTypesNotSelf",
+      "name": "validateTypeUnioningTypesNotSelf",
+      "standard": "kerml",
+      "owner": "Core-Types-Type",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 132
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 241
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-DefinitionAndUsage-Usage-validateUsageIsReferential",
+      "name": "validateUsageIsReferential",
+      "standard": "sysml",
+      "owner": "Systems-DefinitionAndUsage-Usage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-DefinitionAndUsage-Usage-validateUsageVariationIsAbstract",
+      "name": "validateUsageVariationIsAbstract",
+      "standard": "sysml",
+      "owner": "Systems-DefinitionAndUsage-Usage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-DefinitionAndUsage-Usage-validateUsageVariationOwnedFeatureMembership",
+      "name": "validateUsageVariationOwnedFeatureMembership",
+      "standard": "sysml",
+      "owner": "Systems-DefinitionAndUsage-Usage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-DefinitionAndUsage-Usage-validateUsageVariationSpecialization",
+      "name": "validateUsageVariationSpecialization",
+      "standard": "sysml",
+      "owner": "Systems-DefinitionAndUsage-Usage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 133
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 181
+        }
+      ],
+      "assessments": [],
+      "nextAction": "review-code-candidate"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-DefinitionAndUsage-VariantMembership-validateVariantMembershipOwningNamespace",
+      "name": "validateVariantMembershipOwningNamespace",
+      "standard": "sysml",
+      "owner": "Systems-DefinitionAndUsage-VariantMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Views-ViewDefinition-validateViewDefinitionOnlyOneViewRendering",
+      "name": "validateViewDefinitionOnlyOneViewRendering",
+      "standard": "sysml",
+      "owner": "Systems-Views-ViewDefinition",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 134
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 333
+        }
+      ],
+      "assessments": [
+        {
+          "id": "VIEW-DEFINITION-RENDERINGS",
+          "obligation": "A ViewDefinition has at most one ViewRenderingMembership among its owned and inherited feature memberships.",
+          "implementation": "partial",
+          "api": "partial",
+          "limits": "Absent/single, owned duplicates and diamond inheritance have representative cases. KERNEL-018 records missed errors for distinct inherited renderings and local-plus-inherited renderings. Unresolved/cyclic bases, explicit/implicit redefinition, imports, incomplete membership evidence and general view semantics remain unqualified. Legacy message labels already map to canonical public codes.",
+          "tests": [
+            {
+              "case": "VIEW-001",
+              "checks": [
+                "clean",
+                "Empty",
+                "Parent",
+                "Child",
+                "Left",
+                "Right",
+                "Diamond"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "VIEW-002",
+              "checks": [
+                "syntax",
+                "structure",
+                "valid-peer",
+                "definition"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "VIEW-003",
+              "checks": [
+                "syntax",
+                "structure",
+                "resolution",
+                "Combined-element",
+                "Combined-code",
+                "LocalAndInherited-element",
+                "LocalAndInherited-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            }
+          ]
+        }
+      ],
+      "nextAction": "complete-obligation-review"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Views-ViewRenderingMembership-validateViewRenderingMembershipOwningType",
+      "name": "validateViewRenderingMembershipOwningType",
+      "standard": "sysml",
+      "owner": "Systems-Views-ViewRenderingMembership",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Views-ViewUsage-validateViewUsageOnlyOneViewRendering",
+      "name": "validateViewUsageOnlyOneViewRendering",
+      "standard": "sysml",
+      "owner": "Systems-Views-ViewUsage",
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 135
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 335
+        }
+      ],
+      "assessments": [
+        {
+          "id": "VIEW-USAGE-RENDERINGS",
+          "obligation": "A ViewUsage has at most one ViewRenderingMembership among its owned and inherited feature memberships.",
+          "implementation": "partial",
+          "api": "partial",
+          "limits": "Absent/single, owned duplicates and diamond inheritance have representative cases. KERNEL-018 records missed errors for distinct inherited renderings and local-plus-inherited renderings. Unresolved/cyclic bases, explicit/implicit redefinition, imports, incomplete membership evidence and general view semantics remain unqualified. Legacy message labels already map to canonical public codes.",
+          "tests": [
+            {
+              "case": "VIEW-001",
+              "checks": [
+                "clean",
+                "instance",
+                "diamond"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "VIEW-002",
+              "checks": [
+                "syntax",
+                "structure",
+                "valid-peer",
+                "usage"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "VIEW-003",
+              "checks": [
+                "syntax",
+                "structure",
+                "resolution",
+                "combined-element",
+                "combined-code",
+                "localAndInherited-element",
+                "localAndInherited-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            }
+          ]
+        }
+      ],
+      "nextAction": "complete-obligation-review"
+    },
+    {
+      "sourceId": "SYSML-XMI-Systems-Actions-WhileLoopActionUsage-validateWhileLoopActionUsage",
+      "name": "validateWhileLoopActionUsage",
+      "standard": "sysml",
+      "owner": "Systems-Actions-WhileLoopActionUsage",
+      "registrations": [],
+      "mentions": [],
+      "assessments": [],
+      "nextAction": "locate-or-implement"
+    }
+  ],
+  "unmatchedNames": [
+    {
+      "name": "validateAssignmentActionUsageReferentIsTimeVarying",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 206
+        }
+      ]
+    },
+    {
+      "name": "validateBindingConnectorTypeConformance",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 390
+        }
+      ]
+    },
+    {
+      "name": "validateClassifierDefaultSupertype",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 221
+        }
+      ]
+    },
+    {
+      "name": "validateConnectorTypeFeaturing",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 324
+        }
+      ]
+    },
+    {
+      "name": "validateDefinitionVariationMembership",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 163
+        }
+      ]
+    },
+    {
+      "name": "validateElementFilterMembershipIsBoolean",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 458
+        }
+      ]
+    },
+    {
+      "name": "validateElementFilterMembershipIsModelLevelEvaluable",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 468
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 513
+        }
+      ]
+    },
+    {
+      "name": "validateEnumerationUsageType",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs",
+          "line": 48
+        }
+      ]
+    },
+    {
+      "name": "validateEventOccurrenceUsageReferent",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 413
+        }
+      ]
+    },
+    {
+      "name": "validateFeatureChainExpressionFeatureConformance",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 346
+        }
+      ]
+    },
+    {
+      "name": "validateFeatureEndFeatureMultiplicity",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs",
+          "line": 62
+        }
+      ]
+    },
+    {
+      "name": "validateFeatureHasType",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 214
+        }
+      ]
+    },
+    {
+      "name": "validateFlowEndImplicitSubsetting",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 305
+        }
+      ]
+    },
+    {
+      "name": "validateFlowEndSubsetting",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 300
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 303
+        }
+      ]
+    },
+    {
+      "name": "validateInterfaceDefinitionEnd",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 394
+        }
+      ]
+    },
+    {
+      "name": "validateInterfaceUsageEnd",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 396
+        }
+      ]
+    },
+    {
+      "name": "validateLibraryPackageNotStandard",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 278
+        }
+      ]
+    },
+    {
+      "name": "validateMetadataFeatureMetadataNotAbstract",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 654
+        }
+      ]
+    },
+    {
+      "name": "validateMultiplicityRangeResultTypes",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs",
+          "line": 138
+        }
+      ]
+    },
+    {
+      "name": "validateOperatorExpressionBracketOperator",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 427
+        }
+      ]
+    },
+    {
+      "name": "validateOperatorExpressionCastConformance",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 364
+        }
+      ]
+    },
+    {
+      "name": "validateOperatorExpressionQuantity",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "line": 432
+        }
+      ]
+    },
+    {
+      "name": "validateOwnedDifferencingNotOne",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 252
+        }
+      ]
+    },
+    {
+      "name": "validateOwnedIntersectingNotOne",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 246
+        }
+      ]
+    },
+    {
+      "name": "validateOwnedUnioningNotOne",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 240
+        }
+      ]
+    },
+    {
+      "name": "validateSendActionUsagePayloadArgument",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 228
+        }
+      ]
+    },
+    {
+      "name": "validateSendActionUsageReceiver",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 243
+        }
+      ]
+    },
+    {
+      "name": "validateSpecializationSpecificNotConjugated",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+          "line": 239
+        }
+      ]
+    },
+    {
+      "name": "validateStateDefinitionSubactionKind",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 328
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 562
+        }
+      ]
+    },
+    {
+      "name": "validateStateUsageSubactionKind",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 331
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 564
+        }
+      ]
+    },
+    {
+      "name": "validateTriggerInvocationActionAfterArgument",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 263
+        }
+      ]
+    },
+    {
+      "name": "validateTriggerInvocationActionAtArgument",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 267
+        }
+      ]
+    },
+    {
+      "name": "validateTriggerInvocationActionWhenArgument",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 271
+        }
+      ]
+    },
+    {
+      "name": "validateUsageVariationMembership",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 165
+        }
+      ]
+    },
+    {
+      "name": "validateViewDefinitionOnlyOnvViewRendering",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 332
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 438
+        }
+      ]
+    },
+    {
+      "name": "validateViewUsageOnlyOneRendering",
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 335
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 440
+        }
+      ]
+    }
+  ]
+}

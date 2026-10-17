@@ -21,6 +21,8 @@ The [standards requirements inventory](docs/requirements.md) indexes the full cl
 structure, grammar, metamodel rules and normative companion artifacts. Its
 [searchable browser](docs/requirements.html) separates indexed source units from
 bounded implementation/API evidence; it makes no full-conformance percentage claim.
+The [named validation-rule audit](docs/validation-audit.md) separates source search
+hits, registry declarations and directly assessed behavior, and records open defects.
 
 ## Build and run
 

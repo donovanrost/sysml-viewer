@@ -9,10 +9,15 @@ import type { Snapshot } from '../src/kernel/generated/Snapshot';
 
 const read = (path: string) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const matrix = JSON.parse(read('tests/conformance/matrix.json')) as {
-  cases: { id: string; files: string[]; checks: ConformanceCheck[] }[];
+  cases: {
+    id: string;
+    files: string[];
+    checks: ConformanceCheck[];
+    knownFailures?: { check: string; issue: string; reason: string }[];
+  }[];
 };
 const cases = matrix.cases.filter(
-  (c) => c.id.startsWith('FAMILY-') || ['TYPE-005', 'TYPE-006', 'TYPE-007'].includes(c.id),
+  (c) => /^(FAMILY|STATE|VIEW)-/.test(c.id) || ['TYPE-005', 'TYPE-006', 'TYPE-007'].includes(c.id),
 );
 const documents = [...new Set(cases.flatMap((c) => c.files))].map((file) => ({
   id: file,
@@ -20,7 +25,7 @@ const documents = [...new Set(cases.flatMap((c) => c.files))].map((file) => ({
   text: read(file),
 }));
 
-test('all declaration families retain native/WASM parity and their assertions in either file order', async () => {
+test('declaration families and body validation retain native/WASM parity and scoped evidence in either file order', async () => {
   await init({
     module_or_path: readFileSync(
       new URL('../packages/kernel-wasm/sysml_wasm_bg.wasm', import.meta.url),
@@ -53,7 +58,7 @@ test('all declaration families retain native/WASM parity and their assertions in
         diagnostics: wasm.diagnostics.filter((d) => c.files.includes(d.source.documentId)),
       };
       assert.deepEqual(
-        assessCase(scoped, c).filter((check) => check.status !== 'pass'),
+        assessCase(scoped, c).filter((check) => !['pass', 'known-gap'].includes(check.status)),
         [],
         c.id,
       );

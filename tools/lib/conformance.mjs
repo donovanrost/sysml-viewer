@@ -7,8 +7,8 @@ const ops = {
   multiplicity: ['owner', 'value'],
   cardinality: ['owner', 'status', 'lower', 'upper', 'reason'],
   memberships: ['owner', 'mode', 'bindings', 'status', 'reason'],
-  diagnostic: ['stage', 'code', 'severity', 'messageIncludes'],
-  noDiagnostics: ['stage'],
+  diagnostic: ['stage', 'code', 'severity', 'messageIncludes', 'owner'],
+  noDiagnostics: ['stage', 'owner'],
   source: ['owner', 'text'],
   connection: ['name', 'chains', 'statuses'],
 };
@@ -103,6 +103,11 @@ export function validateMatrix(matrix) {
         );
       if (check.op === 'diagnostic')
         assert(check.stage || check.code, 'Diagnostic must identify a stage or code');
+      if (['diagnostic', 'noDiagnostics'].includes(check.op) && Object.hasOwn(check, 'owner'))
+        assert(
+          typeof check.owner === 'string' && check.owner.length,
+          'Diagnostic owner must be a qualified name',
+        );
       if (check.op === 'element') assert(check.name && check.metaclass);
       if (check.op === 'multiplicity') assert(check.owner && Object.hasOwn(check, 'value'));
       if (check.op === 'cardinality') {
@@ -204,6 +209,16 @@ export function checkSnapshot(snapshot, check) {
     assert.equal(matches.length, 1, `Expected exactly one declaration named ${name}`);
     return matches[0];
   };
+  let diagnosticSource;
+  if (['diagnostic', 'noDiagnostics'].includes(check.op) && check.owner) {
+    diagnosticSource = find(check.owner).source;
+    assert(diagnosticSource, `No diagnostic owner source: ${check.owner}`);
+  }
+  const inDiagnosticScope = (diagnostic) =>
+    !diagnosticSource ||
+    (diagnostic.source.documentId === diagnosticSource.documentId &&
+      diagnostic.source.start.byteOffset >= diagnosticSource.start.byteOffset &&
+      diagnostic.source.end.byteOffset <= diagnosticSource.end.byteOffset);
   switch (check.op) {
     case 'element':
       assert.equal(find(check.name).metaclass, check.metaclass);
@@ -309,6 +324,7 @@ export function checkSnapshot(snapshot, check) {
       assert(
         snapshot.diagnostics.some(
           (d) =>
+            inDiagnosticScope(d) &&
             (!check.stage || d.stage === check.stage) &&
             (!check.code || d.code === check.code) &&
             (!check.messageIncludes || d.message.includes(check.messageIncludes)) &&
@@ -319,7 +335,9 @@ export function checkSnapshot(snapshot, check) {
       break;
     case 'noDiagnostics':
       assert.deepEqual(
-        snapshot.diagnostics.filter((d) => !check.stage || d.stage === check.stage),
+        snapshot.diagnostics.filter(
+          (d) => inDiagnosticScope(d) && (!check.stage || d.stage === check.stage),
+        ),
         [],
         'Unexpected diagnostics',
       );
