@@ -274,6 +274,18 @@
       "symbol": "fn real_values_exclude_trivia_without_losing_source_spans",
       "role": "Terminal boundaries, numeric AST values, exact lowering, both dialects, source coordinates, extreme scales and facade recovery after JSON round-trip.",
       "sha256": "3a2339533c0cb6a3e5dfaa1989075b661d2eddf31a301a67c01c619ec7c16723"
+    },
+    "reserved-vocabulary": {
+      "path": "crates/sysml-kernel/tests/data/reserved-words.json",
+      "symbol": "\"provisional\"",
+      "role": "Independent transcription of the two pinned normative keyword lists; constructor keyword policy and open OMG issues are separate",
+      "sha256": "ed67beef5de764684650333bd52b8d410ebf20515ce250bb2472273e7b54cde7"
+    },
+    "reserved-tests": {
+      "path": "crates/sysml-kernel/tests/reserved_words.rs",
+      "symbol": "fn every_reserved_word_requires_quotes_in_identification_aliases_and_references",
+      "role": "Complete specified-keyword vocabulary across five name contexts, dialect/case boundaries, diagnostic spans, constructor policy and public snapshot round-trip",
+      "sha256": "36acbd663a6eb5a819c8156db8c2a4d26c53e0b415820c678b5a344de60d5a24"
     }
   },
   "assessments": [
@@ -2423,6 +2435,86 @@
         }
       ],
       "limits": "KERNEL-013 covers decimal/exponential terminal boundaries and real-value token composition, leading-dot forms, signed exponents, unary signs, range delimiters, whitespace/notes, malformed forms and recovery in both dialects. Original source, spans and public valueExpression text remain unchanged; internal real values exclude trivia and lowering retains exact digits through JSON number or string representation. A product robustness check rejects scales outside the unchanged +/-100000 conversion allowance, including i64::MIN, without wrapping or panicking. Those resource limits are not language syntax limits. Fractional multiplicities retain their semantic diagnostic. The facade still refuses real-valued and extreme-exponent bounds. This does not qualify all numeric contexts, arbitrary expressions, general real-valued execution, a public value/AST API, normative interchange, full Unicode or complete lexical conformance."
+    },
+    {
+      "id": "RESERVED-WORDS",
+      "obligation": "Reject each specified reserved word as a bare name while accepting quoted names and names reserved only in the other dialect.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.1.2",
+        "KERML-CLAUSE-8.2.2.3",
+        "KERML-CLAUSE-8.2.2.6"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "reserved-vocabulary",
+          "reserved-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "syntax-api",
+          "source-api",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "LEX-010",
+          "checks": [
+            "clean",
+            "quotedType",
+            "viaShort",
+            "viaAlias",
+            "viaAliasShort",
+            "foreign",
+            "uppercase",
+            "quotedNew",
+            "bound",
+            "source"
+          ]
+        },
+        {
+          "case": "LEX-011",
+          "checks": [
+            "clean",
+            "quotedType",
+            "viaShort",
+            "viaAlias",
+            "viaAliasShort",
+            "foreign",
+            "uppercase",
+            "quotedNew",
+            "bound",
+            "source"
+          ]
+        },
+        {
+          "case": "LEX-012",
+          "checks": [
+            "reserved",
+            "recovered",
+            "invalid-bound",
+            "dependent-bound"
+          ]
+        },
+        {
+          "case": "LEX-013",
+          "checks": [
+            "reserved",
+            "recovered",
+            "invalid-bound",
+            "dependent-bound"
+          ]
+        }
+      ],
+      "limits": "KERNEL-014 checks all 128 SysML and 101 KerML reserved-word entries through five syntax contexts: long names, short names, alias names, alias targets and qualified expression references. Tests cover quoting, upper-case and identifier suffix/prefix boundaries, the other dialect's vocabulary, Unicode diagnostic coordinates, constructor AST distinction, public query/JSON round-trip and syntax recovery. The existing reservation of new is retained as an explicit compatibility policy: it is missing from both published lists but used by the constructor production; OMG SYSML21-641 and KERML11-200 remain open at the 2026-10-17 review. That ambiguity is not claimed as normative qualification. The four public cases exercise representative reference-resolution and recovery contexts, not every keyword in every semantic context. Full grammar, contextual name resolution, Unicode printability, formatter/editing and constructor execution remain unqualified. No production parser behavior or engine version changes in this increment."
     }
   ]
 }

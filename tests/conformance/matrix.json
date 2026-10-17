@@ -5599,6 +5599,264 @@
           "reason": "invalidSyntax"
         }
       ]
+    },
+    {
+      "id": "LEX-010",
+      "area": "names",
+      "purpose": "sysml quoted reserved names and short aliases resolve; case and dialect boundaries remain distinct.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/lex-010.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "quotedType",
+          "op": "reference",
+          "owner": "KeywordsSysML::quotedType",
+          "kind": "typing",
+          "spelling": "'part'",
+          "status": "resolved",
+          "target": "KeywordsSysML::part"
+        },
+        {
+          "id": "viaShort",
+          "op": "reference",
+          "owner": "KeywordsSysML::viaShort",
+          "kind": "typing",
+          "spelling": "'true'",
+          "status": "resolved",
+          "target": "KeywordsSysML::part"
+        },
+        {
+          "id": "viaAlias",
+          "op": "reference",
+          "owner": "KeywordsSysML::viaAlias",
+          "kind": "typing",
+          "spelling": "'return'",
+          "status": "resolved",
+          "target": "KeywordsSysML::part"
+        },
+        {
+          "id": "viaAliasShort",
+          "op": "reference",
+          "owner": "KeywordsSysML::viaAliasShort",
+          "kind": "typing",
+          "spelling": "'false'",
+          "status": "resolved",
+          "target": "KeywordsSysML::part"
+        },
+        {
+          "id": "foreign",
+          "op": "reference",
+          "owner": "KeywordsSysML::foreign",
+          "kind": "typing",
+          "spelling": "feature",
+          "status": "resolved",
+          "target": "KeywordsSysML::feature"
+        },
+        {
+          "id": "uppercase",
+          "op": "reference",
+          "owner": "KeywordsSysML::uppercase",
+          "kind": "typing",
+          "spelling": "PART",
+          "status": "resolved",
+          "target": "KeywordsSysML::PART"
+        },
+        {
+          "id": "quotedNew",
+          "op": "reference",
+          "owner": "KeywordsSysML::quotedNew",
+          "kind": "typing",
+          "spelling": "'new'",
+          "status": "resolved",
+          "target": "KeywordsSysML::new"
+        },
+        {
+          "id": "bound",
+          "op": "cardinality",
+          "owner": "KeywordsSysML::bound",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "source",
+          "op": "source",
+          "owner": "KeywordsSysML::quotedType",
+          "text": "part quotedType : 'part';"
+        }
+      ]
+    },
+    {
+      "id": "LEX-011",
+      "area": "names",
+      "purpose": "kerml quoted reserved names and short aliases resolve; case and dialect boundaries remain distinct.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/lex-011.kerml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "quotedType",
+          "op": "reference",
+          "owner": "KeywordsKerML::quotedType",
+          "kind": "typing",
+          "spelling": "'class'",
+          "status": "resolved",
+          "target": "KeywordsKerML::class"
+        },
+        {
+          "id": "viaShort",
+          "op": "reference",
+          "owner": "KeywordsKerML::viaShort",
+          "kind": "typing",
+          "spelling": "'true'",
+          "status": "resolved",
+          "target": "KeywordsKerML::class"
+        },
+        {
+          "id": "viaAlias",
+          "op": "reference",
+          "owner": "KeywordsKerML::viaAlias",
+          "kind": "typing",
+          "spelling": "'return'",
+          "status": "resolved",
+          "target": "KeywordsKerML::class"
+        },
+        {
+          "id": "viaAliasShort",
+          "op": "reference",
+          "owner": "KeywordsKerML::viaAliasShort",
+          "kind": "typing",
+          "spelling": "'false'",
+          "status": "resolved",
+          "target": "KeywordsKerML::class"
+        },
+        {
+          "id": "foreign",
+          "op": "reference",
+          "owner": "KeywordsKerML::foreign",
+          "kind": "typing",
+          "spelling": "part",
+          "status": "resolved",
+          "target": "KeywordsKerML::part"
+        },
+        {
+          "id": "uppercase",
+          "op": "reference",
+          "owner": "KeywordsKerML::uppercase",
+          "kind": "typing",
+          "spelling": "CLASS",
+          "status": "resolved",
+          "target": "KeywordsKerML::CLASS"
+        },
+        {
+          "id": "quotedNew",
+          "op": "reference",
+          "owner": "KeywordsKerML::quotedNew",
+          "kind": "typing",
+          "spelling": "'new'",
+          "status": "resolved",
+          "target": "KeywordsKerML::new"
+        },
+        {
+          "id": "bound",
+          "op": "cardinality",
+          "owner": "KeywordsKerML::bound",
+          "status": "evaluated",
+          "lower": "3",
+          "upper": "3"
+        },
+        {
+          "id": "source",
+          "op": "source",
+          "owner": "KeywordsKerML::quotedType",
+          "text": "feature quotedType : 'class';"
+        }
+      ]
+    },
+    {
+      "id": "LEX-012",
+      "area": "names",
+      "purpose": "sysml rejects a bare reserved short name, recovers the next declaration and invalidates workspace bounds.",
+      "polarity": "negative",
+      "files": [
+        "tests/conformance/fixtures/lex-012.sysml",
+        "tests/conformance/fixtures/lex-005.sysml"
+      ],
+      "checks": [
+        {
+          "id": "reserved",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "expected a name"
+        },
+        {
+          "id": "recovered",
+          "op": "element",
+          "name": "InvalidKeywordsSysML::recovered",
+          "metaclass": "PartUsage"
+        },
+        {
+          "id": "invalid-bound",
+          "op": "cardinality",
+          "owner": "InvalidKeywordsSysML::recovered",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        },
+        {
+          "id": "dependent-bound",
+          "op": "cardinality",
+          "owner": "LexicalDependent::clean",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        }
+      ]
+    },
+    {
+      "id": "LEX-013",
+      "area": "names",
+      "purpose": "kerml rejects a bare reserved short name, recovers the next declaration and invalidates workspace bounds.",
+      "polarity": "negative",
+      "files": [
+        "tests/conformance/fixtures/lex-013.kerml",
+        "tests/conformance/fixtures/lex-005.sysml"
+      ],
+      "checks": [
+        {
+          "id": "reserved",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "severity": "error",
+          "messageIncludes": "expected a name"
+        },
+        {
+          "id": "recovered",
+          "op": "element",
+          "name": "InvalidKeywordsKerML::recovered",
+          "metaclass": "Feature"
+        },
+        {
+          "id": "invalid-bound",
+          "op": "cardinality",
+          "owner": "InvalidKeywordsKerML::recovered",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        },
+        {
+          "id": "dependent-bound",
+          "op": "cardinality",
+          "owner": "LexicalDependent::clean",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        }
+      ]
     }
   ]
 }

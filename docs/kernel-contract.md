@@ -90,6 +90,14 @@ existing scale allowance remains bounded, including extreme negative exponents;
 refusal there does not make the source syntactically invalid. Real-valued bounds
 remain unqualified and unknown. See KERNEL-013 in the qualification report.
 
+Reserved words follow the selected dialect. Quoting permits reserved names;
+words reserved only in the other dialect and differently cased basic names remain
+usable. The keyword audit covers all entries in the two published lists across
+five syntax contexts. The existing reservation of `new` remains an explicit
+compatibility policy: it appears in the constructor grammar but is missing from
+the published lists (open OMG SYSML21-641 and KERML11-200). This ambiguity remains
+unqualified. See KERNEL-014 in the qualification report.
+
 A `Reference` describes a **written name reference**. Its resolved target is what
 that name denotes. For conjugated port typing `~P`, the written spelling includes
 `~`, while the name target is `P`; this is not a promise that it is the complete

@@ -550,6 +550,44 @@ source text; no value evaluation or AST API is added. Numeric/context combinatio
 general real-valued execution, normative interchange, full lexical coverage and
 formatter round-trip behavior remain unqualified.
 
+## KERNEL-014: reserved-word vocabulary and name contexts
+
+The six-test reserved-word suite checks every entry in the published lists:
+128 SysML words (8.2.2.1.2) and 101 KerML words (8.2.2.6). The independent
+[vocabulary fixture](../crates/sysml-kernel/tests/data/reserved-words.json) records
+the pinned PDF hashes and separates a provisional implementation policy from
+those normative lists. Each specified word is rejected bare and accepted quoted
+in five contexts: long identification, short identification, alias names, alias
+targets and qualified expression references. Words exclusive to the other dialect
+remain legal names. Upper-case spellings and identifier prefixes/suffixes do not
+accidentally become keywords. Every specified reserved short name also has an
+exact diagnostic byte/UTF-16 range check after Unicode trivia.
+
+The audit found a specification ambiguity rather than a confirmed parser defect:
+`new` is absent from both published reserved-word lists, but KerML 8.2.5.8.3 uses
+it as the constructor keyword. OMG tracks the omission in **SYSML21-641** and
+**KERML11-200**, both open at the 2026-10-17 review. See the
+[SysML issue list](https://issues.omg.org/issues/spec/SysML) and
+[KerML issue list](https://issues.omg.org/issues/spec/KerML?view=ALL).
+The existing reservation is retained pending resolution. Separate tests distinguish
+constructor expressions from references/invocations using the quoted name `'new'`,
+and preserve rejection of malformed constructors. This compatibility decision is
+not counted as resolution of a normative obligation.
+
+LEX-010/011 exercise quoted keywords, quoted short names and aliases, dialect and
+case boundaries, source preservation and an exact feature-valued bound through the
+full library-backed facade. A native snapshot/JSON round-trip test validates its
+query handles and resolved references. Both fixtures join the entire existing
+native/WASM workspace and its unresolved-import variant. LEX-012/013 check bare
+reserved short-name rejection, following-declaration recovery and conservative
+cardinality invalidation in a clean dependent file.
+
+This is a qualification increment: production Rust, vendor patches, engine `.15`,
+package version 0.3.0 and schema 3 are unchanged. The four new public cases cover
+representative semantic contexts; the exhaustive vocabulary tests are syntax
+checks, not all contextual name-resolution rules. Complete grammar, Unicode
+printability, constructor execution and formatter/editing behavior remain open.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -577,15 +615,16 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **92 passing conformance cases**, **no
-known-gap cases**, and **no planned cases in the current matrix**. All **61 Rust kernel tests**,
-**39 Node tests**, and **267 dependency proof tests** pass.
+On macOS arm64, the completed run has **96 passing conformance cases**, **no
+known-gap cases**, and **no planned cases in the current matrix**. All **67 Rust kernel tests**,
+**40 Node tests**, and **267 dependency proof tests** pass.
 The dependency suites cover lexical boundaries (5), rational arithmetic (13), type relations (41), model-level evaluability (33),
 cardinality (34), invocation bindings (19), constructor bindings (16), dynamic graph
 (19), dynamic invocations (27), owned results (4), semantic ownership (5), end constancy (10) and checked
 namespace operations (41). The corpus and the 32 import-rule partitions are included
 in the Rust suite, not additional independently qualified specification counts.
-Native and WebAssembly outputs match exactly.
+Native and WebAssembly outputs match exactly. The [KERNEL-014 validation record](evidence/keywords-macos-arm64.json)
+records the vocabulary, test and assessment fingerprints and this increment's scope.
 
 Rust formatting, Clippy with warnings denied, TypeScript checking, Prettier,
 generated-contract consistency, source/patch verification and inventory checks
@@ -603,7 +642,7 @@ validation used a temporary process-scoped sleep assertion, released at completi
 The 30-second conformance and 60-second benchmark deadlines are unchanged. Earlier unexplained
 benchmark timeouts below remain separate evidence.
 
-The complete [numeric benchmark](evidence/benchmark-numeric-macos-arm64.json)
+The retained KERNEL-013 [numeric benchmark](evidence/benchmark-numeric-macos-arm64.json)
 records three fresh processes per native/WASM workload, for 102 successful samples.
 All repeated native and WASM snapshots agree exactly. Every numeric sample
 passes all nine LEX-006 assertions; all 16 prior workloads remain included.
@@ -651,8 +690,10 @@ these uncontrolled runs do not isolate incremental query cost or establish a
 regression budget. Large import-heavy production models and incremental performance
 remain open engineering work.
 
-The production web build and macOS arm64 app and DMG builds pass. The new local app
+The preceding KERNEL-013 production web build and macOS arm64 app and DMG builds passed.
+KERNEL-014 changes qualification inputs only; it does not repeat performance or packaging measurements.
+The unchanged local app
 is `src-tauri/target/release/bundle/macos/SysML Viewer.app` (11.97 MiB), with a
-4.27 MiB installer under `src-tauri/target/release/bundle/dmg/`. This run
-checks automated viewer integration and packaging; it does not repeat the earlier
+4.27 MiB installer under `src-tauri/target/release/bundle/dmg/`. That earlier run
+checked automated viewer integration and packaging; it does not repeat the earlier
 interactive file-picker/navigation checks or establish Windows/Linux packaging.

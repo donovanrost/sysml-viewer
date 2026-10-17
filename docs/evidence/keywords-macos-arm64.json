@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-10-17T06:51:33.243281+00:00",
+  "platform": "darwin",
+  "arch": "arm64",
+  "scope": "KERNEL-014 qualification-only increment; production kernel, engine version and vendor patches unchanged. Performance and packaging evidence is retained from KERNEL-013, not rerun.",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.15",
+  "kernelInputSha256": "69af955e2750afdb66c4cb63ffd020f424fbdf032c6825a26ca1404db5e06116",
+  "inputs": {
+    "crates/sysml-kernel/tests/data/reserved-words.json": "ed67beef5de764684650333bd52b8d410ebf20515ce250bb2472273e7b54cde7",
+    "crates/sysml-kernel/tests/reserved_words.rs": "36acbd663a6eb5a819c8156db8c2a4d26c53e0b415820c678b5a344de60d5a24",
+    "tests/kernel.test.ts": "82da9688aa63d26b0938192d5f6eeda16e9c5241497ab4d4dc450ca156d66f3d",
+    "tests/conformance/matrix.json": "1aeeaf462060bcfea0eea516597e708fa07dafe8ea6e4ec9fc44d9ca680eceda",
+    "standards/assessments.json": "dc3195153ecb07206edbaffb29c6e48068400888279468a13b1f1882879feee1"
+  },
+  "specifiedReservedWords": {
+    "sysml": 128,
+    "kerml": 101
+  },
+  "syntaxNameContexts": [
+    "long identification",
+    "short identification",
+    "alias name",
+    "qualified alias target",
+    "qualified expression reference"
+  ],
+  "provisionalReservation": {
+    "word": "new",
+    "status": "Retained upstream compatibility policy; not normative closure",
+    "issues": [
+      "SYSML21-641",
+      "KERML11-200"
+    ]
+  },
+  "passing": {
+    "conformance": 96,
+    "rust": 67,
+    "vendor": 267,
+    "node": 40
+  },
+  "checks": [
+    "Rust formatting",
+    "Prettier",
+    "TypeScript noEmit",
+    "Clippy -D warnings",
+    "Generated contract consistency",
+    "Requirements inventory and evidence hashes",
+    "Native/WASM exact snapshot parity in full mixed workspace and unresolved-import variant",
+    "Positive quoted keyword references and negative reserved short-name recovery"
+  ],
+  "buildPerformed": true,
+  "conformanceBinarySha256": "cc2b853d4c4da4a38d8983428ea54ca87f4255faa99c87be657272a45580a337",
+  "sleepPrevention": "Temporary process-scoped caffeinate assertions; no system settings changed.",
+  "limits": "All specified keyword entries are exercised in five syntax contexts. Semantic resolution and recovery cases are representative; complete grammar, all contextual resolution, constructor execution and full specification coverage remain unqualified."
+}

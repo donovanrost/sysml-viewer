@@ -60,7 +60,14 @@ for (const name of [
     text: readFileSync(new URL(`./conformance/fixtures/${name}.sysml`, import.meta.url), 'utf8'),
   });
 }
-for (const name of ['lex-001.sysml', 'lex-002.kerml', 'lex-006.sysml', 'lex-007.kerml']) {
+for (const name of [
+  'lex-001.sysml',
+  'lex-002.kerml',
+  'lex-006.sysml',
+  'lex-007.kerml',
+  'lex-010.sysml',
+  'lex-011.kerml',
+]) {
   documents.push({
     id: name,
     name,
@@ -736,12 +743,12 @@ test('strings preserve decoded values, presence and guards in both workspace con
   }
 });
 
-test('lexical whitespace, numbers and escapes retain source coordinates in both workspace contexts', () => {
+test('lexical whitespace, numbers, escapes and keyword names retain source and resolution in both workspace contexts', () => {
   const matrix = JSON.parse(
     readFileSync(new URL('./conformance/matrix.json', import.meta.url), 'utf8'),
   );
   for (const state of [snapshot, importGuards]) {
-    for (const id of ['LEX-001', 'LEX-002', 'LEX-006', 'LEX-007']) {
+    for (const id of ['LEX-001', 'LEX-002', 'LEX-006', 'LEX-007', 'LEX-010', 'LEX-011']) {
       const item = matrix.cases.find((c: { id: string }) => c.id === id);
       // Scope diagnostic assertions to this fixture; keep the entire model for queries.
       const documentId = item.files[0].split('/').at(-1);
@@ -788,31 +795,46 @@ test('lexical diagnostics and recovery match across native and WebAssembly', () 
   }
 });
 
-test('malformed numeric syntax recovers identically in native and WebAssembly', () => {
-  const documents = ['lex-008.sysml', 'lex-009.kerml', 'lex-005.sysml'].map((name) => ({
-    id: name,
-    name,
-    text: readFileSync(new URL(`./conformance/fixtures/${name}`, import.meta.url), 'utf8'),
-  }));
-  const request = JSON.stringify({ revision: 39, documents });
-  const wasm: Snapshot = JSON.parse(analyze(request));
-  assert.deepEqual(wasm, nativeSnapshot(request));
-  const matrix = JSON.parse(
-    readFileSync(new URL('./conformance/matrix.json', import.meta.url), 'utf8'),
-  );
-  for (const id of ['LEX-008', 'LEX-009']) {
-    const item = matrix.cases.find((c: { id: string }) => c.id === id);
-    assert.deepEqual(
-      assessCase(wasm, item).filter((c) => c.status !== 'pass'),
-      [],
+for (const { label, fixtures, cases, revision } of [
+  {
+    label: 'malformed numeric syntax',
+    fixtures: ['lex-008.sysml', 'lex-009.kerml'],
+    cases: ['LEX-008', 'LEX-009'],
+    revision: 39,
+  },
+  {
+    label: 'reserved short names',
+    fixtures: ['lex-012.sysml', 'lex-013.kerml'],
+    cases: ['LEX-012', 'LEX-013'],
+    revision: 40,
+  },
+]) {
+  test(`native and WebAssembly preserve recovery for ${label}`, () => {
+    const documents = [...fixtures, 'lex-005.sysml'].map((name) => ({
+      id: name,
+      name,
+      text: readFileSync(new URL(`./conformance/fixtures/${name}`, import.meta.url), 'utf8'),
+    }));
+    const request = JSON.stringify({ revision, documents });
+    const wasm: Snapshot = JSON.parse(analyze(request));
+    assert.deepEqual(wasm, nativeSnapshot(request));
+    const matrix = JSON.parse(
+      readFileSync(new URL('./conformance/matrix.json', import.meta.url), 'utf8'),
     );
-  }
-  for (const diagnostic of wasm.diagnostics.filter((d) => d.stage === 'syntax')) {
-    const source = documents.find((d) => d.id === diagnostic.source.documentId)!.text;
-    const { start, end } = diagnostic.source;
-    assert.equal(
-      source.slice(start.utf16Offset, end.utf16Offset),
-      Buffer.from(source).subarray(start.byteOffset, end.byteOffset).toString('utf8'),
-    );
-  }
-});
+    for (const id of cases) {
+      const item = matrix.cases.find((c: { id: string }) => c.id === id);
+      assert.deepEqual(
+        assessCase(wasm, item).filter((c) => c.status !== 'pass'),
+        [],
+      );
+    }
+    for (const diagnostic of wasm.diagnostics.filter((d) => d.stage === 'syntax')) {
+      const source = documents.find((d) => d.id === diagnostic.source.documentId)!.text;
+      const { start, end } = diagnostic.source;
+      assert.equal(
+        source.slice(start.utf16Offset, end.utf16Offset),
+        Buffer.from(source).subarray(start.byteOffset, end.byteOffset).toString('utf8'),
+      );
+    }
+  });
+}
