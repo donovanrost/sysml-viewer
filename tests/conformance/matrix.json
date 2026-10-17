@@ -187,6 +187,125 @@
         }
       ],
       "uncovered": "The cases cover selected names, whitespace, standard escapes, control-character rejection and decimal/exponential/real syntax boundaries. Full Unicode printability, every lexical/context combination, arbitrary expressions and complete grammar conformance remain unqualified."
+    },
+    {
+      "id": "families-data",
+      "title": "Data and structural declarations",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.7"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.8"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.9"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.10"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.11"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.12"
+        }
+      ],
+      "uncovered": "These cases check nominal named declarations, written typing references, exact source extents and rejection of one incompatible explicit type per kind. Body grammar, implicit elements, complete metamodel properties, inherited typing, all well-formedness rules and execution remain unqualified."
+    },
+    {
+      "id": "families-connections",
+      "title": "Connection declarations",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.13"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.14"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.15"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.16"
+        }
+      ],
+      "uncovered": "These cases check nominal named declarations, written typing references, exact source extents and rejection of one incompatible explicit type per kind. Body grammar, implicit elements, complete metamodel properties, inherited typing, all well-formedness rules and execution remain unqualified."
+    },
+    {
+      "id": "families-behaviors",
+      "title": "Behavior declarations",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.17"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.18"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.19"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.20"
+        }
+      ],
+      "uncovered": "These cases check nominal named declarations, written typing references, exact source extents and rejection of one incompatible explicit type per kind. Body grammar, implicit elements, complete metamodel properties, inherited typing, all well-formedness rules and execution remain unqualified."
+    },
+    {
+      "id": "families-cases",
+      "title": "Requirements and case declarations",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.21"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.22"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.23"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.24"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.25"
+        }
+      ],
+      "uncovered": "These cases check nominal named declarations, written typing references, exact source extents and rejection of one incompatible explicit type per kind. Body grammar, implicit elements, complete metamodel properties, inherited typing, all well-formedness rules and execution remain unqualified."
+    },
+    {
+      "id": "families-views",
+      "title": "View and metadata declarations",
+      "clauses": [
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.26"
+        },
+        {
+          "standard": "SysML 2.0",
+          "section": "8.2.2.27"
+        }
+      ],
+      "uncovered": "These cases check nominal named declarations, written typing references, exact source extents and rejection of one incompatible explicit type per kind. Body grammar, implicit elements, complete metamodel properties, inherited typing, all well-formedness rules and execution remain unqualified."
     }
   ],
   "cases": [
@@ -6041,6 +6160,2005 @@
             ["KerMLEnds::b", "KerMLEnds::Branch::leaf", "KerMLEnds::Leaf::p"]
           ],
           "statuses": ["resolved", "resolved"]
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-DATA-001",
+      "area": "families-data",
+      "purpose": "Data and structural declarations: nominal definition and usage metaclasses, resolved typing and exact source extents",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/family-data-positive.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "attribute-definition",
+          "op": "element",
+          "name": "AttributePositive::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "attribute-usage",
+          "op": "element",
+          "name": "AttributePositive::value",
+          "metaclass": "AttributeUsage"
+        },
+        {
+          "id": "attribute-type",
+          "op": "reference",
+          "owner": "AttributePositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "AttributePositive::T"
+        },
+        {
+          "id": "attribute-source",
+          "op": "source",
+          "owner": "AttributePositive::value",
+          "text": "attribute value : T;"
+        },
+        {
+          "id": "enumeration-definition",
+          "op": "element",
+          "name": "EnumerationPositive::T",
+          "metaclass": "EnumerationDefinition"
+        },
+        {
+          "id": "enumeration-usage",
+          "op": "element",
+          "name": "EnumerationPositive::value",
+          "metaclass": "EnumerationUsage"
+        },
+        {
+          "id": "enumeration-type",
+          "op": "reference",
+          "owner": "EnumerationPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "EnumerationPositive::T"
+        },
+        {
+          "id": "enumeration-source",
+          "op": "source",
+          "owner": "EnumerationPositive::value",
+          "text": "enum value : T;"
+        },
+        {
+          "id": "occurrence-definition",
+          "op": "element",
+          "name": "OccurrencePositive::T",
+          "metaclass": "OccurrenceDefinition"
+        },
+        {
+          "id": "occurrence-usage",
+          "op": "element",
+          "name": "OccurrencePositive::value",
+          "metaclass": "OccurrenceUsage"
+        },
+        {
+          "id": "occurrence-type",
+          "op": "reference",
+          "owner": "OccurrencePositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "OccurrencePositive::T"
+        },
+        {
+          "id": "occurrence-source",
+          "op": "source",
+          "owner": "OccurrencePositive::value",
+          "text": "occurrence value : T;"
+        },
+        {
+          "id": "item-definition",
+          "op": "element",
+          "name": "ItemPositive::T",
+          "metaclass": "ItemDefinition"
+        },
+        {
+          "id": "item-usage",
+          "op": "element",
+          "name": "ItemPositive::value",
+          "metaclass": "ItemUsage"
+        },
+        {
+          "id": "item-type",
+          "op": "reference",
+          "owner": "ItemPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ItemPositive::T"
+        },
+        {
+          "id": "item-source",
+          "op": "source",
+          "owner": "ItemPositive::value",
+          "text": "item value : T;"
+        },
+        {
+          "id": "part-definition",
+          "op": "element",
+          "name": "PartPositive::T",
+          "metaclass": "PartDefinition"
+        },
+        {
+          "id": "part-usage",
+          "op": "element",
+          "name": "PartPositive::value",
+          "metaclass": "PartUsage"
+        },
+        {
+          "id": "part-type",
+          "op": "reference",
+          "owner": "PartPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "PartPositive::T"
+        },
+        {
+          "id": "part-source",
+          "op": "source",
+          "owner": "PartPositive::value",
+          "text": "part value : T;"
+        },
+        {
+          "id": "port-definition",
+          "op": "element",
+          "name": "PortPositive::T",
+          "metaclass": "PortDefinition"
+        },
+        {
+          "id": "port-usage",
+          "op": "element",
+          "name": "PortPositive::value",
+          "metaclass": "PortUsage"
+        },
+        {
+          "id": "port-type",
+          "op": "reference",
+          "owner": "PortPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "PortPositive::T"
+        },
+        {
+          "id": "port-source",
+          "op": "source",
+          "owner": "PortPositive::value",
+          "text": "port value : T;"
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-DATA-002",
+      "area": "families-data",
+      "purpose": "Data and structural declarations: incompatible explicit type is diagnosed after successful parsing and resolution",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/family-data-negative.sysml"],
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "clean-structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "clean-resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "attribute-definition",
+          "op": "element",
+          "name": "AttributeNegative::T",
+          "metaclass": "PartDefinition"
+        },
+        {
+          "id": "attribute-usage",
+          "op": "element",
+          "name": "AttributeNegative::value",
+          "metaclass": "AttributeUsage"
+        },
+        {
+          "id": "attribute-type",
+          "op": "reference",
+          "owner": "AttributeNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "AttributeNegative::T"
+        },
+        {
+          "id": "attribute-source",
+          "op": "source",
+          "owner": "AttributeNegative::value",
+          "text": "attribute value : T;"
+        },
+        {
+          "id": "attribute-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "AttributeUsage must be typed by DataType"
+        },
+        {
+          "id": "enumeration-definition",
+          "op": "element",
+          "name": "EnumerationNegative::T",
+          "metaclass": "PartDefinition"
+        },
+        {
+          "id": "enumeration-usage",
+          "op": "element",
+          "name": "EnumerationNegative::value",
+          "metaclass": "EnumerationUsage"
+        },
+        {
+          "id": "enumeration-type",
+          "op": "reference",
+          "owner": "EnumerationNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "EnumerationNegative::T"
+        },
+        {
+          "id": "enumeration-source",
+          "op": "source",
+          "owner": "EnumerationNegative::value",
+          "text": "enum value : T;"
+        },
+        {
+          "id": "enumeration-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "EnumerationUsage must be typed by EnumerationDefinition"
+        },
+        {
+          "id": "occurrence-definition",
+          "op": "element",
+          "name": "OccurrenceNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "occurrence-usage",
+          "op": "element",
+          "name": "OccurrenceNegative::value",
+          "metaclass": "OccurrenceUsage"
+        },
+        {
+          "id": "occurrence-type",
+          "op": "reference",
+          "owner": "OccurrenceNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "OccurrenceNegative::T"
+        },
+        {
+          "id": "occurrence-source",
+          "op": "source",
+          "owner": "OccurrenceNegative::value",
+          "text": "occurrence value : T;"
+        },
+        {
+          "id": "occurrence-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "OccurrenceUsage must be typed by Class"
+        },
+        {
+          "id": "item-definition",
+          "op": "element",
+          "name": "ItemNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "item-usage",
+          "op": "element",
+          "name": "ItemNegative::value",
+          "metaclass": "ItemUsage"
+        },
+        {
+          "id": "item-type",
+          "op": "reference",
+          "owner": "ItemNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ItemNegative::T"
+        },
+        {
+          "id": "item-source",
+          "op": "source",
+          "owner": "ItemNegative::value",
+          "text": "item value : T;"
+        },
+        {
+          "id": "item-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "ItemUsage must be typed by Class"
+        },
+        {
+          "id": "part-definition",
+          "op": "element",
+          "name": "PartNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "part-usage",
+          "op": "element",
+          "name": "PartNegative::value",
+          "metaclass": "PartUsage"
+        },
+        {
+          "id": "part-type",
+          "op": "reference",
+          "owner": "PartNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "PartNegative::T"
+        },
+        {
+          "id": "part-source",
+          "op": "source",
+          "owner": "PartNegative::value",
+          "text": "part value : T;"
+        },
+        {
+          "id": "part-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "PartUsage must be typed by Class"
+        },
+        {
+          "id": "port-definition",
+          "op": "element",
+          "name": "PortNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "port-usage",
+          "op": "element",
+          "name": "PortNegative::value",
+          "metaclass": "PortUsage"
+        },
+        {
+          "id": "port-type",
+          "op": "reference",
+          "owner": "PortNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "PortNegative::T"
+        },
+        {
+          "id": "port-source",
+          "op": "source",
+          "owner": "PortNegative::value",
+          "text": "port value : T;"
+        },
+        {
+          "id": "port-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "PortUsage must be typed by PortDefinition"
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-CONNECTIONS-001",
+      "area": "families-connections",
+      "purpose": "Connection declarations: nominal definition and usage metaclasses, resolved typing and exact source extents",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/family-connections-positive.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "connection-definition",
+          "op": "element",
+          "name": "ConnectionPositive::T",
+          "metaclass": "ConnectionDefinition"
+        },
+        {
+          "id": "connection-usage",
+          "op": "element",
+          "name": "ConnectionPositive::value",
+          "metaclass": "ConnectionUsage"
+        },
+        {
+          "id": "connection-type",
+          "op": "reference",
+          "owner": "ConnectionPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ConnectionPositive::T"
+        },
+        {
+          "id": "connection-source",
+          "op": "source",
+          "owner": "ConnectionPositive::value",
+          "text": "connection value : T;"
+        },
+        {
+          "id": "interface-definition",
+          "op": "element",
+          "name": "InterfacePositive::T",
+          "metaclass": "InterfaceDefinition"
+        },
+        {
+          "id": "interface-usage",
+          "op": "element",
+          "name": "InterfacePositive::value",
+          "metaclass": "InterfaceUsage"
+        },
+        {
+          "id": "interface-type",
+          "op": "reference",
+          "owner": "InterfacePositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "InterfacePositive::T"
+        },
+        {
+          "id": "interface-source",
+          "op": "source",
+          "owner": "InterfacePositive::value",
+          "text": "interface value : T;"
+        },
+        {
+          "id": "allocation-definition",
+          "op": "element",
+          "name": "AllocationPositive::T",
+          "metaclass": "AllocationDefinition"
+        },
+        {
+          "id": "allocation-usage",
+          "op": "element",
+          "name": "AllocationPositive::value",
+          "metaclass": "AllocationUsage"
+        },
+        {
+          "id": "allocation-type",
+          "op": "reference",
+          "owner": "AllocationPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "AllocationPositive::T"
+        },
+        {
+          "id": "allocation-source",
+          "op": "source",
+          "owner": "AllocationPositive::value",
+          "text": "allocation value : T;"
+        },
+        {
+          "id": "flow-definition",
+          "op": "element",
+          "name": "FlowPositive::T",
+          "metaclass": "FlowDefinition"
+        },
+        {
+          "id": "flow-usage",
+          "op": "element",
+          "name": "FlowPositive::value",
+          "metaclass": "FlowUsage"
+        },
+        {
+          "id": "flow-type",
+          "op": "reference",
+          "owner": "FlowPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "FlowPositive::T"
+        },
+        {
+          "id": "flow-source",
+          "op": "source",
+          "owner": "FlowPositive::value",
+          "text": "flow value : T;"
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-CONNECTIONS-002",
+      "area": "families-connections",
+      "purpose": "Connection declarations: incompatible explicit type is diagnosed after successful parsing and resolution",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/family-connections-negative.sysml"],
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "clean-structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "clean-resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "connection-definition",
+          "op": "element",
+          "name": "ConnectionNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "connection-usage",
+          "op": "element",
+          "name": "ConnectionNegative::value",
+          "metaclass": "ConnectionUsage"
+        },
+        {
+          "id": "connection-type",
+          "op": "reference",
+          "owner": "ConnectionNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ConnectionNegative::T"
+        },
+        {
+          "id": "connection-source",
+          "op": "source",
+          "owner": "ConnectionNegative::value",
+          "text": "connection value : T;"
+        },
+        {
+          "id": "connection-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "ConnectionUsage must be typed by AssociationStructure"
+        },
+        {
+          "id": "interface-definition",
+          "op": "element",
+          "name": "InterfaceNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "interface-usage",
+          "op": "element",
+          "name": "InterfaceNegative::value",
+          "metaclass": "InterfaceUsage"
+        },
+        {
+          "id": "interface-type",
+          "op": "reference",
+          "owner": "InterfaceNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "InterfaceNegative::T"
+        },
+        {
+          "id": "interface-source",
+          "op": "source",
+          "owner": "InterfaceNegative::value",
+          "text": "interface value : T;"
+        },
+        {
+          "id": "interface-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "InterfaceUsage must be typed by InterfaceDefinition"
+        },
+        {
+          "id": "allocation-definition",
+          "op": "element",
+          "name": "AllocationNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "allocation-usage",
+          "op": "element",
+          "name": "AllocationNegative::value",
+          "metaclass": "AllocationUsage"
+        },
+        {
+          "id": "allocation-type",
+          "op": "reference",
+          "owner": "AllocationNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "AllocationNegative::T"
+        },
+        {
+          "id": "allocation-source",
+          "op": "source",
+          "owner": "AllocationNegative::value",
+          "text": "allocation value : T;"
+        },
+        {
+          "id": "allocation-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "AllocationUsage must be typed by AllocationDefinition"
+        },
+        {
+          "id": "flow-definition",
+          "op": "element",
+          "name": "FlowNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "flow-usage",
+          "op": "element",
+          "name": "FlowNegative::value",
+          "metaclass": "FlowUsage"
+        },
+        {
+          "id": "flow-type",
+          "op": "reference",
+          "owner": "FlowNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "FlowNegative::T"
+        },
+        {
+          "id": "flow-source",
+          "op": "source",
+          "owner": "FlowNegative::value",
+          "text": "flow value : T;"
+        },
+        {
+          "id": "flow-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "FlowUsage must be typed by Interaction"
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-BEHAVIORS-001",
+      "area": "families-behaviors",
+      "purpose": "Behavior declarations: nominal definition and usage metaclasses, resolved typing and exact source extents",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/family-behaviors-positive.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "action-definition",
+          "op": "element",
+          "name": "ActionPositive::T",
+          "metaclass": "ActionDefinition"
+        },
+        {
+          "id": "action-usage",
+          "op": "element",
+          "name": "ActionPositive::value",
+          "metaclass": "ActionUsage"
+        },
+        {
+          "id": "action-type",
+          "op": "reference",
+          "owner": "ActionPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ActionPositive::T"
+        },
+        {
+          "id": "action-source",
+          "op": "source",
+          "owner": "ActionPositive::value",
+          "text": "action value : T;"
+        },
+        {
+          "id": "state-definition",
+          "op": "element",
+          "name": "StatePositive::T",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "state-usage",
+          "op": "element",
+          "name": "StatePositive::value",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "state-type",
+          "op": "reference",
+          "owner": "StatePositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "StatePositive::T"
+        },
+        {
+          "id": "state-source",
+          "op": "source",
+          "owner": "StatePositive::value",
+          "text": "state value : T;"
+        },
+        {
+          "id": "calculation-definition",
+          "op": "element",
+          "name": "CalculationPositive::T",
+          "metaclass": "CalculationDefinition"
+        },
+        {
+          "id": "calculation-usage",
+          "op": "element",
+          "name": "CalculationPositive::value",
+          "metaclass": "CalculationUsage"
+        },
+        {
+          "id": "calculation-type",
+          "op": "reference",
+          "owner": "CalculationPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "CalculationPositive::T"
+        },
+        {
+          "id": "calculation-source",
+          "op": "source",
+          "owner": "CalculationPositive::value",
+          "text": "calc value : T;"
+        },
+        {
+          "id": "constraint-definition",
+          "op": "element",
+          "name": "ConstraintPositive::T",
+          "metaclass": "ConstraintDefinition"
+        },
+        {
+          "id": "constraint-usage",
+          "op": "element",
+          "name": "ConstraintPositive::value",
+          "metaclass": "ConstraintUsage"
+        },
+        {
+          "id": "constraint-type",
+          "op": "reference",
+          "owner": "ConstraintPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ConstraintPositive::T"
+        },
+        {
+          "id": "constraint-source",
+          "op": "source",
+          "owner": "ConstraintPositive::value",
+          "text": "constraint value : T;"
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-BEHAVIORS-002",
+      "area": "families-behaviors",
+      "purpose": "Behavior declarations: incompatible explicit type is diagnosed after successful parsing and resolution",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/family-behaviors-negative.sysml"],
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "clean-structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "clean-resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "action-definition",
+          "op": "element",
+          "name": "ActionNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "action-usage",
+          "op": "element",
+          "name": "ActionNegative::value",
+          "metaclass": "ActionUsage"
+        },
+        {
+          "id": "action-type",
+          "op": "reference",
+          "owner": "ActionNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ActionNegative::T"
+        },
+        {
+          "id": "action-source",
+          "op": "source",
+          "owner": "ActionNegative::value",
+          "text": "action value : T;"
+        },
+        {
+          "id": "action-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "ActionUsage must be typed by Behavior"
+        },
+        {
+          "id": "state-definition",
+          "op": "element",
+          "name": "StateNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "state-usage",
+          "op": "element",
+          "name": "StateNegative::value",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "state-type",
+          "op": "reference",
+          "owner": "StateNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "StateNegative::T"
+        },
+        {
+          "id": "state-source",
+          "op": "source",
+          "owner": "StateNegative::value",
+          "text": "state value : T;"
+        },
+        {
+          "id": "state-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "StateUsage must be typed by Behavior"
+        },
+        {
+          "id": "calculation-definition",
+          "op": "element",
+          "name": "CalculationNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "calculation-usage",
+          "op": "element",
+          "name": "CalculationNegative::value",
+          "metaclass": "CalculationUsage"
+        },
+        {
+          "id": "calculation-type",
+          "op": "reference",
+          "owner": "CalculationNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "CalculationNegative::T"
+        },
+        {
+          "id": "calculation-source",
+          "op": "source",
+          "owner": "CalculationNegative::value",
+          "text": "calc value : T;"
+        },
+        {
+          "id": "calculation-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "CalculationUsage must be typed by Function"
+        },
+        {
+          "id": "constraint-definition",
+          "op": "element",
+          "name": "ConstraintNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "constraint-usage",
+          "op": "element",
+          "name": "ConstraintNegative::value",
+          "metaclass": "ConstraintUsage"
+        },
+        {
+          "id": "constraint-type",
+          "op": "reference",
+          "owner": "ConstraintNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ConstraintNegative::T"
+        },
+        {
+          "id": "constraint-source",
+          "op": "source",
+          "owner": "ConstraintNegative::value",
+          "text": "constraint value : T;"
+        },
+        {
+          "id": "constraint-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "ConstraintUsage must be typed by Predicate"
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-CASES-001",
+      "area": "families-cases",
+      "purpose": "Requirements and case declarations: nominal definition and usage metaclasses, resolved typing and exact source extents",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/family-cases-positive.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "requirement-definition",
+          "op": "element",
+          "name": "RequirementPositive::T",
+          "metaclass": "RequirementDefinition"
+        },
+        {
+          "id": "requirement-usage",
+          "op": "element",
+          "name": "RequirementPositive::value",
+          "metaclass": "RequirementUsage"
+        },
+        {
+          "id": "requirement-type",
+          "op": "reference",
+          "owner": "RequirementPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "RequirementPositive::T"
+        },
+        {
+          "id": "requirement-source",
+          "op": "source",
+          "owner": "RequirementPositive::value",
+          "text": "requirement value : T;"
+        },
+        {
+          "id": "concern-definition",
+          "op": "element",
+          "name": "ConcernPositive::T",
+          "metaclass": "ConcernDefinition"
+        },
+        {
+          "id": "concern-usage",
+          "op": "element",
+          "name": "ConcernPositive::value",
+          "metaclass": "ConcernUsage"
+        },
+        {
+          "id": "concern-type",
+          "op": "reference",
+          "owner": "ConcernPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ConcernPositive::T"
+        },
+        {
+          "id": "concern-source",
+          "op": "source",
+          "owner": "ConcernPositive::value",
+          "text": "concern value : T;"
+        },
+        {
+          "id": "case-definition",
+          "op": "element",
+          "name": "CasePositive::T",
+          "metaclass": "CaseDefinition"
+        },
+        {
+          "id": "case-usage",
+          "op": "element",
+          "name": "CasePositive::value",
+          "metaclass": "CaseUsage"
+        },
+        {
+          "id": "case-type",
+          "op": "reference",
+          "owner": "CasePositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "CasePositive::T"
+        },
+        {
+          "id": "case-source",
+          "op": "source",
+          "owner": "CasePositive::value",
+          "text": "case value : T;"
+        },
+        {
+          "id": "analysiscase-definition",
+          "op": "element",
+          "name": "AnalysisCasePositive::T",
+          "metaclass": "AnalysisCaseDefinition"
+        },
+        {
+          "id": "analysiscase-usage",
+          "op": "element",
+          "name": "AnalysisCasePositive::value",
+          "metaclass": "AnalysisCaseUsage"
+        },
+        {
+          "id": "analysiscase-type",
+          "op": "reference",
+          "owner": "AnalysisCasePositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "AnalysisCasePositive::T"
+        },
+        {
+          "id": "analysiscase-source",
+          "op": "source",
+          "owner": "AnalysisCasePositive::value",
+          "text": "analysis value : T;"
+        },
+        {
+          "id": "verificationcase-definition",
+          "op": "element",
+          "name": "VerificationCasePositive::T",
+          "metaclass": "VerificationCaseDefinition"
+        },
+        {
+          "id": "verificationcase-usage",
+          "op": "element",
+          "name": "VerificationCasePositive::value",
+          "metaclass": "VerificationCaseUsage"
+        },
+        {
+          "id": "verificationcase-type",
+          "op": "reference",
+          "owner": "VerificationCasePositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "VerificationCasePositive::T"
+        },
+        {
+          "id": "verificationcase-source",
+          "op": "source",
+          "owner": "VerificationCasePositive::value",
+          "text": "verification value : T;"
+        },
+        {
+          "id": "usecase-definition",
+          "op": "element",
+          "name": "UseCasePositive::T",
+          "metaclass": "UseCaseDefinition"
+        },
+        {
+          "id": "usecase-usage",
+          "op": "element",
+          "name": "UseCasePositive::value",
+          "metaclass": "UseCaseUsage"
+        },
+        {
+          "id": "usecase-type",
+          "op": "reference",
+          "owner": "UseCasePositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "UseCasePositive::T"
+        },
+        {
+          "id": "usecase-source",
+          "op": "source",
+          "owner": "UseCasePositive::value",
+          "text": "use case value : T;"
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-CASES-002",
+      "area": "families-cases",
+      "purpose": "Requirements and case declarations: incompatible explicit type is diagnosed after successful parsing and resolution",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/family-cases-negative.sysml"],
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "clean-structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "clean-resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "requirement-definition",
+          "op": "element",
+          "name": "RequirementNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "requirement-usage",
+          "op": "element",
+          "name": "RequirementNegative::value",
+          "metaclass": "RequirementUsage"
+        },
+        {
+          "id": "requirement-type",
+          "op": "reference",
+          "owner": "RequirementNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "RequirementNegative::T"
+        },
+        {
+          "id": "requirement-source",
+          "op": "source",
+          "owner": "RequirementNegative::value",
+          "text": "requirement value : T;"
+        },
+        {
+          "id": "requirement-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "RequirementUsage must be typed by RequirementDefinition"
+        },
+        {
+          "id": "concern-definition",
+          "op": "element",
+          "name": "ConcernNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "concern-usage",
+          "op": "element",
+          "name": "ConcernNegative::value",
+          "metaclass": "ConcernUsage"
+        },
+        {
+          "id": "concern-type",
+          "op": "reference",
+          "owner": "ConcernNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ConcernNegative::T"
+        },
+        {
+          "id": "concern-source",
+          "op": "source",
+          "owner": "ConcernNegative::value",
+          "text": "concern value : T;"
+        },
+        {
+          "id": "concern-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "ConcernUsage must be typed by ConcernDefinition"
+        },
+        {
+          "id": "case-definition",
+          "op": "element",
+          "name": "CaseNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "case-usage",
+          "op": "element",
+          "name": "CaseNegative::value",
+          "metaclass": "CaseUsage"
+        },
+        {
+          "id": "case-type",
+          "op": "reference",
+          "owner": "CaseNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "CaseNegative::T"
+        },
+        {
+          "id": "case-source",
+          "op": "source",
+          "owner": "CaseNegative::value",
+          "text": "case value : T;"
+        },
+        {
+          "id": "case-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "CaseUsage must be typed by CaseDefinition"
+        },
+        {
+          "id": "analysiscase-definition",
+          "op": "element",
+          "name": "AnalysisCaseNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "analysiscase-usage",
+          "op": "element",
+          "name": "AnalysisCaseNegative::value",
+          "metaclass": "AnalysisCaseUsage"
+        },
+        {
+          "id": "analysiscase-type",
+          "op": "reference",
+          "owner": "AnalysisCaseNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "AnalysisCaseNegative::T"
+        },
+        {
+          "id": "analysiscase-source",
+          "op": "source",
+          "owner": "AnalysisCaseNegative::value",
+          "text": "analysis value : T;"
+        },
+        {
+          "id": "analysiscase-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "AnalysisCaseUsage must be typed by AnalysisCaseDefinition"
+        },
+        {
+          "id": "verificationcase-definition",
+          "op": "element",
+          "name": "VerificationCaseNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "verificationcase-usage",
+          "op": "element",
+          "name": "VerificationCaseNegative::value",
+          "metaclass": "VerificationCaseUsage"
+        },
+        {
+          "id": "verificationcase-type",
+          "op": "reference",
+          "owner": "VerificationCaseNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "VerificationCaseNegative::T"
+        },
+        {
+          "id": "verificationcase-source",
+          "op": "source",
+          "owner": "VerificationCaseNegative::value",
+          "text": "verification value : T;"
+        },
+        {
+          "id": "verificationcase-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "VerificationCaseUsage must be typed by VerificationCaseDefinition"
+        },
+        {
+          "id": "usecase-definition",
+          "op": "element",
+          "name": "UseCaseNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "usecase-usage",
+          "op": "element",
+          "name": "UseCaseNegative::value",
+          "metaclass": "UseCaseUsage"
+        },
+        {
+          "id": "usecase-type",
+          "op": "reference",
+          "owner": "UseCaseNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "UseCaseNegative::T"
+        },
+        {
+          "id": "usecase-source",
+          "op": "source",
+          "owner": "UseCaseNegative::value",
+          "text": "use case value : T;"
+        },
+        {
+          "id": "usecase-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "UseCaseUsage must be typed by UseCaseDefinition"
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-VIEWS-001",
+      "area": "families-views",
+      "purpose": "View and metadata declarations: nominal definition and usage metaclasses, resolved typing and exact source extents",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/family-views-positive.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "view-definition",
+          "op": "element",
+          "name": "ViewPositive::T",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "view-usage",
+          "op": "element",
+          "name": "ViewPositive::value",
+          "metaclass": "ViewUsage"
+        },
+        {
+          "id": "view-type",
+          "op": "reference",
+          "owner": "ViewPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ViewPositive::T"
+        },
+        {
+          "id": "view-source",
+          "op": "source",
+          "owner": "ViewPositive::value",
+          "text": "view value : T;"
+        },
+        {
+          "id": "viewpoint-definition",
+          "op": "element",
+          "name": "ViewpointPositive::T",
+          "metaclass": "ViewpointDefinition"
+        },
+        {
+          "id": "viewpoint-usage",
+          "op": "element",
+          "name": "ViewpointPositive::value",
+          "metaclass": "ViewpointUsage"
+        },
+        {
+          "id": "viewpoint-type",
+          "op": "reference",
+          "owner": "ViewpointPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ViewpointPositive::T"
+        },
+        {
+          "id": "viewpoint-source",
+          "op": "source",
+          "owner": "ViewpointPositive::value",
+          "text": "viewpoint value : T;"
+        },
+        {
+          "id": "rendering-definition",
+          "op": "element",
+          "name": "RenderingPositive::T",
+          "metaclass": "RenderingDefinition"
+        },
+        {
+          "id": "rendering-usage",
+          "op": "element",
+          "name": "RenderingPositive::value",
+          "metaclass": "RenderingUsage"
+        },
+        {
+          "id": "rendering-type",
+          "op": "reference",
+          "owner": "RenderingPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "RenderingPositive::T"
+        },
+        {
+          "id": "rendering-source",
+          "op": "source",
+          "owner": "RenderingPositive::value",
+          "text": "rendering value : T;"
+        },
+        {
+          "id": "metadata-definition",
+          "op": "element",
+          "name": "MetadataPositive::T",
+          "metaclass": "MetadataDefinition"
+        },
+        {
+          "id": "metadata-usage",
+          "op": "element",
+          "name": "MetadataPositive::value",
+          "metaclass": "MetadataUsage"
+        },
+        {
+          "id": "metadata-type",
+          "op": "reference",
+          "owner": "MetadataPositive::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "MetadataPositive::T"
+        },
+        {
+          "id": "metadata-source",
+          "op": "source",
+          "owner": "MetadataPositive::value",
+          "text": "metadata value : T;"
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-VIEWS-002",
+      "area": "families-views",
+      "purpose": "View and metadata declarations: incompatible explicit type is diagnosed after successful parsing and resolution",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/family-views-negative.sysml"],
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "clean-structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "clean-resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "view-definition",
+          "op": "element",
+          "name": "ViewNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "view-usage",
+          "op": "element",
+          "name": "ViewNegative::value",
+          "metaclass": "ViewUsage"
+        },
+        {
+          "id": "view-type",
+          "op": "reference",
+          "owner": "ViewNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ViewNegative::T"
+        },
+        {
+          "id": "view-source",
+          "op": "source",
+          "owner": "ViewNegative::value",
+          "text": "view value : T;"
+        },
+        {
+          "id": "view-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "ViewUsage must be typed by ViewDefinition"
+        },
+        {
+          "id": "viewpoint-definition",
+          "op": "element",
+          "name": "ViewpointNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "viewpoint-usage",
+          "op": "element",
+          "name": "ViewpointNegative::value",
+          "metaclass": "ViewpointUsage"
+        },
+        {
+          "id": "viewpoint-type",
+          "op": "reference",
+          "owner": "ViewpointNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "ViewpointNegative::T"
+        },
+        {
+          "id": "viewpoint-source",
+          "op": "source",
+          "owner": "ViewpointNegative::value",
+          "text": "viewpoint value : T;"
+        },
+        {
+          "id": "viewpoint-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "ViewpointUsage must be typed by ViewpointDefinition"
+        },
+        {
+          "id": "rendering-definition",
+          "op": "element",
+          "name": "RenderingNegative::T",
+          "metaclass": "AttributeDefinition"
+        },
+        {
+          "id": "rendering-usage",
+          "op": "element",
+          "name": "RenderingNegative::value",
+          "metaclass": "RenderingUsage"
+        },
+        {
+          "id": "rendering-type",
+          "op": "reference",
+          "owner": "RenderingNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "RenderingNegative::T"
+        },
+        {
+          "id": "rendering-source",
+          "op": "source",
+          "owner": "RenderingNegative::value",
+          "text": "rendering value : T;"
+        },
+        {
+          "id": "rendering-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "RenderingUsage must be typed by RenderingDefinition"
+        },
+        {
+          "id": "metadata-definition",
+          "op": "element",
+          "name": "MetadataNegative::T",
+          "metaclass": "PartDefinition"
+        },
+        {
+          "id": "metadata-usage",
+          "op": "element",
+          "name": "MetadataNegative::value",
+          "metaclass": "MetadataUsage"
+        },
+        {
+          "id": "metadata-type",
+          "op": "reference",
+          "owner": "MetadataNegative::value",
+          "kind": "typing",
+          "spelling": "T",
+          "status": "resolved",
+          "target": "MetadataNegative::T"
+        },
+        {
+          "id": "metadata-source",
+          "op": "source",
+          "owner": "MetadataNegative::value",
+          "text": "metadata value : T;"
+        },
+        {
+          "id": "metadata-rejected",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "metadata must be typed by a metadata definition or metaclass"
+        }
+      ]
+    },
+    {
+      "id": "TYPE-005",
+      "area": "typing",
+      "purpose": "SysML usages accept permitted KerML classifiers, including states and exhibits typed by Behavior, multiple behaviors and an ActionDefinition",
+      "polarity": "positive",
+      "files": [
+        "tests/conformance/fixtures/family-kernel-types.kerml",
+        "tests/conformance/fixtures/type-005.sysml"
+      ],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "data",
+          "op": "element",
+          "name": "KernelFamilyTyping::data",
+          "metaclass": "AttributeUsage"
+        },
+        {
+          "id": "data-type",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::data",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::Data",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::Data"
+        },
+        {
+          "id": "occurrenceValue",
+          "op": "element",
+          "name": "KernelFamilyTyping::occurrenceValue",
+          "metaclass": "OccurrenceUsage"
+        },
+        {
+          "id": "occurrenceValue-type",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::occurrenceValue",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::Occurrence",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::Occurrence"
+        },
+        {
+          "id": "structureValue",
+          "op": "element",
+          "name": "KernelFamilyTyping::structureValue",
+          "metaclass": "ItemUsage"
+        },
+        {
+          "id": "structureValue-type",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::structureValue",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::Structure",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::Structure"
+        },
+        {
+          "id": "association",
+          "op": "element",
+          "name": "KernelFamilyTyping::association",
+          "metaclass": "ConnectionUsage"
+        },
+        {
+          "id": "association-type",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::association",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::Association",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::Association"
+        },
+        {
+          "id": "interactionValue",
+          "op": "element",
+          "name": "KernelFamilyTyping::interactionValue",
+          "metaclass": "FlowUsage"
+        },
+        {
+          "id": "interactionValue-type",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::interactionValue",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::Interaction",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::Interaction"
+        },
+        {
+          "id": "behaviorValue",
+          "op": "element",
+          "name": "KernelFamilyTyping::behaviorValue",
+          "metaclass": "ActionUsage"
+        },
+        {
+          "id": "behaviorValue-type",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::behaviorValue",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::BehaviorBase",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::BehaviorBase"
+        },
+        {
+          "id": "direct",
+          "op": "element",
+          "name": "KernelFamilyTyping::direct",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "direct-type",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::direct",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::BehaviorBase",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::BehaviorBase"
+        },
+        {
+          "id": "shown",
+          "op": "element",
+          "name": "KernelFamilyTyping::shown",
+          "metaclass": "ExhibitStateUsage"
+        },
+        {
+          "id": "shown-type",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::shown",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::BehaviorChild",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::BehaviorChild"
+        },
+        {
+          "id": "functionValue",
+          "op": "element",
+          "name": "KernelFamilyTyping::functionValue",
+          "metaclass": "CalculationUsage"
+        },
+        {
+          "id": "functionValue-type",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::functionValue",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::Function",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::Function"
+        },
+        {
+          "id": "predicateValue",
+          "op": "element",
+          "name": "KernelFamilyTyping::predicateValue",
+          "metaclass": "ConstraintUsage"
+        },
+        {
+          "id": "predicateValue-type",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::predicateValue",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::Predicate",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::Predicate"
+        },
+        {
+          "id": "annotation",
+          "op": "element",
+          "name": "KernelFamilyTyping::annotation",
+          "metaclass": "MetadataUsage"
+        },
+        {
+          "id": "annotation-type",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::annotation",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::Metadata",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::Metadata"
+        },
+        {
+          "id": "multiple-BehaviorBase",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::multiple",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::BehaviorBase",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::BehaviorBase"
+        },
+        {
+          "id": "multiple-OtherBehavior",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::multiple",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::OtherBehavior",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::OtherBehavior"
+        },
+        {
+          "id": "related-BehaviorBase",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::related",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::BehaviorBase",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::BehaviorBase"
+        },
+        {
+          "id": "related-BehaviorChild",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::related",
+          "kind": "typing",
+          "spelling": "FamilyKernelTypes::BehaviorChild",
+          "status": "resolved",
+          "target": "FamilyKernelTypes::BehaviorChild"
+        },
+        {
+          "id": "local-action",
+          "op": "reference",
+          "owner": "KernelFamilyTyping::actionTyped",
+          "kind": "typing",
+          "spelling": "LocalAction",
+          "status": "resolved",
+          "target": "KernelFamilyTyping::LocalAction"
+        }
+      ]
+    },
+    {
+      "id": "TYPE-006",
+      "area": "typing",
+      "purpose": "Concern typing requires ConcernDefinition, retains general RequirementUsage compatibility and enforces the existing independent-type limit",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/type-006.sysml"],
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "clean-structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "clean-resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "invalid-type",
+          "op": "reference",
+          "owner": "ConcernTyping::invalid",
+          "kind": "typing",
+          "spelling": "General",
+          "status": "resolved",
+          "target": "ConcernTyping::General"
+        },
+        {
+          "id": "asRequirement-type",
+          "op": "reference",
+          "owner": "ConcernTyping::asRequirement",
+          "kind": "typing",
+          "spelling": "Specific",
+          "status": "resolved",
+          "target": "ConcernTyping::Specific"
+        },
+        {
+          "id": "valid-type",
+          "op": "reference",
+          "owner": "ConcernTyping::valid",
+          "kind": "typing",
+          "spelling": "Specific",
+          "status": "resolved",
+          "target": "ConcernTyping::Specific"
+        },
+        {
+          "id": "inherited-type",
+          "op": "reference",
+          "owner": "ConcernTyping::inherited",
+          "kind": "typing",
+          "spelling": "Specialized",
+          "status": "resolved",
+          "target": "ConcernTyping::Specialized"
+        },
+        {
+          "id": "reject-general",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "ConcernUsage must be typed by ConcernDefinition"
+        },
+        {
+          "id": "reject-independent",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "ConcernUsage must have exactly one non-redundant type"
+        }
+      ]
+    },
+    {
+      "id": "TYPE-007",
+      "area": "typing",
+      "purpose": "Broadening StateUsage to Behavior still rejects data types for states and exhibits and preserves unresolved targets",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/type-007.sysml"],
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "clean-structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "reject-state",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "StateUsage must be typed by Behavior"
+        },
+        {
+          "id": "reject-exhibit",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "messageIncludes": "ExhibitStateUsage must be typed by Behavior"
+        },
+        {
+          "id": "missing",
+          "op": "reference",
+          "owner": "StateTypingGuards::missing",
+          "kind": "typing",
+          "spelling": "Absent",
+          "status": "unresolved"
+        },
+        {
+          "id": "good",
+          "op": "reference",
+          "owner": "StateTypingGuards::good",
+          "kind": "typing",
+          "spelling": "BehaviorType",
+          "status": "resolved",
+          "target": "StateTypingGuards::BehaviorType"
         }
       ]
     }

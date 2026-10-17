@@ -24,12 +24,14 @@ fn restriction(usage: &str) -> Option<(&'static str, bool)> {
         "AllocationUsage" => ("AllocationDefinition", false),
         "FlowUsage" | "SuccessionFlowUsage" => ("Interaction", false),
         "ActionUsage" | "PerformActionUsage" => ("Behavior", false),
-        "StateUsage" | "ExhibitStateUsage" => ("StateDefinition", false),
+        // StateUsage::stateDefinition redefines actionDefinition with Behavior
+        // as its range; a nominal StateDefinition is not required (SysML 8.3.18).
+        "StateUsage" | "ExhibitStateUsage" => ("Behavior", false),
         "CalculationUsage" => ("Function", true),
         "ConstraintUsage" | "AssertConstraintUsage" => ("Predicate", true),
-        "RequirementUsage" | "SatisfyRequirementUsage" | "ConcernUsage" => {
-            ("RequirementDefinition", true)
-        }
+        "RequirementUsage" | "SatisfyRequirementUsage" => ("RequirementDefinition", true),
+        // ConcernUsage narrows requirementDefinition to ConcernDefinition.
+        "ConcernUsage" => ("ConcernDefinition", true),
         "CaseUsage" => ("CaseDefinition", true),
         "AnalysisCaseUsage" => ("AnalysisCaseDefinition", true),
         "VerificationCaseUsage" => ("VerificationCaseDefinition", true),
@@ -200,4 +202,72 @@ pub(super) fn validate(r: &mut ResolvedModel, model: &Model) -> Vec<(usize, Diag
         }
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn findings(source: &str) -> Vec<(String, String)> {
+        let mut model = Model::new();
+        model.add_source("types.kerml", "package K { behavior B; behavior C :> B; }");
+        model.add_source("usages.sysml", source);
+        let mut graph = ResolvedModel::build(&model);
+        validate(&mut graph, &model)
+            .into_iter()
+            .map(|(_, d)| {
+                (
+                    source[d.span.start as usize..d.span.end as usize].into(),
+                    d.message,
+                )
+            })
+            .collect()
+    }
+
+    #[test]
+    fn state_and_exhibit_typing_accept_behavior_but_reject_data() {
+        let findings = findings(
+            "package P {
+            state plain : K::B; exhibit state shown : K::C;
+            action def A; state local : A;
+            attribute def D; state bad : D; exhibit state badExhibit : D;
+            state mixed : K::B, D; state missing : Absent;
+        }",
+        );
+        assert_eq!(findings.len(), 3, "{findings:?}");
+        for (target, message) in &findings {
+            assert_eq!(target, "D");
+            assert!(message.contains("must be typed by Behavior"), "{message}");
+        }
+        assert!(
+            findings
+                .iter()
+                .any(|(_, m)| m.starts_with("ExhibitStateUsage"))
+        );
+    }
+
+    #[test]
+    fn concerns_narrow_requirements_and_keep_nonredundant_type_checks() {
+        let findings = findings(
+            "package P {
+            requirement def R; concern def C; concern def S :> C; concern def T;
+            requirement general : C; concern own : C; concern child : S;
+            concern redundant : C, S; concern bad : R;
+            concern mixed : C, R; concern independent : C, T;
+        }",
+        );
+        assert_eq!(findings.len(), 3, "{findings:?}");
+        assert_eq!(
+            findings
+                .iter()
+                .filter(|(target, message)| target == "R"
+                    && message.contains("must be typed by ConcernDefinition"))
+                .count(),
+            2
+        );
+        assert!(
+            findings.iter().any(|(target, message)| target == "T"
+                && message.contains("exactly one non-redundant type"))
+        );
+    }
 }

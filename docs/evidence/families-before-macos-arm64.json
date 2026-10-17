@@ -1,0 +1,2110 @@
+{
+  "purpose": "Pre-fix regression probes against the existing .16 binary; not a rebuilt conformance run.",
+  "generatedAt": "2026-10-17T22:17:46.797Z",
+  "kernelInputSha256": "7f73cc2634117980053e893c88c671c862ed3e78bd83ff4ea38e3d69b6c606ae",
+  "binarySha256": "e5bc708260ecee09588653f22f4b54a778704cba8022d1616bc674e7d84daa70",
+  "matrixSha256": "4d488e6dd10aa0b5deb90391924c790bf8635e86d0d7ce6fe5e9b7791ab657ae",
+  "results": [
+    {
+      "id": "FAMILY-DATA-001",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/family-data-positive.sysml": "e1836e14a847ab40dcd6f6768e2dc7328ae2ab4f595d2acf31db5049bc96426c"
+      },
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "attribute-definition",
+          "status": "pass"
+        },
+        {
+          "id": "attribute-usage",
+          "status": "pass"
+        },
+        {
+          "id": "attribute-type",
+          "status": "pass"
+        },
+        {
+          "id": "attribute-source",
+          "status": "pass"
+        },
+        {
+          "id": "enumeration-definition",
+          "status": "pass"
+        },
+        {
+          "id": "enumeration-usage",
+          "status": "pass"
+        },
+        {
+          "id": "enumeration-type",
+          "status": "pass"
+        },
+        {
+          "id": "enumeration-source",
+          "status": "pass"
+        },
+        {
+          "id": "occurrence-definition",
+          "status": "pass"
+        },
+        {
+          "id": "occurrence-usage",
+          "status": "pass"
+        },
+        {
+          "id": "occurrence-type",
+          "status": "pass"
+        },
+        {
+          "id": "occurrence-source",
+          "status": "pass"
+        },
+        {
+          "id": "item-definition",
+          "status": "pass"
+        },
+        {
+          "id": "item-usage",
+          "status": "pass"
+        },
+        {
+          "id": "item-type",
+          "status": "pass"
+        },
+        {
+          "id": "item-source",
+          "status": "pass"
+        },
+        {
+          "id": "part-definition",
+          "status": "pass"
+        },
+        {
+          "id": "part-usage",
+          "status": "pass"
+        },
+        {
+          "id": "part-type",
+          "status": "pass"
+        },
+        {
+          "id": "part-source",
+          "status": "pass"
+        },
+        {
+          "id": "port-definition",
+          "status": "pass"
+        },
+        {
+          "id": "port-usage",
+          "status": "pass"
+        },
+        {
+          "id": "port-type",
+          "status": "pass"
+        },
+        {
+          "id": "port-source",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "id": "FAMILY-DATA-002",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/family-data-negative.sysml": "668f7ba5d039457160f2330680ffe751ff9be8636dfced6dde0a9e1b8a3dcae0"
+      },
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "status": "pass"
+        },
+        {
+          "id": "clean-structure",
+          "status": "pass"
+        },
+        {
+          "id": "clean-resolution",
+          "status": "pass"
+        },
+        {
+          "id": "attribute-definition",
+          "status": "pass"
+        },
+        {
+          "id": "attribute-usage",
+          "status": "pass"
+        },
+        {
+          "id": "attribute-type",
+          "status": "pass"
+        },
+        {
+          "id": "attribute-source",
+          "status": "pass"
+        },
+        {
+          "id": "attribute-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "enumeration-definition",
+          "status": "pass"
+        },
+        {
+          "id": "enumeration-usage",
+          "status": "pass"
+        },
+        {
+          "id": "enumeration-type",
+          "status": "pass"
+        },
+        {
+          "id": "enumeration-source",
+          "status": "pass"
+        },
+        {
+          "id": "enumeration-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "occurrence-definition",
+          "status": "pass"
+        },
+        {
+          "id": "occurrence-usage",
+          "status": "pass"
+        },
+        {
+          "id": "occurrence-type",
+          "status": "pass"
+        },
+        {
+          "id": "occurrence-source",
+          "status": "pass"
+        },
+        {
+          "id": "occurrence-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "item-definition",
+          "status": "pass"
+        },
+        {
+          "id": "item-usage",
+          "status": "pass"
+        },
+        {
+          "id": "item-type",
+          "status": "pass"
+        },
+        {
+          "id": "item-source",
+          "status": "pass"
+        },
+        {
+          "id": "item-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "part-definition",
+          "status": "pass"
+        },
+        {
+          "id": "part-usage",
+          "status": "pass"
+        },
+        {
+          "id": "part-type",
+          "status": "pass"
+        },
+        {
+          "id": "part-source",
+          "status": "pass"
+        },
+        {
+          "id": "part-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "port-definition",
+          "status": "pass"
+        },
+        {
+          "id": "port-usage",
+          "status": "pass"
+        },
+        {
+          "id": "port-type",
+          "status": "pass"
+        },
+        {
+          "id": "port-source",
+          "status": "pass"
+        },
+        {
+          "id": "port-rejected",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "AttributeUsage must be typed by DataType; the declared type is a PartDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-data-negative.sysml",
+            "start": {
+              "byteOffset": 66,
+              "utf16Offset": 66,
+              "line": 3,
+              "column": 23
+            },
+            "end": {
+              "byteOffset": 67,
+              "utf16Offset": 67,
+              "line": 3,
+              "column": 24
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "EnumerationUsage must be typed by EnumerationDefinition; the declared type is a PartDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-data-negative.sysml",
+            "start": {
+              "byteOffset": 135,
+              "utf16Offset": 135,
+              "line": 8,
+              "column": 18
+            },
+            "end": {
+              "byteOffset": 136,
+              "utf16Offset": 136,
+              "line": 8,
+              "column": 19
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "OccurrenceUsage must be typed by Class; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-data-negative.sysml",
+            "start": {
+              "byteOffset": 214,
+              "utf16Offset": 214,
+              "line": 13,
+              "column": 24
+            },
+            "end": {
+              "byteOffset": 215,
+              "utf16Offset": 215,
+              "line": 13,
+              "column": 25
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "ItemUsage must be typed by Class; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-data-negative.sysml",
+            "start": {
+              "byteOffset": 281,
+              "utf16Offset": 281,
+              "line": 18,
+              "column": 18
+            },
+            "end": {
+              "byteOffset": 282,
+              "utf16Offset": 282,
+              "line": 18,
+              "column": 19
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "PartUsage must be typed by Class; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-data-negative.sysml",
+            "start": {
+              "byteOffset": 348,
+              "utf16Offset": 348,
+              "line": 23,
+              "column": 18
+            },
+            "end": {
+              "byteOffset": 349,
+              "utf16Offset": 349,
+              "line": 23,
+              "column": 19
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "PortUsage must be typed by PortDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-data-negative.sysml",
+            "start": {
+              "byteOffset": 415,
+              "utf16Offset": 415,
+              "line": 28,
+              "column": 18
+            },
+            "end": {
+              "byteOffset": 416,
+              "utf16Offset": 416,
+              "line": 28,
+              "column": 19
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-CONNECTIONS-001",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/family-connections-positive.sysml": "72c2e560e1a8359370537d411ca32cfeeb93a5fe967666fe3ebd0d60661b4ecc"
+      },
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "connection-definition",
+          "status": "pass"
+        },
+        {
+          "id": "connection-usage",
+          "status": "pass"
+        },
+        {
+          "id": "connection-type",
+          "status": "pass"
+        },
+        {
+          "id": "connection-source",
+          "status": "pass"
+        },
+        {
+          "id": "interface-definition",
+          "status": "pass"
+        },
+        {
+          "id": "interface-usage",
+          "status": "pass"
+        },
+        {
+          "id": "interface-type",
+          "status": "pass"
+        },
+        {
+          "id": "interface-source",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-definition",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-usage",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-type",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-source",
+          "status": "pass"
+        },
+        {
+          "id": "flow-definition",
+          "status": "pass"
+        },
+        {
+          "id": "flow-usage",
+          "status": "pass"
+        },
+        {
+          "id": "flow-type",
+          "status": "pass"
+        },
+        {
+          "id": "flow-source",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "id": "FAMILY-CONNECTIONS-002",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/family-connections-negative.sysml": "192d82e5e8e2b910ead581ee67f50233c584af0443a9697ca7ca28a31554337d"
+      },
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "status": "pass"
+        },
+        {
+          "id": "clean-structure",
+          "status": "pass"
+        },
+        {
+          "id": "clean-resolution",
+          "status": "pass"
+        },
+        {
+          "id": "connection-definition",
+          "status": "pass"
+        },
+        {
+          "id": "connection-usage",
+          "status": "pass"
+        },
+        {
+          "id": "connection-type",
+          "status": "pass"
+        },
+        {
+          "id": "connection-source",
+          "status": "pass"
+        },
+        {
+          "id": "connection-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "interface-definition",
+          "status": "pass"
+        },
+        {
+          "id": "interface-usage",
+          "status": "pass"
+        },
+        {
+          "id": "interface-type",
+          "status": "pass"
+        },
+        {
+          "id": "interface-source",
+          "status": "pass"
+        },
+        {
+          "id": "interface-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-definition",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-usage",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-type",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-source",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "flow-definition",
+          "status": "pass"
+        },
+        {
+          "id": "flow-usage",
+          "status": "pass"
+        },
+        {
+          "id": "flow-type",
+          "status": "pass"
+        },
+        {
+          "id": "flow-source",
+          "status": "pass"
+        },
+        {
+          "id": "flow-rejected",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "ConnectionUsage must be typed by AssociationStructure; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-connections-negative.sysml",
+            "start": {
+              "byteOffset": 73,
+              "utf16Offset": 73,
+              "line": 3,
+              "column": 24
+            },
+            "end": {
+              "byteOffset": 74,
+              "utf16Offset": 74,
+              "line": 3,
+              "column": 25
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "InterfaceUsage must be typed by InterfaceDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-connections-negative.sysml",
+            "start": {
+              "byteOffset": 150,
+              "utf16Offset": 150,
+              "line": 8,
+              "column": 23
+            },
+            "end": {
+              "byteOffset": 151,
+              "utf16Offset": 151,
+              "line": 8,
+              "column": 24
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "AllocationUsage must be typed by AllocationDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-connections-negative.sysml",
+            "start": {
+              "byteOffset": 229,
+              "utf16Offset": 229,
+              "line": 13,
+              "column": 24
+            },
+            "end": {
+              "byteOffset": 230,
+              "utf16Offset": 230,
+              "line": 13,
+              "column": 25
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "FlowUsage must be typed by Interaction; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-connections-negative.sysml",
+            "start": {
+              "byteOffset": 296,
+              "utf16Offset": 296,
+              "line": 18,
+              "column": 18
+            },
+            "end": {
+              "byteOffset": 297,
+              "utf16Offset": 297,
+              "line": 18,
+              "column": 19
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-BEHAVIORS-001",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/family-behaviors-positive.sysml": "f247bb39ba5be50fd7b1f3f2b67174620641db9344837cb8e16fcf566ae78bc0"
+      },
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "action-definition",
+          "status": "pass"
+        },
+        {
+          "id": "action-usage",
+          "status": "pass"
+        },
+        {
+          "id": "action-type",
+          "status": "pass"
+        },
+        {
+          "id": "action-source",
+          "status": "pass"
+        },
+        {
+          "id": "state-definition",
+          "status": "pass"
+        },
+        {
+          "id": "state-usage",
+          "status": "pass"
+        },
+        {
+          "id": "state-type",
+          "status": "pass"
+        },
+        {
+          "id": "state-source",
+          "status": "pass"
+        },
+        {
+          "id": "calculation-definition",
+          "status": "pass"
+        },
+        {
+          "id": "calculation-usage",
+          "status": "pass"
+        },
+        {
+          "id": "calculation-type",
+          "status": "pass"
+        },
+        {
+          "id": "calculation-source",
+          "status": "pass"
+        },
+        {
+          "id": "constraint-definition",
+          "status": "pass"
+        },
+        {
+          "id": "constraint-usage",
+          "status": "pass"
+        },
+        {
+          "id": "constraint-type",
+          "status": "pass"
+        },
+        {
+          "id": "constraint-source",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "id": "FAMILY-BEHAVIORS-002",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/family-behaviors-negative.sysml": "bd6ec55e670f7788ce5b6cf32b4e8a14c0016278e2dcf822dfd31e19304eda31"
+      },
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "status": "pass"
+        },
+        {
+          "id": "clean-structure",
+          "status": "pass"
+        },
+        {
+          "id": "clean-resolution",
+          "status": "pass"
+        },
+        {
+          "id": "action-definition",
+          "status": "pass"
+        },
+        {
+          "id": "action-usage",
+          "status": "pass"
+        },
+        {
+          "id": "action-type",
+          "status": "pass"
+        },
+        {
+          "id": "action-source",
+          "status": "pass"
+        },
+        {
+          "id": "action-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "state-definition",
+          "status": "pass"
+        },
+        {
+          "id": "state-usage",
+          "status": "pass"
+        },
+        {
+          "id": "state-type",
+          "status": "pass"
+        },
+        {
+          "id": "state-source",
+          "status": "pass"
+        },
+        {
+          "id": "state-rejected",
+          "status": "fail",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"state-rejected\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"messageIncludes\":\"StateUsage must be typed by Behavior\"}"
+        },
+        {
+          "id": "calculation-definition",
+          "status": "pass"
+        },
+        {
+          "id": "calculation-usage",
+          "status": "pass"
+        },
+        {
+          "id": "calculation-type",
+          "status": "pass"
+        },
+        {
+          "id": "calculation-source",
+          "status": "pass"
+        },
+        {
+          "id": "calculation-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "constraint-definition",
+          "status": "pass"
+        },
+        {
+          "id": "constraint-usage",
+          "status": "pass"
+        },
+        {
+          "id": "constraint-type",
+          "status": "pass"
+        },
+        {
+          "id": "constraint-source",
+          "status": "pass"
+        },
+        {
+          "id": "constraint-rejected",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "ActionUsage must be typed by Behavior; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-behaviors-negative.sysml",
+            "start": {
+              "byteOffset": 65,
+              "utf16Offset": 65,
+              "line": 3,
+              "column": 20
+            },
+            "end": {
+              "byteOffset": 66,
+              "utf16Offset": 66,
+              "line": 3,
+              "column": 21
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "StateUsage must be typed by StateDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-behaviors-negative.sysml",
+            "start": {
+              "byteOffset": 134,
+              "utf16Offset": 134,
+              "line": 8,
+              "column": 19
+            },
+            "end": {
+              "byteOffset": 135,
+              "utf16Offset": 135,
+              "line": 8,
+              "column": 20
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "CalculationUsage must be typed by Function; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-behaviors-negative.sysml",
+            "start": {
+              "byteOffset": 208,
+              "utf16Offset": 208,
+              "line": 13,
+              "column": 18
+            },
+            "end": {
+              "byteOffset": 209,
+              "utf16Offset": 209,
+              "line": 13,
+              "column": 19
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "ConstraintUsage must be typed by Predicate; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-behaviors-negative.sysml",
+            "start": {
+              "byteOffset": 287,
+              "utf16Offset": 287,
+              "line": 18,
+              "column": 24
+            },
+            "end": {
+              "byteOffset": 288,
+              "utf16Offset": 288,
+              "line": 18,
+              "column": 25
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-CASES-001",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/family-cases-positive.sysml": "4b437dd55e52a41d21a6cec03c388ab0f03f4fc267380cff46dc222c5fb8ba9c"
+      },
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "requirement-definition",
+          "status": "pass"
+        },
+        {
+          "id": "requirement-usage",
+          "status": "pass"
+        },
+        {
+          "id": "requirement-type",
+          "status": "pass"
+        },
+        {
+          "id": "requirement-source",
+          "status": "pass"
+        },
+        {
+          "id": "concern-definition",
+          "status": "pass"
+        },
+        {
+          "id": "concern-usage",
+          "status": "pass"
+        },
+        {
+          "id": "concern-type",
+          "status": "pass"
+        },
+        {
+          "id": "concern-source",
+          "status": "pass"
+        },
+        {
+          "id": "case-definition",
+          "status": "pass"
+        },
+        {
+          "id": "case-usage",
+          "status": "pass"
+        },
+        {
+          "id": "case-type",
+          "status": "pass"
+        },
+        {
+          "id": "case-source",
+          "status": "pass"
+        },
+        {
+          "id": "analysiscase-definition",
+          "status": "pass"
+        },
+        {
+          "id": "analysiscase-usage",
+          "status": "pass"
+        },
+        {
+          "id": "analysiscase-type",
+          "status": "pass"
+        },
+        {
+          "id": "analysiscase-source",
+          "status": "pass"
+        },
+        {
+          "id": "verificationcase-definition",
+          "status": "pass"
+        },
+        {
+          "id": "verificationcase-usage",
+          "status": "pass"
+        },
+        {
+          "id": "verificationcase-type",
+          "status": "pass"
+        },
+        {
+          "id": "verificationcase-source",
+          "status": "pass"
+        },
+        {
+          "id": "usecase-definition",
+          "status": "pass"
+        },
+        {
+          "id": "usecase-usage",
+          "status": "pass"
+        },
+        {
+          "id": "usecase-type",
+          "status": "pass"
+        },
+        {
+          "id": "usecase-source",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "id": "FAMILY-CASES-002",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/family-cases-negative.sysml": "a78ca8031542a6bda7c1cab31f746f7961e7ba53ee32a87be7aad0e54b4594f8"
+      },
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "status": "pass"
+        },
+        {
+          "id": "clean-structure",
+          "status": "pass"
+        },
+        {
+          "id": "clean-resolution",
+          "status": "pass"
+        },
+        {
+          "id": "requirement-definition",
+          "status": "pass"
+        },
+        {
+          "id": "requirement-usage",
+          "status": "pass"
+        },
+        {
+          "id": "requirement-type",
+          "status": "pass"
+        },
+        {
+          "id": "requirement-source",
+          "status": "pass"
+        },
+        {
+          "id": "requirement-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "concern-definition",
+          "status": "pass"
+        },
+        {
+          "id": "concern-usage",
+          "status": "pass"
+        },
+        {
+          "id": "concern-type",
+          "status": "pass"
+        },
+        {
+          "id": "concern-source",
+          "status": "pass"
+        },
+        {
+          "id": "concern-rejected",
+          "status": "fail",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"concern-rejected\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"messageIncludes\":\"ConcernUsage must be typed by ConcernDefinition\"}"
+        },
+        {
+          "id": "case-definition",
+          "status": "pass"
+        },
+        {
+          "id": "case-usage",
+          "status": "pass"
+        },
+        {
+          "id": "case-type",
+          "status": "pass"
+        },
+        {
+          "id": "case-source",
+          "status": "pass"
+        },
+        {
+          "id": "case-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "analysiscase-definition",
+          "status": "pass"
+        },
+        {
+          "id": "analysiscase-usage",
+          "status": "pass"
+        },
+        {
+          "id": "analysiscase-type",
+          "status": "pass"
+        },
+        {
+          "id": "analysiscase-source",
+          "status": "pass"
+        },
+        {
+          "id": "analysiscase-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "verificationcase-definition",
+          "status": "pass"
+        },
+        {
+          "id": "verificationcase-usage",
+          "status": "pass"
+        },
+        {
+          "id": "verificationcase-type",
+          "status": "pass"
+        },
+        {
+          "id": "verificationcase-source",
+          "status": "pass"
+        },
+        {
+          "id": "verificationcase-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "usecase-definition",
+          "status": "pass"
+        },
+        {
+          "id": "usecase-usage",
+          "status": "pass"
+        },
+        {
+          "id": "usecase-type",
+          "status": "pass"
+        },
+        {
+          "id": "usecase-source",
+          "status": "pass"
+        },
+        {
+          "id": "usecase-rejected",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "RequirementUsage must be typed by RequirementDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-cases-negative.sysml",
+            "start": {
+              "byteOffset": 75,
+              "utf16Offset": 75,
+              "line": 3,
+              "column": 25
+            },
+            "end": {
+              "byteOffset": 76,
+              "utf16Offset": 76,
+              "line": 3,
+              "column": 26
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "ConcernUsage must be typed by RequirementDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-cases-negative.sysml",
+            "start": {
+              "byteOffset": 148,
+              "utf16Offset": 148,
+              "line": 8,
+              "column": 21
+            },
+            "end": {
+              "byteOffset": 149,
+              "utf16Offset": 149,
+              "line": 8,
+              "column": 22
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "CaseUsage must be typed by CaseDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-cases-negative.sysml",
+            "start": {
+              "byteOffset": 215,
+              "utf16Offset": 215,
+              "line": 13,
+              "column": 18
+            },
+            "end": {
+              "byteOffset": 216,
+              "utf16Offset": 216,
+              "line": 13,
+              "column": 19
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "AnalysisCaseUsage must be typed by AnalysisCaseDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-cases-negative.sysml",
+            "start": {
+              "byteOffset": 294,
+              "utf16Offset": 294,
+              "line": 18,
+              "column": 22
+            },
+            "end": {
+              "byteOffset": 295,
+              "utf16Offset": 295,
+              "line": 18,
+              "column": 23
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "VerificationCaseUsage must be typed by VerificationCaseDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-cases-negative.sysml",
+            "start": {
+              "byteOffset": 381,
+              "utf16Offset": 381,
+              "line": 23,
+              "column": 26
+            },
+            "end": {
+              "byteOffset": 382,
+              "utf16Offset": 382,
+              "line": 23,
+              "column": 27
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "UseCaseUsage must be typed by UseCaseDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-cases-negative.sysml",
+            "start": {
+              "byteOffset": 455,
+              "utf16Offset": 455,
+              "line": 28,
+              "column": 22
+            },
+            "end": {
+              "byteOffset": 456,
+              "utf16Offset": 456,
+              "line": 28,
+              "column": 23
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "FAMILY-VIEWS-001",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/family-views-positive.sysml": "c7fba97ca57f83930383e3e3d64359d3ded3f2d319e0eee8c9f78870847fe81a"
+      },
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "view-definition",
+          "status": "pass"
+        },
+        {
+          "id": "view-usage",
+          "status": "pass"
+        },
+        {
+          "id": "view-type",
+          "status": "pass"
+        },
+        {
+          "id": "view-source",
+          "status": "pass"
+        },
+        {
+          "id": "viewpoint-definition",
+          "status": "pass"
+        },
+        {
+          "id": "viewpoint-usage",
+          "status": "pass"
+        },
+        {
+          "id": "viewpoint-type",
+          "status": "pass"
+        },
+        {
+          "id": "viewpoint-source",
+          "status": "pass"
+        },
+        {
+          "id": "rendering-definition",
+          "status": "pass"
+        },
+        {
+          "id": "rendering-usage",
+          "status": "pass"
+        },
+        {
+          "id": "rendering-type",
+          "status": "pass"
+        },
+        {
+          "id": "rendering-source",
+          "status": "pass"
+        },
+        {
+          "id": "metadata-definition",
+          "status": "pass"
+        },
+        {
+          "id": "metadata-usage",
+          "status": "pass"
+        },
+        {
+          "id": "metadata-type",
+          "status": "pass"
+        },
+        {
+          "id": "metadata-source",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "id": "FAMILY-VIEWS-002",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/family-views-negative.sysml": "6f0d5b9ac682f999e47acc74440372aba7c709e1a1a27f182f0f37b8589b4ba9"
+      },
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "status": "pass"
+        },
+        {
+          "id": "clean-structure",
+          "status": "pass"
+        },
+        {
+          "id": "clean-resolution",
+          "status": "pass"
+        },
+        {
+          "id": "view-definition",
+          "status": "pass"
+        },
+        {
+          "id": "view-usage",
+          "status": "pass"
+        },
+        {
+          "id": "view-type",
+          "status": "pass"
+        },
+        {
+          "id": "view-source",
+          "status": "pass"
+        },
+        {
+          "id": "view-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "viewpoint-definition",
+          "status": "pass"
+        },
+        {
+          "id": "viewpoint-usage",
+          "status": "pass"
+        },
+        {
+          "id": "viewpoint-type",
+          "status": "pass"
+        },
+        {
+          "id": "viewpoint-source",
+          "status": "pass"
+        },
+        {
+          "id": "viewpoint-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "rendering-definition",
+          "status": "pass"
+        },
+        {
+          "id": "rendering-usage",
+          "status": "pass"
+        },
+        {
+          "id": "rendering-type",
+          "status": "pass"
+        },
+        {
+          "id": "rendering-source",
+          "status": "pass"
+        },
+        {
+          "id": "rendering-rejected",
+          "status": "pass"
+        },
+        {
+          "id": "metadata-definition",
+          "status": "pass"
+        },
+        {
+          "id": "metadata-usage",
+          "status": "pass"
+        },
+        {
+          "id": "metadata-type",
+          "status": "pass"
+        },
+        {
+          "id": "metadata-source",
+          "status": "pass"
+        },
+        {
+          "id": "metadata-rejected",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "ViewUsage must be typed by ViewDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-views-negative.sysml",
+            "start": {
+              "byteOffset": 61,
+              "utf16Offset": 61,
+              "line": 3,
+              "column": 18
+            },
+            "end": {
+              "byteOffset": 62,
+              "utf16Offset": 62,
+              "line": 3,
+              "column": 19
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "ViewpointUsage must be typed by ViewpointDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-views-negative.sysml",
+            "start": {
+              "byteOffset": 138,
+              "utf16Offset": 138,
+              "line": 8,
+              "column": 23
+            },
+            "end": {
+              "byteOffset": 139,
+              "utf16Offset": 139,
+              "line": 8,
+              "column": 24
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "RenderingUsage must be typed by RenderingDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-views-negative.sysml",
+            "start": {
+              "byteOffset": 215,
+              "utf16Offset": 215,
+              "line": 13,
+              "column": 23
+            },
+            "end": {
+              "byteOffset": 216,
+              "utf16Offset": 216,
+              "line": 13,
+              "column": 24
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "metadata must be typed by a metadata definition or metaclass; `T` is a PartDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/family-views-negative.sysml",
+            "start": {
+              "byteOffset": 285,
+              "utf16Offset": 285,
+              "line": 18,
+              "column": 22
+            },
+            "end": {
+              "byteOffset": 286,
+              "utf16Offset": 286,
+              "line": 18,
+              "column": 23
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "TYPE-005",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/family-kernel-types.kerml": "684dadd472a247ee6b15a53b825e2784036201d961db32447da1d90378fe04e8",
+        "tests/conformance/fixtures/type-005.sysml": "b4ad6e9a3bb31bc54376ed8234575f2deaae6070c0879e2734f611f3287e4d28"
+      },
+      "checks": [
+        {
+          "id": "clean",
+          "status": "fail",
+          "message": "AssertionError [ERR_ASSERTION]: Unexpected diagnostics\n+ actual - expected\n\n+ [\n+   {\n+     code: 'semantic',\n+     message: 'StateUsage must be typed by StateDefinition; the declared type is a Behavior',\n+     severity: 'error',\n+     source: {\n+       documentId: 'tests/conformance/fixtures/type-005.sysml',\n+       end: {\n+         byteOffset: 426,\n+         column: 51,\n+         line: 8,\n+         utf16Offset: 426\n+       },\n+       start: {\n+         byteOffset: 395,\n+         column: 20,\n+         line: 8,\n+         utf16Offset: 395\n+       }\n+     },\n+     stage: 'semantic'\n+   },\n+   {\n+     code: 'semantic',\n+     message: 'StateUsage must be typed by StateDefinition; the declared type is a Behavior',\n+     severity: 'error',\n+     source: {\n+       documentId: 'tests/conformance/fixtures/type-005.sysml',\n+       end: {\n+         byteOffset: 480,\n+         column: 53,\n+         line: 9,\n+         utf16Offset: 480\n+       },\n+       start: {\n+         byteOffset: 449,\n+         column: 22,\n+         line: 9,\n+         utf16Offset: 449\n+       }\n+     },\n+     stage: 'semantic'\n+   },\n+   {\n+     code: 'semantic',\n+     message: 'StateUsage must be typed by StateDefinition; the declared type is a Behavior',\n+     severity: 'error',\n+     source: {\n+       documentId: 'tests/conformance/fixtures/type-005.sysml',\n+       end: {\n+         byteOffset: 514,\n+         column: 87,\n+         line: 9,\n+         utf16Offset: 514\n+       },\n+       start: {\n+         byteOffset: 482,\n+         column: 55,\n+         line: 9,\n+         utf16Offset: 482\n+       }\n+     },\n+     stage: 'semantic'\n+   },\n+   {\n+     code: 'semantic',\n+     message: 'StateUsage must be typed by StateDefinition; the declared type is a Behavior',\n+     severity: 'error',\n+     source: {\n+       documentId: 'tests/conformance/fixtures/type-005.sysml',\n+       end: {\n+         byteOffset: 567,\n+         column: 52,\n+         line: 10,\n+         utf16Offset: 567\n+       },\n+       start: {\n+         byteOffset: 536,\n+         column: 21,\n+         line: 10,\n+         utf16Offset: 536\n+       }\n+     },\n+     stage: 'semantic'\n+   },\n+   {\n+     code: 'semantic',\n+     message: 'StateUsage must be typed by StateDefinition; the declared type is a Behavior',\n+     severity: 'error',\n+     source: {\n+       documentId: 'tests/conformance/fixtures/type-005.sysml',\n+       end: {\n+         byteOffset: 601,\n+         column: 86,\n+         line: 10,\n+         utf16Offset: 601\n+       },\n+       start: {\n+         byteOffset: 569,\n+         column: 54,\n+         line: 10,\n+         utf16Offset: 569\n+       }\n+     },\n+     stage: 'semantic'\n+   },\n+   {\n+     code: 'semantic',\n+     message: 'ExhibitStateUsage must be typed by StateDefinition; the declared type is a Behavior',\n+     severity: 'error',\n+     source: {\n+       documentId: 'tests/conformance/fixtures/type-005.sysml',\n+       end: {\n+         byteOffset: 661,\n+         column: 59,\n+         line: 11,\n+         utf16Offset: 661\n+       },\n+       start: {\n+         byteOffset: 629,\n+         column: 27,\n+         line: 11,\n+         utf16Offset: 629\n+       }\n+     },\n+     stage: 'semantic'\n+   },\n+   {\n+     code: 'semantic',\n+     message: 'StateUsage must be typed by StateDefinition; the declared type is a ActionDefinition',\n+     severity: 'error',\n+     source: {\n+       documentId: 'tests/conformance/fixtures/type-005.sysml',\n+       end: {\n+         byteOffset: 726,\n+         column: 36,\n+         line: 13,\n+         utf16Offset: 726\n+       },\n+       start: {\n+         byteOffset: 715,\n+         column: 25,\n+         line: 13,\n+         utf16Offset: 715\n+       }\n+     },\n+     stage: 'semantic'\n+   }\n+ ]\n- []\n"
+        },
+        {
+          "id": "data",
+          "status": "pass"
+        },
+        {
+          "id": "data-type",
+          "status": "pass"
+        },
+        {
+          "id": "occurrenceValue",
+          "status": "pass"
+        },
+        {
+          "id": "occurrenceValue-type",
+          "status": "pass"
+        },
+        {
+          "id": "structureValue",
+          "status": "pass"
+        },
+        {
+          "id": "structureValue-type",
+          "status": "pass"
+        },
+        {
+          "id": "association",
+          "status": "pass"
+        },
+        {
+          "id": "association-type",
+          "status": "pass"
+        },
+        {
+          "id": "interactionValue",
+          "status": "pass"
+        },
+        {
+          "id": "interactionValue-type",
+          "status": "pass"
+        },
+        {
+          "id": "behaviorValue",
+          "status": "pass"
+        },
+        {
+          "id": "behaviorValue-type",
+          "status": "pass"
+        },
+        {
+          "id": "direct",
+          "status": "pass"
+        },
+        {
+          "id": "direct-type",
+          "status": "pass"
+        },
+        {
+          "id": "shown",
+          "status": "pass"
+        },
+        {
+          "id": "shown-type",
+          "status": "pass"
+        },
+        {
+          "id": "functionValue",
+          "status": "pass"
+        },
+        {
+          "id": "functionValue-type",
+          "status": "pass"
+        },
+        {
+          "id": "predicateValue",
+          "status": "pass"
+        },
+        {
+          "id": "predicateValue-type",
+          "status": "pass"
+        },
+        {
+          "id": "annotation",
+          "status": "pass"
+        },
+        {
+          "id": "annotation-type",
+          "status": "pass"
+        },
+        {
+          "id": "multiple-BehaviorBase",
+          "status": "pass"
+        },
+        {
+          "id": "multiple-OtherBehavior",
+          "status": "pass"
+        },
+        {
+          "id": "related-BehaviorBase",
+          "status": "pass"
+        },
+        {
+          "id": "related-BehaviorChild",
+          "status": "pass"
+        },
+        {
+          "id": "local-action",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "StateUsage must be typed by StateDefinition; the declared type is a Behavior",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-005.sysml",
+            "start": {
+              "byteOffset": 395,
+              "utf16Offset": 395,
+              "line": 8,
+              "column": 20
+            },
+            "end": {
+              "byteOffset": 426,
+              "utf16Offset": 426,
+              "line": 8,
+              "column": 51
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "StateUsage must be typed by StateDefinition; the declared type is a Behavior",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-005.sysml",
+            "start": {
+              "byteOffset": 449,
+              "utf16Offset": 449,
+              "line": 9,
+              "column": 22
+            },
+            "end": {
+              "byteOffset": 480,
+              "utf16Offset": 480,
+              "line": 9,
+              "column": 53
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "StateUsage must be typed by StateDefinition; the declared type is a Behavior",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-005.sysml",
+            "start": {
+              "byteOffset": 482,
+              "utf16Offset": 482,
+              "line": 9,
+              "column": 55
+            },
+            "end": {
+              "byteOffset": 514,
+              "utf16Offset": 514,
+              "line": 9,
+              "column": 87
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "StateUsage must be typed by StateDefinition; the declared type is a Behavior",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-005.sysml",
+            "start": {
+              "byteOffset": 536,
+              "utf16Offset": 536,
+              "line": 10,
+              "column": 21
+            },
+            "end": {
+              "byteOffset": 567,
+              "utf16Offset": 567,
+              "line": 10,
+              "column": 52
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "StateUsage must be typed by StateDefinition; the declared type is a Behavior",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-005.sysml",
+            "start": {
+              "byteOffset": 569,
+              "utf16Offset": 569,
+              "line": 10,
+              "column": 54
+            },
+            "end": {
+              "byteOffset": 601,
+              "utf16Offset": 601,
+              "line": 10,
+              "column": 86
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "ExhibitStateUsage must be typed by StateDefinition; the declared type is a Behavior",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-005.sysml",
+            "start": {
+              "byteOffset": 629,
+              "utf16Offset": 629,
+              "line": 11,
+              "column": 27
+            },
+            "end": {
+              "byteOffset": 661,
+              "utf16Offset": 661,
+              "line": 11,
+              "column": 59
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "StateUsage must be typed by StateDefinition; the declared type is a ActionDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-005.sysml",
+            "start": {
+              "byteOffset": 715,
+              "utf16Offset": 715,
+              "line": 13,
+              "column": 25
+            },
+            "end": {
+              "byteOffset": 726,
+              "utf16Offset": 726,
+              "line": 13,
+              "column": 36
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "TYPE-006",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/type-006.sysml": "c8d29f4700b690a32f17d9a1660b9d5fe3e421a54f3d7e0b5543ebc8385844a8"
+      },
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "status": "pass"
+        },
+        {
+          "id": "clean-structure",
+          "status": "pass"
+        },
+        {
+          "id": "clean-resolution",
+          "status": "pass"
+        },
+        {
+          "id": "invalid-type",
+          "status": "pass"
+        },
+        {
+          "id": "asRequirement-type",
+          "status": "pass"
+        },
+        {
+          "id": "valid-type",
+          "status": "pass"
+        },
+        {
+          "id": "inherited-type",
+          "status": "pass"
+        },
+        {
+          "id": "reject-general",
+          "status": "fail",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"reject-general\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"messageIncludes\":\"ConcernUsage must be typed by ConcernDefinition\"}"
+        },
+        {
+          "id": "reject-independent",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "ConcernUsage must have exactly one non-redundant type; found 2",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-006.sysml",
+            "start": {
+              "byteOffset": 363,
+              "utf16Offset": 363,
+              "line": 11,
+              "column": 34
+            },
+            "end": {
+              "byteOffset": 368,
+              "utf16Offset": 368,
+              "line": 11,
+              "column": 39
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "ConcernUsage must have exactly one non-redundant type; found 2",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-006.sysml",
+            "start": {
+              "byteOffset": 400,
+              "utf16Offset": 400,
+              "line": 12,
+              "column": 31
+            },
+            "end": {
+              "byteOffset": 407,
+              "utf16Offset": 407,
+              "line": 12,
+              "column": 38
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "TYPE-007",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+      "files": {
+        "tests/conformance/fixtures/type-007.sysml": "ceda2a4f4f159b08a39668fd5f26c5ee98a5977708caaead3741ff93034503c3"
+      },
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "status": "pass"
+        },
+        {
+          "id": "clean-structure",
+          "status": "pass"
+        },
+        {
+          "id": "reject-state",
+          "status": "fail",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"reject-state\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"messageIncludes\":\"StateUsage must be typed by Behavior\"}"
+        },
+        {
+          "id": "reject-exhibit",
+          "status": "fail",
+          "message": "AssertionError [ERR_ASSERTION]: Missing diagnostic {\"id\":\"reject-exhibit\",\"op\":\"diagnostic\",\"stage\":\"semantic\",\"severity\":\"error\",\"messageIncludes\":\"ExhibitStateUsage must be typed by Behavior\"}"
+        },
+        {
+          "id": "missing",
+          "status": "pass"
+        },
+        {
+          "id": "good",
+          "status": "pass"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "StateUsage must be typed by StateDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-007.sysml",
+            "start": {
+              "byteOffset": 97,
+              "utf16Offset": 97,
+              "line": 4,
+              "column": 17
+            },
+            "end": {
+              "byteOffset": 101,
+              "utf16Offset": 101,
+              "line": 4,
+              "column": 21
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "ExhibitStateUsage must be typed by StateDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-007.sysml",
+            "start": {
+              "byteOffset": 134,
+              "utf16Offset": 134,
+              "line": 5,
+              "column": 32
+            },
+            "end": {
+              "byteOffset": 138,
+              "utf16Offset": 138,
+              "line": 5,
+              "column": 36
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "StateUsage must be typed by StateDefinition; the declared type is a ActionDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-007.sysml",
+            "start": {
+              "byteOffset": 158,
+              "utf16Offset": 158,
+              "line": 6,
+              "column": 19
+            },
+            "end": {
+              "byteOffset": 170,
+              "utf16Offset": 170,
+              "line": 6,
+              "column": 31
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "StateUsage must be typed by StateDefinition; the declared type is a AttributeDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-007.sysml",
+            "start": {
+              "byteOffset": 172,
+              "utf16Offset": 172,
+              "line": 6,
+              "column": 33
+            },
+            "end": {
+              "byteOffset": 176,
+              "utf16Offset": 176,
+              "line": 6,
+              "column": 37
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "StateUsage must be typed by StateDefinition; the declared type is a ActionDefinition",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-007.sysml",
+            "start": {
+              "byteOffset": 195,
+              "utf16Offset": 195,
+              "line": 7,
+              "column": 18
+            },
+            "end": {
+              "byteOffset": 207,
+              "utf16Offset": 207,
+              "line": 7,
+              "column": 30
+            }
+          }
+        },
+        {
+          "code": "incomplete-inheritance",
+          "severity": "warning",
+          "stage": "capability",
+          "message": "The engine could not completely determine this element's inherited members.",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-007.sysml",
+            "start": {
+              "byteOffset": 213,
+              "utf16Offset": 213,
+              "line": 8,
+              "column": 5
+            },
+            "end": {
+              "byteOffset": 236,
+              "utf16Offset": 236,
+              "line": 8,
+              "column": 28
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `Absent`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/type-007.sysml",
+            "start": {
+              "byteOffset": 229,
+              "utf16Offset": 229,
+              "line": 8,
+              "column": 21
+            },
+            "end": {
+              "byteOffset": 235,
+              "utf16Offset": 235,
+              "line": 8,
+              "column": 27
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

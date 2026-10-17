@@ -51,7 +51,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/typing.rs",
       "symbol": "fn restriction(",
       "role": "candidate explicit-typing checks",
-      "sha256": "5020939a8d52f435ef42c5d5b5abede799a97d7b7875810e45a1fa3b42930a96"
+      "sha256": "2659c9ea43e1193aef737894b7d2c01c099687370d820ada5c757a59072bc4e9"
     },
     "multiplicities": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/multiplicities.rs",
@@ -298,6 +298,18 @@
       "symbol": "fn broken_and_ambiguous_ends_do_not_hide_resolved_peers",
       "role": "Native full-library regression coverage for endpoint uncertainty, deep chains, body errors, flows, n-ary connectors and snapshot query round-trip",
       "sha256": "0b9cb205e078fee0f6e3ebda2400b8df57339376aa8ab599b87b05153f45b596"
+    },
+    "semantic-driver": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+      "symbol": "pub fn validate_semantics_with(",
+      "role": "Runs semantic validators including metadata type checks",
+      "sha256": "89e5002bbc63b860c1e1881986268860c24ef01a358133a40f7ae0eade724e77"
+    },
+    "family-tests": {
+      "path": "crates/sysml-kernel/tests/families.rs",
+      "symbol": "fn concern_rejections_are_local_and_redundant_specific_types_stay_valid",
+      "role": "Source-scoped family typing and cross-dialect regression tests",
+      "sha256": "57fc8a5bdf9266a2ebf09e2acd5e1ec5cbca2de8f8d1b42c794c2bfe2af93ee7"
     }
   },
   "assessments": [
@@ -2562,6 +2574,1392 @@
         }
       ],
       "limits": "KERNEL-014 checks all 128 SysML and 101 KerML reserved-word entries through five syntax contexts: long names, short names, alias names, alias targets and qualified expression references. Tests cover quoting, upper-case and identifier suffix/prefix boundaries, the other dialect's vocabulary, Unicode diagnostic coordinates, constructor AST distinction, public query/JSON round-trip and syntax recovery. The existing reservation of new is retained as an explicit compatibility policy: it is missing from both published lists but used by the constructor production; OMG SYSML21-641 and KERML11-200 remain open at the 2026-10-17 review. That ambiguity is not claimed as normative qualification. The four public cases exercise representative reference-resolution and recovery contexts, not every keyword in every semantic context. Full grammar, contextual name resolution, Unicode printability, formatter/editing and constructor execution remain unqualified. No production parser behavior or engine version changes in this increment."
+    },
+    {
+      "id": "FAMILY-ATTRIBUTE",
+      "obligation": "Construct and expose a named AttributeDefinition and AttributeUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.7",
+        "SYSML-XMI-Systems-Attributes-AttributeUsage-attributeDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "attribute-definition",
+            "attribute-usage",
+            "attribute-type",
+            "attribute-source"
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "attribute-definition",
+            "attribute-usage",
+            "attribute-type",
+            "attribute-source",
+            "attribute-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-ENUMERATION",
+      "obligation": "Construct and expose a named EnumerationDefinition and EnumerationUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.8",
+        "SYSML-XMI-Systems-Enumerations-EnumerationUsage-enumerationDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "enumeration-definition",
+            "enumeration-usage",
+            "enumeration-type",
+            "enumeration-source"
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "enumeration-definition",
+            "enumeration-usage",
+            "enumeration-type",
+            "enumeration-source",
+            "enumeration-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-OCCURRENCE",
+      "obligation": "Construct and expose a named OccurrenceDefinition and OccurrenceUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.9",
+        "SYSML-XMI-Systems-Occurrences-OccurrenceUsage-occurrenceDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "occurrence-definition",
+            "occurrence-usage",
+            "occurrence-type",
+            "occurrence-source"
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "occurrence-definition",
+            "occurrence-usage",
+            "occurrence-type",
+            "occurrence-source",
+            "occurrence-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-ITEM",
+      "obligation": "Construct and expose a named ItemDefinition and ItemUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.10",
+        "SYSML-XMI-Systems-Items-ItemUsage-itemDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "item-definition",
+            "item-usage",
+            "item-type",
+            "item-source"
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "item-definition",
+            "item-usage",
+            "item-type",
+            "item-source",
+            "item-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-PART",
+      "obligation": "Construct and expose a named PartDefinition and PartUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.11",
+        "SYSML-XMI-Systems-Parts-PartUsage-partDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "part-definition",
+            "part-usage",
+            "part-type",
+            "part-source"
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "part-definition",
+            "part-usage",
+            "part-type",
+            "part-source",
+            "part-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-PORT",
+      "obligation": "Construct and expose a named PortDefinition and PortUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.12",
+        "SYSML-XMI-Systems-Ports-PortUsage-portDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "port-definition",
+            "port-usage",
+            "port-type",
+            "port-source"
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "port-definition",
+            "port-usage",
+            "port-type",
+            "port-source",
+            "port-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-CONNECTION",
+      "obligation": "Construct and expose a named ConnectionDefinition and ConnectionUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.13",
+        "SYSML-XMI-Systems-Connections-ConnectionUsage-connectionDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CONNECTIONS-001",
+          "checks": [
+            "clean",
+            "connection-definition",
+            "connection-usage",
+            "connection-type",
+            "connection-source"
+          ]
+        },
+        {
+          "case": "FAMILY-CONNECTIONS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "connection-definition",
+            "connection-usage",
+            "connection-type",
+            "connection-source",
+            "connection-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-INTERFACE",
+      "obligation": "Construct and expose a named InterfaceDefinition and InterfaceUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.14",
+        "SYSML-XMI-Systems-Interfaces-InterfaceUsage-interfaceDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CONNECTIONS-001",
+          "checks": [
+            "clean",
+            "interface-definition",
+            "interface-usage",
+            "interface-type",
+            "interface-source"
+          ]
+        },
+        {
+          "case": "FAMILY-CONNECTIONS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "interface-definition",
+            "interface-usage",
+            "interface-type",
+            "interface-source",
+            "interface-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-ALLOCATION",
+      "obligation": "Construct and expose a named AllocationDefinition and AllocationUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.15",
+        "SYSML-XMI-Systems-Allocations-AllocationUsage-allocationDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CONNECTIONS-001",
+          "checks": [
+            "clean",
+            "allocation-definition",
+            "allocation-usage",
+            "allocation-type",
+            "allocation-source"
+          ]
+        },
+        {
+          "case": "FAMILY-CONNECTIONS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "allocation-definition",
+            "allocation-usage",
+            "allocation-type",
+            "allocation-source",
+            "allocation-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-FLOW",
+      "obligation": "Construct and expose a named FlowDefinition and FlowUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.16",
+        "SYSML-XMI-Systems-Flows-FlowUsage-flowDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CONNECTIONS-001",
+          "checks": [
+            "clean",
+            "flow-definition",
+            "flow-usage",
+            "flow-type",
+            "flow-source"
+          ]
+        },
+        {
+          "case": "FAMILY-CONNECTIONS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "flow-definition",
+            "flow-usage",
+            "flow-type",
+            "flow-source",
+            "flow-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-ACTION",
+      "obligation": "Construct and expose a named ActionDefinition and ActionUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.17",
+        "SYSML-XMI-Systems-Actions-ActionUsage-actionDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-BEHAVIORS-001",
+          "checks": [
+            "clean",
+            "action-definition",
+            "action-usage",
+            "action-type",
+            "action-source"
+          ]
+        },
+        {
+          "case": "FAMILY-BEHAVIORS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "action-definition",
+            "action-usage",
+            "action-type",
+            "action-source",
+            "action-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-STATE",
+      "obligation": "Construct and expose a named StateDefinition and StateUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.18",
+        "SYSML-XMI-Systems-States-StateUsage-stateDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-BEHAVIORS-001",
+          "checks": [
+            "clean",
+            "state-definition",
+            "state-usage",
+            "state-type",
+            "state-source"
+          ]
+        },
+        {
+          "case": "FAMILY-BEHAVIORS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "state-definition",
+            "state-usage",
+            "state-type",
+            "state-source",
+            "state-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-CALCULATION",
+      "obligation": "Construct and expose a named CalculationDefinition and CalculationUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.19",
+        "SYSML-XMI-Systems-Calculations-CalculationUsage-calculationDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-BEHAVIORS-001",
+          "checks": [
+            "clean",
+            "calculation-definition",
+            "calculation-usage",
+            "calculation-type",
+            "calculation-source"
+          ]
+        },
+        {
+          "case": "FAMILY-BEHAVIORS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "calculation-definition",
+            "calculation-usage",
+            "calculation-type",
+            "calculation-source",
+            "calculation-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-CONSTRAINT",
+      "obligation": "Construct and expose a named ConstraintDefinition and ConstraintUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.20",
+        "SYSML-XMI-Systems-Constraints-ConstraintUsage-constraintDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-BEHAVIORS-001",
+          "checks": [
+            "clean",
+            "constraint-definition",
+            "constraint-usage",
+            "constraint-type",
+            "constraint-source"
+          ]
+        },
+        {
+          "case": "FAMILY-BEHAVIORS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "constraint-definition",
+            "constraint-usage",
+            "constraint-type",
+            "constraint-source",
+            "constraint-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-REQUIREMENT",
+      "obligation": "Construct and expose a named RequirementDefinition and RequirementUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.21",
+        "SYSML-XMI-Systems-Requirements-RequirementUsage-requirementDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "requirement-definition",
+            "requirement-usage",
+            "requirement-type",
+            "requirement-source"
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "requirement-definition",
+            "requirement-usage",
+            "requirement-type",
+            "requirement-source",
+            "requirement-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-CONCERN",
+      "obligation": "Construct and expose a named ConcernDefinition and ConcernUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.21",
+        "SYSML-XMI-Systems-Requirements-ConcernUsage-concernDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "concern-definition",
+            "concern-usage",
+            "concern-type",
+            "concern-source"
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "concern-definition",
+            "concern-usage",
+            "concern-type",
+            "concern-source",
+            "concern-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-CASE",
+      "obligation": "Construct and expose a named CaseDefinition and CaseUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.22",
+        "SYSML-XMI-Systems-Cases-CaseUsage-caseDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "case-definition",
+            "case-usage",
+            "case-type",
+            "case-source"
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "case-definition",
+            "case-usage",
+            "case-type",
+            "case-source",
+            "case-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-ANALYSISCASE",
+      "obligation": "Construct and expose a named AnalysisCaseDefinition and AnalysisCaseUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.23",
+        "SYSML-XMI-Systems-AnalysisCases-AnalysisCaseUsage-analysisCaseDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "analysiscase-definition",
+            "analysiscase-usage",
+            "analysiscase-type",
+            "analysiscase-source"
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "analysiscase-definition",
+            "analysiscase-usage",
+            "analysiscase-type",
+            "analysiscase-source",
+            "analysiscase-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-VERIFICATIONCASE",
+      "obligation": "Construct and expose a named VerificationCaseDefinition and VerificationCaseUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.24",
+        "SYSML-XMI-Systems-VerificationCases-VerificationCaseUsage-verificationCaseDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "verificationcase-definition",
+            "verificationcase-usage",
+            "verificationcase-type",
+            "verificationcase-source"
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "verificationcase-definition",
+            "verificationcase-usage",
+            "verificationcase-type",
+            "verificationcase-source",
+            "verificationcase-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-USECASE",
+      "obligation": "Construct and expose a named UseCaseDefinition and UseCaseUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.25",
+        "SYSML-XMI-Systems-UseCases-UseCaseUsage-useCaseDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "usecase-definition",
+            "usecase-usage",
+            "usecase-type",
+            "usecase-source"
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "usecase-definition",
+            "usecase-usage",
+            "usecase-type",
+            "usecase-source",
+            "usecase-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-VIEW",
+      "obligation": "Construct and expose a named ViewDefinition and ViewUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.26",
+        "SYSML-XMI-Systems-Views-ViewUsage-viewDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-VIEWS-001",
+          "checks": [
+            "clean",
+            "view-definition",
+            "view-usage",
+            "view-type",
+            "view-source"
+          ]
+        },
+        {
+          "case": "FAMILY-VIEWS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "view-definition",
+            "view-usage",
+            "view-type",
+            "view-source",
+            "view-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-VIEWPOINT",
+      "obligation": "Construct and expose a named ViewpointDefinition and ViewpointUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.26",
+        "SYSML-XMI-Systems-Views-ViewpointUsage-viewpointDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-VIEWS-001",
+          "checks": [
+            "clean",
+            "viewpoint-definition",
+            "viewpoint-usage",
+            "viewpoint-type",
+            "viewpoint-source"
+          ]
+        },
+        {
+          "case": "FAMILY-VIEWS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "viewpoint-definition",
+            "viewpoint-usage",
+            "viewpoint-type",
+            "viewpoint-source",
+            "viewpoint-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-RENDERING",
+      "obligation": "Construct and expose a named RenderingDefinition and RenderingUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.26",
+        "SYSML-XMI-Systems-Views-RenderingUsage-renderingDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-VIEWS-001",
+          "checks": [
+            "clean",
+            "rendering-definition",
+            "rendering-usage",
+            "rendering-type",
+            "rendering-source"
+          ]
+        },
+        {
+          "case": "FAMILY-VIEWS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "rendering-definition",
+            "rendering-usage",
+            "rendering-type",
+            "rendering-source",
+            "rendering-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-METADATA",
+      "obligation": "Construct and expose a named MetadataDefinition and MetadataUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.27",
+        "SYSML-XMI-Systems-Metadata-MetadataUsage-metadataDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine",
+          "semantic-driver"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-VIEWS-001",
+          "checks": [
+            "clean",
+            "metadata-definition",
+            "metadata-usage",
+            "metadata-type",
+            "metadata-source"
+          ]
+        },
+        {
+          "case": "FAMILY-VIEWS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "metadata-definition",
+            "metadata-usage",
+            "metadata-type",
+            "metadata-source",
+            "metadata-rejected"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "TYPING-FAMILY-BOUNDARIES",
+      "obligation": "Accept the tested KerML classifier families for SysML usages; accept Behavior for state/exhibit typing and require ConcernDefinition for concern typing.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateUsage-stateDefinition",
+        "SYSML-XMI-Systems-Requirements-ConcernUsage-concernDefinition",
+        "SYSML-CLAUSE-8.2.2.18",
+        "SYSML-CLAUSE-8.2.2.21"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "typing",
+          "engine",
+          "family-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "TYPE-005",
+          "checks": [
+            "clean",
+            "data",
+            "data-type",
+            "occurrenceValue",
+            "occurrenceValue-type",
+            "structureValue",
+            "structureValue-type",
+            "association",
+            "association-type",
+            "interactionValue",
+            "interactionValue-type",
+            "behaviorValue",
+            "behaviorValue-type",
+            "direct",
+            "direct-type",
+            "shown",
+            "shown-type",
+            "functionValue",
+            "functionValue-type",
+            "predicateValue",
+            "predicateValue-type",
+            "annotation",
+            "annotation-type",
+            "multiple-BehaviorBase",
+            "multiple-OtherBehavior",
+            "related-BehaviorBase",
+            "related-BehaviorChild",
+            "local-action"
+          ]
+        },
+        {
+          "case": "TYPE-006",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "invalid-type",
+            "asRequirement-type",
+            "valid-type",
+            "inherited-type",
+            "reject-general",
+            "reject-independent"
+          ]
+        },
+        {
+          "case": "TYPE-007",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "reject-state",
+            "reject-exhibit",
+            "missing",
+            "good"
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 corrects StateUsage/ExhibitStateUsage to allow Behavior and ConcernUsage to require ConcernDefinition. Explicit positive/negative cases and source-scoped Rust diagnostics cover multiple, redundant, incompatible and unresolved types. The facade projects reference identity independently of validity. General implicit/inherited typing, parameter direction exceptions, all derived properties and complete typing constraints remain unqualified."
     }
   ]
 }

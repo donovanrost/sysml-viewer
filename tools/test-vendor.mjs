@@ -31,6 +31,7 @@ try {
   const suites = [
     ['sysmlv2-syntax', 'lexer::'],
     ['sysmlv2-model', 'rational::tests::'],
+    ['sysmlv2-model', 'check::typing::tests::'],
     ...[
       'type_relations',
       'model_level_evaluability',

@@ -5305,26 +5305,3036 @@
         }
       ],
       "limits": "KERNEL-014 checks all 128 SysML and 101 KerML reserved-word entries through five syntax contexts: long names, short names, alias names, alias targets and qualified expression references. Tests cover quoting, upper-case and identifier suffix/prefix boundaries, the other dialect's vocabulary, Unicode diagnostic coordinates, constructor AST distinction, public query/JSON round-trip and syntax recovery. The existing reservation of new is retained as an explicit compatibility policy: it is missing from both published lists but used by the constructor production; OMG SYSML21-641 and KERML11-200 remain open at the 2026-10-17 review. That ambiguity is not claimed as normative qualification. The four public cases exercise representative reference-resolution and recovery contexts, not every keyword in every semantic context. Full grammar, contextual name resolution, Unicode printability, formatter/editing and constructor execution remain unqualified. No production parser behavior or engine version changes in this increment."
+    },
+    {
+      "id": "FAMILY-ATTRIBUTE",
+      "obligation": "Construct and expose a named AttributeDefinition and AttributeUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.7",
+        "SYSML-XMI-Systems-Attributes-AttributeUsage-attributeDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "attribute-definition",
+            "attribute-usage",
+            "attribute-type",
+            "attribute-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "attribute-definition",
+              "status": "pass"
+            },
+            {
+              "id": "attribute-usage",
+              "status": "pass"
+            },
+            {
+              "id": "attribute-type",
+              "status": "pass"
+            },
+            {
+              "id": "attribute-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "attribute-definition",
+            "attribute-usage",
+            "attribute-type",
+            "attribute-source",
+            "attribute-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "attribute-definition",
+              "status": "pass"
+            },
+            {
+              "id": "attribute-usage",
+              "status": "pass"
+            },
+            {
+              "id": "attribute-type",
+              "status": "pass"
+            },
+            {
+              "id": "attribute-source",
+              "status": "pass"
+            },
+            {
+              "id": "attribute-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-ENUMERATION",
+      "obligation": "Construct and expose a named EnumerationDefinition and EnumerationUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.8",
+        "SYSML-XMI-Systems-Enumerations-EnumerationUsage-enumerationDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "enumeration-definition",
+            "enumeration-usage",
+            "enumeration-type",
+            "enumeration-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "enumeration-definition",
+              "status": "pass"
+            },
+            {
+              "id": "enumeration-usage",
+              "status": "pass"
+            },
+            {
+              "id": "enumeration-type",
+              "status": "pass"
+            },
+            {
+              "id": "enumeration-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "enumeration-definition",
+            "enumeration-usage",
+            "enumeration-type",
+            "enumeration-source",
+            "enumeration-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "enumeration-definition",
+              "status": "pass"
+            },
+            {
+              "id": "enumeration-usage",
+              "status": "pass"
+            },
+            {
+              "id": "enumeration-type",
+              "status": "pass"
+            },
+            {
+              "id": "enumeration-source",
+              "status": "pass"
+            },
+            {
+              "id": "enumeration-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-OCCURRENCE",
+      "obligation": "Construct and expose a named OccurrenceDefinition and OccurrenceUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.9",
+        "SYSML-XMI-Systems-Occurrences-OccurrenceUsage-occurrenceDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "occurrence-definition",
+            "occurrence-usage",
+            "occurrence-type",
+            "occurrence-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "occurrence-definition",
+              "status": "pass"
+            },
+            {
+              "id": "occurrence-usage",
+              "status": "pass"
+            },
+            {
+              "id": "occurrence-type",
+              "status": "pass"
+            },
+            {
+              "id": "occurrence-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "occurrence-definition",
+            "occurrence-usage",
+            "occurrence-type",
+            "occurrence-source",
+            "occurrence-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "occurrence-definition",
+              "status": "pass"
+            },
+            {
+              "id": "occurrence-usage",
+              "status": "pass"
+            },
+            {
+              "id": "occurrence-type",
+              "status": "pass"
+            },
+            {
+              "id": "occurrence-source",
+              "status": "pass"
+            },
+            {
+              "id": "occurrence-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-ITEM",
+      "obligation": "Construct and expose a named ItemDefinition and ItemUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.10",
+        "SYSML-XMI-Systems-Items-ItemUsage-itemDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "item-definition",
+            "item-usage",
+            "item-type",
+            "item-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "item-definition",
+              "status": "pass"
+            },
+            {
+              "id": "item-usage",
+              "status": "pass"
+            },
+            {
+              "id": "item-type",
+              "status": "pass"
+            },
+            {
+              "id": "item-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "item-definition",
+            "item-usage",
+            "item-type",
+            "item-source",
+            "item-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "item-definition",
+              "status": "pass"
+            },
+            {
+              "id": "item-usage",
+              "status": "pass"
+            },
+            {
+              "id": "item-type",
+              "status": "pass"
+            },
+            {
+              "id": "item-source",
+              "status": "pass"
+            },
+            {
+              "id": "item-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-PART",
+      "obligation": "Construct and expose a named PartDefinition and PartUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.11",
+        "SYSML-XMI-Systems-Parts-PartUsage-partDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "part-definition",
+            "part-usage",
+            "part-type",
+            "part-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "part-definition",
+              "status": "pass"
+            },
+            {
+              "id": "part-usage",
+              "status": "pass"
+            },
+            {
+              "id": "part-type",
+              "status": "pass"
+            },
+            {
+              "id": "part-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "part-definition",
+            "part-usage",
+            "part-type",
+            "part-source",
+            "part-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "part-definition",
+              "status": "pass"
+            },
+            {
+              "id": "part-usage",
+              "status": "pass"
+            },
+            {
+              "id": "part-type",
+              "status": "pass"
+            },
+            {
+              "id": "part-source",
+              "status": "pass"
+            },
+            {
+              "id": "part-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-PORT",
+      "obligation": "Construct and expose a named PortDefinition and PortUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.12",
+        "SYSML-XMI-Systems-Ports-PortUsage-portDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-DATA-001",
+          "checks": [
+            "clean",
+            "port-definition",
+            "port-usage",
+            "port-type",
+            "port-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "port-definition",
+              "status": "pass"
+            },
+            {
+              "id": "port-usage",
+              "status": "pass"
+            },
+            {
+              "id": "port-type",
+              "status": "pass"
+            },
+            {
+              "id": "port-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-DATA-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "port-definition",
+            "port-usage",
+            "port-type",
+            "port-source",
+            "port-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "port-definition",
+              "status": "pass"
+            },
+            {
+              "id": "port-usage",
+              "status": "pass"
+            },
+            {
+              "id": "port-type",
+              "status": "pass"
+            },
+            {
+              "id": "port-source",
+              "status": "pass"
+            },
+            {
+              "id": "port-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-CONNECTION",
+      "obligation": "Construct and expose a named ConnectionDefinition and ConnectionUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.13",
+        "SYSML-XMI-Systems-Connections-ConnectionUsage-connectionDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CONNECTIONS-001",
+          "checks": [
+            "clean",
+            "connection-definition",
+            "connection-usage",
+            "connection-type",
+            "connection-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "connection-definition",
+              "status": "pass"
+            },
+            {
+              "id": "connection-usage",
+              "status": "pass"
+            },
+            {
+              "id": "connection-type",
+              "status": "pass"
+            },
+            {
+              "id": "connection-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-CONNECTIONS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "connection-definition",
+            "connection-usage",
+            "connection-type",
+            "connection-source",
+            "connection-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "connection-definition",
+              "status": "pass"
+            },
+            {
+              "id": "connection-usage",
+              "status": "pass"
+            },
+            {
+              "id": "connection-type",
+              "status": "pass"
+            },
+            {
+              "id": "connection-source",
+              "status": "pass"
+            },
+            {
+              "id": "connection-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-INTERFACE",
+      "obligation": "Construct and expose a named InterfaceDefinition and InterfaceUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.14",
+        "SYSML-XMI-Systems-Interfaces-InterfaceUsage-interfaceDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CONNECTIONS-001",
+          "checks": [
+            "clean",
+            "interface-definition",
+            "interface-usage",
+            "interface-type",
+            "interface-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "interface-definition",
+              "status": "pass"
+            },
+            {
+              "id": "interface-usage",
+              "status": "pass"
+            },
+            {
+              "id": "interface-type",
+              "status": "pass"
+            },
+            {
+              "id": "interface-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-CONNECTIONS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "interface-definition",
+            "interface-usage",
+            "interface-type",
+            "interface-source",
+            "interface-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "interface-definition",
+              "status": "pass"
+            },
+            {
+              "id": "interface-usage",
+              "status": "pass"
+            },
+            {
+              "id": "interface-type",
+              "status": "pass"
+            },
+            {
+              "id": "interface-source",
+              "status": "pass"
+            },
+            {
+              "id": "interface-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-ALLOCATION",
+      "obligation": "Construct and expose a named AllocationDefinition and AllocationUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.15",
+        "SYSML-XMI-Systems-Allocations-AllocationUsage-allocationDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CONNECTIONS-001",
+          "checks": [
+            "clean",
+            "allocation-definition",
+            "allocation-usage",
+            "allocation-type",
+            "allocation-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "allocation-definition",
+              "status": "pass"
+            },
+            {
+              "id": "allocation-usage",
+              "status": "pass"
+            },
+            {
+              "id": "allocation-type",
+              "status": "pass"
+            },
+            {
+              "id": "allocation-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-CONNECTIONS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "allocation-definition",
+            "allocation-usage",
+            "allocation-type",
+            "allocation-source",
+            "allocation-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "allocation-definition",
+              "status": "pass"
+            },
+            {
+              "id": "allocation-usage",
+              "status": "pass"
+            },
+            {
+              "id": "allocation-type",
+              "status": "pass"
+            },
+            {
+              "id": "allocation-source",
+              "status": "pass"
+            },
+            {
+              "id": "allocation-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-FLOW",
+      "obligation": "Construct and expose a named FlowDefinition and FlowUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.16",
+        "SYSML-XMI-Systems-Flows-FlowUsage-flowDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CONNECTIONS-001",
+          "checks": [
+            "clean",
+            "flow-definition",
+            "flow-usage",
+            "flow-type",
+            "flow-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "flow-definition",
+              "status": "pass"
+            },
+            {
+              "id": "flow-usage",
+              "status": "pass"
+            },
+            {
+              "id": "flow-type",
+              "status": "pass"
+            },
+            {
+              "id": "flow-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-CONNECTIONS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "flow-definition",
+            "flow-usage",
+            "flow-type",
+            "flow-source",
+            "flow-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "flow-definition",
+              "status": "pass"
+            },
+            {
+              "id": "flow-usage",
+              "status": "pass"
+            },
+            {
+              "id": "flow-type",
+              "status": "pass"
+            },
+            {
+              "id": "flow-source",
+              "status": "pass"
+            },
+            {
+              "id": "flow-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-ACTION",
+      "obligation": "Construct and expose a named ActionDefinition and ActionUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.17",
+        "SYSML-XMI-Systems-Actions-ActionUsage-actionDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-BEHAVIORS-001",
+          "checks": [
+            "clean",
+            "action-definition",
+            "action-usage",
+            "action-type",
+            "action-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "action-definition",
+              "status": "pass"
+            },
+            {
+              "id": "action-usage",
+              "status": "pass"
+            },
+            {
+              "id": "action-type",
+              "status": "pass"
+            },
+            {
+              "id": "action-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-BEHAVIORS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "action-definition",
+            "action-usage",
+            "action-type",
+            "action-source",
+            "action-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "action-definition",
+              "status": "pass"
+            },
+            {
+              "id": "action-usage",
+              "status": "pass"
+            },
+            {
+              "id": "action-type",
+              "status": "pass"
+            },
+            {
+              "id": "action-source",
+              "status": "pass"
+            },
+            {
+              "id": "action-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-STATE",
+      "obligation": "Construct and expose a named StateDefinition and StateUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.18",
+        "SYSML-XMI-Systems-States-StateUsage-stateDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-BEHAVIORS-001",
+          "checks": [
+            "clean",
+            "state-definition",
+            "state-usage",
+            "state-type",
+            "state-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "state-definition",
+              "status": "pass"
+            },
+            {
+              "id": "state-usage",
+              "status": "pass"
+            },
+            {
+              "id": "state-type",
+              "status": "pass"
+            },
+            {
+              "id": "state-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-BEHAVIORS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "state-definition",
+            "state-usage",
+            "state-type",
+            "state-source",
+            "state-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "state-definition",
+              "status": "pass"
+            },
+            {
+              "id": "state-usage",
+              "status": "pass"
+            },
+            {
+              "id": "state-type",
+              "status": "pass"
+            },
+            {
+              "id": "state-source",
+              "status": "pass"
+            },
+            {
+              "id": "state-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-CALCULATION",
+      "obligation": "Construct and expose a named CalculationDefinition and CalculationUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.19",
+        "SYSML-XMI-Systems-Calculations-CalculationUsage-calculationDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-BEHAVIORS-001",
+          "checks": [
+            "clean",
+            "calculation-definition",
+            "calculation-usage",
+            "calculation-type",
+            "calculation-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "calculation-definition",
+              "status": "pass"
+            },
+            {
+              "id": "calculation-usage",
+              "status": "pass"
+            },
+            {
+              "id": "calculation-type",
+              "status": "pass"
+            },
+            {
+              "id": "calculation-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-BEHAVIORS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "calculation-definition",
+            "calculation-usage",
+            "calculation-type",
+            "calculation-source",
+            "calculation-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "calculation-definition",
+              "status": "pass"
+            },
+            {
+              "id": "calculation-usage",
+              "status": "pass"
+            },
+            {
+              "id": "calculation-type",
+              "status": "pass"
+            },
+            {
+              "id": "calculation-source",
+              "status": "pass"
+            },
+            {
+              "id": "calculation-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-CONSTRAINT",
+      "obligation": "Construct and expose a named ConstraintDefinition and ConstraintUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.20",
+        "SYSML-XMI-Systems-Constraints-ConstraintUsage-constraintDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-BEHAVIORS-001",
+          "checks": [
+            "clean",
+            "constraint-definition",
+            "constraint-usage",
+            "constraint-type",
+            "constraint-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "constraint-definition",
+              "status": "pass"
+            },
+            {
+              "id": "constraint-usage",
+              "status": "pass"
+            },
+            {
+              "id": "constraint-type",
+              "status": "pass"
+            },
+            {
+              "id": "constraint-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-BEHAVIORS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "constraint-definition",
+            "constraint-usage",
+            "constraint-type",
+            "constraint-source",
+            "constraint-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "constraint-definition",
+              "status": "pass"
+            },
+            {
+              "id": "constraint-usage",
+              "status": "pass"
+            },
+            {
+              "id": "constraint-type",
+              "status": "pass"
+            },
+            {
+              "id": "constraint-source",
+              "status": "pass"
+            },
+            {
+              "id": "constraint-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-REQUIREMENT",
+      "obligation": "Construct and expose a named RequirementDefinition and RequirementUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.21",
+        "SYSML-XMI-Systems-Requirements-RequirementUsage-requirementDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "requirement-definition",
+            "requirement-usage",
+            "requirement-type",
+            "requirement-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "requirement-definition",
+              "status": "pass"
+            },
+            {
+              "id": "requirement-usage",
+              "status": "pass"
+            },
+            {
+              "id": "requirement-type",
+              "status": "pass"
+            },
+            {
+              "id": "requirement-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "requirement-definition",
+            "requirement-usage",
+            "requirement-type",
+            "requirement-source",
+            "requirement-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "requirement-definition",
+              "status": "pass"
+            },
+            {
+              "id": "requirement-usage",
+              "status": "pass"
+            },
+            {
+              "id": "requirement-type",
+              "status": "pass"
+            },
+            {
+              "id": "requirement-source",
+              "status": "pass"
+            },
+            {
+              "id": "requirement-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-CONCERN",
+      "obligation": "Construct and expose a named ConcernDefinition and ConcernUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.21",
+        "SYSML-XMI-Systems-Requirements-ConcernUsage-concernDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "concern-definition",
+            "concern-usage",
+            "concern-type",
+            "concern-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "concern-definition",
+              "status": "pass"
+            },
+            {
+              "id": "concern-usage",
+              "status": "pass"
+            },
+            {
+              "id": "concern-type",
+              "status": "pass"
+            },
+            {
+              "id": "concern-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "concern-definition",
+            "concern-usage",
+            "concern-type",
+            "concern-source",
+            "concern-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "concern-definition",
+              "status": "pass"
+            },
+            {
+              "id": "concern-usage",
+              "status": "pass"
+            },
+            {
+              "id": "concern-type",
+              "status": "pass"
+            },
+            {
+              "id": "concern-source",
+              "status": "pass"
+            },
+            {
+              "id": "concern-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-CASE",
+      "obligation": "Construct and expose a named CaseDefinition and CaseUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.22",
+        "SYSML-XMI-Systems-Cases-CaseUsage-caseDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "case-definition",
+            "case-usage",
+            "case-type",
+            "case-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "case-definition",
+              "status": "pass"
+            },
+            {
+              "id": "case-usage",
+              "status": "pass"
+            },
+            {
+              "id": "case-type",
+              "status": "pass"
+            },
+            {
+              "id": "case-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "case-definition",
+            "case-usage",
+            "case-type",
+            "case-source",
+            "case-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "case-definition",
+              "status": "pass"
+            },
+            {
+              "id": "case-usage",
+              "status": "pass"
+            },
+            {
+              "id": "case-type",
+              "status": "pass"
+            },
+            {
+              "id": "case-source",
+              "status": "pass"
+            },
+            {
+              "id": "case-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-ANALYSISCASE",
+      "obligation": "Construct and expose a named AnalysisCaseDefinition and AnalysisCaseUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.23",
+        "SYSML-XMI-Systems-AnalysisCases-AnalysisCaseUsage-analysisCaseDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "analysiscase-definition",
+            "analysiscase-usage",
+            "analysiscase-type",
+            "analysiscase-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "analysiscase-definition",
+              "status": "pass"
+            },
+            {
+              "id": "analysiscase-usage",
+              "status": "pass"
+            },
+            {
+              "id": "analysiscase-type",
+              "status": "pass"
+            },
+            {
+              "id": "analysiscase-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "analysiscase-definition",
+            "analysiscase-usage",
+            "analysiscase-type",
+            "analysiscase-source",
+            "analysiscase-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "analysiscase-definition",
+              "status": "pass"
+            },
+            {
+              "id": "analysiscase-usage",
+              "status": "pass"
+            },
+            {
+              "id": "analysiscase-type",
+              "status": "pass"
+            },
+            {
+              "id": "analysiscase-source",
+              "status": "pass"
+            },
+            {
+              "id": "analysiscase-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-VERIFICATIONCASE",
+      "obligation": "Construct and expose a named VerificationCaseDefinition and VerificationCaseUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.24",
+        "SYSML-XMI-Systems-VerificationCases-VerificationCaseUsage-verificationCaseDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "verificationcase-definition",
+            "verificationcase-usage",
+            "verificationcase-type",
+            "verificationcase-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "verificationcase-definition",
+              "status": "pass"
+            },
+            {
+              "id": "verificationcase-usage",
+              "status": "pass"
+            },
+            {
+              "id": "verificationcase-type",
+              "status": "pass"
+            },
+            {
+              "id": "verificationcase-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "verificationcase-definition",
+            "verificationcase-usage",
+            "verificationcase-type",
+            "verificationcase-source",
+            "verificationcase-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "verificationcase-definition",
+              "status": "pass"
+            },
+            {
+              "id": "verificationcase-usage",
+              "status": "pass"
+            },
+            {
+              "id": "verificationcase-type",
+              "status": "pass"
+            },
+            {
+              "id": "verificationcase-source",
+              "status": "pass"
+            },
+            {
+              "id": "verificationcase-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-USECASE",
+      "obligation": "Construct and expose a named UseCaseDefinition and UseCaseUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.25",
+        "SYSML-XMI-Systems-UseCases-UseCaseUsage-useCaseDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-CASES-001",
+          "checks": [
+            "clean",
+            "usecase-definition",
+            "usecase-usage",
+            "usecase-type",
+            "usecase-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "usecase-definition",
+              "status": "pass"
+            },
+            {
+              "id": "usecase-usage",
+              "status": "pass"
+            },
+            {
+              "id": "usecase-type",
+              "status": "pass"
+            },
+            {
+              "id": "usecase-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-CASES-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "usecase-definition",
+            "usecase-usage",
+            "usecase-type",
+            "usecase-source",
+            "usecase-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "usecase-definition",
+              "status": "pass"
+            },
+            {
+              "id": "usecase-usage",
+              "status": "pass"
+            },
+            {
+              "id": "usecase-type",
+              "status": "pass"
+            },
+            {
+              "id": "usecase-source",
+              "status": "pass"
+            },
+            {
+              "id": "usecase-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-VIEW",
+      "obligation": "Construct and expose a named ViewDefinition and ViewUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.26",
+        "SYSML-XMI-Systems-Views-ViewUsage-viewDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-VIEWS-001",
+          "checks": [
+            "clean",
+            "view-definition",
+            "view-usage",
+            "view-type",
+            "view-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "view-definition",
+              "status": "pass"
+            },
+            {
+              "id": "view-usage",
+              "status": "pass"
+            },
+            {
+              "id": "view-type",
+              "status": "pass"
+            },
+            {
+              "id": "view-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-VIEWS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "view-definition",
+            "view-usage",
+            "view-type",
+            "view-source",
+            "view-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "view-definition",
+              "status": "pass"
+            },
+            {
+              "id": "view-usage",
+              "status": "pass"
+            },
+            {
+              "id": "view-type",
+              "status": "pass"
+            },
+            {
+              "id": "view-source",
+              "status": "pass"
+            },
+            {
+              "id": "view-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-VIEWPOINT",
+      "obligation": "Construct and expose a named ViewpointDefinition and ViewpointUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.26",
+        "SYSML-XMI-Systems-Views-ViewpointUsage-viewpointDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-VIEWS-001",
+          "checks": [
+            "clean",
+            "viewpoint-definition",
+            "viewpoint-usage",
+            "viewpoint-type",
+            "viewpoint-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "viewpoint-definition",
+              "status": "pass"
+            },
+            {
+              "id": "viewpoint-usage",
+              "status": "pass"
+            },
+            {
+              "id": "viewpoint-type",
+              "status": "pass"
+            },
+            {
+              "id": "viewpoint-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-VIEWS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "viewpoint-definition",
+            "viewpoint-usage",
+            "viewpoint-type",
+            "viewpoint-source",
+            "viewpoint-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "viewpoint-definition",
+              "status": "pass"
+            },
+            {
+              "id": "viewpoint-usage",
+              "status": "pass"
+            },
+            {
+              "id": "viewpoint-type",
+              "status": "pass"
+            },
+            {
+              "id": "viewpoint-source",
+              "status": "pass"
+            },
+            {
+              "id": "viewpoint-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-RENDERING",
+      "obligation": "Construct and expose a named RenderingDefinition and RenderingUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.26",
+        "SYSML-XMI-Systems-Views-RenderingUsage-renderingDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-VIEWS-001",
+          "checks": [
+            "clean",
+            "rendering-definition",
+            "rendering-usage",
+            "rendering-type",
+            "rendering-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "rendering-definition",
+              "status": "pass"
+            },
+            {
+              "id": "rendering-usage",
+              "status": "pass"
+            },
+            {
+              "id": "rendering-type",
+              "status": "pass"
+            },
+            {
+              "id": "rendering-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-VIEWS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "rendering-definition",
+            "rendering-usage",
+            "rendering-type",
+            "rendering-source",
+            "rendering-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "rendering-definition",
+              "status": "pass"
+            },
+            {
+              "id": "rendering-usage",
+              "status": "pass"
+            },
+            {
+              "id": "rendering-type",
+              "status": "pass"
+            },
+            {
+              "id": "rendering-source",
+              "status": "pass"
+            },
+            {
+              "id": "rendering-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "FAMILY-METADATA",
+      "obligation": "Construct and expose a named MetadataDefinition and MetadataUsage, resolve its explicit type and reject the tested incompatible type.",
+      "category": "standard",
+      "sources": [
+        "SYSML-CLAUSE-8.2.2.27",
+        "SYSML-XMI-Systems-Metadata-MetadataUsage-metadataDefinition"
+      ],
+      "applicability": "current-product",
+      "priority": "P1",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "parser",
+          "graph",
+          "typing",
+          "engine",
+          "semantic-driver"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "source-api"
+        ]
+      },
+      "tests": [
+        {
+          "case": "FAMILY-VIEWS-001",
+          "checks": [
+            "clean",
+            "metadata-definition",
+            "metadata-usage",
+            "metadata-type",
+            "metadata-source"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "metadata-definition",
+              "status": "pass"
+            },
+            {
+              "id": "metadata-usage",
+              "status": "pass"
+            },
+            {
+              "id": "metadata-type",
+              "status": "pass"
+            },
+            {
+              "id": "metadata-source",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "FAMILY-VIEWS-002",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "metadata-definition",
+            "metadata-usage",
+            "metadata-type",
+            "metadata-source",
+            "metadata-rejected"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "metadata-definition",
+              "status": "pass"
+            },
+            {
+              "id": "metadata-usage",
+              "status": "pass"
+            },
+            {
+              "id": "metadata-type",
+              "status": "pass"
+            },
+            {
+              "id": "metadata-source",
+              "status": "pass"
+            },
+            {
+              "id": "metadata-rejected",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 checks one nominal declaration pair and one incompatible explicit type through the public snapshot. References to invalid types intentionally remain resolved: resolution is not type validity. Item and Part properties select subsets of occurrence types; this case does not assert that every explicit type must be a Structure or PartDefinition. No complete grammar, implicit construction, inherited typing, property derivation, family semantics or clause closure is claimed."
+    },
+    {
+      "id": "TYPING-FAMILY-BOUNDARIES",
+      "obligation": "Accept the tested KerML classifier families for SysML usages; accept Behavior for state/exhibit typing and require ConcernDefinition for concern typing.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateUsage-stateDefinition",
+        "SYSML-XMI-Systems-Requirements-ConcernUsage-concernDefinition",
+        "SYSML-CLAUSE-8.2.2.18",
+        "SYSML-CLAUSE-8.2.2.21"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "typing",
+          "engine",
+          "family-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "TYPE-005",
+          "checks": [
+            "clean",
+            "data",
+            "data-type",
+            "occurrenceValue",
+            "occurrenceValue-type",
+            "structureValue",
+            "structureValue-type",
+            "association",
+            "association-type",
+            "interactionValue",
+            "interactionValue-type",
+            "behaviorValue",
+            "behaviorValue-type",
+            "direct",
+            "direct-type",
+            "shown",
+            "shown-type",
+            "functionValue",
+            "functionValue-type",
+            "predicateValue",
+            "predicateValue-type",
+            "annotation",
+            "annotation-type",
+            "multiple-BehaviorBase",
+            "multiple-OtherBehavior",
+            "related-BehaviorBase",
+            "related-BehaviorChild",
+            "local-action"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "data",
+              "status": "pass"
+            },
+            {
+              "id": "data-type",
+              "status": "pass"
+            },
+            {
+              "id": "occurrenceValue",
+              "status": "pass"
+            },
+            {
+              "id": "occurrenceValue-type",
+              "status": "pass"
+            },
+            {
+              "id": "structureValue",
+              "status": "pass"
+            },
+            {
+              "id": "structureValue-type",
+              "status": "pass"
+            },
+            {
+              "id": "association",
+              "status": "pass"
+            },
+            {
+              "id": "association-type",
+              "status": "pass"
+            },
+            {
+              "id": "interactionValue",
+              "status": "pass"
+            },
+            {
+              "id": "interactionValue-type",
+              "status": "pass"
+            },
+            {
+              "id": "behaviorValue",
+              "status": "pass"
+            },
+            {
+              "id": "behaviorValue-type",
+              "status": "pass"
+            },
+            {
+              "id": "direct",
+              "status": "pass"
+            },
+            {
+              "id": "direct-type",
+              "status": "pass"
+            },
+            {
+              "id": "shown",
+              "status": "pass"
+            },
+            {
+              "id": "shown-type",
+              "status": "pass"
+            },
+            {
+              "id": "functionValue",
+              "status": "pass"
+            },
+            {
+              "id": "functionValue-type",
+              "status": "pass"
+            },
+            {
+              "id": "predicateValue",
+              "status": "pass"
+            },
+            {
+              "id": "predicateValue-type",
+              "status": "pass"
+            },
+            {
+              "id": "annotation",
+              "status": "pass"
+            },
+            {
+              "id": "annotation-type",
+              "status": "pass"
+            },
+            {
+              "id": "multiple-BehaviorBase",
+              "status": "pass"
+            },
+            {
+              "id": "multiple-OtherBehavior",
+              "status": "pass"
+            },
+            {
+              "id": "related-BehaviorBase",
+              "status": "pass"
+            },
+            {
+              "id": "related-BehaviorChild",
+              "status": "pass"
+            },
+            {
+              "id": "local-action",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "TYPE-006",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "invalid-type",
+            "asRequirement-type",
+            "valid-type",
+            "inherited-type",
+            "reject-general",
+            "reject-independent"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "clean-resolution",
+              "status": "pass"
+            },
+            {
+              "id": "invalid-type",
+              "status": "pass"
+            },
+            {
+              "id": "asRequirement-type",
+              "status": "pass"
+            },
+            {
+              "id": "valid-type",
+              "status": "pass"
+            },
+            {
+              "id": "inherited-type",
+              "status": "pass"
+            },
+            {
+              "id": "reject-general",
+              "status": "pass"
+            },
+            {
+              "id": "reject-independent",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "TYPE-007",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "reject-state",
+            "reject-exhibit",
+            "missing",
+            "good"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean-syntax",
+              "status": "pass"
+            },
+            {
+              "id": "clean-structure",
+              "status": "pass"
+            },
+            {
+              "id": "reject-state",
+              "status": "pass"
+            },
+            {
+              "id": "reject-exhibit",
+              "status": "pass"
+            },
+            {
+              "id": "missing",
+              "status": "pass"
+            },
+            {
+              "id": "good",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-016 corrects StateUsage/ExhibitStateUsage to allow Behavior and ConcernUsage to require ConcernDefinition. Explicit positive/negative cases and source-scoped Rust diagnostics cover multiple, redundant, incompatible and unresolved types. The facade projects reference identity independently of validity. General implicit/inherited typing, parameter direction exceptions, all derived properties and complete typing constraints remain unqualified."
     }
   ],
-  "executableCases": 98,
+  "executableCases": 111,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "604db6748125fd1039d897031b4de1288d8ed642a570f8d4494eca507bda1ca9",
+  "assessmentsSha256": "3932265e0937e59046247b93d631306ef28c3a5f1afbd2adfbe03e78195c9aa4",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "56a19f071856ee5c2b70ec125fc1416bab40575871fa2c4f40c63694007db6b9",
-    "generatedAt": "2026-10-17T21:13:54.491Z",
-    "kernelInputSha256": "7f73cc2634117980053e893c88c671c862ed3e78bd83ff4ea38e3d69b6c606ae",
-    "binarySha256": "e5bc708260ecee09588653f22f4b54a778704cba8022d1616bc674e7d84daa70",
+    "sha256": "93ffdba29603ff956b3261a31d2292bbc4d9837f4b1633dd3362c8ad6092cad6",
+    "generatedAt": "2026-10-17T22:34:27.455Z",
+    "kernelInputSha256": "1ebb10ee8707fecc3185b4b122acf50ac789816a52394098991c55245c076cc5",
+    "binarySha256": "40743c6f14b47684830d468b36f86422344354f1da879f1998b9873ae0772246",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.16",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.17",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 98,
+      "pass": 111,
       "known-gap": 0,
       "planned": 0,
       "fail": 0

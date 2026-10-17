@@ -137,7 +137,9 @@ check the viewer projection, source slicing and bundled example. This is the ini
 acceptance suite, not a substitute for an official semantic conformance matrix or
 continuous fuzzing.
 
-The coverage matrix has 73 executable cases. The matrix
+The coverage matrix includes nominal declaration and incompatible-type cases for
+24 SysML definition/usage kinds, plus cross-dialect classifier boundaries. The
+[generated inventory summary](docs/requirements-summary.md) gives current counts. The matrix
 checks standards-linked expectations, including two unchanged official examples,
 with a fresh process and deadline per case. Its harness rejects new failures and
 unexpected passes of known gaps. Reports are saved to `target/conformance/` and

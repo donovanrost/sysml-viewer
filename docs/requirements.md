@@ -161,3 +161,51 @@ normative differences before adopting a new baseline.
 This review queue is substantial remaining engineering work. The completed artifact
 is the reproducible standards-wide inventory and traceability mechanism; atomic
 requirement review and implementation of uncovered behavior remain open.
+
+## Breadth audit: declaration and explicit-typing baseline
+
+KERNEL-016 starts the family audit with 24 SysML definition/usage pairs. Ten
+`FAMILY-*` cases exercise nominal construction, written type identity, exact source
+extents and an incompatible explicit type for each kind. `TYPE-005` adds permitted
+KerML classifier targets; `TYPE-006/007` exercise nearby valid and invalid concern
+and state typing. Each family's assessment names only the tested obligation.
+The tests are representative partitions, not a complete grammar or constraint audit.
+
+| Family group | Executable baseline | Next review needed |
+| --- | --- | --- |
+| Attributes, enumerations, occurrences, items, parts, ports | `FAMILY-DATA-001/002` | Directed parameters, enum variants, individuals/portions, implicit bases, conjugation and feature derivations |
+| Connections, interfaces, allocations, flows | `FAMILY-CONNECTIONS-001/002` | End construction, typing/direction compatibility, binding/succession constraints and payloads |
+| Actions, states, calculations, constraints | `FAMILY-BEHAVIORS-001/002`, `TYPE-005/007` | Body alternatives, parameter/result memberships, control nodes, transitions, temporal rules and expression semantics |
+| Requirements, concerns, cases, analysis, verification, use cases | `FAMILY-CASES-001/002`, `TYPE-006` | Subject/actor/stakeholder/objective memberships, requirement constraints, satisfaction, verification and inclusion |
+| Views, viewpoints, renderings, metadata | `FAMILY-VIEWS-001/002` | Expose/filter/render memberships, annotation targets, semantic metadata and graphical notation |
+
+Comparison with the normative XMI found two implementation defects: states were
+restricted to StateDefinition despite the Behavior range of
+`StateUsage::stateDefinition`; concerns accepted general RequirementDefinition
+despite the narrowed range of `ConcernUsage::concernDefinition`. These are fixed
+in the semantic dependency, with public Rust and native/WASM regressions. The
+pre-fix execution is preserved in `docs/evidence/families-before-macos-arm64.json`.
+
+The distinction between redefinition and subsetting matters in this audit.
+`ItemUsage::itemDefinition` selects Structures from occurrence types, and
+`PartUsage::partDefinition` selects PartDefinitions from item definitions. Their
+property ranges alone do not establish that every explicit type must have those
+metaclasses. No blanket narrowing was added for those properties.
+
+The whole-language audit remains open. Root elements/dependencies/annotations,
+the complete KerML type/feature/relationship and expression grammar, all family
+body productions, inferred/derived metamodel construction, normative libraries,
+interchange, authoring and graphical conformance still need obligation-level
+review. Existing upstream code in these areas remains a candidate until its
+public behavior and positive/negative acceptance criteria are independently
+checked. The next audit step is the body/member construction and derived-property
+boundary, followed by full validation-rule mapping; more nominal declaration
+examples alone cannot close these areas.
+
+The syntax and semantic validators' registries together name 89 of the 180 unique
+`validate...` constraint names in the pinned metamodels. All 89 names match the
+catalogue. This is a candidate-code inventory, not validation coverage:
+registered rules still require independent tests and review, and the 91 remaining
+names may have implementation outside those registries. Derived properties,
+`check...` semantic constraints, operation conditions and prose obligations also
+remain in scope. The registries cannot serve as the completion denominator.

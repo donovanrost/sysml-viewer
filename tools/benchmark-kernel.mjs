@@ -27,6 +27,23 @@ if (process.argv.includes('--wasm-child')) {
   );
   const scenarios = [
     {
+      name: 'concern-typing',
+      text: readFileSync(join(root, 'tests/conformance/fixtures/type-006.sysml'), 'utf8'),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'TYPE-006').checks,
+    },
+    {
+      name: 'behavior-families',
+      text: readFileSync(
+        join(root, 'tests/conformance/fixtures/family-behaviors-positive.sysml'),
+        'utf8',
+      ),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'FAMILY-BEHAVIORS-001').checks,
+    },
+    {
       name: 'connection-ends',
       text: readFileSync(join(root, 'tests/conformance/fixtures/conn-004.sysml'), 'utf8'),
       checks: JSON.parse(

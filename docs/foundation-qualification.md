@@ -642,6 +642,53 @@ Engine `.16` retains schema 3 and package version 0.3.0. Endpoint policy stays i
 the reusable Rust facade. Two existing reversible dependency patches record the
 projection-sharing change; no UI language rules are added.
 
+## KERNEL-016: declaration families and explicit typing boundaries
+
+The breadth audit now exercises nominal definition/usage construction for 24 SysML
+kinds: attributes, enumerations, occurrences, items, parts, ports, connections,
+interfaces, allocations, flows, actions, states, calculations, constraints,
+requirements, concerns, cases, analysis cases, verification cases, use cases,
+views, viewpoints, renderings and metadata. Ten `FAMILY-*` cases check metaclasses,
+resolved explicit type identity and exact source extents, plus rejection of an
+incompatible type for each kind. Each kind has its own bounded assessment; the
+shared case does not qualify every production or constraint in its family.
+
+`TYPE-005` crosses the SysML/KerML boundary for DataType, Class, Structure,
+AssociationStructure, Interaction, Behavior, Function, Predicate and Metaclass.
+Reading the normative XMI property redefinitions found two bugs in the dependency's
+explicit-typing restriction table:
+
+- `StateUsage::stateDefinition` has range Behavior, including when inherited by
+  ExhibitStateUsage. The prior StateDefinition-only restriction rejected valid
+  kernel behaviors and action definitions. Direct, multiple, related and exhibited
+  behavior types now pass; data types still fail.
+- `ConcernUsage::concernDefinition` narrows RequirementUsage's type to
+  ConcernDefinition. General RequirementDefinition targets were incorrectly
+  accepted. These now produce semantic errors while the reference still resolves.
+  Requirements typed by concerns remain valid, and redundant ancestor/descendant
+  concern types do not become independent types.
+
+The [pre-fix probes](evidence/families-before-macos-arm64.json) preserve the `.16`
+failures. `TYPE-006/007` and four Rust tests check diagnostic source locations,
+valid peers, mixed types, the existing independent-type limit, unresolved targets,
+syntax-only separation and JSON/query round-trip. Missing types still produce
+resolution and incomplete-query capability findings rather than an incompatible
+resolved-type error. The new mixed-workspace Node test runs all 13 cases together
+in both file orders and compares complete native/WASM snapshots. Diagnostic checks
+retain each case's document scope; no existing integration documents were removed.
+
+Two private dependency tests exercise the validator directly. Patch 0016 is
+independently reversible to the pinned upstream file. Engine `.17` retains schema
+3 and package 0.3.0; there is no new UI language rule or wire shape. The benchmark
+adds behavior declarations and concern typing to all earlier workloads.
+
+This is a representative declaration/typing baseline, not completion of the
+whole-language audit. Body grammar, derived/implicit metamodel construction,
+directed-parameter exceptions, inferred typing and complete family semantics
+remain open. The [review queue](requirements.md#breadth-audit-declaration-and-explicit-typing-baseline)
+records the next obligations. The existing AST/graph functionality remains a
+candidate outside the reviewed public behavior.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -669,17 +716,18 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the completed run has **98 passing conformance cases**, **no
-known-gap cases**, and **no planned cases in the current matrix**. All **73 Rust kernel tests**,
-**41 Node tests**, and **268 dependency proof tests** pass.
-The dependency suites cover lexical boundaries (5), rational arithmetic (13), type relations (41), model-level evaluability (33),
+On macOS arm64, the completed run has **111 passing conformance cases**, **no
+known-gap cases**, and **no planned cases in the current matrix**. All **77 Rust kernel tests**,
+**42 Node tests**, and **270 dependency proof tests** pass.
+The dependency suites cover lexical boundaries (5), rational arithmetic (13), explicit usage typing (2), type relations (41), model-level evaluability (33),
 cardinality (34), invocation bindings (19), constructor bindings (17), dynamic graph
 (19), dynamic invocations (27), owned results (4), semantic ownership (5), end constancy (10) and checked
 namespace operations (41). The corpus and the 32 import-rule partitions are included
 in the Rust suite, not additional independently qualified specification counts.
-Native and WebAssembly outputs match exactly. The [KERNEL-015 validation record](evidence/connections-macos-arm64.json)
-records implementation and test fingerprints, the previous CONN-002 behavior and
-this increment's scope. The prior [vocabulary audit](evidence/keywords-macos-arm64.json) remains available.
+Native and WebAssembly outputs match exactly. The [KERNEL-016 validation record](evidence/families-macos-arm64.json)
+records implementation and test fingerprints, the state/concern pre-fix failures,
+and this increment's scope. The prior [connection validation](evidence/connections-macos-arm64.json)
+and [vocabulary audit](evidence/keywords-macos-arm64.json) remain available.
 
 Rust formatting, Clippy with warnings denied, TypeScript checking, Prettier,
 generated-contract consistency, source/patch verification and inventory checks
@@ -697,12 +745,25 @@ validation used a temporary process-scoped sleep assertion, released at completi
 The 30-second conformance and 60-second benchmark deadlines are unchanged. Earlier unexplained
 benchmark timeouts below remain separate evidence.
 
-The complete [connection benchmark](evidence/benchmark-connections-macos-arm64.json)
+The [KERNEL-016 benchmark](evidence/benchmark-families-macos-arm64.json) records
+120 successful samples: all 18 earlier workloads plus concern typing and behavior
+declarations, each in three fresh native and three fresh WASM processes. All
+repeats and native/WASM snapshots agree exactly; no timeout occurred. The new
+workloads run their matrix assertions on every sample. Their observed values are:
+
+| Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
+| --- | ---: | ---: | ---: |
+| Concern typing | 2,442 | 4,153 | 384.5/315.9 |
+| Behavior declarations | 2,079 | 2,618 | 384.3/332.3 |
+
+The preceding [connection benchmark](evidence/benchmark-connections-macos-arm64.json)
 records three fresh processes per native/WASM workload, for 108 successful samples.
 All repeated native and WASM snapshots agree exactly. Each connection sample
 passes all 14 CONN-004 assertions; all 17 prior workloads remain included.
-The preceding [numeric benchmark](evidence/benchmark-numeric-macos-arm64.json)
+The earlier [numeric benchmark](evidence/benchmark-numeric-macos-arm64.json)
 and KERNEL-013 debug overflow-check evidence remain available.
+
+The following table retains the KERNEL-015 observations for historical comparison:
 
 | Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
 | --- | ---: | ---: | ---: |

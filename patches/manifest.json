@@ -136,6 +136,15 @@
       "baseSha256": "8ca2a58b89ed29bc8402f2e04b8478aeeaaaab32f50a50975bec21ebeaf09786",
       "resultSha256": "f21875ae00867390fcf9f90a23346f32437d7cf089d9a961b9e28cf12959c969",
       "reason": "KERNEL-013: enforce the existing decimal-scale allowance using an inclusive range check instead of signed absolute value, which overflows for i64::MIN. Extreme exponents remain syntactically valid but cannot wrap the exact-decimal reader into an incorrect finite result. Boundary regressions cover both signs, fractional scale adjustment, i64 limits and the unchanged 100000 allowance. This does not qualify real-valued cardinality or general expression evaluation."
+    },
+    {
+      "id": "KERNEL-016",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/typing.rs",
+      "patch": "patches/0016-usage-typing-families.patch",
+      "sha256": "abad67929d2825871f76e9a3b77a0839ed7c36f5cdaa865f9f9f1b0bcfdefa3f",
+      "baseSha256": "5020939a8d52f435ef42c5d5b5abede799a97d7b7875810e45a1fa3b42930a96",
+      "resultSha256": "2659c9ea43e1193aef737894b7d2c01c099687370d820ada5c757a59072bc4e9",
+      "reason": "StateUsage and ExhibitStateUsage allow the Behavior range of StateUsage::stateDefinition; ConcernUsage narrows RequirementUsage to ConcernDefinition. Private and public regressions retain invalid/missing type separation, nonredundant type limits, and RequirementUsage acceptance of ConcernDefinition. Normative anchors are the pinned SysML XMI property redefinitions. TYPE-005/006 preserve the pre-fix failures."
     }
   ]
 }
