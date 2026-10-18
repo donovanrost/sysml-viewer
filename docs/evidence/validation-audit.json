@@ -36,7 +36,7 @@
     },
     {
       "path": "crates/sysml-kernel/src/lib.rs",
-      "sha256": "d95bd7fff97d8f54d6a61f8a233c8f61e21256e4ae842829f6f9b32c67155c86"
+      "sha256": "0cf3d0e84a48eb47593da6dd98c67444b4f4fe34378d6c87aa4fbee8937d419f"
     },
     {
       "path": "crates/sysml-kernel/src/namespaces.rs",
@@ -184,7 +184,11 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
-      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
+      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/accept_bindings.rs",
+      "sha256": "093342367127d0c41ee76ee0adb841ab0484b79f1748db8f8da2b03e3e46db19"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/behavior.rs",
@@ -272,7 +276,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs",
-      "sha256": "b1fc09b8c36591db402bf7715139a09a789e7088b348f179167f379c99ede4e2"
+      "sha256": "8ad9da07aca2c4df6c04101aff6f0a79b8038fb8ae165953bdc0441c2fa65651"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/import_memberships.rs",
@@ -360,7 +364,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs",
-      "sha256": "d2b55b221bbbfeab6447cad0a28ab0b49a54b86d221bc7b31eb6767acca38efe"
+      "sha256": "38a5065c480e39ac15e47a5ca7b7b070f1a3963de2083e18f3d3d256598879ad"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/parameter_context.rs",
@@ -637,8 +641,8 @@
   ],
   "structuredInputHashEncoding": "JSON.stringify(parsed input), UTF-8",
   "catalogueSha256": "6e99879d8d7564e2fb160394b9dcd1c1b05bdb6603a05ca61c5ec2d29bce7f6b",
-  "assessmentsSha256": "5509ba7c322133b0c71ff262a6ca3d6b444b9e9c1907038ad4964be96912b937",
-  "matrixSha256": "3b507ff126b89cee68290f44e854a8223f36346f7d6bb595b3f935672111f873",
+  "assessmentsSha256": "fa102d9b8ccaa2d886f0f4c47c0fef8cfd0d8ea4d92c46d7c7fc5dea372d879b",
+  "matrixSha256": "75da18b846b65968c2cc07f2c1fc8d5e77bab29d1815be598a6921800910a004",
   "counts": {
     "rules": 180,
     "registered": 97,

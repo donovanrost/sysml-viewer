@@ -1,0 +1,101 @@
+{
+  "generatedAt": "2026-10-18T03:33:00.183745+00:00",
+  "scope": "Full-library public analysis of three invalid trigger arguments. This probes emitted diagnostic identifiers and positive rejection only; it does not establish complete validation or measure all missing conditions.",
+  "request": {
+    "revision": 1,
+    "documents": [
+      {
+        "id": "trigger-argument-probe",
+        "name": "trigger-argument-probe.sysml",
+        "text": "package TriggerArgumentProbe {\n  action def Test {\n    action wrongAfter accept after true;\n    action wrongAt accept at false;\n    action wrongWhen accept when 1;\n  }\n}\n"
+      }
+    ]
+  },
+  "requestSha256": "a14466c65bc9b47d0ee1f6b3684e8a907484f8d3d401f5434e8328e3742a2aa5",
+  "responseSha256": "011922211c77646b0571b6f79a22418ab881619002e27a5af6cca74f98f58c69",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.24",
+  "binarySha256": "ef435421b502b83aa7296c44d0eb04bf5785fc6ba3f26c3dd33ecae98d587c19",
+  "kernelInputSha256": "bffa7b01dabed05b04397c8d9f92db9520069cd7556f5a6349da288f1c0f62b4",
+  "command": [
+    "target/release/sysml-inspect",
+    "--request-json"
+  ],
+  "exitCode": 0,
+  "expectedCanonicalRules": [
+    "validateTriggerInvocationExpressionAfterArgument",
+    "validateTriggerInvocationExpressionAtArgument",
+    "validateTriggerInvocationExpressionWhenArgument"
+  ],
+  "diagnostics": [
+    {
+      "code": "validateTriggerInvocationActionAfterArgument",
+      "severity": "error",
+      "stage": "semantic",
+      "message": "A 'after' trigger argument must conform to ISQ::DurationValue [validateTriggerInvocationActionAfterArgument]",
+      "source": {
+        "documentId": "trigger-argument-probe",
+        "start": {
+          "byteOffset": 86,
+          "utf16Offset": 86,
+          "line": 3,
+          "column": 36
+        },
+        "end": {
+          "byteOffset": 90,
+          "utf16Offset": 90,
+          "line": 3,
+          "column": 40
+        }
+      }
+    },
+    {
+      "code": "validateTriggerInvocationActionAtArgument",
+      "severity": "error",
+      "stage": "semantic",
+      "message": "A 'at' trigger argument must conform to Time::TimeInstantValue [validateTriggerInvocationActionAtArgument]",
+      "source": {
+        "documentId": "trigger-argument-probe",
+        "start": {
+          "byteOffset": 121,
+          "utf16Offset": 121,
+          "line": 4,
+          "column": 30
+        },
+        "end": {
+          "byteOffset": 126,
+          "utf16Offset": 126,
+          "line": 4,
+          "column": 35
+        }
+      }
+    },
+    {
+      "code": "validateTriggerInvocationActionWhenArgument",
+      "severity": "error",
+      "stage": "semantic",
+      "message": "A 'when' trigger argument must conform to ScalarValues::Boolean [validateTriggerInvocationActionWhenArgument]",
+      "source": {
+        "documentId": "trigger-argument-probe",
+        "start": {
+          "byteOffset": 161,
+          "utf16Offset": 161,
+          "line": 5,
+          "column": 34
+        },
+        "end": {
+          "byteOffset": 162,
+          "utf16Offset": 162,
+          "line": 5,
+          "column": 35
+        }
+      }
+    }
+  ],
+  "canonicalRulesObserved": [],
+  "sourceAnchors": [
+    "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAfterArgument",
+    "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAtArgument",
+    "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionWhenArgument"
+  ],
+  "reproductionScript": "import json,subprocess,hashlib,datetime\nfrom pathlib import Path\nsource='''package TriggerArgumentProbe {\n  action def Test {\n    action wrongAfter accept after true;\n    action wrongAt accept at false;\n    action wrongWhen accept when 1;\n  }\n}\n'''\nrequest={'revision':1,'documents':[{'id':'trigger-argument-probe','name':'trigger-argument-probe.sysml','text':source}]}\npayload=json.dumps(request).encode();binary=Path('target/release/sysml-inspect');sha=lambda b:hashlib.sha256(b).hexdigest();before=sha(binary.read_bytes())\nrun=subprocess.run([str(binary),'--request-json'],input=payload,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)\nassert run.returncode==0,run.stderr.decode()\nsnapshot=json.loads(run.stdout);assert snapshot['engineVersion'].endswith('.24')\nassert all(d['stage']=='semantic' for d in snapshot['diagnostics']), snapshot['diagnostics']\nassert len(snapshot['diagnostics'])==3\nassert before==sha(binary.read_bytes())\nexpected=['validateTriggerInvocationExpressionAfterArgument','validateTriggerInvocationExpressionAtArgument','validateTriggerInvocationExpressionWhenArgument']\nprint(json.dumps(snapshot['diagnostics'],indent=2))\nrecord={\n 'generatedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),\n 'scope':'Full-library public analysis of three invalid trigger arguments. This probes emitted diagnostic identifiers and positive rejection only; it does not establish complete validation or measure all missing conditions.',\n 'request':request,'requestSha256':sha(payload),'responseSha256':sha(run.stdout),\n 'engineVersion':snapshot['engineVersion'],'binarySha256':before,\n 'kernelInputSha256':subprocess.check_output(['node','--input-type=module','-e',\"import {kernelInputHash} from './tools/lib/kernel-inputs.mjs'; process.stdout.write(kernelInputHash(process.cwd()));\"],text=True),\n 'command':[str(binary),'--request-json'],'exitCode':run.returncode,\n 'expectedCanonicalRules':expected,'diagnostics':snapshot['diagnostics'],\n 'canonicalRulesObserved':[name for name in expected if any(d['code']==name for d in snapshot['diagnostics'])],\n 'sourceAnchors':['SYSML-XMI-Systems-Actions-TriggerInvocationExpression-'+name for name in expected],\n 'reproductionScript':Path(__file__).read_text(),\n}\nPath('docs/evidence/trigger-argument-validation-before-macos-arm64.json').write_text(json.dumps(record,indent=2)+'\\n')\n"
+}

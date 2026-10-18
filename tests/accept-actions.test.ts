@@ -16,7 +16,7 @@ const matrix = JSON.parse(read('tests/conformance/matrix.json')) as {
     knownFailures?: { check: string; issue: string; reason: string }[];
   }[];
 };
-const cases = matrix.cases.filter((c) => /^(?:ACCEPT-00[12]|STATE-0(?:08|11|12|13))$/.test(c.id));
+const cases = matrix.cases.filter((c) => /^(?:ACCEPT-00[123]|STATE-0(?:08|11|12|13))$/.test(c.id));
 const documents = [...new Set(cases.flatMap((c) => c.files))].map((file) => ({
   id: file,
   name: file.split('/').at(-1)!,
@@ -50,7 +50,7 @@ test('accept inputs and trigger values retain native/WASM parity beside transiti
     for (const element of wasm.elements.filter(
       (e) =>
         e.metaclass === 'AcceptActionUsage' &&
-        /^Accept(?:Construction|Triggers)::/.test(e.qualifiedName ?? ''),
+        /^Accept(?:Construction|Triggers|Receivers)::/.test(e.qualifiedName ?? ''),
     )) {
       // Transition accepter records currently expose navigation identity only.
       // A stub must never certify a complete empty membership enumeration.

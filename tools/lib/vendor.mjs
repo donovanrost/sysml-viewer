@@ -1,7 +1,15 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+} from 'node:fs';
 import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -30,7 +38,17 @@ export function verifyVendor(root, { apply = false } = {}) {
     assert(!patched.has(entry.file), 'Overlapping patches require a new reviewed combined patch');
     patched.add(entry.file);
     assert(entry.id && entry.reason);
-    assert.equal(hashes[entry.file], entry.baseSha256, 'Patch base differs from upstream manifest');
+    const addition = entry.baseSha256 === null;
+    if (addition) {
+      assert(!Object.hasOwn(hashes, entry.file), 'An added file must be absent from upstream');
+    } else {
+      assert(Object.hasOwn(hashes, entry.file), 'Existing-file patch requires an upstream base');
+      assert.equal(
+        hashes[entry.file],
+        entry.baseSha256,
+        'Patch base differs from upstream manifest',
+      );
+    }
     assert.equal(hash(read(entry.patch)), entry.sha256, 'Patch bytes changed');
     const patch = join(root, entry.patch);
     const numstat = execFileSync('git', ['apply', '--numstat', patch], {
@@ -41,10 +59,12 @@ export function verifyVendor(root, { apply = false } = {}) {
       .split('\n');
     assert.equal(numstat.length, 1, 'One patch must touch exactly one declared file');
     assert.equal(numstat[0].split('\t')[2], entry.file, 'Unexpected patch target');
-    if (apply && hash(read(entry.file)) === entry.baseSha256) {
+    const present = existsSync(join(root, entry.file));
+    if (apply && (addition ? !present : present && hash(read(entry.file)) === entry.baseSha256)) {
       execFileSync('git', ['apply', '--check', patch], { cwd: root });
       execFileSync('git', ['apply', patch], { cwd: root });
     }
+    assert(existsSync(join(root, entry.file)), `Patch not applied: ${entry.file}`);
     assert.equal(
       hash(read(entry.file)),
       entry.resultSha256,
@@ -56,11 +76,15 @@ export function verifyVendor(root, { apply = false } = {}) {
       mkdirSync(dirname(target), { recursive: true });
       copyFileSync(join(root, entry.file), target);
       execFileSync('git', ['apply', '--reverse', patch], { cwd: temporary, stdio: 'pipe' });
-      assert.equal(
-        hash(readFileSync(target)),
-        entry.baseSha256,
-        'Patch does not reconstruct upstream bytes',
-      );
+      if (addition) {
+        assert(!existsSync(target), 'Reversing an added-file patch must remove the file');
+      } else {
+        assert.equal(
+          hash(readFileSync(target)),
+          entry.baseSha256,
+          'Patch does not reconstruct upstream bytes',
+        );
+      }
     } finally {
       rmSync(temporary, { recursive: true, force: true });
     }

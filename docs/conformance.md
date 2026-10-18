@@ -149,6 +149,7 @@ Clause references identify the source of a test, not complete coverage of that c
 | STATE-013 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | State subaction memberships require a StateDefinition or StateUsage owner, including state subtypes; invalid part/action contexts retain structural and semantic diagnostics. |
 | ACCEPT-001 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | positive | Covered | Accept actions construct distinct payload and receiver parameters, including omitted receivers, bound payloads, body features, state subactions and transition triggers. |
 | ACCEPT-002 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | positive | Covered | At, after and when trigger forms retain the accept payload/receiver order and separate outer transition parameters through full-library public analysis. |
+| ACCEPT-003 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | positive | Covered | Public authored accept/transition memberships remain stable while the kernel constructs implicit trigger receiver bindings; exact generated connector identities and endpoints are checked by native graph tests. |
 
 ## Coverage limits
 

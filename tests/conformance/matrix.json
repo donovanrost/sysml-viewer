@@ -954,16 +954,16 @@
         {
           "id": "name",
           "op": "reference",
-          "owner": "'海'::x",
+          "owner": "'\u6d77'::x",
           "kind": "typing",
           "status": "resolved",
-          "target": "'海'::'Éngine'"
+          "target": "'\u6d77'::'\u00c9ngine'"
         },
         {
           "id": "bytes-and-utf16",
           "op": "source",
-          "owner": "'海'::x",
-          "text": "part x : 'Éngine';"
+          "owner": "'\u6d77'::x",
+          "text": "part x : '\u00c9ngine';"
         }
       ]
     },
@@ -1845,9 +1845,9 @@
           "op": "reference",
           "owner": "QuotedNames::unicode",
           "kind": "typing",
-          "spelling": "'海'",
+          "spelling": "'\u6d77'",
           "status": "resolved",
-          "target": "QuotedNames::'海'"
+          "target": "QuotedNames::'\u6d77'"
         },
         {
           "id": "reserved",
@@ -5319,15 +5319,15 @@
           "op": "reference",
           "owner": "LexicalSysML::x",
           "kind": "typing",
-          "spelling": "'海🚢'",
+          "spelling": "'\u6d77\ud83d\udea2'",
           "status": "resolved",
-          "target": "LexicalSysML::'海🚢'"
+          "target": "LexicalSysML::'\u6d77\ud83d\udea2'"
         },
         {
           "id": "source",
           "op": "source",
           "owner": "LexicalSysML::x",
-          "text": "part\fx : '海🚢';"
+          "text": "part\fx : '\u6d77\ud83d\udea2';"
         },
         {
           "id": "bound",
@@ -5355,15 +5355,15 @@
           "op": "reference",
           "owner": "LexicalKerML::x",
           "kind": "typing",
-          "spelling": "'海🚢'",
+          "spelling": "'\u6d77\ud83d\udea2'",
           "status": "resolved",
-          "target": "LexicalKerML::'海🚢'"
+          "target": "LexicalKerML::'\u6d77\ud83d\udea2'"
         },
         {
           "id": "source",
           "op": "source",
           "owner": "LexicalKerML::x",
-          "text": "feature\fx : '海🚢';"
+          "text": "feature\fx : '\u6d77\ud83d\udea2';"
         },
         {
           "id": "bound",
@@ -5397,7 +5397,7 @@
           "op": "diagnostic",
           "stage": "syntax",
           "severity": "error",
-          "messageIncludes": "invalid escape sequence `\\海`"
+          "messageIncludes": "invalid escape sequence `\\\u6d77`"
         },
         {
           "id": "tab",
@@ -5464,7 +5464,7 @@
           "op": "diagnostic",
           "stage": "syntax",
           "severity": "error",
-          "messageIncludes": "invalid escape sequence `\\海`"
+          "messageIncludes": "invalid escape sequence `\\\u6d77`"
         },
         {
           "id": "tab",
@@ -5537,7 +5537,7 @@
           "id": "noted-source",
           "op": "source",
           "owner": "NumericSysML::noted",
-          "text": "attribute noted = 1 //* 海🚢 */ . // fraction\n        25;"
+          "text": "attribute noted = 1 //* \u6d77\ud83d\udea2 */ . // fraction\n        25;"
         },
         {
           "id": "precise-source",
@@ -5604,7 +5604,7 @@
           "id": "noted-source",
           "op": "source",
           "owner": "NumericKerML::noted",
-          "text": "feature noted = 1 //* 海🚢 */ . // fraction\n        25;"
+          "text": "feature noted = 1 //* \u6d77\ud83d\udea2 */ . // fraction\n        25;"
         },
         {
           "id": "precise-source",
@@ -10798,6 +10798,320 @@
           "op": "element",
           "name": "AcceptTriggers::Driver::onCondition::accepter",
           "metaclass": "AcceptActionUsage"
+        }
+      ]
+    },
+    {
+      "id": "ACCEPT-003",
+      "area": "families-behaviors",
+      "purpose": "Public authored accept/transition memberships remain stable while the kernel constructs implicit trigger receiver bindings; exact generated connector identities and endpoints are checked by native graph tests.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/accept-receiver-bindings.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "absolute-element",
+          "op": "element",
+          "name": "AcceptReceivers::Reception::absolute",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "absolute-parameters",
+          "op": "memberships",
+          "owner": "AcceptReceivers::Reception::absolute",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "eventAt",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Reception::absolute",
+              "target": "AcceptReceivers::Reception::absolute::eventAt",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Reception::absolute",
+              "target": "AcceptReceivers::Reception::absolute::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "absolute-payload",
+          "op": "element",
+          "name": "AcceptReceivers::Reception::absolute::eventAt",
+          "metaclass": "ReferenceUsage"
+        },
+        {
+          "id": "relative-element",
+          "op": "element",
+          "name": "AcceptReceivers::Reception::relative",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "relative-parameters",
+          "op": "memberships",
+          "owner": "AcceptReceivers::Reception::relative",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "eventAfter",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Reception::relative",
+              "target": "AcceptReceivers::Reception::relative::eventAfter",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Reception::relative",
+              "target": "AcceptReceivers::Reception::relative::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "relative-payload",
+          "op": "element",
+          "name": "AcceptReceivers::Reception::relative::eventAfter",
+          "metaclass": "ReferenceUsage"
+        },
+        {
+          "id": "conditional-element",
+          "op": "element",
+          "name": "AcceptReceivers::Reception::conditional",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "conditional-parameters",
+          "op": "memberships",
+          "owner": "AcceptReceivers::Reception::conditional",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "eventWhen",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Reception::conditional",
+              "target": "AcceptReceivers::Reception::conditional::eventWhen",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Reception::conditional",
+              "target": "AcceptReceivers::Reception::conditional::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "conditional-payload",
+          "op": "element",
+          "name": "AcceptReceivers::Reception::conditional::eventWhen",
+          "metaclass": "ReferenceUsage"
+        },
+        {
+          "id": "atTime-parameters",
+          "op": "memberships",
+          "owner": "AcceptReceivers::Driver::atTime",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Driver::atTime",
+              "target": "AcceptReceivers::Driver::atTime::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "timePayload",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Driver::atTime",
+              "target": "AcceptReceivers::Driver::atTime::timePayload",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "atTime-accepter",
+          "op": "element",
+          "name": "AcceptReceivers::Driver::atTime::accepter",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "afterDelay-parameters",
+          "op": "memberships",
+          "owner": "AcceptReceivers::Driver::afterDelay",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Driver::afterDelay",
+              "target": "AcceptReceivers::Driver::afterDelay::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "delayPayload",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Driver::afterDelay",
+              "target": "AcceptReceivers::Driver::afterDelay::delayPayload",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "afterDelay-accepter",
+          "op": "element",
+          "name": "AcceptReceivers::Driver::afterDelay::accepter",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "onCondition-parameters",
+          "op": "memberships",
+          "owner": "AcceptReceivers::Driver::onCondition",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Driver::onCondition",
+              "target": "AcceptReceivers::Driver::onCondition::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "conditionPayload",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Driver::onCondition",
+              "target": "AcceptReceivers::Driver::onCondition::conditionPayload",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "onCondition-accepter",
+          "op": "element",
+          "name": "AcceptReceivers::Driver::onCondition::accepter",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "state-subactions",
+          "op": "stateSubactions",
+          "owner": "AcceptReceivers::Driver",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "entry",
+              "target": null,
+              "metaclass": "AcceptActionUsage"
+            },
+            {
+              "kind": "do",
+              "target": null,
+              "metaclass": "AcceptActionUsage"
+            },
+            {
+              "kind": "exit",
+              "target": null,
+              "metaclass": "AcceptActionUsage"
+            }
+          ]
+        },
+        {
+          "id": "plain-parameters",
+          "op": "memberships",
+          "owner": "AcceptReceivers::Reception::plain",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "payload",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Reception::plain",
+              "target": "AcceptReceivers::Reception::plain::payload",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Reception::plain",
+              "target": "AcceptReceivers::Reception::plain::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "value-parameters",
+          "op": "memberships",
+          "owner": "AcceptReceivers::Reception::value",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "payload",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Reception::value",
+              "target": "AcceptReceivers::Reception::value::payload",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptReceivers::Reception::value",
+              "target": "AcceptReceivers::Reception::value::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
         }
       ]
     }

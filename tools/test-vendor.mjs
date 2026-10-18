@@ -43,6 +43,7 @@ try {
       'dynamic_graph',
       'dynamic_invocations',
       'owned_results',
+      'accept_bindings',
       'semantic_ownership',
       'end_constancy',
       'operations::namespaces',

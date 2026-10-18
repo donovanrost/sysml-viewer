@@ -23,6 +23,10 @@ automatic background update or a replacement of failing expected results.
    `node tools/verify-vendor.mjs --apply` to apply or verify it. The verifier
    reconstructs the original bytes in a temporary tree. Rebase/remove patches
    explicitly during an upgrade; a changed upstream revision is rejected.
+   A new local module uses an explicit `baseSha256: null` and an added-file patch.
+   It must be absent from the immutable upstream inventory, and reversing its patch
+   must remove the file. Its result hash joins the verified build-input inventory;
+   never add a locally created file to the upstream hash manifest.
 4. If the library revision changes, refresh the official conformance fixtures from
    the same revision using their recorded upstream paths. Preserve bytes and update
    `tests/conformance/upstream/provenance.json`. Verify the expectations against the

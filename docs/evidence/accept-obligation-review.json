@@ -29,12 +29,26 @@
         "90aa2967bd3b00b05451f0c2187955ddc1db079f328a9ab2edbeda6e855b0dd7"
       ],
       "reviewStatus": "open",
-      "implementationEvidence": "unassessed",
+      "implementationEvidence": "candidate",
       "acceptancePartitions": [
         "First result conforms to Quantities::ScalarQuantityValue",
         "Measurement-reference feature redefinition closure reaches Quantities::TensorQuantityValue::mRef and specializes ISQBase::DurationUnit",
         "Wrong units, missing measurement reference, transitive redefinition, quantity subclasses and unavailable library facts"
-      ]
+      ],
+      "candidateEvidence": {
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+        "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a",
+        "boundary": "Existing source-based wrong_type checks use validateTriggerInvocationAction... diagnostic spellings, absent from the canonical rule registry. This is a code-review finding only; complete XMI argument/result/wrapper conditions and runtime diagnostics require new probes.",
+        "executionEvidence": "trigger-argument-validation-before-macos-arm64.json",
+        "runtimeObservation": "The invalid literal is rejected, but the emitted Action-spelled diagnostic code does not equal the canonical Expression-spelled rule ID. Complete rule semantics remain unqualified.",
+        "additionalReview": {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
+          "sha256": "48e3c05d1784c2ef23e5d034be0aa922a6d1b09691de35dff1d520d7b770c4d1",
+          "finding": "wrong_type requires upward conformance to the named ISQ::DurationValue classifier. The pinned OCL instead requires ScalarQuantityValue plus a feature with redefinition closure to TensorQuantityValue::mRef and specialization to ISQBase::DurationUnit. An additional dimension comparison does not by itself establish equivalence of these predicates.",
+          "nextCounterexample": "An independent ScalarQuantityValue subtype that redefines mRef with DurationUnit typing, without specializing ISQ::DurationValue. Verify the normative result-feature and redefinition facts before treating any emitted diagnostic as a false positive.",
+          "status": "source-level mismatch candidate; no custom-quantity runtime claim"
+        }
+      }
     },
     {
       "sourceUnit": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAtArgument",
@@ -44,12 +58,19 @@
         "a7591f09322270ce7b916bd21533ceb71d461d7b4f81a31b43ee329aa7b96217"
       ],
       "reviewStatus": "open",
-      "implementationEvidence": "unassessed",
+      "implementationEvidence": "candidate",
       "acceptancePartitions": [
         "Nonempty argument list and first argument result conforming to Time::TimeInstantValue",
         "Wrong result kind/type, unavailable expression result and inherited/conjugated typing",
         "Other trigger kinds do not trigger this conditional constraint"
-      ]
+      ],
+      "candidateEvidence": {
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+        "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a",
+        "boundary": "Existing source-based wrong_type checks use validateTriggerInvocationAction... diagnostic spellings, absent from the canonical rule registry. This is a code-review finding only; complete XMI argument/result/wrapper conditions and runtime diagnostics require new probes.",
+        "executionEvidence": "trigger-argument-validation-before-macos-arm64.json",
+        "runtimeObservation": "The invalid literal is rejected, but the emitted Action-spelled diagnostic code does not equal the canonical Expression-spelled rule ID. Complete rule semantics remain unqualified."
+      }
     },
     {
       "sourceUnit": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionWhenArgument",
@@ -59,13 +80,20 @@
         "8bc1c03741e973977d4462bbf920e844dbc4aaf064ab4800c520e41801306664"
       ],
       "reviewStatus": "open",
-      "implementationEvidence": "unassessed",
+      "implementationEvidence": "candidate",
       "acceptancePartitions": [
         "First argument is a FeatureReferenceExpression referring to an Expression",
         "Referenced expression result conforms to ScalarValues::Boolean",
         "Missing argument/referent/result, non-expression referent, wrong result type and inherited type facts; wrapper construction alone does not prove validation"
       ],
-      "evidenceBoundary": "KERNEL-022 proves construction of the referenced-expression wrapper, not implementation or execution of this named validation constraint."
+      "evidenceBoundary": "KERNEL-022 proves construction of the referenced-expression wrapper, not implementation or execution of this named validation constraint.",
+      "candidateEvidence": {
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+        "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a",
+        "boundary": "Existing source-based wrong_type checks use validateTriggerInvocationAction... diagnostic spellings, absent from the canonical rule registry. This is a code-review finding only; complete XMI argument/result/wrapper conditions and runtime diagnostics require new probes.",
+        "executionEvidence": "trigger-argument-validation-before-macos-arm64.json",
+        "runtimeObservation": "The invalid literal is rejected, but the emitted Action-spelled diagnostic code does not equal the canonical Expression-spelled rule ID. Complete rule semantics remain unqualified."
+      }
     },
     {
       "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-isTriggerAction_",
@@ -105,14 +133,29 @@
         "22dc798edcff0eee729e55281dc21120991a46e719655c1c4461ce0629262be3"
       ],
       "reviewStatus": "open",
-      "implementationEvidence": "known-gap-for-probed-cases",
+      "implementationEvidence": "partial-construction",
       "acceptancePartitions": [
         "Each trigger kind has the required accept-owned BindingConnector",
         "Related feature identities include second accept parameter and second invocation parameter",
         "Missing invocation receiver, absent/wrong-owner connector, reversed ends, unrelated same-named features",
         "Explicit via versus omitted/default receiver; inherited/implicit relationship interactions"
       ],
-      "executionEvidence": "accept-receiver-binding-before-macos-arm64.json"
+      "executionEvidenceBefore": "accept-receiver-binding-before-macos-arm64.json",
+      "currentEvidence": {
+        "nativeRegression": "crates/sysml-kernel/tests/accept_receiver_bindings.rs",
+        "privateRegressions": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/accept_bindings.rs#tests",
+        "qualificationRecord": "accept-bindings-macos-arm64.json",
+        "boundary": "KERNEL-023 constructs receiver parameters and exact owned binding endpoints for the tested textual contexts, and checks existing/malformed/collision/work-limit/replay partitions. The public snapshot omits generated connector endpoints. Inherited parameter ordering and complete BindingConnector/library dependencies remain unqualified; this obligation remains open."
+      },
+      "sourceSpellingReview": {
+        "observation": "The SysML constraint body uses b.relatedFeatures. The pinned KerML Connector property is named relatedFeature, and deriveConnectorRelatedFeature defines it from connector-end reference subsettings. Current tests use this declared singular property and verify exact referenced endpoint identities, consistent with the constraint comment.",
+        "anchors": [
+          "KERML-XMI-Kernel-Connectors-Connector-relatedFeature",
+          "KERML-XMI-Kernel-Connectors-Connector-deriveConnectorRelatedFeature"
+        ],
+        "kermlXmiSha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+        "status": "recorded spelling discrepancy; no amendment of normative artifacts or full OCL conformance claim"
+      }
     },
     {
       "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-deriveAcceptActionUsagePayloadParameter",
@@ -214,6 +257,21 @@
     "BindingConnector, relatedFeatures, implied connector/end construction and specialization/redefinition closure",
     "State/transition membership derivation discrepancies already recorded in state-property-review.json"
   ],
-  "nextImplementationReview": "Trace the trigger receiver parameter and accept-owned binding connector together. Positive payload-wrapper construction does not establish this semantic binding. Assess existing implied-construction code before deciding whether to repair or implement.",
-  "nextFailureProbe": "accept-receiver-binding-before-macos-arm64.json"
+  "nextImplementationReview": "Review the three trigger argument validators against their exact XMI conditions: existing source-expression checks and Action-spelled diagnostics are candidates, not qualification. For after, trace ScalarQuantityValue measurement-reference redefinition to DurationUnit; for when, validate the wrapper and referenced expression result independently.",
+  "nextFailureProbe": "The saved trigger-argument-validation-before-macos-arm64.json proves all three diagnostic-ID mismatches in otherwise valid action-body syntax. Next probe abstract-model wrapper/result conditions and duration-unit counterexamples; preserve the existing rejection behavior.",
+  "followUpSourceReview": {
+    "reviewedAt": "2026-10-18T03:26:56.224726+00:00",
+    "library": "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Triggers.kerml",
+    "sha256": "124cad3625935e078d1363e6100ee12537ca9c51445a18108e056db8b4885609",
+    "observation": "Pinned TriggerWhen declares condition, receiver and monitor inputs; TriggerAt/TriggerAfter declare a first time/duration argument, receiver, clock and monitor. SysML 8.4.13.6 prose says each trigger function has both extra clock and monitor parameters. Treat this as an explicit dependency discrepancy to resolve using machine-readable authority, not permission to invent a TriggerWhen clock argument.",
+    "status": "open-source-discrepancy; no default-argument execution or closure claimed",
+    "normativeArchive": {
+      "url": "https://www.omg.org/spec/KerML/20250201/Semantic-Library.kpar",
+      "sha256": "6d9e311646a557cb08b64313cab6a7931109751b2ac7fbfcefad5c2216a6167b",
+      "cacheFile": "kerml-semantic.kpar"
+    },
+    "normativeMember": "Kernel Semantic Library/Triggers.kerml",
+    "normativeMemberSha256": "124cad3625935e078d1363e6100ee12537ca9c51445a18108e056db8b4885609",
+    "vendorMatchesNormativeMember": true
+  }
 }

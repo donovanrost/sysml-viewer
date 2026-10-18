@@ -264,6 +264,7 @@ pub(super) fn stage_owned_result(
         ownership,
         plan.expression,
         plan.expression,
+        BindingMembership::Member,
         plan.referent,
         plan.result_id,
         &plan.binding_ids,
@@ -296,18 +297,25 @@ pub(super) fn stage_owned_result(
     }
 }
 
+pub(super) enum BindingMembership {
+    Member,
+    Feature,
+}
+
 /// The BindingConnector is both Feature and Relationship, owned as a child of
-/// an OwningMembership. This deliberately does not assert that the expression
-/// is its featuring Type: the required rule says ownedMember, and the connector
-/// relates an outer referent to the result. It has no direct relationship carrier;
+/// a membership selected by the caller. Owned-result/default bindings use an
+/// OwningMembership: their rules require ownedMember, without claiming that the
+/// expression features the binding. Accept receiver bindings use FeatureMembership
+/// and separately stage their TypeFeaturing relationship. No binding has a direct relationship carrier;
 /// its two EndFeatureMemberships and ReferenceSubsettings do. Do not conflate
 /// that legitimate dual metaclass with a malformed membership child backlink.
 #[allow(clippy::too_many_arguments)]
-fn stage_binding(
+pub(super) fn stage_binding(
     b: &Builder,
     ownership: &mut SemanticOwnership,
     owner: usize,
     anchor: usize,
+    membership_kind: BindingMembership,
     referent: usize,
     target_id: Uuid,
     binding_ids: &[Uuid; 8],
@@ -343,7 +351,10 @@ fn stage_binding(
         owning_relationship,
     };
     rows.push(node(
-        "OwningMembership",
+        match membership_kind {
+            BindingMembership::Member => "OwningMembership",
+            BindingMembership::Feature => "FeatureMembership",
+        },
         binding_ids[0],
         None,
         vec![binding],
@@ -525,6 +536,7 @@ pub(super) fn stage_constructor_default(
         ownership,
         plan.result,
         plan.expression,
+        BindingMembership::Member,
         plan.feature,
         value_id,
         &plan.ids,

@@ -93,13 +93,13 @@
       "reason": "KERNEL-009 certifies explicit NullExpression values and lazy null-coalescing with exact scalar providers. Complete argument eligibility, reciprocal deferred wrappers, loaded function identity and cumulative work limits remain required; unavailable evaluation is not emptiness. MULT-029/030 cover empty/present selection, composition and guarded unknowns. Approximate arithmetic results, including power overflow and underflow, cannot establish exact endpoints. Dynamic publication materializes library names only when it must construct a static prefix; a same-transaction prefix retains all physical-authority and recipe checks without rebuilding unused names. KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits. KERNEL-011 certifies decoded LiteralString values, equality and sameness, concatenation and presence in conditional/coalescing providers. UTF-8 bytes are charged before copies, concatenation allocation and comparisons; all work shares the unchanged query budget. Publication consumes a freshly audited static prefix under one exclusive borrow and uses the complete raw ID index for warm-prefix collisions, avoiding duplicate scans while separate entry paths retain full validation. Mixed domains, string ordering, general string-library functions and numeric coercion remain unqualified. MULT-033/034 and private tests cover Unicode, standard escapes, stale and malformed graph evidence, and cumulative work refusal."
     },
     {
-      "id": "KERNEL-010",
+      "id": "KERNEL-010 / KERNEL-023",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs",
       "patch": "patches/0011-atomic-dynamic-staging.patch",
-      "sha256": "82404082aca58ffcbc3a2bccf50eaba1df2e97f300d4749eadf42be4b1852f6e",
+      "sha256": "3c4a6f2f669ed739df563149f17ce1ea198a8910e4478c7dbc9f0665f2757459",
       "baseSha256": "5d9cc31f0716d4b8852d98019ab3fbe8e014df1a7f294cb856e143632af0f716",
-      "resultSha256": "b1fc09b8c36591db402bf7715139a09a789e7088b348f179167f379c99ede4e2",
-      "reason": "KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits."
+      "resultSha256": "8ad9da07aca2c4df6c04101aff6f0a79b8038fb8ae165953bdc0441c2fa65651",
+      "reason": "KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits. KERNEL-023: Plan and stage accept trigger receivers, owned bindings and local featuring within the shared atomic semantic tail; reserve identities before dynamic staging and retain independent work-limited refusal."
     },
     {
       "id": "KERNEL-010",
@@ -165,13 +165,13 @@
       "reason": "KERNEL-018: count ViewRenderingMembership across owned and inherited featureMembership after actual redefinition, visibility and import selection. Missing/ambiguous references, recovery, cycles and incomplete dependencies cannot certify a candidate-count violation; two owned memberships remain a definite error. Reuse the shared projection and bound the query-local dependency preflight. KERNEL-019 moves parallel-state validation from lexical transition/succession ownership to checked action endpoint incidence in the action validator."
     },
     {
-      "id": "KERNEL-018 / KERNEL-021 / KERNEL-022",
+      "id": "KERNEL-018 / KERNEL-021 / KERNEL-022 / KERNEL-023",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "patch": "patches/0019-preserve-distinct-view-renderings.patch",
-      "sha256": "9212202ed797bfe51f8fb0f67da2c82b8ce15366ce9aa7a8ddf113abf91a930e",
+      "sha256": "5d1b15c4dac0df39e5d25601ea0ca96a0d06cea892d9a84bdb114ad31ec29e33",
       "baseSha256": "4bcbae4ec8a3fe2847ac48a00b3661fb4c53d8ee0e1dbac8120e089821caa565",
-      "resultSha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1",
-      "reason": "KERNEL-018: same-name compatibility shadowing must not remove a ViewRenderingMembership. checkRenderingUsageRedefinition targets the library viewRendering feature, not every inherited same-name user rendering. Preserve actual explicit/transitive redefinition and shared membership identity/visibility reduction. KERNEL-021 constructs the anonymous first input parameter of textual transitions before the optional trigger payload, preserving source and payload positions across explicit and shorthand forms. KERNEL-021: Transition parameter construction retains grammar-versus-semantic provenance, with contextual guarded targets distinguished by state ownership. KERNEL-022: Construct accept payload and receiver inputs in order, marking omitted receiver membership implied. Trigger values belong to the payload FeatureValue; at/after use argument Feature/FeatureValue wrappers, while when retains OwnedExpressionReference. Share the existing deferred-expression wrapper without changing operator operand layouts."
+      "resultSha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4",
+      "reason": "KERNEL-018: same-name compatibility shadowing must not remove a ViewRenderingMembership. checkRenderingUsageRedefinition targets the library viewRendering feature, not every inherited same-name user rendering. Preserve actual explicit/transitive redefinition and shared membership identity/visibility reduction. KERNEL-021 constructs the anonymous first input parameter of textual transitions before the optional trigger payload, preserving source and payload positions across explicit and shorthand forms. KERNEL-021: Transition parameter construction retains grammar-versus-semantic provenance, with contextual guarded targets distinguished by state ownership. KERNEL-022: Construct accept payload and receiver inputs in order, marking omitted receiver membership implied. Trigger values belong to the payload FeatureValue; at/after use argument Feature/FeatureValue wrappers, while when retains OwnedExpressionReference. Share the existing deferred-expression wrapper without changing operator operand layouts. KERNEL-023: Register the independent accept receiver-binding semantic planner."
     },
     {
       "id": "KERNEL-019 / KERNEL-020 / KERNEL-021 / KERNEL-022",
@@ -217,6 +217,24 @@
       "reason": "KERNEL-022: Document current payload-value construction separately from retained compatibility readers for the older sibling-trigger layout.",
       "sha256": "e08ed68da66de9f55e58594dcad47e3cd150ab3eaa98d71ccf4c1fdb5769318a",
       "resultSha256": "caa925533e0e836ddcdb4464e3f9edb926f7c326e835875b6829dbfcf975156e"
+    },
+    {
+      "id": "KERNEL-023",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs",
+      "patch": "patches/0025-binding-membership-roles.patch",
+      "baseSha256": "d2b55b221bbbfeab6447cad0a28ab0b49a54b86d221bc7b31eb6767acca38efe",
+      "reason": "KERNEL-023: Share the existing binary binding factory with an explicit membership role. Preserve owned-result/default OwningMembership layouts; accept receivers require FeatureMembership.",
+      "sha256": "d8a705ac31f9b32b95fdc0590bb8b3db6063e7afd5822223053c8ee742fba978",
+      "resultSha256": "38a5065c480e39ac15e47a5ca7b7b070f1a3963de2083e18f3d3d256598879ad"
+    },
+    {
+      "id": "KERNEL-023",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/accept_bindings.rs",
+      "patch": "patches/0026-accept-receiver-bindings.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-023: Construct missing trigger receiver parameters and accept-owned binding connectors from checked reciprocal local ownership. Preserve existing receivers and matching bindings, reject contradictory graphs and identity collisions, and publish no partial family when work is exhausted. Includes private adversarial and replay regressions.",
+      "sha256": "765190cc8cf3f01646fd670164c106af41bb27ee78bdb8c20cbdcf5fd2001840",
+      "resultSha256": "093342367127d0c41ee76ee0adb841ab0484b79f1748db8f8da2b03e3e46db19"
     }
   ]
 }

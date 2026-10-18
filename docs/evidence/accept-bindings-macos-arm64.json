@@ -1,0 +1,413 @@
+{
+  "generatedAt": "2026-10-18T03:46:35.842903+00:00",
+  "platform": "darwin",
+  "arch": "arm64",
+  "scope": "KERNEL-023 checked local construction of trigger receiver parameters and accept-owned binding connectors, including explicit owned-feature membership and local featuring. One native graph test covers 11 accepts/nine triggers across ordinary/state/transition contexts in both formats with and without libraries. Seven private tests cover existing/malformed bindings, identity collisions, work limits and replay. ACCEPT-003 and native/WASM parity check preserved authored projections only; generated connector endpoints are not exposed by the facade. Inherited ordering, default behavior, complete connector/library semantics, execution and normative interchange remain open.",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.24",
+  "kernelInputSha256": "bffa7b01dabed05b04397c8d9f92db9520069cd7556f5a6349da288f1c0f62b4",
+  "binarySha256": "ef435421b502b83aa7296c44d0eb04bf5785fc6ba3f26c3dd33ecae98d587c19",
+  "inputs": {
+    "Cargo.lock": "860432d6cbb3d019d138b4289d0f042931e56b92bac8c6e1d1a06985c1c6210b",
+    "Cargo.toml": "4df0469d74c7413c2d83292b5503a8727aadd1705596ffc3f96d15f9c78a88b7",
+    "crates/sysml-kernel/src/engine.rs": "2c98dd9065771916347d50900093322b72849c3f02622d543140aa5e9f0890c0",
+    "crates/sysml-kernel/src/lib.rs": "0cf3d0e84a48eb47593da6dd98c67444b4f4fe34378d6c87aa4fbee8937d419f",
+    "crates/sysml-kernel/src/query.rs": "8e4095a4d4fe88bc6b0668c265b2c6ba1c803e3cca1a670c5d53700e724829d4",
+    "crates/sysml-kernel/src/states.rs": "1aa90f7feee41b3dd790c54463056e7c66938163ca55eb8e733abc647a028d4f",
+    "crates/sysml-kernel/src/types.rs": "43229e1590e526ee7e00f06f8f4e9eaa32f8e3c84cec3f4a5448ecd4ca45d66a",
+    "crates/sysml-kernel/tests/accept_construction.rs": "9de9a4c39945b31c19d05491ba5cdc3486a34eed0a09a1983e0c800711dd0a94",
+    "crates/sysml-kernel/tests/accept_receiver_bindings.rs": "4c70d91ffcb4a31631c7a93d6ce8b8813db833899051a6c9e13ca4863f5536b2",
+    "crates/sysml-kernel/tests/state_subactions.rs": "62cef6fbb635350c1803577903bdd12b5e8d3514e592792b50b6326020448c58",
+    "crates/sysml-kernel/tests/transition_construction.rs": "773855456906c7145f07e9b677e0eb96a7d095f08653e59b8702387ff7494669",
+    "package-lock.json": "0830ea42fa9a63e20536ae61e22fa8846a481b319ee8fb33c540683fe9393210",
+    "package.json": "f648de0ed21d4250d00f3d85fdef39b970eb875b5b81ba68d4fa24f973cc592c",
+    "patches/0001-defer-alias-distinguishability.patch": "39fde104455e05c931e459222ac8250332a5eee8241fc3afab361d3f7fd45068",
+    "patches/0002-package-attribute-featuring.patch": "9e7896680259939831570769aa5f2a0c2f59a71ee1a9332fb5b9a35aaceff805",
+    "patches/0003-checked-conditional-bindings.patch": "0b3850db39dce7fccb26e955f0dc0589fa6b016d47b010279cada2d5eeea8af3",
+    "patches/0004-designated-operator-cache.patch": "024456d9d2519c75fcb4d358ee76a9a28d862fefd6cb19c64316ebbf6a11990f",
+    "patches/0005-designated-callee-evidence.patch": "a680fdee92c6f23f9ebe723417646b9002ced5313afee027b2d555c974f26add",
+    "patches/0006-checked-conditional-cardinality.patch": "fea7a28b3a962670ae496c64faf18b7dfbdbc88936db91a31c2217d7f47e39b7",
+    "patches/0007-exact-conditional-execution.patch": "acfa50eecd7f5a3cc22de0e1fa300cef4d84cdceb2fd71d3f8b721a8b5d58e2b",
+    "patches/0008-isolate-unresolved-specializations.patch": "615990aa7ed9fe5f55965747c95f4506c300c6ca3268b143bdd14e750f43abba",
+    "patches/0009-shared-eligibility-batch.patch": "fe2d87e2a993aade2e9ef62396566b8b69061867ca9b01e3991258c04b40f6fe",
+    "patches/0010-reuse-static-prefix.patch": "677bc0942b80697dc9ec9582058ea291ce9348196bbe0a3520dfbceff7ace26a",
+    "patches/0011-atomic-dynamic-staging.patch": "3c4a6f2f669ed739df563149f17ce1ea198a8910e4478c7dbc9f0665f2757459",
+    "patches/0012-atomic-ownership-batch.patch": "02e04fea6a4240b01efd12af5a9e076d2b7f8fbe7f29bb82a6d6b0862bb400a1",
+    "patches/0013-lexical-whitespace-and-quotes.patch": "c55f7826b5d6192eed8883e127ce9d02e021f1a27c82b7ca6f9b1677205da4bc",
+    "patches/0014-numeric-token-composition.patch": "18e8ff25b878f551c54a7768c28b9782dcb72afd35d0064b2b44bf061d790a89",
+    "patches/0015-decimal-scale-boundary.patch": "1ad209204549671361600519d554bdabd2e02d48307ef927f5f5cca50235210f",
+    "patches/0016-usage-typing-families.patch": "abad67929d2825871f76e9a3b77a0839ed7c36f5cdaa865f9f9f1b0bcfdefa3f",
+    "patches/0017-state-subaction-rule-identifiers.patch": "5f9b7437d76e5c73c7eecd24dec5221dacd078f2892fa78366b1ba1659d334fb",
+    "patches/0018-inherited-view-rendering-validation.patch": "bb2ad7e99e9c5a4fb56a0789c5927224cede47c01100cea0f483a9406472ad69",
+    "patches/0019-preserve-distinct-view-renderings.patch": "5d1b15c4dac0df39e5d25601ea0ca96a0d06cea892d9a84bdb114ad31ec29e33",
+    "patches/0020-parallel-state-transitions.patch": "812130b505df08e87d64aa9e427df16422eda147bf87ae36e4c76ae550e00004",
+    "patches/0021-transition-parameter-syntax.patch": "66b91c3426a4ffaa6f5df58e952736ecc9504924c4444bff503451a030c639ff",
+    "patches/0022-transition-format-provenance.patch": "9d8b04ac47f52b907137745b164d5490e6c3c3d5e824041b085c7713ce62ca56",
+    "patches/0023-lift-transition-parameter-origin.patch": "6a79eb18aaae208928a12dad434953bca8b5f704cd78612f8305fc9b162a4407",
+    "patches/0024-accept-argument-compatibility.patch": "e08ed68da66de9f55e58594dcad47e3cd150ab3eaa98d71ccf4c1fdb5769318a",
+    "patches/0025-binding-membership-roles.patch": "d8a705ac31f9b32b95fdc0590bb8b3db6063e7afd5822223053c8ee742fba978",
+    "patches/0026-accept-receiver-bindings.patch": "765190cc8cf3f01646fd670164c106af41bb27ee78bdb8c20cbdcf5fd2001840",
+    "patches/manifest.json": "0f57e219024823603a10d9fd1588205e4341839811400ec2c2bf68468bdd84ea",
+    "src-tauri/Cargo.lock": "5fd8c06b438a737eb076b79b42de319f25623d5b3db5fdc5b4c4df64d87dc820",
+    "src-tauri/Cargo.toml": "7cbd2241a2b190597e4868da042d0436bda057abe993a9697b53556296efaa93",
+    "src-tauri/tauri.conf.json": "faa8b31a2e2d9790886182b5ea886ea1ef2b7d1c9e4102a46bba07a8a4845576",
+    "src/kernel/client.ts": "0c6514a2311cfb32a96338db4f78c4a6fbaa35c97f3764332aea48a605f3dc59",
+    "src/kernel/generated/Element.ts": "bbdb0c2415dfc426019a6c3da553258d0ca60c826bd90b386121e721fbf9b579",
+    "src/kernel/generated/StateSubaction.ts": "6e7534013f2ac4880f9ab822a8a2f0d317920d5275c84e493747e40bb4362e60",
+    "src/kernel/generated/StateSubactionIssue.ts": "1bdea5aeaee75662fa4420eb682560fd6fd3ecaf6335d0e473444ce4916dd242",
+    "src/kernel/generated/StateSubactionKind.ts": "d271eaa99ae522463d986bd8e58ad992ad691aee98166f5cfda2a7a155d25000",
+    "src/kernel/generated/StateSubactions.ts": "f9a5e822a600345e98cc871ef2e816e26793202d9213914d0d1180a7c068dc19",
+    "src/viewer/model.ts": "7fa3342b67cf85ce2182d34894fc1004e305e6962358aadf95c822593a5bee81",
+    "standards/assessments.json": "5d030c094dccd6f70a00ccb7ae5843a3a2331fbf71f99f0b076511b8ee4fd9bb",
+    "standards/catalogue.json": "fa5f9d95017d14d95682976629f05daf22bd64fcf2fe79b6faa731931bb1b08e",
+    "standards/sources.json": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
+    "tests/accept-actions.test.ts": "027983b5f470b73797b4e897a65fb702ea1559d8cfb06ae563eed5a41f9b8ebf",
+    "tests/conformance-runner.test.mjs": "76326edad826ef436e20a26045e6bfe824a9752e18d98255047605329dd7040f",
+    "tests/conformance/fixtures/accept-construction.sysml": "c0a3d4547cee27ddad90faa60209b07ab6feed89e77656b6a2c1514c9d1defae",
+    "tests/conformance/fixtures/accept-receiver-bindings.sysml": "fc49e2278900acff6c7be90a95905bb078e9a704bbd7d9c81fac69c1dbac25b5",
+    "tests/conformance/fixtures/accept-triggers.sysml": "45f95b6060361b8487defde3a41c6a899643015c1095392c4b865886caf2b581",
+    "tests/conformance/matrix.json": "5ace27ad88813fe5c1cb67fcba2b36e416f34c3d073bee1e539491c22040d888",
+    "tests/families.test.ts": "ff7c714b5f17c6316c38ea7fae181bab821ff331c4b42b3ca6fd49970f537d90",
+    "tests/kernel-client.test.ts": "0436b2cfc457725aa9af72d105da19073e40addf1bc0e5003044cf551c6676b0",
+    "tests/kernel.test.ts": "0ccece0e36e4ecf22e1c2c79c41cac3b7e913bfc589fd53448cca099593d76cb",
+    "tests/requirements.test.mjs": "7ad40a0452d2e9c59f48839690da83b9de86357497702b90e42b7c5b5ebf56d3",
+    "tests/state-subactions.test.ts": "a8a47d23b3cb9f4697ce8f2d842296fec4284b4f16f4c10b0d7a36bafec6bbe9",
+    "tests/vendor-patches.test.mjs": "69c3ea92c59360f638411f0a0a50ef6b281df8eb815e5e34ecee3f39c451bca0",
+    "tools/benchmark-kernel.mjs": "edc5e95c2b52bb83212d790a531fd6584fcf5ee8dc7fb1e03b2f3087d4f29289",
+    "tools/import-standards.py": "a8c09ae7a71b0e3e65d28977c8716bff25f1f050c2f1f163157839d0862c9924",
+    "tools/lib/conformance.mjs": "2aedf06bca95c83f56f1a613cbc1cb0e4435b3ecb24ed22d4b0a247f7cd58862",
+    "tools/lib/requirements.mjs": "22f65568a4f5d7e65a59f6881b1539b3ccbeee39cbecb6d076600cb067555fe9",
+    "tools/lib/vendor.mjs": "85ec63b727db4fa53f8c10dc7790ccd1432c785e2897d603c3f15973cb55030b",
+    "tools/requirements-extraction.txt": "3ec8922905dc4e3a10c3b46bd7fba023c37ffc309d51c6bed2a13ec3e98177fd",
+    "tools/test-vendor.mjs": "d475a9e0de6453dcd74c51cf09ba3f10069de3fb44c0a00595b5fb91fc49a40a",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs": "0d6adf4c0ba1cf041edb3e46aa51b77b743f7c7b12768d6aec3e2f081098efd7",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs": "4d1636387ebb334f513748330fef19d9a3e54221afb10ded1d9ba30ca13fa4ba",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/typing.rs": "2659c9ea43e1193aef737894b7d2c01c099687370d820ada5c757a59072bc4e9",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs": "6807871d3d5d32007f59e8406b446a0a8afc5ba51e66fa729077369a427e8092",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/accept_bindings.rs": "093342367127d0c41ee76ee0adb841ab0484b79f1748db8f8da2b03e3e46db19",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/behavior.rs": "caa925533e0e836ddcdb4464e3f9edb926f7c326e835875b6829dbfcf975156e",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs": "55904e99c8f1a10492d76ae6098135aa883759a5df47feee6e8858dfc1910e8a",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs": "c85c9f315ecc5214fa624e720e493d15622f822a6410e47c33726d7cb5fc9d50",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs": "01c9aa635ad9d9fb3a7fdaf5d34071b626494a37da1db52eebf020e425ff2478",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs": "4e02c3ee3a88c75d1b398a91e91fe8bbbf0c71359161a3955171d998db815d96",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "8ad9da07aca2c4df6c04101aff6f0a79b8038fb8ae165953bdc0441c2fa65651",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs": "8329c60723149b689537a7f5afcf251396c196c71742102703cf20ab492dd015",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability.rs": "9d5968b21f6da29cb9425c6019e2d27621a27ff5c3fd5452bf231bb883a5287d",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs": "08f521867657bed8204154c271036b5fdf12db1ea4f71f31e6e256a3dd77f3f3",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs": "38a5065c480e39ac15e47a5ca7b7b070f1a3963de2083e18f3d3d256598879ad",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs": "9f724257d0b466612447e7b057b9bb543e47c316e9a763468b51d13ee829fa0a",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "581edf552f7a33497a0deea3268c912c3b91f255c7f6d3a3624aa5a02ce90925",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs": "5e59c965712baa790f43e58df39e0f8e01e14df73ae1a76840076e9e65e5e8b8",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/rational.rs": "f21875ae00867390fcf9f90a23346f32437d7cf089d9a961b9e28cf12959c969",
+    "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/ast.rs": "98fe517dc6a8c488f5e092914b26fb957f1513aee87d8439b037734ed277a3c0",
+    "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs": "0f4ed33deb16af0facf93f3c15bb6a7056fa01ee27bfcc74dbdc593b32d1e654",
+    "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/lexer.rs": "e99ea6d8807862c2be5b23fe0e9396f7cb1fd5ba50b31823053c2cc7f4197df6",
+    "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs": "20eb619b7659a054a6c7d8485e20f03bffa68f84f4dab6702cf3bd9f9bf5c2a9",
+    "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/print.rs": "a5d1432c941e9f728f3768bd49bf375eb00cc7a6e7059156970689e83b44fd87"
+  },
+  "reports": {
+    "docs/evidence/conformance-macos-arm64.json": "6dd78c0fa4a590def61bfe20b9e60d40a73ee06bb431edc9f6c96fb138604882",
+    "docs/evidence/requirements-macos-arm64.json": "c17479c52f3cbb1ee16ec7756321cc209c5894e4f31427bcbedf162e01cc2c65",
+    "docs/evidence/validation-audit.json": "ec5f9cbe5feba63807470bcdf593752d8acbb0c79f3022ec1f719a19caaa67d0",
+    "docs/evidence/benchmark-accept-bindings-macos-arm64.json": "ae75e4e435d3a1a5457df8bd08e2acc8903f2c02e497fac52f70359cc9932fc3",
+    "docs/evidence/accept-receiver-binding-before-macos-arm64.json": "aad6706d4f4d7c79b49b822488466ca5946d4dcb4e825f132aad8d12667fb3f8",
+    "docs/evidence/trigger-argument-validation-before-macos-arm64.json": "e4353b3679935a103d244d0a1de39b2049c52e7620b81a231b63883fab720d1b"
+  },
+  "passing": {
+    "rust": 92,
+    "vendor": 294,
+    "node": 55,
+    "conformance": 133,
+    "benchmarkSamples": 180
+  },
+  "knownGapCases": 0,
+  "knownGapAssertions": 0,
+  "casesAdded": 1,
+  "assertionsAdded": 19,
+  "assessments": 77,
+  "validationNameInventory": {
+    "rules": 180,
+    "registered": 97,
+    "withSourceMentions": 98,
+    "withoutSourceMentions": 82,
+    "withDirectAssessments": 16,
+    "withoutDirectAssessments": 164,
+    "unmatchedNames": 36
+  },
+  "verification": [
+    {
+      "step": "extraction",
+      "command": [
+        "target/standards-env/bin/python",
+        "tools/import-standards.py",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 1.91,
+      "log": "target/accept-bindings/extraction.log"
+    },
+    {
+      "step": "vendor",
+      "command": [
+        "node",
+        "tools/verify-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.44,
+      "log": "target/accept-bindings/vendor.log"
+    },
+    {
+      "step": "rust-format",
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "fmt",
+        "-p",
+        "sysml-kernel",
+        "-p",
+        "sysml-cli",
+        "-p",
+        "sysml-wasm",
+        "--",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.15,
+      "log": "target/accept-bindings/rust-format.log"
+    },
+    {
+      "step": "clippy",
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 4.64,
+      "log": "target/accept-bindings/clippy.log"
+    },
+    {
+      "step": "format",
+      "command": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.84,
+      "log": "target/accept-bindings/format.log"
+    },
+    {
+      "step": "contract",
+      "command": [
+        "npm",
+        "run",
+        "contract:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 9.58,
+      "log": "target/accept-bindings/contract.log"
+    },
+    {
+      "step": "matrix-docs",
+      "command": [
+        "npm",
+        "run",
+        "conformance:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.18,
+      "log": "target/accept-bindings/matrix-docs.log"
+    },
+    {
+      "step": "inventory",
+      "command": [
+        "npm",
+        "run",
+        "requirements:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.28,
+      "log": "target/accept-bindings/inventory.log"
+    },
+    {
+      "step": "vendor-tests",
+      "command": [
+        "npm",
+        "run",
+        "vendor:test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 62.11,
+      "log": "target/accept-bindings/vendor-tests.log"
+    },
+    {
+      "step": "rust-tests",
+      "command": [
+        "npm",
+        "run",
+        "kernel:test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 313.82,
+      "log": "target/accept-bindings/rust-tests.log"
+    },
+    {
+      "step": "conformance",
+      "command": [
+        "npm",
+        "run",
+        "conformance"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 294.81,
+      "log": "target/accept-bindings/conformance.log"
+    },
+    {
+      "step": "requirements-report",
+      "command": [
+        "npm",
+        "run",
+        "requirements:report"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.86,
+      "log": "target/accept-bindings/requirements-report.log"
+    },
+    {
+      "step": "node-tests",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 102.43,
+      "log": "target/accept-bindings/node-tests.log"
+    },
+    {
+      "step": "benchmark",
+      "command": [
+        "npm",
+        "run",
+        "benchmark"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 441.02,
+      "log": "target/accept-bindings/benchmark.log"
+    },
+    {
+      "step": "desktop",
+      "command": [
+        "npm",
+        "run",
+        "desktop:build",
+        "--",
+        "--bundles",
+        "app,dmg",
+        "--ci"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 64.6,
+      "log": "target/accept-bindings/desktop.log"
+    }
+  ],
+  "verificationLogSha256": {
+    "target/accept-bindings/extraction.log": "c03393e2caaf812cbfe709cc00d2390779a668a8986266be249a8653ab1d0d80",
+    "target/accept-bindings/vendor.log": "50309683a04995f16e5a6b8136b8d348677fe7d1dbeeda24f31e916297d3cbb2",
+    "target/accept-bindings/rust-format.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/accept-bindings/clippy.log": "840323bdb712c7562a66be6821786507d6894d399900c34b01dc13813df54551",
+    "target/accept-bindings/format.log": "c8372da20a50ecdb2eb545bcaf2c7601d99158be26046b3118b377e5726f84b2",
+    "target/accept-bindings/contract.log": "6d8aaa11710d1be03c094fa4592c38fb7077013922a65fa8fe40de04d7da8cbc",
+    "target/accept-bindings/matrix-docs.log": "f2d6de6bf84831a82b1547d4b05edda85c88d12184b2e107eacd42971a4ca9ab",
+    "target/accept-bindings/inventory.log": "462b7ad90caa464d5fa69ab8bbb28fdb96f3e09823dcebea1c953cf0e23fc287",
+    "target/accept-bindings/vendor-tests.log": "71f3febd1f07a218bc676323457d3aeb8b212adbb4eb0eb330880bfb22256106",
+    "target/accept-bindings/rust-tests.log": "44ed075cca57963a9feadbf0ede3a08796d2106c9c6f618b318d70a566e946fb",
+    "target/accept-bindings/conformance.log": "fbf8215c87d441285d33e2951eabef24dcbd49c86ba78822cf6971337ac28b26",
+    "target/accept-bindings/requirements-report.log": "500b62ec1293b20888474e5cbd6e269eedf41af59859b6daf24eec79a0b56d6e",
+    "target/accept-bindings/node-tests.log": "9b2baccb4ffcc07beab4d6c61ee2348a82535d482d0824463a5df26beb7394f6",
+    "target/accept-bindings/benchmark.log": "7375d0a8b988c0a9915e436ba9548e0f381d1f4a409fa8063f92f5e11508f44f",
+    "target/accept-bindings/desktop.log": "4cd498c9b59d923af6d2a177b57aa550242943975e16863efc4a0412eb03755e"
+  },
+  "finalReadOnlyChecks": [
+    {
+      "check": "vendor",
+      "command": [
+        "node",
+        "tools/verify-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.61
+    },
+    {
+      "check": "matrix-docs",
+      "command": [
+        "npm",
+        "run",
+        "conformance:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.29
+    },
+    {
+      "check": "inventory",
+      "command": [
+        "npm",
+        "run",
+        "requirements:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.33
+    },
+    {
+      "check": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.06
+    }
+  ],
+  "followUpEvidence": {
+    "docs/completion-plan.md": "ae48835bf548991790d5d6e6c469702d906924cbb7bceebe861294844e6ee59b",
+    "docs/evidence/accept-obligation-review.json": "2da1f2d4427b37a06b6c4cdcf2631e37d64d4762bc685f2ae87ef08ac651e539"
+  },
+  "benchmarkComparison": {
+    "baseline": "docs/evidence/benchmark-accept-construction-macos-arm64.json",
+    "sharedScenarioRuntimeMedians": 58,
+    "medianChangePercent": 0.7,
+    "largestMedianIncreasePercent": 8.3,
+    "largestIncreaseScenario": "connection-ends",
+    "largestIncreaseRuntime": "wasm",
+    "interpretation": "Observational comparison on the same local host; no isolated performance regression threshold is claimed."
+  },
+  "platforms": {
+    "macOS-arm64": "verified",
+    "Windows": "not run",
+    "Linux": "not run"
+  },
+  "artifacts": {
+    "app": "src-tauri/target/release/bundle/macos/SysML Viewer.app",
+    "appBytes": 12666321,
+    "dmg": "src-tauri/target/release/bundle/dmg/SysML Viewer_0.4.0_aarch64.dmg",
+    "dmgBytes": 4583598,
+    "dmgSha256": "11895a6fb06f8201eade9ed6c6e8a908b64ad3117c33237c3386281faa0e7375",
+    "localApp": "release/SysML Viewer.app",
+    "previousApp": "release/SysML Viewer.previous-d40bdd6.app",
+    "localAppMatchesBundle": true,
+    "bundleFilesSha256": {
+      "Contents/Info.plist": "732197517b8e6b23ee5b5669fbc50764d1bd8c45654642cdffd7949fe3f4855f",
+      "Contents/MacOS/sysml-viewer": "ebf9e21b27b2af647b1bea4732be0edd459ef9b78818bb564be7cbea26757dc0",
+      "Contents/Resources/icon.icns": "90028bb4ea3a018ec8de8f1afb4dccce9cb2a1e3376e89981094c0e9cb5a54bb"
+    }
+  }
+}

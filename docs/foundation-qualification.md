@@ -963,6 +963,50 @@ compatibility readers and bounded generated-model round trips do not qualify the
 complete normative JSON/KPAR format. Package/app version 0.4.0 and snapshot schema
 4 remain unchanged.
 
+## KERNEL-023: accept trigger receiver bindings
+
+Engine `.24` adds the missing second trigger parameter and an accept-owned
+`BindingConnector` between that parameter and the accept receiver. The
+[baseline probe](evidence/accept-receiver-binding-before-macos-arm64.json) records
+both omissions for at/after/when after full-library implicit publication.
+The normative anchor is
+`checkAcceptActionUsageReceiverBindingConnector`, including its exact second-parameter
+identities. The connector uses `FeatureMembership`, so it is an owned feature;
+its ends use `EndFeatureMembership` and checked `ReferenceSubsetting` targets.
+Local `TypeFeaturing` relationships retain the receiver and connector/end owners.
+
+The planner first checks reciprocal parameter/value ownership, direction, trigger
+kind, existing bindings and every generated UUID. It preserves an existing second
+input and accepts a matching connector in either end order. An unrelated connector
+is retained but does not satisfy the obligation. Contradictory membership aliases,
+endpoint arrays, missing backlinks and non-Feature ends cannot certify a binding.
+Malformed local evidence refuses that accept while admitting independent neighbors.
+Exhausting the work allowance drops all plans in this family; planning never
+mutates source rows. The shared publisher stages receivers, connectors and ownership
+as one transaction, with stable identities when its semantic tail is rebuilt.
+
+The native graph regression covers 11 accepts, nine with triggers, across ordinary
+actions, state entry/do/exit and transitions. It runs in canonical and legacy formats,
+both with and without the full standard library. Seven private tests exercise
+malformed models, existing/reversed/unrelated bindings, all generated identity
+collisions, work exhaustion, immutable source rows and replay. The public
+`ACCEPT-003` case and native/WASM parity test check preserved authored memberships
+and state subaction identities beside the previous accept/transition corpus.
+They do not inspect generated endpoints: the facade currently omits these implicit
+binding rows. Deeper evidence comes from the raw graph API tests.
+
+The new planner is a separate dependency module. Its recorded added-file patch has
+an explicit null upstream hash, and reverse verification must remove it. Existing
+upstream hashes are unchanged; the effective inventory includes the new module.
+Four new provenance tests cover reproducible addition, tampering, missing/invalid
+bases, reverse-to-absence and the single-file boundary.
+
+Full inherited parameter ordering, callable/default construction, trigger argument
+validation, default receiver/clock/monitor behavior, complete connector ancestry,
+execution, public endpoint queries and normative interchange remain open. This
+increment does not close the entire named obligation or the action family.
+Package/app version 0.4.0 and snapshot schema 4 are unchanged.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -990,19 +1034,24 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the current matrix has **132 passing conformance cases**, **no
-known-gap cases**, and **no planned cases**. All **91 Rust kernel tests**, **51 Node
-tests**, and **287 dependency proof tests** pass. The dependency suites cover
+On macOS arm64, the current matrix has **133 passing conformance cases**, **no
+known-gap cases**, and **no planned cases**. All **92 Rust kernel tests**, **55 Node
+tests**, and **294 dependency proof tests** pass. The dependency suites cover
 lexical boundaries (5), rational arithmetic (13), explicit usage typing (2), view
 rendering validation (5), transition/accept incidence, target, trigger and membership/input validation (12), type relations (41), model-level evaluability (33),
 cardinality (34), invocation bindings (19), constructor bindings (17), dynamic graph
-(19), dynamic invocations (27), owned results (4), semantic ownership (5), end
+(19), dynamic invocations (27), owned results (4), accept receiver bindings (7), semantic ownership (5), end
 constancy (10) and checked namespace operations (41). The corpus and the 32 import-rule
 partitions are included in the Rust suite, not additional independently qualified
 specification counts. Native and WebAssembly outputs match exactly, including the
 expanded family/body corpus in both file orders.
 
-The [KERNEL-022 validation record](evidence/accept-construction-macos-arm64.json)
+The [KERNEL-023 validation record](evidence/accept-bindings-macos-arm64.json)
+records receiver/binding construction, seven private malformed/identity/budget/replay
+tests, one native graph regression in four library/format configurations and one
+public case with 19 authored-projection assertions. Four new Node tests qualify
+added-file patch provenance. The public snapshot does not expose binding endpoints.
+The prior [KERNEL-022 validation record](evidence/accept-construction-macos-arm64.json)
 records payload/receiver construction, trigger value ownership/wrappers and the
 owned-input constraint. Two public cases add 32 assertions. Four native tests
 cover input provenance/direction, trigger wrappers, state/transition accepts and
@@ -1045,6 +1094,20 @@ passed in 2.0–4.1 seconds, with identical snapshots within each case. Subseque
 validation used a temporary process-scoped sleep assertion, released at completion.
 The 30-second conformance and 60-second benchmark deadlines are unchanged. Earlier unexplained
 benchmark timeouts below remain separate evidence.
+
+The [KERNEL-023 benchmark](evidence/benchmark-accept-bindings-macos-arm64.json)
+records 180 successful samples across 30 workloads. All 29 earlier workloads remain.
+The new workload runs the full receiver fixture and checks its public authored
+projection on every sample; raw graph tests supply the generated-binding proof.
+Repeated and native/WASM snapshots agree exactly. These fresh-process measurements
+do not establish production-model latency bounds. Across the 58 shared
+scenario/runtime medians, the median change from KERNEL-022 is +0.7%; the largest
+increase is +8.3% for the WASM connection-end workload. These observations come
+from the same local host, not an isolated performance-regression experiment.
+
+| Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
+| --- | ---: | ---: | ---: |
+| Accept trigger receiver bindings | 2,048 | 2,499 | 396.7/347.6 |
 
 The [KERNEL-022 benchmark](evidence/benchmark-accept-construction-macos-arm64.json)
 records 174 successful samples across 29 workloads. All 27 previous workloads remain;
@@ -1169,7 +1232,7 @@ regression budget. Large import-heavy production models and incremental performa
 remain open engineering work.
 
 The production web build and macOS arm64 app and DMG builds pass. The local app
-is `src-tauri/target/release/bundle/macos/SysML Viewer.app` (version 0.4.0, 12.06 MiB), with a
-4.36 MiB installer under `src-tauri/target/release/bundle/dmg/`. This run
+is `src-tauri/target/release/bundle/macos/SysML Viewer.app` (version 0.4.0, 12.08 MiB), with a
+4.37 MiB installer under `src-tauri/target/release/bundle/dmg/`. This run
 checks automated viewer integration and packaging; it does not repeat the earlier
 interactive file-picker/navigation checks or establish Windows/Linux packaging.

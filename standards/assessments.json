@@ -45,7 +45,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn effective_features(",
       "role": "candidate upstream graph and resolution implementation; presence does not prove every rule",
-      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
+      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
     },
     "typing": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/typing.rs",
@@ -81,13 +81,13 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn resolve_in(",
       "role": "candidate upstream scoped-name resolution",
-      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
+      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
     },
     "connector-ends": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn connector_end_targets(",
       "role": "candidate upstream connector-chain query",
-      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
+      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
     },
     "diagram": {
       "path": "src/viewer/diagram.ts",
@@ -351,7 +351,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn state_subactions(",
       "role": "Shared semantic library query for written state subaction kinds and action elements",
-      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
+      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
     },
     "trigger-source-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
@@ -363,7 +363,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "\"sourceparam\"",
       "role": "Textual transition source/payload parameter construction",
-      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
+      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
     },
     "transition-construction-tests": {
       "path": "crates/sysml-kernel/tests/transition_construction.rs",
@@ -393,7 +393,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "let payload_element = self.emit_payload",
       "role": "Accept payload/receiver construction and payload-owned trigger argument wrappers",
-      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
+      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
     },
     "accept-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
@@ -417,7 +417,19 @@
       "path": "tests/accept-actions.test.ts",
       "symbol": "membersAvailable",
       "role": "Native/WASM accept and transition parity with explicit navigation-stub completeness boundary",
-      "sha256": "4cb3afad85f500b5cc5b6a8eae258c7f9212cb80150fa49aa69636b4c15e685e"
+      "sha256": "027983b5f470b73797b4e897a65fb702ea1559d8cfb06ae563eed5a41f9b8ebf"
+    },
+    "accept-bindings": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/accept_bindings.rs",
+      "symbol": "pub(super) fn plan",
+      "role": "Checked local accept receiver-binding construction and private adversarial/replay tests",
+      "sha256": "093342367127d0c41ee76ee0adb841ab0484b79f1748db8f8da2b03e3e46db19"
+    },
+    "accept-binding-tests": {
+      "path": "crates/sysml-kernel/tests/accept_receiver_bindings.rs",
+      "symbol": "fn trigger_receiver_parameters_and_owned_bindings_are_constructed_together",
+      "role": "Exact raw generated ownership, receiver direction, connector endpoints and stable identities in both graph formats, with and without libraries",
+      "sha256": "4c70d91ffcb4a31631c7a93d6ce8b8813db833899051a6c9e13ca4863f5536b2"
     }
   },
   "assessments": [
@@ -4291,7 +4303,7 @@
           ]
         }
       ],
-      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001–006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
+      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001\u2013006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
     },
     {
       "id": "VIEW-USAGE-RENDERINGS",
@@ -4378,7 +4390,7 @@
           ]
         }
       ],
-      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001–006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
+      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001\u2013006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
     },
     {
       "id": "STATE-DEFINITION-PARALLEL",
@@ -5148,6 +5160,61 @@
         ]
       },
       "limits": "KERNEL-022 raw graph tests distinguish trigger values from sibling accept parameters and check at/after versus when argument wrappers. Two full-library public cases retain typed trigger forms, distinct accept/transition input order and clean diagnostics; native/WASM parity runs beside previous transition and recovered-syntax cases in both file orders. Generated canonical and legacy compact graphs survive lifting/printing/reparsing with body features and payload/receiver expressions. Earlier sibling-trigger input readers remain compatibility code, not normative interchange qualification. Full trigger parameter construction, receiver binding, time/change-event semantics, execution and external-model interchange remain open."
+    },
+    {
+      "id": "ACCEPT-RECEIVER-BINDING",
+      "category": "standard",
+      "applicability": "current-product",
+      "priority": "P0",
+      "obligation": "A trigger-valued AcceptActionUsage owns a BindingConnector relating its second parameter to the second parameter of its TriggerInvocationExpression.",
+      "sources": [
+        "SYSML-XMI-Systems-Actions-AcceptActionUsage-checkAcceptActionUsageReceiverBindingConnector",
+        "SYSML-GRAMMAR-TriggerExpression",
+        "SYSML-CLAUSE-8.4.13.6"
+      ],
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "accept-bindings",
+          "accept-binding-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query",
+          "accept-parity"
+        ]
+      },
+      "tests": [
+        {
+          "case": "ACCEPT-003",
+          "checks": [
+            "clean",
+            "absolute-element",
+            "absolute-parameters",
+            "absolute-payload",
+            "relative-element",
+            "relative-parameters",
+            "relative-payload",
+            "conditional-element",
+            "conditional-parameters",
+            "conditional-payload",
+            "atTime-parameters",
+            "atTime-accepter",
+            "afterDelay-parameters",
+            "afterDelay-accepter",
+            "onCondition-parameters",
+            "onCondition-accepter",
+            "state-subactions",
+            "plain-parameters",
+            "value-parameters"
+          ]
+        }
+      ],
+      "limits": "KERNEL-023 native graph tests check 11 accepts including nine at/after/when triggers across ordinary actions, state entry/do/exit and transitions, in canonical/legacy graphs with and without the full library. Private graph mutations cover existing receivers, matching/reversed/unrelated connectors, contradictory ownership and endpoint aliases, every generated-ID collision, work exhaustion and replay without source mutation. The public matrix/parity case checks preserved authored memberships and state subaction identities only: the facade intentionally omits these generated binding rows and does not expose their endpoints. No whole-family closure is claimed. Inherited parameter ordering, general abstract-model repair, trigger argument validation, default receiver/clock/monitor behavior, complete binding ancestry, execution and normative interchange remain open."
     }
   ]
 }

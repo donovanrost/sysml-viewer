@@ -29,6 +29,7 @@ if (process.argv.includes('--wasm-child')) {
     ...[
       ['accept-construction', 'ACCEPT-001'],
       ['accept-triggers', 'ACCEPT-002'],
+      ['accept-receiver-bindings', 'ACCEPT-003'],
       ['transition-construction', 'STATE-012'],
       ['state-membership-owners', 'STATE-013'],
     ].map(([name, id]) => ({

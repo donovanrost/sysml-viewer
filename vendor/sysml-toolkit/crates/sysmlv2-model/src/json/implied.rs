@@ -4394,9 +4394,19 @@ impl Builder {
                 .unwrap_or_default();
         dynamic_steps = dynamic_steps.saturating_add(default_plans.len().saturating_mul(8));
         reserved.extend(default_plans.iter().flat_map(|plan| plan.ids()));
+        let mut accept_steps = 0;
+        let accept_plans =
+            super::accept_bindings::plan(self, &reserved, &mut accept_steps).unwrap_or_default();
+        let accept_rows = accept_plans
+            .iter()
+            .map(|plan| plan.row_count())
+            .sum::<usize>();
+        dynamic_steps = dynamic_steps.saturating_add(accept_rows);
+        reserved.extend(accept_plans.iter().flat_map(|plan| plan.ids()));
         let original_view = Arc::clone(self.semantic_ownership.as_ref().unwrap());
-        let mut ownership = (!plans.is_empty() || !default_plans.is_empty())
-            .then(|| original_view.as_ref().clone());
+        let mut ownership =
+            (!plans.is_empty() || !default_plans.is_empty() || !accept_plans.is_empty())
+                .then(|| original_view.as_ref().clone());
         let mut rows = Vec::new();
         let mut result_edges = Vec::new();
         let mut result_redefinition_steps = plans.len();
@@ -4434,6 +4444,14 @@ impl Builder {
             if local_steps <= crate::eval::MAX_STEPS {
                 local_roles.extend(roles);
             }
+        }
+        for plan in accept_plans {
+            result_edges.extend(super::accept_bindings::stage(
+                self,
+                ownership.as_mut().unwrap(),
+                plan,
+                &mut rows,
+            ));
         }
         let mut dynamic = if dynamic_steps > crate::eval::MAX_STEPS {
             Err(super::dynamic_invocations::Refusal::WorkLimit)

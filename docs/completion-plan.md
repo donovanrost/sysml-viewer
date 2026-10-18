@@ -115,20 +115,26 @@ they do not override the normative artifacts when expectations differ.
 
 ## Near-term sequence
 
-1. Finish KERNEL-022 qualification and preserve the accept reconstruction regression.
+1. KERNEL-022 and KERNEL-023 qualification are complete within their recorded
+   boundaries. Receiver bindings are constructed in the raw graph; public endpoint
+   queries and the remaining accept/trigger dependencies still need qualification.
 2. Complete the [first C08 accept/trigger decomposition](evidence/accept-obligation-review.json)
    as the first complete family slice:
    all three accept properties and their derivations, `isTriggerAction`, the owned
    input rule, ordinary/subaction/transition specializations, receiver binding,
    all three trigger argument validations and `instantiatedType`. Include inherited
    ActionUsage/InvocationExpression obligations and library defaults. The current
-   payload-wrapper fix closes none of those dependencies by implication.
+   payload-wrapper fix closes none of those dependencies by implication. The
+   [trigger argument probe](evidence/trigger-argument-validation-before-macos-arm64.json)
+   now reproduces noncanonical diagnostic IDs for all three invalid argument forms;
+   rejection alone does not establish their complete named validation rules.
 3. Review the remaining transition bindings and the recorded state derivation
    conflicts together with this slice. Establish public query acceptance criteria
    before adding more projections that could conceal missing model facts. The
-   [receiver-binding probe](evidence/accept-receiver-binding-before-macos-arm64.json)
-   already reproduces a missing second invocation parameter and missing binding
-   connector for all three ordinary trigger kinds after implicit publication.
+   [pre-KERNEL-023 receiver-binding probe](evidence/accept-receiver-binding-before-macos-arm64.json)
+   recorded a missing second invocation parameter and binding connector for all
+   three ordinary trigger kinds. KERNEL-023 repairs those tested constructions;
+   broader inherited/default binding behavior remains open.
 4. Allocate all remaining source units across C01–C15 and break each package into
    estimable obligations. Preserve a disposition for context/informative material
    and extraction duplicates so omissions remain visible.

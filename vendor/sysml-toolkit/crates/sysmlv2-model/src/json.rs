@@ -20,6 +20,7 @@
 //! until multi-file/library resolution lands (which replaces these with the
 //! normative UUIDv5 library IDs).
 
+mod accept_bindings;
 mod behavior;
 mod callable_bodies;
 mod cases;
