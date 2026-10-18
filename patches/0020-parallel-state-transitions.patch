@@ -1,3 +1,4 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs
 --- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs
 +++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs
 @@ -9,12 +9,234 @@
@@ -236,10 +237,12 @@
      let n = r.b.explicit_len();
      let mut incoming = vec![0; n];
      let mut outgoing = vec![0; n];
-@@ -53,20 +275,6 @@
+@@ -51,20 +273,6 @@
+                 incoming[z] += 1;
+                 outgoing[a] += 1;
                  edges.push((e, a, z, *from, *to));
-             }
-         }
+-            }
+-        }
 -        if let Some(t) = g.owner[e].filter(|&p| is(&r.b, p, "TransitionUsage")) {
 -            let unit = r.b.unit_of_elem(t);
 -            if !model.is_library_unit(unit) && z != *to && !g.effective_kind(&r.b, z, "ActionUsage")
@@ -252,12 +255,70 @@
 -                        "A transition's succession must target an action usage",
 -                    ),
 -                ));
--            }
--        }
+             }
+         }
      }
-     for (edge, a, z, from, to) in edges {
-         let unit = r.b.unit_of_elem(edge);
-@@ -157,15 +365,29 @@
+@@ -120,6 +328,59 @@
+             continue;
+         }
+         let span = g.span(&r.b, e);
++        if is(&r.b, e, "StateSubactionMembership") {
++            let valid_owner = g.owner[e].is_some_and(|owner| {
++                is(&r.b, owner, "StateDefinition") || is(&r.b, owner, "StateUsage")
++            });
++            if !valid_owner {
++                out.push((
++                    unit,
++                    super::rule_error(
++                        span,
++                        "validateStateSubactionMembershipOwningType",
++                        "A state subaction membership must belong to a state definition or usage",
++                    ),
++                ));
++            }
++        }
++        if is(&r.b, e, "TransitionFeatureMembership") {
++            if !g.owner[e].is_some_and(|owner| is(&r.b, owner, "TransitionUsage")) {
++                out.push((
++                    unit,
++                    super::rule_error(
++                        span,
++                        "validateTransitionFeatureMembershipOwningType",
++                        "A transition feature membership must belong to a transition usage",
++                    ),
++                ));
++            }
++            let required = match r.b.elements[e].props.get("kind").and_then(|v| v.as_str()) {
++                Some("trigger") => Some((
++                    "AcceptActionUsage",
++                    "validateTransitionFeatureMembershipTriggerAction",
++                )),
++                Some("effect") => Some((
++                    "ActionUsage",
++                    "validateTransitionFeatureMembershipEffectAction",
++                )),
++                _ => None,
++            };
++            if let Some((kind, rule)) = required {
++                if !r
++                    .membership_member(ElementRef(e))
++                    .is_some_and(|member| is(&r.b, member.0, kind))
++                {
++                    out.push((
++                        unit,
++                        super::rule_error(
++                            span,
++                            rule,
++                            format!("This transition feature membership must own a {kind}"),
++                        ),
++                    ));
++                }
++            }
++        }
+         for (bad, rule) in [
+             (
+                 is(&r.b, e, "ForkNode") && incoming[e] > 1,
+@@ -157,15 +418,42 @@
              }
          }
          if is(&r.b, e, "TransitionUsage") {
@@ -283,6 +344,19 @@
 +                crate::json::Derived::Value(value) => !value.elements().is_empty(),
 +                _ => false,
 +            };
++            if let crate::json::Derived::Value(input) = r.derived(ElementRef(e), "input") {
++                let owned_inputs = input
++                    .elements()
++                    .into_iter()
++                    .filter(|&input| r.owner(input) == Some(ElementRef(e)))
++                    .count();
++                let required = if triggered { 2 } else { 1 };
++                if owned_inputs < required {
++                    out.push((unit, super::rule_error(span,
++                        "validateTransitionUsageParameters",
++                        format!("A transition must have at least {required} owned input parameter(s)"))));
++                }
++            }
 +            // The rule constrains the derived source, not every membership or
 +            // the action referenced by a PerformActionUsage source.
              if triggered
@@ -295,7 +369,7 @@
              {
                  out.push((
                      unit,
-@@ -320,3 +542,199 @@
+@@ -320,3 +608,306 @@
      }
      out
  }
@@ -493,5 +567,112 @@
 +            .map(|(_, d)| &source[d.span.start as usize..d.span.end as usize])
 +            .collect();
 +        assert_eq!(names, ["performed", "performChain", "invalid"]);
++    }
++
++    fn codes_after(source: &str, mutate: impl FnOnce(&mut ResolvedModel)) -> Vec<&'static str> {
++        let (model, mut graph, _) = graph(source);
++        mutate(&mut graph);
++        let facts = Facts::new(&mut graph.b);
++        validate(&mut graph, &model, &facts)
++            .into_iter()
++            .filter_map(|(_, d)| d.code)
++            .collect()
++    }
++
++    #[test]
++    fn transition_input_validation_counts_owned_in_and_inout_but_not_output_or_inherited_inputs() {
++        let source = "action def Base { in inherited; }
++            item def Signal;
++            state def Driver { state a; state b;
++                transition plain : Base first a then b;
++                transition triggered first a accept payload : Signal then b;
++            }";
++        assert!(codes_after(source, |_| {}).is_empty());
++        let failures = codes_after(source, |graph| {
++            for transition in graph.elements_of_metaclass("TransitionUsage") {
++                let input = graph
++                    .owned_features(transition)
++                    .into_iter()
++                    .find(|&p| graph.element_type(p) == "ReferenceUsage")
++                    .unwrap();
++                graph.b.elements[input.0]
++                    .props
++                    .insert("direction", serde_json::json!("out"));
++            }
++        });
++        assert_eq!(
++            failures,
++            [
++                "validateTransitionUsageParameters",
++                "validateTransitionUsageParameters"
++            ]
++        );
++        assert!(
++            codes_after(source, |graph| {
++                for transition in graph.elements_of_metaclass("TransitionUsage") {
++                    for input in graph.owned_features(transition) {
++                        if graph.element_type(input) == "ReferenceUsage" {
++                            graph.b.elements[input.0]
++                                .props
++                                .insert("direction", serde_json::json!("inout"));
++                        }
++                    }
++                }
++            })
++            .is_empty()
++        );
++    }
++
++    #[test]
++    fn state_subaction_membership_owner_accepts_state_subtypes_and_rejects_other_namespaces() {
++        let source = "state def S { entry; do; exit; }
++            state s { entry; } exhibit state shown { exit; }";
++        assert!(codes_after(source, |_| {}).is_empty());
++        let failures = codes_after(source, |graph| {
++            for state in graph.elements_of_metaclass("StateDefinition") {
++                graph.b.elements[state.0].ty = "PartDefinition";
++            }
++        });
++        assert_eq!(failures, ["validateStateSubactionMembershipOwningType"; 3]);
++    }
++
++    #[test]
++    fn transition_membership_ownership_and_feature_kinds_are_independent_checks() {
++        let source = "item def Signal;
++            state def Driver { state a; state b;
++                transition t first a accept payload : Signal do action effect then b;
++            }";
++        assert!(codes_after(source, |_| {}).is_empty());
++        let failures = codes_after(source, |graph| {
++            for transition in graph.elements_of_metaclass("TransitionUsage") {
++                graph.b.elements[transition.0].ty = "ActionUsage";
++            }
++        });
++        assert_eq!(
++            failures,
++            ["validateTransitionFeatureMembershipOwningType"; 2]
++        );
++        let failures = codes_after(source, |graph| {
++            let members = graph.elements_of_metaclass("TransitionFeatureMembership");
++            for member in members {
++                let child = graph.membership_member(member).unwrap();
++                graph.b.elements[child.0].ty = match graph.b.elements[member.0]
++                    .props
++                    .get("kind")
++                    .and_then(|x| x.as_str())
++                {
++                    Some("trigger") => "PerformActionUsage",
++                    Some("effect") => "ReferenceUsage",
++                    _ => unreachable!(),
++                };
++            }
++        });
++        assert_eq!(
++            failures,
++            [
++                "validateTransitionFeatureMembershipTriggerAction",
++                "validateTransitionFeatureMembershipEffectAction"
++            ]
++        );
 +    }
 +}

@@ -8,7 +8,7 @@
       "tocClauses": 928,
       "locatedHeadings": 928,
       "unnumberedHeadings": 56,
-      "grammarProductions": 337,
+      "grammarProductions": 341,
       "modalPassageCandidates": 579,
       "xmi": {
         "association": 188,
@@ -30,7 +30,7 @@
       "tocClauses": 643,
       "locatedHeadings": 643,
       "unnumberedHeadings": 11,
-      "grammarProductions": 283,
+      "grammarProductions": 286,
       "modalPassageCandidates": 429,
       "xmi": {
         "association": 131,
@@ -14376,6 +14376,19 @@
       "line": 28
     },
     {
+      "id": "SYSML-GRAMMAR-ConnectorEndMember",
+      "standard": "sysml",
+      "kind": "grammar-production",
+      "facet": "textual-notation",
+      "title": "ConnectorEndMember",
+      "section": "8.2.2.13.1",
+      "parent": "SYSML-CLAUSE-8.2.2.13.1",
+      "source": "sysml-pdf",
+      "page": 208,
+      "line": 33,
+      "extractionNote": "Printed production header ends with a colon instead of an equals sign."
+    },
+    {
       "id": "SYSML-GRAMMAR-ConnectorEnd",
       "standard": "sysml",
       "kind": "grammar-production",
@@ -14602,6 +14615,19 @@
       "source": "sysml-pdf",
       "page": 210,
       "line": 3
+    },
+    {
+      "id": "SYSML-GRAMMAR-InterfaceEnd",
+      "standard": "sysml",
+      "kind": "grammar-production",
+      "facet": "textual-notation",
+      "title": "InterfaceEnd",
+      "section": "8.2.2.14.2",
+      "parent": "SYSML-CLAUSE-8.2.2.14.2",
+      "source": "sysml-pdf",
+      "page": 210,
+      "line": 6,
+      "extractionNote": "Printed production header ends with a colon instead of an equals sign."
     },
     {
       "id": "SYSML-GRAMMAR-AllocationDefinition",
@@ -15718,6 +15744,19 @@
       "source": "sysml-pdf",
       "page": 217,
       "line": 13
+    },
+    {
+      "id": "SYSML-GRAMMAR-EntryTransitionMember",
+      "standard": "sysml",
+      "kind": "grammar-production",
+      "facet": "textual-notation",
+      "title": "EntryTransitionMember",
+      "section": "8.2.2.18.1",
+      "parent": "SYSML-CLAUSE-8.2.2.18.1",
+      "source": "sysml-pdf",
+      "page": 217,
+      "line": 17,
+      "extractionNote": "Printed production header ends with a colon instead of an equals sign."
     },
     {
       "id": "SYSML-GRAMMAR-StateActionUsage",
@@ -16871,6 +16910,19 @@
       "source": "sysml-pdf",
       "page": 224,
       "line": 42
+    },
+    {
+      "id": "SYSML-GRAMMAR-MetadataBodyUsage",
+      "standard": "sysml",
+      "kind": "grammar-production",
+      "facet": "textual-notation",
+      "title": "MetadataBodyUsage",
+      "section": "8.2.2.27",
+      "parent": "SYSML-CLAUSE-8.2.2.27",
+      "source": "sysml-pdf",
+      "page": 224,
+      "line": 45,
+      "extractionNote": "Printed production header ends with a colon instead of an equals sign."
     },
     {
       "id": "SYSML-GRAMMAR-ExtendedDefinition",
@@ -59902,6 +59954,19 @@
       "line": 4
     },
     {
+      "id": "KERML-GRAMMAR-SpecificType",
+      "standard": "kerml",
+      "kind": "grammar-production",
+      "facet": "textual-notation",
+      "title": "SpecificType",
+      "section": "8.2.4.1.2",
+      "parent": "KERML-CLAUSE-8.2.4.1.2",
+      "source": "kerml-pdf",
+      "page": 113,
+      "line": 7,
+      "extractionNote": "Printed production header ends with a colon instead of an equals sign."
+    },
+    {
       "id": "KERML-GRAMMAR-GeneralType",
       "standard": "kerml",
       "kind": "grammar-production",
@@ -60116,6 +60181,19 @@
       "source": "kerml-pdf",
       "page": 115,
       "line": 5
+    },
+    {
+      "id": "KERML-GRAMMAR-BasicFeaturePrefix",
+      "standard": "kerml",
+      "kind": "grammar-production",
+      "facet": "textual-notation",
+      "title": "BasicFeaturePrefix",
+      "section": "8.2.4.3.1",
+      "parent": "KERML-CLAUSE-8.2.4.3.1",
+      "source": "kerml-pdf",
+      "page": 115,
+      "line": 9,
+      "extractionNote": "Printed production header ends with a colon instead of an equals sign."
     },
     {
       "id": "KERML-GRAMMAR-OwnedCrossFeatureMember",
@@ -62276,6 +62354,19 @@
       "source": "kerml-pdf",
       "page": 131,
       "line": 10
+    },
+    {
+      "id": "KERML-GRAMMAR-PrefixMetadataFeature",
+      "standard": "kerml",
+      "kind": "grammar-production",
+      "facet": "textual-notation",
+      "title": "PrefixMetadataFeature",
+      "section": "8.2.5.12",
+      "parent": "KERML-CLAUSE-8.2.5.12",
+      "source": "kerml-pdf",
+      "page": 131,
+      "line": 13,
+      "extractionNote": "Printed production header ends with a colon instead of an equals sign."
     },
     {
       "id": "KERML-GRAMMAR-MetadataFeature",

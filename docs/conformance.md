@@ -145,6 +145,8 @@ Clause references identify the source of a test, not complete coverage of that c
 | STATE-009 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | Owned state subaction queries preserve declaration order, binding/action identity, anonymous actions and duplicate roles; inherited actions stay separate. |
 | STATE-010 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | Existing state-definition and state-usage fixtures expose anonymous and named bindings without selecting away duplicate kinds. |
 | STATE-011 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | Syntax recovery cannot certify an empty/complete state-body enumeration; an independent document retains its owned binding query. |
+| STATE-012 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | positive | Covered | Construct the transition source input before its optional payload and preserve typed membership identity and order alongside guards, effects and directed body members. |
+| STATE-013 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | State subaction memberships require a StateDefinition or StateUsage owner, including state subtypes; invalid part/action contexts retain structural and semantic diagnostics. |
 
 ## Coverage limits
 

@@ -240,3 +240,59 @@ test('state query assertions reject partial unknowns and inconsistent binding id
   value.memberships[0].member.targetId = 'another-action';
   assert.equal(assessCase(value, { checks: [check] })[0].status, 'fail');
 });
+
+test('membership assertions retain requested metaclass and declaration order', () => {
+  const binding = (name) => ({
+    name,
+    shortName: null,
+    namespace: 'P::T',
+    target: name ? `P::T::${name}` : null,
+    status: 'resolved',
+    visibility: 'public',
+    alias: false,
+  });
+  const check = {
+    id: 'inputs',
+    op: 'memberships',
+    owner: 'P::T',
+    mode: 'owned',
+    metaclass: 'ParameterMembership',
+    ordered: true,
+    bindings: [binding(null), binding('payload')],
+  };
+  const value = {
+    ...snapshot,
+    elements: [
+      { id: 't', qualifiedName: 'P::T', membersAvailable: true, ownedMemberships: ['s', 'p', 'n'] },
+      { id: 'source', qualifiedName: null },
+      { id: 'payload', qualifiedName: 'P::T::payload' },
+    ],
+    memberships: [
+      ...[
+        ['s', null, 'source'],
+        ['p', 'payload', 'payload'],
+      ].map(([id, name, targetId]) => ({
+        id,
+        name,
+        shortName: null,
+        namespaceId: 't',
+        metaclass: 'ParameterMembership',
+        member: { status: 'resolved', targetId },
+        visibility: 'public',
+        isAlias: false,
+      })),
+      { id: 'n', namespaceId: 't', metaclass: 'OwningMembership' },
+    ],
+  };
+  assert.equal(assessCase(value, { checks: [check] })[0].status, 'pass');
+  value.elements[0].ownedMemberships = ['p', 's', 'n'];
+  assert.equal(assessCase(value, { checks: [check] })[0].status, 'fail');
+  value.elements[0].ownedMemberships = ['s', 'p', 'n'];
+  value.memberships[1].metaclass = 'FeatureMembership';
+  assert.equal(assessCase(value, { checks: [check] })[0].status, 'fail');
+  for (const invalid of [{ metaclass: '' }, { ordered: 'true' }]) {
+    const m = matrix();
+    m.cases[0].checks.push({ ...check, ...invalid });
+    assert.throws(() => validateMatrix(m));
+  }
+});

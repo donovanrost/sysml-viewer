@@ -1,0 +1,11 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs
+@@ -2921,6 +2921,7 @@
+                 negated: bval(el, "isNegated"),
+             },
+             UsageKind::Transition => UsageDetail::Transition {
++                source_parameter_origin: TransitionParameterOrigin::Grammar,
+                 source,
+                 trigger,
+                 guard: guard.map(Box::new),

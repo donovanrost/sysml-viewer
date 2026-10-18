@@ -26,6 +26,16 @@ if (process.argv.includes('--wasm-child')) {
     `target/release/sysml-inspect${process.platform === 'win32' ? '.exe' : ''}`,
   );
   const scenarios = [
+    ...[
+      ['transition-construction', 'STATE-012'],
+      ['state-membership-owners', 'STATE-013'],
+    ].map(([name, id]) => ({
+      name,
+      text: readFileSync(join(root, `tests/conformance/fixtures/${name}.sysml`), 'utf8'),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === id).checks,
+    })),
     {
       name: 'state-subaction-queries',
       text: readFileSync(

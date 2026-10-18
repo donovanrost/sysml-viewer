@@ -117,13 +117,18 @@ pub const IMPLEMENTED_NORMATIVE_SEMANTIC_RULES: &[&str] = &[
     "validateSatisfyRequirementUsageReference",
     "validateStateDefinitionParallelSubactions",
     "validateStateDefinitionStateSubactionKind",
+    "validateStateSubactionMembershipOwningType",
     "validateStateUsageParallelSubactions",
     "validateStateUsageStateSubactionKind",
     "validateStructureSpecialization",
     "validateSubsettingConstantConformance",
     "validateSubsettingFeaturingTypes",
     "validateSubsettingUniquenessConformance",
+    "validateTransitionFeatureMembershipEffectAction",
     "validateTransitionFeatureMembershipGuardExpression",
+    "validateTransitionFeatureMembershipOwningType",
+    "validateTransitionFeatureMembershipTriggerAction",
+    "validateTransitionUsageParameters",
     "validateTransitionUsageSuccession",
     "validateTransitionUsageTriggerActions",
     "validateTypeDifferencingTypesNotSelf",
@@ -325,9 +330,7 @@ fn normative_rule(rule: &'static str) -> &'static str {
         // Local KERNEL-017: the pinned StateDefinition/StateUsage rules
         // include State before SubactionKind. Preserve legacy message text
         // while publishing the canonical identifier, as for view renderings.
-        "validateStateDefinitionSubactionKind" => {
-            "validateStateDefinitionStateSubactionKind"
-        }
+        "validateStateDefinitionSubactionKind" => "validateStateDefinitionStateSubactionKind",
         "validateStateUsageSubactionKind" => "validateStateUsageStateSubactionKind",
         "validateViewDefinitionOnlyOnvViewRendering" => {
             "validateViewDefinitionOnlyOneViewRendering"

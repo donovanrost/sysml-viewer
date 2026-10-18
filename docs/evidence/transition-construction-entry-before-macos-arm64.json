@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-10-18T01:57:30.555738+00:00",
+  "kind": "Regression on the in-progress KERNEL-021 source before correcting entry-transition provenance; not the committed baseline or final qualification.",
+  "test": "entry_guards_keep_implied_inputs_across_successions_and_formatting",
+  "command": [
+    "node",
+    "tools/rust.mjs",
+    "test",
+    "--locked",
+    "--release",
+    "-p",
+    "sysml-kernel",
+    "--test",
+    "transition_construction",
+    "entry_guards"
+  ],
+  "inputs": {
+    "crates/sysml-kernel/tests/transition_construction.rs": "7a27695b106186d47d08c49a843708cc4b7fcf11575becbb9bd936a14774b3b2",
+    "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs": "2709d8476ad5397e213c9d2c5fc2e082a4c4b0cf64975d39f4f64e5f07d3d4a0",
+    "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/ast.rs": "acb927723391ff53b1966269074784a0db709e9e64b4d7c99f786b11ab2aa435",
+    "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/print.rs": "a5d1432c941e9f728f3768bd49bf375eb00cc7a6e7059156970689e83b44fd87",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
+  },
+  "actualImplied": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "expectedImplied": [
+    true,
+    true,
+    true,
+    false,
+    true,
+    false
+  ],
+  "logSha256": "b3d6d68d98beb1cd807363de798ccb666276de8c628931a9eadf0b1ba0377aa2",
+  "output": "   Compiling sysmlv2-model v0.10.2 (/Users/donovanrost/Documents/ChatGPT/SysML/vendor/sysml-toolkit/crates/sysmlv2-model)\n   Compiling sysml-kernel v0.4.0 (/Users/donovanrost/Documents/ChatGPT/SysML/crates/sysml-kernel)\n    Finished `release` profile [optimized] target(s) in 35.83s\n     Running tests/transition_construction.rs (target/release/deps/transition_construction-c47b5dd612c9aba3)\n\nrunning 1 test\ntest entry_guards_keep_implied_inputs_across_successions_and_formatting ... FAILED\n\nfailures:\n\n---- entry_guards_keep_implied_inputs_across_successions_and_formatting stdout ----\n\nthread 'entry_guards_keep_implied_inputs_across_successions_and_formatting' (63645565) panicked at crates/sysml-kernel/tests/transition_construction.rs:237:9:\nassertion `left == right` failed: state def S {\n        entry;\n        if true then a;\n        if false then b;\n        then a;\n        if true then b;\n        state a; if true then b;\n        state b;\n    }\n    state usage {\n        entry action initialize;\n        if true then a;\n        state a; if false then b;\n        state b;\n    }\n  left: [false, false, false, false, false, false]\n right: [true, true, true, false, true, false]\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    entry_guards_keep_implied_inputs_across_successions_and_formatting\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `-p sysml-kernel --test transition_construction`\nnode:internal/errors:985\n  const err = new Error(message);\n              ^\n\nError: Command failed: /Users/donovanrost/.cargo/bin/rustup run 1.97.0 cargo test --locked --release -p sysml-kernel --test transition_construction entry_guards\n    at genericNodeError (node:internal/errors:985:15)\n    at wrappedFn (node:internal/errors:539:14)\n    at checkExecSyncError (node:child_process:925:11)\n    at execFileSync (node:child_process:961:15)\n    at cargo (file:///Users/donovanrost/Documents/ChatGPT/SysML/tools/rust.mjs:17:10)\n    at file:///Users/donovanrost/Documents/ChatGPT/SysML/tools/rust.mjs:25:3\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:633:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  status: 101,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 29570,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.16.0\n"
+}

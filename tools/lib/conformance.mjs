@@ -7,7 +7,7 @@ const ops = {
   multiplicity: ['owner', 'value'],
   cardinality: ['owner', 'status', 'lower', 'upper', 'reason'],
   stateSubactions: ['owner', 'status', 'actions', 'reason'],
-  memberships: ['owner', 'mode', 'bindings', 'status', 'reason'],
+  memberships: ['owner', 'mode', 'bindings', 'status', 'reason', 'metaclass', 'ordered'],
   diagnostic: ['stage', 'code', 'severity', 'messageIncludes', 'owner'],
   noDiagnostics: ['stage', 'owner', 'code', 'severity', 'messageIncludes'],
   source: ['owner', 'text'],
@@ -143,6 +143,9 @@ export function validateMatrix(matrix) {
         }
       }
       if (check.op === 'memberships') {
+        if (check.metaclass !== undefined)
+          assert(typeof check.metaclass === 'string' && check.metaclass.length > 0);
+        if (check.ordered !== undefined) assert.equal(typeof check.ordered, 'boolean');
         if (check.mode === 'imported') {
           assert(['complete', 'unknown'].includes(check.status));
           if (check.status === 'unknown') {
@@ -339,6 +342,7 @@ export function checkSnapshot(snapshot, check) {
           return { m, namespace };
         })
         .filter(({ namespace }) => check.mode === 'imported' || !namespace.library)
+        .filter(({ m }) => check.metaclass === undefined || m.metaclass === check.metaclass)
         .map(({ m, namespace }) => ({
           name: m.name,
           shortName: m.shortName,
@@ -362,7 +366,10 @@ export function checkSnapshot(snapshot, check) {
           b.contextVisibility,
         ]);
       const sorted = (items) => [...items].sort((a, b) => key(a).localeCompare(key(b)));
-      assert.deepEqual(sorted(bindings), sorted(check.bindings));
+      assert.deepEqual(
+        check.ordered ? bindings : sorted(bindings),
+        check.ordered ? check.bindings : sorted(check.bindings),
+      );
       break;
     }
     case 'diagnostic':

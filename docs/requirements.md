@@ -16,10 +16,17 @@ matrix](conformance.md) continues to hold runnable acceptance cases.
 - Every numbered PDF clause, including context and annex clauses, reconciled against
   both the printed table of contents and PDF bookmarks. Numbered body headings are
   also located. Substantive unnumbered bookmarks are retained separately.
-- Named grammar productions, including lexical terminals. Five headers that omit
+- Named grammar productions, including lexical terminals. Twelve headers that omit
   an equals sign in the printed specification are included as explicit extraction
   exceptions. Production alternatives, synthesis assignments and contextual notes
   still require individual review.
+
+  KERNEL-021 adds seven previously omitted headers with colon terminators,
+  including `EntryTransitionMember` (SysML PDF page 217). The other additions are
+  `ConnectorEndMember`, `InterfaceEnd`, `MetadataBodyUsage`, `SpecificType`,
+  `BasicFeaturePrefix` and `PrefixMetadataFeature`. The extractor records each
+  discrepancy and its reviewed location explicitly. This inventory correction
+  does not amend the grammar or establish implementation coverage.
 - Every metaclass, property (including association-owned ends), association,
   generalization, operation, parameter, constraint, enumeration/literal and package
   declaration of the indexed XMI types. Constraint records include named validation,
@@ -210,9 +217,9 @@ source trees of the syntax library, model library and public kernel, fingerprint
 each file, and joins only direct assessment source edges. `requirements:check`
 rejects generated drift and registry names outside the pinned catalogue.
 
-After KERNEL-020, the registries name 91 rules and source text mentions 92. The
-other 88 names were not located by this search. Ten rules have direct bounded
-assessments; 170 still need direct obligation review. These are separate measures:
+After KERNEL-021, the registries name 96 rules and source text mentions 97. The
+other 83 names were not located by this search. Fifteen rules have direct bounded
+assessments; 165 still need direct obligation review. These are separate measures:
 comments, private tests and registration lists are search hints, and a missing
 name does not establish missing behavior. The 36 labels outside the catalogue
 include deliberate compatibility aliases and checks needing further classification.
@@ -267,6 +274,17 @@ state-slot and transition-feature derivations have documented internal conflicts
 see [the source review](evidence/state-property-review.json). General membership
 role properties, transition feature collections, implicit construction, the
 remaining trigger/guard/effect constraints and other action forms remain open.
+
+KERNEL-021 adds the missing first transition input and five named input/membership
+constraints. `STATE-012/013` cover the public ordered parameter and transition-feature
+bindings and state-subaction owner diagnostics. Raw graph and private validator
+tests distinguish grammar-created and implied parameters, preserve provenance
+through formatting, and reject malformed owners, feature kinds and deficient
+owned inputs. These bounded assessments retain open work on source/succession
+binding, payload chains, guard semantics, complete implicit construction and
+normative interchange. The next state-family review must decompose those
+dependencies together with accept-action parameters rather than infer closure
+from these five rule mappings.
 
 The broader audit should classify complete obligation sets by implementation, API
 exposure and verified behavior before refining the remaining-work forecast.

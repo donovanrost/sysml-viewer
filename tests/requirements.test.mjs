@@ -28,7 +28,23 @@ test('inventory preserves complete extraction counts without manufacturing cover
   validateInventory(i);
   const summary = summarize(i.catalogue, i.assessments, i.matrix);
   assert.equal(summary.clauses, 1571);
-  assert.equal(summary.grammarProductions, 620);
+  assert.equal(summary.grammarProductions, 627);
+  for (const [id, page] of [
+    ['SYSML-GRAMMAR-ConnectorEndMember', 208],
+    ['SYSML-GRAMMAR-InterfaceEnd', 210],
+    ['SYSML-GRAMMAR-EntryTransitionMember', 217],
+    ['SYSML-GRAMMAR-MetadataBodyUsage', 224],
+    ['KERML-GRAMMAR-SpecificType', 113],
+    ['KERML-GRAMMAR-BasicFeaturePrefix', 115],
+    ['KERML-GRAMMAR-PrefixMetadataFeature', 131],
+  ]) {
+    const production = i.catalogue.items.find((x) => x.id === id);
+    assert.equal(production.page, page);
+    assert.equal(
+      production.extractionNote,
+      'Printed production header ends with a colon instead of an equals sign.',
+    );
+  }
   assert.equal(summary.metamodelConstraints, 724);
   assert.equal(summary.libraryModels, 94);
   assert.equal(summary.schemaDefinitions, 270);

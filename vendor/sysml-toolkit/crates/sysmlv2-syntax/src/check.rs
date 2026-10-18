@@ -1161,6 +1161,7 @@ impl Validator {
                 self.walk_usage(body, self.ctx_for_usage(body.kind));
             }
             UsageDetail::Transition {
+                source_parameter_origin: _,
                 source: _,
                 trigger,
                 guard,

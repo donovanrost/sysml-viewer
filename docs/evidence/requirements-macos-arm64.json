@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "sourceUnits": 6167,
+  "sourceUnits": 6174,
   "clauses": 1571,
-  "grammarProductions": 620,
+  "grammarProductions": 627,
   "metamodelConstraints": 724,
   "proseCandidates": 1008,
   "libraryModels": 94,
@@ -10170,26 +10170,549 @@
         }
       ],
       "limits": "KERNEL-020 uses the shared triggerAction derivation and the KERNEL-019 checked source proof. STATE-008 includes a state source with an unrelated alias, a chained state source, direct and chained PerformActionUsage sources referencing states, ordinary action sources, absent and broken sources, and an untriggered action source. A missing source cannot establish the non-StateUsage antecedent; valid state identity is not replaced by an unrelated membership. Private coverage retains meaningful ambiguous endpoint candidates. Complete transition construction, raw/nonbinary graph forms, all trigger payloads, transition feature validation, guard/effect semantics and execution remain unqualified."
+    },
+    {
+      "id": "TRANSITION-PARAMETER-CONSTRUCTION",
+      "obligation": "A transition owns at least one input; a triggered transition owns at least two, with the textual source slot preceding its payload.",
+      "category": "standard",
+      "sources": [
+        "SYSML-GRAMMAR-TransitionUsage",
+        "SYSML-GRAMMAR-TargetTransitionUsage",
+        "SYSML-GRAMMAR-EmptyParameterMember",
+        "SYSML-GRAMMAR-EmptyUsage",
+        "SYSML-XMI-Systems-States-TransitionUsage-validateTransitionUsageParameters",
+        "SYSML-GRAMMAR-GuardedSuccession",
+        "SYSML-GRAMMAR-GuardedTargetSuccession",
+        "SYSML-GRAMMAR-DefaultTargetSuccession",
+        "KERML-XMI-Root-Elements-Relationship-isImplied",
+        "SYSML-GRAMMAR-EntryTransitionMember",
+        "SYSML-GRAMMAR-StateBodyItem"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-construction",
+          "transition-membership-validation",
+          "transition-construction-tests",
+          "transition-parameter-ast",
+          "transition-parameter-format",
+          "parser"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-012",
+          "checks": [
+            "clean",
+            "plain-element",
+            "plain-parameters",
+            "triggered-element",
+            "triggered-parameters",
+            "guarded-element",
+            "guarded-parameters",
+            "effectful-element",
+            "effectful-parameters",
+            "full-element",
+            "full-parameters",
+            "feature-memberships",
+            "trigger-kind",
+            "effect-kind"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "plain-element",
+              "status": "pass"
+            },
+            {
+              "id": "plain-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-element",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "guarded-element",
+              "status": "pass"
+            },
+            {
+              "id": "guarded-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "effectful-element",
+              "status": "pass"
+            },
+            {
+              "id": "effectful-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "full-element",
+              "status": "pass"
+            },
+            {
+              "id": "full-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "feature-memberships",
+              "status": "pass"
+            },
+            {
+              "id": "trigger-kind",
+              "status": "pass"
+            },
+            {
+              "id": "effect-kind",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-021 fixes the missing first EmptyParameterMember. Raw canonical and legacy graphs cover explicit, target shorthand, guarded action succession and directed body forms; the public full-library query preserves the effective transitionLinkSource and payload identities. The validator selects shared derived inputs owned by the transition, excluding inherited and output-only features while admitting inout. Private mutations verify deficient untriggered/triggered inputs. Guarded/default action-succession grammar omits the empty slot although the common metamodel rule requires it; the builder constructs that input as implied. The AST retains grammar, contextual or semantic parameter origin; conditional targets use their state/action owner context, including state subtypes. Raw-graph tests verify provenance before and after formatting. Guarded entry transitions use the semantic-only slot even in a state body; repeated guards and intervening target successions preserve that entry context until an ordinary member resets it. Normalized external JSON lifting and complete implied-relationship interchange remain unqualified. This is not qualification of every implicit binding, payload chain, inherited feature interaction, raw-payload import/lift round trip or complete transition semantics."
+    },
+    {
+      "id": "STATE-SUBACTION-OWNER",
+      "obligation": "A StateSubactionMembership must be owned by a StateDefinition or StateUsage, including subclasses.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateSubactionMembership-validateStateSubactionMembershipOwningType"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-construction",
+          "transition-membership-validation",
+          "transition-construction-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-013",
+          "checks": [
+            "syntax",
+            "WrongPart-structure",
+            "WrongPart-owner",
+            "WrongAction-structure",
+            "WrongAction-owner",
+            "ValidDefinition-valid-owner",
+            "validUsage-valid-owner",
+            "validExhibit-valid-owner"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "WrongPart-structure",
+              "status": "pass"
+            },
+            {
+              "id": "WrongPart-owner",
+              "status": "pass"
+            },
+            {
+              "id": "WrongAction-structure",
+              "status": "pass"
+            },
+            {
+              "id": "WrongAction-owner",
+              "status": "pass"
+            },
+            {
+              "id": "ValidDefinition-valid-owner",
+              "status": "pass"
+            },
+            {
+              "id": "validUsage-valid-owner",
+              "status": "pass"
+            },
+            {
+              "id": "validExhibit-valid-owner",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-021 retains structural findings for invalid part/action bodies and adds the named semantic owner constraint. Definitions, usages and ExhibitStateUsage are positive peers; private graph mutations exercise all three subaction kinds. Full raw graph consistency, implicit membership construction and complete state semantics remain open."
+    },
+    {
+      "id": "TRANSITION-FEATURE-OWNER",
+      "obligation": "A TransitionFeatureMembership must belong to a TransitionUsage.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipOwningType"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-construction",
+          "transition-membership-validation",
+          "transition-construction-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-012",
+          "checks": [
+            "clean",
+            "plain-element",
+            "plain-parameters",
+            "triggered-element",
+            "triggered-parameters",
+            "guarded-element",
+            "guarded-parameters",
+            "effectful-element",
+            "effectful-parameters",
+            "full-element",
+            "full-parameters",
+            "feature-memberships",
+            "trigger-kind",
+            "effect-kind"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "plain-element",
+              "status": "pass"
+            },
+            {
+              "id": "plain-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-element",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "guarded-element",
+              "status": "pass"
+            },
+            {
+              "id": "guarded-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "effectful-element",
+              "status": "pass"
+            },
+            {
+              "id": "effectful-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "full-element",
+              "status": "pass"
+            },
+            {
+              "id": "full-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "feature-memberships",
+              "status": "pass"
+            },
+            {
+              "id": "trigger-kind",
+              "status": "pass"
+            },
+            {
+              "id": "effect-kind",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-021 checks the explicit membership owner and actual member metaclass. Private mutation of the transition owner to an ActionUsage rejects both trigger and effect memberships. The public textual grammar supplies valid typed memberships; malformed-kind/owner negative evidence is the registered private dependency suite. Arbitrary inconsistent raw ownership graphs, semantic metadata construction, guard Boolean/multiplicity qualification and complete transition-feature derivations remain open."
+    },
+    {
+      "id": "TRANSITION-TRIGGER-KIND",
+      "obligation": "A trigger TransitionFeatureMembership must own an AcceptActionUsage.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipTriggerAction"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-construction",
+          "transition-membership-validation",
+          "transition-construction-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-012",
+          "checks": [
+            "clean",
+            "plain-element",
+            "plain-parameters",
+            "triggered-element",
+            "triggered-parameters",
+            "guarded-element",
+            "guarded-parameters",
+            "effectful-element",
+            "effectful-parameters",
+            "full-element",
+            "full-parameters",
+            "feature-memberships",
+            "trigger-kind",
+            "effect-kind"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "plain-element",
+              "status": "pass"
+            },
+            {
+              "id": "plain-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-element",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "guarded-element",
+              "status": "pass"
+            },
+            {
+              "id": "guarded-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "effectful-element",
+              "status": "pass"
+            },
+            {
+              "id": "effectful-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "full-element",
+              "status": "pass"
+            },
+            {
+              "id": "full-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "feature-memberships",
+              "status": "pass"
+            },
+            {
+              "id": "trigger-kind",
+              "status": "pass"
+            },
+            {
+              "id": "effect-kind",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-021 checks the explicit membership owner and actual member metaclass. Private mutation to PerformActionUsage is rejected even though that target remains an ActionUsage. The public textual grammar supplies valid typed memberships; malformed-kind/owner negative evidence is the registered private dependency suite. Arbitrary inconsistent raw ownership graphs, semantic metadata construction, guard Boolean/multiplicity qualification and complete transition-feature derivations remain open."
+    },
+    {
+      "id": "TRANSITION-EFFECT-KIND",
+      "obligation": "An effect TransitionFeatureMembership must own an ActionUsage.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipEffectAction"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-construction",
+          "transition-membership-validation",
+          "transition-construction-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-012",
+          "checks": [
+            "clean",
+            "plain-element",
+            "plain-parameters",
+            "triggered-element",
+            "triggered-parameters",
+            "guarded-element",
+            "guarded-parameters",
+            "effectful-element",
+            "effectful-parameters",
+            "full-element",
+            "full-parameters",
+            "feature-memberships",
+            "trigger-kind",
+            "effect-kind"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "plain-element",
+              "status": "pass"
+            },
+            {
+              "id": "plain-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-element",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "guarded-element",
+              "status": "pass"
+            },
+            {
+              "id": "guarded-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "effectful-element",
+              "status": "pass"
+            },
+            {
+              "id": "effectful-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "full-element",
+              "status": "pass"
+            },
+            {
+              "id": "full-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "feature-memberships",
+              "status": "pass"
+            },
+            {
+              "id": "trigger-kind",
+              "status": "pass"
+            },
+            {
+              "id": "effect-kind",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-021 checks the explicit membership owner and actual member metaclass. The public PerformActionUsage effect is admitted; private mutation to ReferenceUsage is rejected without following its referent. The public textual grammar supplies valid typed memberships; malformed-kind/owner negative evidence is the registered private dependency suite. Arbitrary inconsistent raw ownership graphs, semantic metadata construction, guard Boolean/multiplicity qualification and complete transition-feature derivations remain open."
     }
   ],
-  "executableCases": 128,
+  "executableCases": 130,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
-  "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "0703cf443c8c1d1560fb85c0f666f8e326057f2549364cac985d83f11bbdc9ab",
+  "catalogueSha256": "fa5f9d95017d14d95682976629f05daf22bd64fcf2fe79b6faa731931bb1b08e",
+  "assessmentsSha256": "d1667a1f0d812b984eb7ba29228fcf9cd03576ed03bca583824c61e1f4dfc86c",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "374a8bb3d17f024d737b34c3c8fb9a0b1dc9cfe4c0cd1a885221da4b055266c8",
-    "generatedAt": "2026-10-18T01:16:00.377Z",
-    "kernelInputSha256": "f7d1a94d3f4a471f8042a3f321d4f03b9d934352fba477b79577a85958b87141",
-    "binarySha256": "c63624380086002d83e49244b8381091d113ff6681e2d007a08fa983e18a4525",
+    "sha256": "f95d953fd421703dc59e4f87a7997e393c79b53d2b8c9a428f5287364999ca28",
+    "generatedAt": "2026-10-18T02:11:11.307Z",
+    "kernelInputSha256": "f926d5b79b5507cfbfdfbc998f92a3f44e82d883ec40c87026d405dc682cec3e",
+    "binarySha256": "b90367eb24420db44d04051619284c66cd52c2192a3f16029a041d1c78a872f3",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.21",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.22",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 128,
+      "pass": 130,
       "known-gap": 0,
       "planned": 0,
       "fail": 0

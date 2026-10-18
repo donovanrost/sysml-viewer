@@ -2921,6 +2921,7 @@ impl<'a> Lifter<'a> {
                 negated: bval(el, "isNegated"),
             },
             UsageKind::Transition => UsageDetail::Transition {
+                source_parameter_origin: TransitionParameterOrigin::Grammar,
                 source,
                 trigger,
                 guard: guard.map(Box::new),

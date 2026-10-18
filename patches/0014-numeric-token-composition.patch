@@ -23,7 +23,96 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs b/vendor/s
  //! *superset* across contexts (e.g. state members are not rejected inside
  //! plain part bodies) — context validation belongs to a later semantic
  //! layer, not the parser.
-@@ -5550,6 +5550,7 @@
+@@ -1053,6 +1053,40 @@
+             }
+         }
+         self.expr_chain = deepest.max(self.expr_chain);
++        // StateBodyItem gives an entry action its own sequence of
++        // EntryTransitionMembers. Their guarded form uses
++        // GuardedTargetSuccession, which has no EmptyParameterMember,
++        // even though the enclosing namespace is a state. Keep this
++        // grammar distinction before lowering resolves other contextual
++        // target transitions from their state/action owner.
++        let mut after_entry = false;
++        for member in &mut members {
++            after_entry = match &mut member.kind {
++                MemberKind::StateSubaction {
++                    kind: StateSubactionKind::Entry,
++                    ..
++                } => true,
++                MemberKind::Usage(usage) if after_entry && usage.body.is_none() => {
++                    match &mut usage.detail {
++                        UsageDetail::Transition {
++                            source_parameter_origin,
++                            source: None,
++                            trigger: None,
++                            guard: Some(_),
++                            effect: None,
++                            is_default: false,
++                            ..
++                        } if *source_parameter_origin == TransitionParameterOrigin::Contextual => {
++                            *source_parameter_origin = TransitionParameterOrigin::Semantic;
++                            true
++                        }
++                        UsageDetail::Succession { source: None, .. } => true,
++                        _ => false,
++                    }
++                }
++                _ => false,
++            };
++        }
+         members
+     }
+ 
+@@ -1366,6 +1400,7 @@
+                 kind: UsageKind::Transition,
+                 declaration: FeatureDeclaration::default(),
+                 detail: UsageDetail::Transition {
++                    source_parameter_origin: TransitionParameterOrigin::Semantic,
+                     source: None,
+                     trigger: None,
+                     guard: None,
+@@ -1625,6 +1660,7 @@
+                 kind: UsageKind::Transition,
+                 declaration: FeatureDeclaration::default(),
+                 detail: UsageDetail::Transition {
++                    source_parameter_origin: TransitionParameterOrigin::Semantic,
+                     source: Some(source.target),
+                     trigger: None,
+                     guard: Some(Box::new(guard)),
+@@ -1689,6 +1725,7 @@
+                 kind: UsageKind::Transition,
+                 declaration: FeatureDeclaration::default(),
+                 detail: UsageDetail::Transition {
++                    source_parameter_origin: TransitionParameterOrigin::Contextual,
+                     source: None,
+                     trigger: None,
+                     guard: Some(Box::new(cond)),
+@@ -1917,6 +1954,7 @@
+             kind: UsageKind::Transition,
+             declaration: FeatureDeclaration::default(),
+             detail: UsageDetail::Transition {
++                source_parameter_origin: TransitionParameterOrigin::Grammar,
+                 source,
+                 trigger,
+                 guard: guard.map(Box::new),
+@@ -1977,6 +2015,7 @@
+             kind: UsageKind::Transition,
+             declaration,
+             detail: UsageDetail::Transition {
++                source_parameter_origin: TransitionParameterOrigin::Grammar,
+                 source,
+                 trigger,
+                 guard: guard.map(Box::new),
+@@ -3988,6 +4027,7 @@
+                 kind: UsageKind::Transition,
+                 declaration,
+                 detail: UsageDetail::Transition {
++                    source_parameter_origin: TransitionParameterOrigin::Semantic,
+                     source: Some(source.target),
+                     trigger: None,
+                     guard: Some(Box::new(guard)),
+@@ -5550,6 +5590,7 @@
  
      /// Real/integer literal composition:
      /// `DECIMAL` | `EXP` | `DECIMAL? '.' (DECIMAL | EXP)`.
@@ -31,7 +120,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs b/vendor/s
      fn parse_number(&mut self, start: Span) -> Option<Expr> {
          if self.at(TokenKind::Exp) {
              let tok = self.bump();
-@@ -5565,7 +5566,7 @@
+@@ -5565,7 +5606,7 @@
                  let frac = self.bump();
                  let span = start.join(frac.span);
                  return Some(Expr {
@@ -40,7 +129,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs b/vendor/s
                      span,
                  });
              }
-@@ -5580,7 +5581,11 @@
+@@ -5580,7 +5621,11 @@
              let frac = self.bump();
              let span = start.join(frac.span);
              return Some(Expr {

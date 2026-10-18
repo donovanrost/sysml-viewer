@@ -1,0 +1,35 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/ast.rs b/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/ast.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/ast.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-syntax/src/ast.rs
+@@ -782,6 +782,10 @@
+     },
+     /// `transition (first)? <source>? trigger? guard? effect? then <target>`
+     Transition {
++        /// Whether the source parameter is part of the textual production
++        /// or must be supplied to satisfy the common transition semantics.
++        #[cfg_attr(feature = "serde", serde(default))]
++        source_parameter_origin: TransitionParameterOrigin,
+         source: Option<TargetRef>,
+         trigger: Option<Box<UsageDetail>>,
+         guard: Option<Box<Expr>>,
+@@ -791,6 +795,20 @@
+         /// `else target ;` default transition.
+         is_default: bool,
+     },
++}
++
++#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
++#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
++pub enum TransitionParameterOrigin {
++    /// TransitionUsage or TargetTransitionUsage includes EmptyParameterMember.
++    #[default]
++    Grammar,
++    /// `if ... then ...` is a target transition in a state body and a
++    /// GuardedTargetSuccession in an action body.
++    Contextual,
++    /// Guarded/default action successions and guarded entry transitions
++    /// omit the empty parameter.
++    Semantic,
+ }
+ 
+ /// One specialization clause in a feature declaration.

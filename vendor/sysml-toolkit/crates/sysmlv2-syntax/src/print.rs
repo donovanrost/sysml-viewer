@@ -1599,6 +1599,7 @@ impl Printer {
 
     fn print_transition(&mut self, u: &Usage, span: Span) {
         let UsageDetail::Transition {
+            source_parameter_origin,
             source,
             trigger,
             guard,
@@ -1620,9 +1621,18 @@ impl Printer {
         }
         let has_decl = Self::decl_present(&u.declaration);
         // Pure guarded shorthand (`if g then t;`).
-        let pure_guard = source.is_none() && trigger.is_none() && effect.is_none() && !has_decl;
+        let pure_guard = *source_parameter_origin == TransitionParameterOrigin::Contextual
+            && source.is_none()
+            && trigger.is_none()
+            && !has_decl;
         if !(pure_guard && guard.is_some()) {
-            self.w("transition ");
+            if *source_parameter_origin == TransitionParameterOrigin::Semantic {
+                if has_decl {
+                    self.w("succession ");
+                }
+            } else {
+                self.w("transition ");
+            }
             if has_decl {
                 self.print_feature_declaration(&u.declaration);
             }

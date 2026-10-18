@@ -153,14 +153,23 @@ def pdf_index(standard, pdf, manifest):
             if not in_grammar:
                 continue
             header = re.fullmatch(r"\s*([A-Z][A-Za-z0-9_]*)(?:\s*:\s*([A-Z][A-Za-z0-9_]*))?\s*=.*", line)
-            # Five printed headers omit '='. Preserve that discrepancy explicitly;
+            # Twelve printed headers omit '='. Preserve that discrepancy explicitly;
             # do not silently repair or omit the production in the inventory.
-            exceptions = {("sysml", "PackageMember", 199), ("sysml", "DefinitionDeclaration", 201),
-                          ("sysml", "UsagePrefix", 202), ("sysml", "StateSendActionUsage", 217),
-                          ("kerml", "ImportDeclaration", 107)}
-            missing = re.fullmatch(r"\s*([A-Z][A-Za-z0-9_]*)\s*:\s*([A-Z][A-Za-z0-9_]*)\s*", line)
+            exceptions = {("sysml", "PackageMember", 199): "", ("sysml", "DefinitionDeclaration", 201): "",
+                          ("sysml", "UsagePrefix", 202): "", ("sysml", "StateSendActionUsage", 217): "",
+                          ("kerml", "ImportDeclaration", 107): "",
+                          ("sysml", "ConnectorEndMember", 208): ":",
+                          ("sysml", "InterfaceEnd", 210): ":",
+                          ("sysml", "EntryTransitionMember", 217): ":",
+                          ("sysml", "MetadataBodyUsage", 224): ":",
+                          ("kerml", "SpecificType", 113): ":",
+                          ("kerml", "BasicFeaturePrefix", 115): ":",
+                          ("kerml", "PrefixMetadataFeature", 131): ":"}
+            missing = re.fullmatch(r"\s*([A-Z][A-Za-z0-9_]*)\s*:\s*([A-Z][A-Za-z0-9_]*)\s*(:?)\s*", line)
             if missing:
-                assert (standard, missing[1], page_number) in exceptions, "Unreviewed grammar header exception"
+                assert exceptions.get((standard, missing[1], page_number)) == missing[3], (
+                    f"Unreviewed grammar header exception: {standard}, page {page_number}, {stripped}"
+                )
                 header = missing
             if header:
                 item = {"id": f"{standard.upper()}-GRAMMAR-{header[1]}",
@@ -169,7 +178,8 @@ def pdf_index(standard, pdf, manifest):
                         "parent": clause_id(standard, current), "source": standard + "-pdf",
                         "page": page_number, "line": line_number}
                 if missing:
-                    item["extractionNote"] = "Printed production header omits the equals sign."
+                    item["extractionNote"] = ("Printed production header ends with a colon instead of an equals sign."
+                                              if missing[3] else "Printed production header omits the equals sign.")
                 grammar.append(item)
         flush()
 

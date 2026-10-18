@@ -66,6 +66,16 @@ queries consume this published callee/input/argument evidence. Publication can
 decline a family; its checked query still returns unknown. The graph format is
 internal and distinct from snapshot schema 4; this is not an interchange API.
 
+Transition construction supplies an owned source input before any trigger payload.
+The public owned-membership query exposes those distinct ParameterMemberships in
+declaration order. With the bundled library, the first input's effective name is
+`transitionLinkSource` even though it has no declared name. Directed body features
+can supply additional inputs without being ParameterMemberships. The internal AST
+retains grammar-created versus semantic-only source-slot provenance, including
+conditional target and guarded entry-transition context, across textual formatting.
+The public snapshot does not expose a complete implied-relationship graph or certify normative interchange.
+See KERNEL-021 in [foundation qualification](foundation-qualification.md).
+
 Ranges are half-open. Byte/UTF-16 offsets are zero-based; line and UTF-16 column
 numbers are one-based. Original encoding after UTF-8 decoding and line endings
 are preserved. Indexed query construction verifies coordinate agreement.

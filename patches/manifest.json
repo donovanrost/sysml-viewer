@@ -3,13 +3,13 @@
   "toolkitRevision": "821221767c3c56cb1ebe7da22666197a47c9c645",
   "patches": [
     {
-      "id": "KERNEL-002",
+      "id": "KERNEL-002 / KERNEL-021",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
       "patch": "patches/0001-defer-alias-distinguishability.patch",
-      "sha256": "8ab4f7737a60948f0f5af581cef617e0356923063ba7a4475889aed8dc85305e",
+      "sha256": "39fde104455e05c931e459222ac8250332a5eee8241fc3afab361d3f7fd45068",
       "baseSha256": "80dda42883f8cbaa5a2f2e69f5080cb5a15ad8b0c0a5fcb8c2353fc43c84b50f",
-      "resultSha256": "f34aa7203810104300c28f32e5e61ce0b1b11d899981b964cfd5bafec5eda6ce",
-      "reason": "Defer unresolved alias target comparisons from syntax to the facade semantic namespace validator. IMP-022 must pass; IMP-015 and IMP-023 must still diagnose collisions."
+      "resultSha256": "0f4ed33deb16af0facf93f3c15bb6a7056fa01ee27bfcc74dbdc593b32d1e654",
+      "reason": "Defer unresolved alias target comparisons from syntax to the facade semantic namespace validator. IMP-022 must pass; IMP-015 and IMP-023 must still diagnose collisions. KERNEL-021: The syntax walker accepts the new transition parameter-origin field; body-context validation is unchanged."
     },
     {
       "id": "KERNEL-001",
@@ -117,16 +117,16 @@
       "sha256": "c55f7826b5d6192eed8883e127ce9d02e021f1a27c82b7ca6f9b1677205da4bc",
       "baseSha256": "15c778003b360759b95a491a8eb195b37eb85bfdb4d626d86ee7bfec9a044244",
       "resultSha256": "e99ea6d8807862c2be5b23fe0e9396f7cb1fd5ba50b31823053c2cc7f4197df6",
-      "reason": "KerML 1.0 8.2.2.1/3/5: form feed separates tokens; quoted names and strings share the seven Table 4 escapes and reject raw C0/C1 controls. Unicode diagnostic spans remain character-aligned and scanning retains complete source coverage and later declarations. Full Unicode printability and arbitrary line-terminator encodings remain unqualified. LEX-001\u2013004, native syntax/round-trip checks and five lexer proof tests retain acceptance, refusal and recovery boundaries."
+      "reason": "KerML 1.0 8.2.2.1/3/5: form feed separates tokens; quoted names and strings share the seven Table 4 escapes and reject raw C0/C1 controls. Unicode diagnostic spans remain character-aligned and scanning retains complete source coverage and later declarations. Full Unicode printability and arbitrary line-terminator encodings remain unqualified. LEX-001–004, native syntax/round-trip checks and five lexer proof tests retain acceptance, refusal and recovery boundaries."
     },
     {
-      "id": "KERNEL-013",
+      "id": "KERNEL-013 / KERNEL-021",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs",
       "patch": "patches/0014-numeric-token-composition.patch",
-      "sha256": "bd716a79f203e756da14352de73218996fd637023c3f3b7efc49775186b995ce",
+      "sha256": "18e8ff25b878f551c54a7768c28b9782dcb72afd35d0064b2b44bf061d790a89",
       "baseSha256": "c99e341ff258b0b28c29b7e63c83d3c228a58dee6813d2c3a6b73f544ed5645b",
-      "resultSha256": "0b8b608caa7b6f0f7f96b2b97287224237c0e0efd1b7f3c0d4449a3e034318f2",
-      "reason": "KERNEL-013: compose real literal values from their numeric tokens, excluding whitespace and notes while retaining exact original expression spans. KerML 8.2.2.1/4 and 8.2.5.8.4 define token separation and real composition. Decimal digits and exponents remain text with no floating-point conversion. Numeric syntax, AST/lowering regressions and LEX-006\u2013009 retain acceptance, refusal and recovery boundaries."
+      "resultSha256": "20eb619b7659a054a6c7d8485e20f03bffa68f84f4dab6702cf3bd9f9bf5c2a9",
+      "reason": "KERNEL-013: compose real literal values from their numeric tokens, excluding whitespace and notes while retaining exact original expression spans. KerML 8.2.2.1/4 and 8.2.5.8.4 define token separation and real composition. Decimal digits and exponents remain text with no floating-point conversion. Numeric syntax, AST/lowering regressions and LEX-006–009 retain acceptance, refusal and recovery boundaries. KERNEL-021: The parser retains the source parameter origin for explicit transitions, contextual target guards and guarded/default successions."
     },
     {
       "id": "KERNEL-013",
@@ -147,13 +147,13 @@
       "reason": "StateUsage and ExhibitStateUsage allow the Behavior range of StateUsage::stateDefinition; ConcernUsage narrows RequirementUsage to ConcernDefinition. Private and public regressions retain invalid/missing type separation, nonredundant type limits, and RequirementUsage acceptance of ConcernDefinition. Normative anchors are the pinned SysML XMI property redefinitions. TYPE-005/006 preserve the pre-fix failures."
     },
     {
-      "id": "KERNEL-017/018",
+      "id": "KERNEL-017/018 / KERNEL-021",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
       "patch": "patches/0017-state-subaction-rule-identifiers.patch",
-      "sha256": "669de68cf60062fbba07a2b5705b8c1c8161bc1c4be818f2138375feab7252c4",
+      "sha256": "05802c8cff93d503cae859538a08a2a127db5f91e5039a4782d709b8b1c243c9",
       "baseSha256": "89e5002bbc63b860c1e1881986268860c24ef01a358133a40f7ae0eade724e77",
-      "resultSha256": "30dbb8ac764d640cf1a513a92546d7a1564d6f023fc3183b1aaeb30f263b8495",
-      "reason": "Retain canonical state-subaction rule codes and dispatch view-rendering validation through the shared inherited-membership projection."
+      "resultSha256": "1fbfd50483bece8409891f579d56db232b0a16a38c08ba2f9540077b3d86942f",
+      "reason": "Retain canonical state-subaction rule codes and dispatch view-rendering validation through the shared inherited-membership projection. KERNEL-021 registers the five reviewed transition parameter and state/transition membership constraint identifiers. KERNEL-021: The five parameter and state/transition membership constraint codes are registered."
     },
     {
       "id": "KERNEL-018/019",
@@ -165,22 +165,49 @@
       "reason": "KERNEL-018: count ViewRenderingMembership across owned and inherited featureMembership after actual redefinition, visibility and import selection. Missing/ambiguous references, recovery, cycles and incomplete dependencies cannot certify a candidate-count violation; two owned memberships remain a definite error. Reuse the shared projection and bound the query-local dependency preflight. KERNEL-019 moves parallel-state validation from lexical transition/succession ownership to checked action endpoint incidence in the action validator."
     },
     {
-      "id": "KERNEL-018",
+      "id": "KERNEL-018 / KERNEL-021",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "patch": "patches/0019-preserve-distinct-view-renderings.patch",
-      "sha256": "537b5b0e1316f23389896e618f6bcc3c9317ce782405d1a6437b19406b71f782",
+      "sha256": "142a916d256199692a592a24ca0a33fa9a08aae09ae92a186e8c9814d9bf3231",
       "baseSha256": "4bcbae4ec8a3fe2847ac48a00b3661fb4c53d8ee0e1dbac8120e089821caa565",
-      "resultSha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e",
-      "reason": "KERNEL-018: same-name compatibility shadowing must not remove a ViewRenderingMembership. checkRenderingUsageRedefinition targets the library viewRendering feature, not every inherited same-name user rendering. Preserve actual explicit/transitive redefinition and shared membership identity/visibility reduction."
+      "resultSha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7",
+      "reason": "KERNEL-018: same-name compatibility shadowing must not remove a ViewRenderingMembership. checkRenderingUsageRedefinition targets the library viewRendering feature, not every inherited same-name user rendering. Preserve actual explicit/transitive redefinition and shared membership identity/visibility reduction. KERNEL-021 constructs the anonymous first input parameter of textual transitions before the optional trigger payload, preserving source and payload positions across explicit and shorthand forms. KERNEL-021: Transition parameter construction retains grammar-versus-semantic provenance, with contextual guarded targets distinguished by state ownership."
     },
     {
-      "id": "KERNEL-019 / KERNEL-020",
+      "id": "KERNEL-019 / KERNEL-020 / KERNEL-021",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "patch": "patches/0020-parallel-state-transitions.patch",
       "baseSha256": "88c4211d4f3331b13519139e02da09855bc49030aa5f8904c8751b80e7371f67",
-      "reason": "Check parallel-state restrictions through independent, resolved TransitionUsage endpoint incidence on direct owned actions. Preserve action identity, reject incomplete chains and retain known opposite endpoints. Transition target-kind validation uses Feature.featureTarget rather than following a final ReferenceSubsetting. STATE-003 through STATE-007 cover ownership, alias/inheritance boundaries, unresolved and ambiguous names, action kinds and cross-file incidence. This does not qualify all transition or connector derivations. KERNEL-020 constrains triggered transitions through the first checked source ActionUsage and shared triggerAction derivation, preserving PerformActionUsage identity and ignoring unrelated alias members. Missing and ambiguous sources cannot establish an invalid source kind. The private ambiguity regression now contains directly owned candidate actions.",
-      "sha256": "418d4166babd43ed0840283473a49cd701976694935ad8688dd2b8acd922b8fc",
-      "resultSha256": "fe14dd505f79749f94264220fe648c30e061703f187c7505e0f4d4fd682493d9"
+      "reason": "Check parallel-state restrictions through independent, resolved TransitionUsage endpoint incidence on direct owned actions. Preserve action identity, reject incomplete chains and retain known opposite endpoints. Transition target-kind validation uses Feature.featureTarget rather than following a final ReferenceSubsetting. STATE-003 through STATE-007 cover ownership, alias/inheritance boundaries, unresolved and ambiguous names, action kinds and cross-file incidence. This does not qualify all transition or connector derivations. KERNEL-020 constrains triggered transitions through the first checked source ActionUsage and shared triggerAction derivation, preserving PerformActionUsage identity and ignoring unrelated alias members. Missing and ambiguous sources cannot establish an invalid source kind. The private ambiguity regression now contains directly owned candidate actions. KERNEL-021 validates owned input parameter counts through shared input derivation, state/transition membership owner kinds and trigger/effect member kinds. Private regressions retain in/out/inout, inherited-input exclusion, state subtypes and malformed member types. KERNEL-021: Owned input and state/transition membership validation retains the registered private negative regressions.",
+      "sha256": "9a40a72ae295d4f5ba575b5d11bde6226f3b19217d0bb1a180c844bee6fa8912",
+      "resultSha256": "dbe60817afd3f49b4dbe39a317a06188aed2a15cf4ed1e7eabc538561913e159"
+    },
+    {
+      "id": "KERNEL-021",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/ast.rs",
+      "patch": "patches/0021-transition-parameter-syntax.patch",
+      "baseSha256": "a116c9416ebab9735b1a7bb8f96e7ad92798bc7c1d4a326c5eb7a5a8f926e2d8",
+      "reason": "KERNEL-021: The AST records transition parameter origin so lowering can distinguish an empty grammar slot from a semantic-only slot. Serialized older ASTs default to grammar origin.",
+      "sha256": "66b91c3426a4ffaa6f5df58e952736ecc9504924c4444bff503451a030c639ff",
+      "resultSha256": "98fe517dc6a8c488f5e092914b26fb957f1513aee87d8439b037734ed277a3c0"
+    },
+    {
+      "id": "KERNEL-021",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/print.rs",
+      "patch": "patches/0022-transition-format-provenance.patch",
+      "baseSha256": "dae05bbb5712de65d4c9e3251b71ff6d41b7393eb966c28711001ff2ce0f60db",
+      "reason": "KERNEL-021: Formatting preserves guarded/default succession and contextual target forms, so reparsing does not change source-parameter provenance.",
+      "sha256": "9d8b04ac47f52b907137745b164d5490e6c3c3d5e824041b085c7713ce62ca56",
+      "resultSha256": "a5d1432c941e9f728f3768bd49bf375eb00cc7a6e7059156970689e83b44fd87"
+    },
+    {
+      "id": "KERNEL-021",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs",
+      "patch": "patches/0023-lift-transition-parameter-origin.patch",
+      "baseSha256": "fc7bea90f370cc11a92e2eaadddbcf9650f6312b22ccb6f083e8788d998f89a8",
+      "reason": "KERNEL-021: The existing normalized transition lifter explicitly chooses grammar origin. Arbitrary raw-payload provenance round trips remain outside this qualification.",
+      "sha256": "2e1854bdcfaf0fc0aa9953d9d675e4a2418209a24d64824bbd6588e326356029",
+      "resultSha256": "63ca59e582a977a2c10c6fd670d3f1a93420e1b0d28cc831dd615f06b667c483"
     }
   ]
 }

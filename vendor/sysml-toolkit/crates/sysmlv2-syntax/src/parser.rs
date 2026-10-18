@@ -1053,6 +1053,40 @@ impl<'s> Parser<'s> {
             }
         }
         self.expr_chain = deepest.max(self.expr_chain);
+        // StateBodyItem gives an entry action its own sequence of
+        // EntryTransitionMembers. Their guarded form uses
+        // GuardedTargetSuccession, which has no EmptyParameterMember,
+        // even though the enclosing namespace is a state. Keep this
+        // grammar distinction before lowering resolves other contextual
+        // target transitions from their state/action owner.
+        let mut after_entry = false;
+        for member in &mut members {
+            after_entry = match &mut member.kind {
+                MemberKind::StateSubaction {
+                    kind: StateSubactionKind::Entry,
+                    ..
+                } => true,
+                MemberKind::Usage(usage) if after_entry && usage.body.is_none() => {
+                    match &mut usage.detail {
+                        UsageDetail::Transition {
+                            source_parameter_origin,
+                            source: None,
+                            trigger: None,
+                            guard: Some(_),
+                            effect: None,
+                            is_default: false,
+                            ..
+                        } if *source_parameter_origin == TransitionParameterOrigin::Contextual => {
+                            *source_parameter_origin = TransitionParameterOrigin::Semantic;
+                            true
+                        }
+                        UsageDetail::Succession { source: None, .. } => true,
+                        _ => false,
+                    }
+                }
+                _ => false,
+            };
+        }
         members
     }
 
@@ -1366,6 +1400,7 @@ impl<'s> Parser<'s> {
                 kind: UsageKind::Transition,
                 declaration: FeatureDeclaration::default(),
                 detail: UsageDetail::Transition {
+                    source_parameter_origin: TransitionParameterOrigin::Semantic,
                     source: None,
                     trigger: None,
                     guard: None,
@@ -1625,6 +1660,7 @@ impl<'s> Parser<'s> {
                 kind: UsageKind::Transition,
                 declaration: FeatureDeclaration::default(),
                 detail: UsageDetail::Transition {
+                    source_parameter_origin: TransitionParameterOrigin::Semantic,
                     source: Some(source.target),
                     trigger: None,
                     guard: Some(Box::new(guard)),
@@ -1689,6 +1725,7 @@ impl<'s> Parser<'s> {
                 kind: UsageKind::Transition,
                 declaration: FeatureDeclaration::default(),
                 detail: UsageDetail::Transition {
+                    source_parameter_origin: TransitionParameterOrigin::Contextual,
                     source: None,
                     trigger: None,
                     guard: Some(Box::new(cond)),
@@ -1917,6 +1954,7 @@ impl<'s> Parser<'s> {
             kind: UsageKind::Transition,
             declaration: FeatureDeclaration::default(),
             detail: UsageDetail::Transition {
+                source_parameter_origin: TransitionParameterOrigin::Grammar,
                 source,
                 trigger,
                 guard: guard.map(Box::new),
@@ -1977,6 +2015,7 @@ impl<'s> Parser<'s> {
             kind: UsageKind::Transition,
             declaration,
             detail: UsageDetail::Transition {
+                source_parameter_origin: TransitionParameterOrigin::Grammar,
                 source,
                 trigger,
                 guard: guard.map(Box::new),
@@ -3988,6 +4027,7 @@ impl<'s> Parser<'s> {
                 kind: UsageKind::Transition,
                 declaration,
                 detail: UsageDetail::Transition {
+                    source_parameter_origin: TransitionParameterOrigin::Semantic,
                     source: Some(source.target),
                     trigger: None,
                     guard: Some(Box::new(guard)),

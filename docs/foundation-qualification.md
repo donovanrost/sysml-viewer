@@ -867,6 +867,60 @@ it does not qualify the contradictory derived slots. General membership role
 properties, transition feature collections, implied body construction, all
 trigger/guard/effect constraints and execution remain open.
 
+## KERNEL-021: transition input construction and membership validation
+
+Engine `.22` constructs the first owned transition input that the previous
+lowering omitted. A transition without a trigger now has its source input; a
+triggered transition has that input followed by its separate payload. The
+[pre-fix regression](evidence/transition-construction-before-macos-arm64.json)
+records the actual raw canonical-model failure: zero and one owned inputs where
+the specification requires at least one and two. It was executed before the
+production edits, rather than inferred from the corrected implementation.
+
+`STATE-012` checks ordered parameter and transition-feature memberships through
+the full-library public query. The first input has no declared name, but its
+effective name is `transitionLinkSource`; payload identity remains distinct.
+Native regressions exercise canonical and legacy graphs, explicit and target
+transition forms, guards, effects, guarded successions and directed body features.
+Owned `in` and `inout` features count as inputs; inherited and output-only features
+do not satisfy the owned-input requirement.
+
+The syntax tree retains whether the first parameter comes from the grammar or
+semantic construction. Explicit transition productions supply EmptyParameterMember.
+Guarded/default action-successions omit it, so the shared TransitionUsage input
+requirement supplies an implied parameter. Conditional target syntax uses the
+owning state/action context, including state subtypes. A regression checks the
+relationship's `isImplied` value before and after formatting and reparsing.
+Guarded entry transitions use GuardedTargetSuccession even inside a state. The
+parser preserves that distinction across repeated guards and intervening target
+successions, and resets it at an ordinary state member. The additional
+[pre-correction regression](evidence/transition-construction-entry-before-macos-arm64.json)
+records the failure found during review of the in-progress implementation; the
+final native test checks entry and ordinary target provenance before and after
+formatting.
+
+Five registered named constraints validate transition input counts, state
+subaction membership owners, transition-feature membership owners, trigger
+AcceptActionUsage members and effect ActionUsage members. `STATE-013` checks
+invalid part/action owners beside valid state definitions, usages and exhibited
+states. Private graph mutations supply negative cases that the textual grammar
+cannot construct, including an action that is not an accept action and a reference
+that is not an action. Structural and semantic diagnostics remain separate.
+
+The conformance harness can select an exact membership metaclass and assert
+declaration order; its positive and negative regressions retain the default
+order-insensitive behavior for earlier cases. The family parity corpus retains
+every prior fixture and uses all 32 available document slots. Package/app version
+0.4.0 and snapshot schema 4 are unchanged: this corrects constructed model facts
+without changing the public wire shape.
+
+This increment does not close complete transition semantics. Source/succession
+bindings, payload subsetting chains, all guard constraints, implicit specialization
+closure, arbitrary raw graph consistency and normative interchange still need
+qualification. Normalized JSON lifting chooses explicit transition grammar;
+external-payload provenance round trips are not established by the textual
+formatting regression.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -894,11 +948,11 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the current matrix has **128 passing conformance cases**, **no
-known-gap cases**, and **no planned cases**. All **82 Rust kernel tests**, **49 Node
-tests**, and **283 dependency proof tests** pass. The dependency suites cover
+On macOS arm64, the current matrix has **130 passing conformance cases**, **no
+known-gap cases**, and **no planned cases**. All **87 Rust kernel tests**, **50 Node
+tests**, and **286 dependency proof tests** pass. The dependency suites cover
 lexical boundaries (5), rational arithmetic (13), explicit usage typing (2), view
-rendering validation (5), transition incidence/target/trigger validation (8), type relations (41), model-level evaluability (33),
+rendering validation (5), transition incidence/target/trigger and membership/input validation (11), type relations (41), model-level evaluability (33),
 cardinality (34), invocation bindings (19), constructor bindings (17), dynamic graph
 (19), dynamic invocations (27), owned results (4), semantic ownership (5), end
 constancy (10) and checked namespace operations (41). The corpus and the 32 import-rule
@@ -906,7 +960,14 @@ partitions are included in the Rust suite, not additional independently qualifie
 specification counts. Native and WebAssembly outputs match exactly, including the
 expanded family/body corpus in both file orders.
 
-The [KERNEL-020 validation record](evidence/state-queries-macos-arm64.json) records
+The [KERNEL-021 validation record](evidence/transition-construction-macos-arm64.json)
+records the transition input construction and five named input/membership rules,
+two added cases and 22 added assertions. Five native tests cover raw input order,
+canonical/legacy graphs, public identity, ordinary and entry-transition provenance
+and formatting. The requirements extractor reproduces all 17 pinned artifacts
+with seven previously omitted colon-terminated production headers retained; the
+inventory now contains 627 grammar productions and 6,174 overlapping source units.
+The prior [KERNEL-020 validation record](evidence/state-queries-macos-arm64.json) records
 the schema-4 owned state-subaction query and triggered-source correction, four
 added cases and 40 added assertions. It retains source-local recovery behavior,
 binding integrity checks and explicit limits on derived state/transition slots.
@@ -936,6 +997,18 @@ passed in 2.0–4.1 seconds, with identical snapshots within each case. Subseque
 validation used a temporary process-scoped sleep assertion, released at completion.
 The 30-second conformance and 60-second benchmark deadlines are unchanged. Earlier unexplained
 benchmark timeouts below remain separate evidence.
+
+The [KERNEL-021 benchmark](evidence/benchmark-transition-construction-macos-arm64.json)
+records 162 successful samples across 27 workloads. All 25 earlier workloads remain;
+the two additions check ordered transition input/feature memberships and state
+subaction owner diagnostics on every sample. Repeated and native/WASM snapshots
+agree exactly. Measurements include fresh process startup and do not establish
+production-model latency guarantees.
+
+| Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
+| --- | ---: | ---: | ---: |
+| Transition input construction | 2,035 | 2,474 | 405.1/360.6 |
+| State subaction membership owners | 2,012 | 2,456 | 397.6/342.9 |
 
 The [KERNEL-020 benchmark](evidence/benchmark-state-queries-macos-arm64.json)
 records 150 successful samples across 25 workloads. All 23 earlier workloads remain;

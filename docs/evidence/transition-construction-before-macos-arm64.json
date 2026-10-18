@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-10-18T01:50:05.400941+00:00",
+  "baselineCommit": "fa4bcb7",
+  "baselineEngineVersionDeclared": "open-mbee/0.10.2@821221767c3c+sysml-kernel.21",
+  "kind": "Raw canonical-model regression executed before production edits; not a CLI snapshot.",
+  "command": [
+    "node",
+    "tools/rust.mjs",
+    "test",
+    "--locked",
+    "--release",
+    "-p",
+    "sysml-kernel",
+    "--test",
+    "transition_construction"
+  ],
+  "test": "transitions_construct_source_and_payload_input_slots_in_order",
+  "actualOwnedInputs": {
+    "plain": 0,
+    "triggered": 1
+  },
+  "expectedOwnedInputs": {
+    "plain": 1,
+    "triggered": 2
+  },
+  "source": "package TransitionConstruction { item def Signal; state def Driver { state a; state b; transition plain first a then b; transition triggered first a accept payload : Signal then b; } }",
+  "logSha256": "ac958ccf93fabcdca6ba07a4e123f8ca1effa6352279ca6fe0b88267d46631fb",
+  "output": "   Compiling sysml-kernel v0.4.0 (/Users/donovanrost/Documents/ChatGPT/SysML/crates/sysml-kernel)\n    Finished `release` profile [optimized] target(s) in 14.80s\n     Running tests/transition_construction.rs (target/release/deps/transition_construction-c47b5dd612c9aba3)\n\nrunning 1 test\ntest transitions_construct_source_and_payload_input_slots_in_order ... FAILED\n\nfailures:\n\n---- transitions_construct_source_and_payload_input_slots_in_order stdout ----\n\nthread 'transitions_construct_source_and_payload_input_slots_in_order' (63540343) panicked at crates/sysml-kernel/tests/transition_construction.rs:42:5:\nassertion `left == right` failed\n  left: [(\"plain\", 0), (\"triggered\", 1)]\n right: [(\"plain\", 1), (\"triggered\", 2)]\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    transitions_construct_source_and_payload_input_slots_in_order\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `-p sysml-kernel --test transition_construction`\n",
+  "limitations": "The regression file subsequently gained more tests and formatting. This record retains the failing execution, not a claim that its test-file bytes equal the final file."
+}

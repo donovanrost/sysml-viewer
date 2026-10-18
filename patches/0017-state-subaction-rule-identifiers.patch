@@ -1,16 +1,27 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs
 --- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs
 +++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs
-@@ -116,7 +116,9 @@
+@@ -116,12 +116,19 @@
      "validateRequirementVerificationMembershipOwningType",
      "validateSatisfyRequirementUsageReference",
      "validateStateDefinitionParallelSubactions",
 +    "validateStateDefinitionStateSubactionKind",
++    "validateStateSubactionMembershipOwningType",
      "validateStateUsageParallelSubactions",
 +    "validateStateUsageStateSubactionKind",
      "validateStructureSpecialization",
      "validateSubsettingConstantConformance",
      "validateSubsettingFeaturingTypes",
-@@ -314,12 +316,19 @@
+     "validateSubsettingUniquenessConformance",
++    "validateTransitionFeatureMembershipEffectAction",
+     "validateTransitionFeatureMembershipGuardExpression",
++    "validateTransitionFeatureMembershipOwningType",
++    "validateTransitionFeatureMembershipTriggerAction",
++    "validateTransitionUsageParameters",
+     "validateTransitionUsageSuccession",
+     "validateTransitionUsageTriggerActions",
+     "validateTypeDifferencingTypesNotSelf",
+@@ -314,12 +321,17 @@
  }
  
  /// The identifier of a rule in the spelling the pinned abstract syntax
@@ -24,14 +35,12 @@
 +        // Local KERNEL-017: the pinned StateDefinition/StateUsage rules
 +        // include State before SubactionKind. Preserve legacy message text
 +        // while publishing the canonical identifier, as for view renderings.
-+        "validateStateDefinitionSubactionKind" => {
-+            "validateStateDefinitionStateSubactionKind"
-+        }
++        "validateStateDefinitionSubactionKind" => "validateStateDefinitionStateSubactionKind",
 +        "validateStateUsageSubactionKind" => "validateStateUsageStateSubactionKind",
          "validateViewDefinitionOnlyOnvViewRendering" => {
              "validateViewDefinitionOnlyOneViewRendering"
          }
-@@ -402,6 +411,7 @@
+@@ -402,6 +414,7 @@
      let facts = facts::Facts::new(&mut r.b);
      out.extend(connectors::validate(r, model, &facts));
      out.extend(structural::validate(r, model, &facts));

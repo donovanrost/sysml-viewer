@@ -45,7 +45,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn effective_features(",
       "role": "candidate upstream graph and resolution implementation; presence does not prove every rule",
-      "sha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e"
+      "sha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
     },
     "typing": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/typing.rs",
@@ -63,7 +63,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs",
       "symbol": "pub fn parse_source(",
       "role": "candidate syntax implementation",
-      "sha256": "0b8b608caa7b6f0f7f96b2b97287224237c0e0efd1b7f3c0d4449a3e034318f2"
+      "sha256": "20eb619b7659a054a6c7d8485e20f03bffa68f84f4dab6702cf3bd9f9bf5c2a9"
     },
     "syntax-api": {
       "path": "crates/sysml-kernel/src/syntax.rs",
@@ -81,13 +81,13 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn resolve_in(",
       "role": "candidate upstream scoped-name resolution",
-      "sha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e"
+      "sha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
     },
     "connector-ends": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn connector_end_targets(",
       "role": "candidate upstream connector-chain query",
-      "sha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e"
+      "sha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
     },
     "diagram": {
       "path": "src/viewer/diagram.ts",
@@ -117,7 +117,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/check.rs",
       "symbol": "pub fn validate(",
       "role": "Patched syntax structure checker; KERNEL-002 defers alias metaclass comparisons until resolution",
-      "sha256": "f34aa7203810104300c28f32e5e61ce0b1b11d899981b964cfd5bafec5eda6ce"
+      "sha256": "0f4ed33deb16af0facf93f3c15bb6a7056fa01ee27bfcc74dbdc593b32d1e654"
     },
     "checked-featuring": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
@@ -261,7 +261,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs",
       "symbol": "fn parse_number(",
       "role": "Numeric token composition preserves exact spelling independently of whitespace/notes and retains original source spans.",
-      "sha256": "0b8b608caa7b6f0f7f96b2b97287224237c0e0efd1b7f3c0d4449a3e034318f2"
+      "sha256": "20eb619b7659a054a6c7d8485e20f03bffa68f84f4dab6702cf3bd9f9bf5c2a9"
     },
     "decimal-reader": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/rational.rs",
@@ -303,7 +303,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
       "symbol": "pub fn validate_semantics_with(",
       "role": "Runs semantic validators including metadata type checks",
-      "sha256": "30dbb8ac764d640cf1a513a92546d7a1564d6f023fc3183b1aaeb30f263b8495"
+      "sha256": "1fbfd50483bece8409891f579d56db232b0a16a38c08ba2f9540077b3d86942f"
     },
     "family-tests": {
       "path": "crates/sysml-kernel/tests/families.rs",
@@ -327,13 +327,13 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "fn validate_parallel_states(",
       "role": "Checked source/target incidence of transitions on directly owned parallel-state actions, with independent unresolved endpoint guards",
-      "sha256": "fe14dd505f79749f94264220fe648c30e061703f187c7505e0f4d4fd682493d9"
+      "sha256": "dbe60817afd3f49b4dbe39a317a06188aed2a15cf4ed1e7eabc538561913e159"
     },
     "transition-target-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "fn target_feature(",
       "role": "Bounded written transition target Feature.featureTarget identity proof before ActionUsage kind validation",
-      "sha256": "fe14dd505f79749f94264220fe648c30e061703f187c7505e0f4d4fd682493d9"
+      "sha256": "dbe60817afd3f49b4dbe39a317a06188aed2a15cf4ed1e7eabc538561913e159"
     },
     "state-query": {
       "path": "crates/sysml-kernel/src/states.rs",
@@ -351,13 +351,43 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn state_subactions(",
       "role": "Shared semantic library query for written state subaction kinds and action elements",
-      "sha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e"
+      "sha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
     },
     "trigger-source-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "pub(super) fn validate(",
       "role": "Trigger-source constraint uses shared triggerAction and checked source identity",
-      "sha256": "fe14dd505f79749f94264220fe648c30e061703f187c7505e0f4d4fd682493d9"
+      "sha256": "dbe60817afd3f49b4dbe39a317a06188aed2a15cf4ed1e7eabc538561913e159"
+    },
+    "transition-construction": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+      "symbol": "\"sourceparam\"",
+      "role": "Textual transition source/payload parameter construction",
+      "sha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
+    },
+    "transition-construction-tests": {
+      "path": "crates/sysml-kernel/tests/transition_construction.rs",
+      "symbol": "fn transitions_construct_source_and_payload_input_slots_in_order",
+      "role": "Raw graph and public full-library parameter construction regressions",
+      "sha256": "773855456906c7145f07e9b677e0eb96a7d095f08653e59b8702387ff7494669"
+    },
+    "transition-membership-validation": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+      "symbol": "\"validateTransitionUsageParameters\"",
+      "role": "Owned input, state/transition owner and trigger/effect kind checks with private malformed-graph regressions",
+      "sha256": "dbe60817afd3f49b4dbe39a317a06188aed2a15cf4ed1e7eabc538561913e159"
+    },
+    "transition-parameter-ast": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/ast.rs",
+      "symbol": "pub enum TransitionParameterOrigin",
+      "role": "Typed source-parameter origin retained across parsing and lowering",
+      "sha256": "98fe517dc6a8c488f5e092914b26fb957f1513aee87d8439b037734ed277a3c0"
+    },
+    "transition-parameter-format": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/print.rs",
+      "symbol": "fn print_transition",
+      "role": "Preserves source-parameter origin when formatting textual transition forms",
+      "sha256": "a5d1432c941e9f728f3768bd49bf375eb00cc7a6e7059156970689e83b44fd87"
     }
   },
   "assessments": [
@@ -4231,7 +4261,7 @@
           ]
         }
       ],
-      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001\u2013006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
+      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001–006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
     },
     {
       "id": "VIEW-USAGE-RENDERINGS",
@@ -4318,7 +4348,7 @@
           ]
         }
       ],
-      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001\u2013006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
+      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001–006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
     },
     {
       "id": "STATE-DEFINITION-PARALLEL",
@@ -4687,6 +4717,253 @@
         }
       ],
       "limits": "KERNEL-020 uses the shared triggerAction derivation and the KERNEL-019 checked source proof. STATE-008 includes a state source with an unrelated alias, a chained state source, direct and chained PerformActionUsage sources referencing states, ordinary action sources, absent and broken sources, and an untriggered action source. A missing source cannot establish the non-StateUsage antecedent; valid state identity is not replaced by an unrelated membership. Private coverage retains meaningful ambiguous endpoint candidates. Complete transition construction, raw/nonbinary graph forms, all trigger payloads, transition feature validation, guard/effect semantics and execution remain unqualified."
+    },
+    {
+      "id": "TRANSITION-PARAMETER-CONSTRUCTION",
+      "obligation": "A transition owns at least one input; a triggered transition owns at least two, with the textual source slot preceding its payload.",
+      "category": "standard",
+      "sources": [
+        "SYSML-GRAMMAR-TransitionUsage",
+        "SYSML-GRAMMAR-TargetTransitionUsage",
+        "SYSML-GRAMMAR-EmptyParameterMember",
+        "SYSML-GRAMMAR-EmptyUsage",
+        "SYSML-XMI-Systems-States-TransitionUsage-validateTransitionUsageParameters",
+        "SYSML-GRAMMAR-GuardedSuccession",
+        "SYSML-GRAMMAR-GuardedTargetSuccession",
+        "SYSML-GRAMMAR-DefaultTargetSuccession",
+        "KERML-XMI-Root-Elements-Relationship-isImplied",
+        "SYSML-GRAMMAR-EntryTransitionMember",
+        "SYSML-GRAMMAR-StateBodyItem"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-construction",
+          "transition-membership-validation",
+          "transition-construction-tests",
+          "transition-parameter-ast",
+          "transition-parameter-format",
+          "parser"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-012",
+          "checks": [
+            "clean",
+            "plain-element",
+            "plain-parameters",
+            "triggered-element",
+            "triggered-parameters",
+            "guarded-element",
+            "guarded-parameters",
+            "effectful-element",
+            "effectful-parameters",
+            "full-element",
+            "full-parameters",
+            "feature-memberships",
+            "trigger-kind",
+            "effect-kind"
+          ]
+        }
+      ],
+      "limits": "KERNEL-021 fixes the missing first EmptyParameterMember. Raw canonical and legacy graphs cover explicit, target shorthand, guarded action succession and directed body forms; the public full-library query preserves the effective transitionLinkSource and payload identities. The validator selects shared derived inputs owned by the transition, excluding inherited and output-only features while admitting inout. Private mutations verify deficient untriggered/triggered inputs. Guarded/default action-succession grammar omits the empty slot although the common metamodel rule requires it; the builder constructs that input as implied. The AST retains grammar, contextual or semantic parameter origin; conditional targets use their state/action owner context, including state subtypes. Raw-graph tests verify provenance before and after formatting. Guarded entry transitions use the semantic-only slot even in a state body; repeated guards and intervening target successions preserve that entry context until an ordinary member resets it. Normalized external JSON lifting and complete implied-relationship interchange remain unqualified. This is not qualification of every implicit binding, payload chain, inherited feature interaction, raw-payload import/lift round trip or complete transition semantics."
+    },
+    {
+      "id": "STATE-SUBACTION-OWNER",
+      "obligation": "A StateSubactionMembership must be owned by a StateDefinition or StateUsage, including subclasses.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateSubactionMembership-validateStateSubactionMembershipOwningType"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-construction",
+          "transition-membership-validation",
+          "transition-construction-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-013",
+          "checks": [
+            "syntax",
+            "WrongPart-structure",
+            "WrongPart-owner",
+            "WrongAction-structure",
+            "WrongAction-owner",
+            "ValidDefinition-valid-owner",
+            "validUsage-valid-owner",
+            "validExhibit-valid-owner"
+          ]
+        }
+      ],
+      "limits": "KERNEL-021 retains structural findings for invalid part/action bodies and adds the named semantic owner constraint. Definitions, usages and ExhibitStateUsage are positive peers; private graph mutations exercise all three subaction kinds. Full raw graph consistency, implicit membership construction and complete state semantics remain open."
+    },
+    {
+      "id": "TRANSITION-FEATURE-OWNER",
+      "obligation": "A TransitionFeatureMembership must belong to a TransitionUsage.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipOwningType"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-construction",
+          "transition-membership-validation",
+          "transition-construction-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-012",
+          "checks": [
+            "clean",
+            "plain-element",
+            "plain-parameters",
+            "triggered-element",
+            "triggered-parameters",
+            "guarded-element",
+            "guarded-parameters",
+            "effectful-element",
+            "effectful-parameters",
+            "full-element",
+            "full-parameters",
+            "feature-memberships",
+            "trigger-kind",
+            "effect-kind"
+          ]
+        }
+      ],
+      "limits": "KERNEL-021 checks the explicit membership owner and actual member metaclass. Private mutation of the transition owner to an ActionUsage rejects both trigger and effect memberships. The public textual grammar supplies valid typed memberships; malformed-kind/owner negative evidence is the registered private dependency suite. Arbitrary inconsistent raw ownership graphs, semantic metadata construction, guard Boolean/multiplicity qualification and complete transition-feature derivations remain open."
+    },
+    {
+      "id": "TRANSITION-TRIGGER-KIND",
+      "obligation": "A trigger TransitionFeatureMembership must own an AcceptActionUsage.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipTriggerAction"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-construction",
+          "transition-membership-validation",
+          "transition-construction-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-012",
+          "checks": [
+            "clean",
+            "plain-element",
+            "plain-parameters",
+            "triggered-element",
+            "triggered-parameters",
+            "guarded-element",
+            "guarded-parameters",
+            "effectful-element",
+            "effectful-parameters",
+            "full-element",
+            "full-parameters",
+            "feature-memberships",
+            "trigger-kind",
+            "effect-kind"
+          ]
+        }
+      ],
+      "limits": "KERNEL-021 checks the explicit membership owner and actual member metaclass. Private mutation to PerformActionUsage is rejected even though that target remains an ActionUsage. The public textual grammar supplies valid typed memberships; malformed-kind/owner negative evidence is the registered private dependency suite. Arbitrary inconsistent raw ownership graphs, semantic metadata construction, guard Boolean/multiplicity qualification and complete transition-feature derivations remain open."
+    },
+    {
+      "id": "TRANSITION-EFFECT-KIND",
+      "obligation": "An effect TransitionFeatureMembership must own an ActionUsage.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipEffectAction"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-construction",
+          "transition-membership-validation",
+          "transition-construction-tests"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-012",
+          "checks": [
+            "clean",
+            "plain-element",
+            "plain-parameters",
+            "triggered-element",
+            "triggered-parameters",
+            "guarded-element",
+            "guarded-parameters",
+            "effectful-element",
+            "effectful-parameters",
+            "full-element",
+            "full-parameters",
+            "feature-memberships",
+            "trigger-kind",
+            "effect-kind"
+          ]
+        }
+      ],
+      "limits": "KERNEL-021 checks the explicit membership owner and actual member metaclass. The public PerformActionUsage effect is admitted; private mutation to ReferenceUsage is rejected without following its referent. The public textual grammar supplies valid typed memberships; malformed-kind/owner negative evidence is the registered private dependency suite. Arbitrary inconsistent raw ownership graphs, semantic metadata construction, guard Boolean/multiplicity qualification and complete transition-feature derivations remain open."
     }
   ]
 }

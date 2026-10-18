@@ -2,9 +2,12 @@
 //!
 //! Implements the KerML clause 10.4 "JSON Serialization" mapping in its
 //! *compact* form: only what the textual notation states — owned (non-derived)
-//! properties, no implied relationships (`isImpliedIncluded: false` on every
-//! element), one flat JSON array per root namespace, every cross-reference an
+//! properties without the later implied-specialization closure, one flat JSON
+//! array per root namespace, every cross-reference an
 //! `{"@id": ...}` object (clause 10.4.4).
+//! Lowering-time transition input slots retain their individual `isImplied`
+//! provenance; complete implied-relationship interchange is not qualified by
+//! this source serialization path.
 //!
 //! Element IDs are deterministic UUIDv5 values derived from each element's
 //! ownership path, so serializing the same source always yields the same
@@ -5324,6 +5327,7 @@ impl Builder {
                 self.emit_usage_param(e, "body", body, scope);
             }
             UsageDetail::Transition {
+                source_parameter_origin,
                 source,
                 trigger,
                 guard,
@@ -5336,6 +5340,25 @@ impl Builder {
                     self.set(m, "isImplied", json!(false));
                     self.set_ref(m, "memberElement", scope, source);
                 }
+                // TransitionUsage and TargetTransitionUsage begin their
+                // parameter sequence with EmptyParameterMember. It remains
+                // a distinct owned input even when the source is implicit;
+                // a triggered transition's payload is the second input.
+                let pm = self.new_relationship("ParameterMembership", e, "sourceparam");
+                let implied = match source_parameter_origin {
+                    TransitionParameterOrigin::Grammar => false,
+                    TransitionParameterOrigin::Semantic => true,
+                    TransitionParameterOrigin::Contextual => {
+                        !self.scopes[scope].owner.is_some_and(|owner| {
+                            metaclass_conforms(self.elements[owner].ty, "StateDefinition")
+                                || metaclass_conforms(self.elements[owner].ty, "StateUsage")
+                        })
+                    }
+                };
+                self.set(pm, "isImplied", json!(implied));
+                let input = self.new_owned_element("ReferenceUsage", pm, "sourceparam");
+                self.set_synth_usage_flags(input);
+                self.set(input, "isComposite", json!(false));
                 // Trigger payload parameters (`accept pub : Publish`) are
                 // referencable from the guard and effect: give the
                 // transition its own scope for those parts.
@@ -12759,7 +12782,8 @@ impl ResolvedModel {
 
     /// The relationships `e` owns directly (`Element::ownedRelationship`:
     /// its memberships, imports, specializations, typings, annotations,
-    /// …), in declaration order — the explicit ones. The implied
+    /// …), in declaration order — the lowered source graph, including
+    /// construction-time implied transition parameter slots. The implied
     /// specializations are listed by [`Self::implied_relationships`] and
     /// included by the relationship families of [`Self::derived`]
     /// (`ownedSpecialization`, `ownedSubsetting`, …).

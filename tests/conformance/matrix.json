@@ -954,16 +954,16 @@
         {
           "id": "name",
           "op": "reference",
-          "owner": "'\u6d77'::x",
+          "owner": "'海'::x",
           "kind": "typing",
           "status": "resolved",
-          "target": "'\u6d77'::'\u00c9ngine'"
+          "target": "'海'::'Éngine'"
         },
         {
           "id": "bytes-and-utf16",
           "op": "source",
-          "owner": "'\u6d77'::x",
-          "text": "part x : '\u00c9ngine';"
+          "owner": "'海'::x",
+          "text": "part x : 'Éngine';"
         }
       ]
     },
@@ -1845,9 +1845,9 @@
           "op": "reference",
           "owner": "QuotedNames::unicode",
           "kind": "typing",
-          "spelling": "'\u6d77'",
+          "spelling": "'海'",
           "status": "resolved",
-          "target": "QuotedNames::'\u6d77'"
+          "target": "QuotedNames::'海'"
         },
         {
           "id": "reserved",
@@ -5319,15 +5319,15 @@
           "op": "reference",
           "owner": "LexicalSysML::x",
           "kind": "typing",
-          "spelling": "'\u6d77\ud83d\udea2'",
+          "spelling": "'海🚢'",
           "status": "resolved",
-          "target": "LexicalSysML::'\u6d77\ud83d\udea2'"
+          "target": "LexicalSysML::'海🚢'"
         },
         {
           "id": "source",
           "op": "source",
           "owner": "LexicalSysML::x",
-          "text": "part\fx : '\u6d77\ud83d\udea2';"
+          "text": "part\fx : '海🚢';"
         },
         {
           "id": "bound",
@@ -5355,15 +5355,15 @@
           "op": "reference",
           "owner": "LexicalKerML::x",
           "kind": "typing",
-          "spelling": "'\u6d77\ud83d\udea2'",
+          "spelling": "'海🚢'",
           "status": "resolved",
-          "target": "LexicalKerML::'\u6d77\ud83d\udea2'"
+          "target": "LexicalKerML::'海🚢'"
         },
         {
           "id": "source",
           "op": "source",
           "owner": "LexicalKerML::x",
-          "text": "feature\fx : '\u6d77\ud83d\udea2';"
+          "text": "feature\fx : '海🚢';"
         },
         {
           "id": "bound",
@@ -5397,7 +5397,7 @@
           "op": "diagnostic",
           "stage": "syntax",
           "severity": "error",
-          "messageIncludes": "invalid escape sequence `\\\u6d77`"
+          "messageIncludes": "invalid escape sequence `\\海`"
         },
         {
           "id": "tab",
@@ -5464,7 +5464,7 @@
           "op": "diagnostic",
           "stage": "syntax",
           "severity": "error",
-          "messageIncludes": "invalid escape sequence `\\\u6d77`"
+          "messageIncludes": "invalid escape sequence `\\海`"
         },
         {
           "id": "tab",
@@ -5537,7 +5537,7 @@
           "id": "noted-source",
           "op": "source",
           "owner": "NumericSysML::noted",
-          "text": "attribute noted = 1 //* \u6d77\ud83d\udea2 */ . // fraction\n        25;"
+          "text": "attribute noted = 1 //* 海🚢 */ . // fraction\n        25;"
         },
         {
           "id": "precise-source",
@@ -5604,7 +5604,7 @@
           "id": "noted-source",
           "op": "source",
           "owner": "NumericKerML::noted",
-          "text": "feature noted = 1 //* \u6d77\ud83d\udea2 */ . // fraction\n        25;"
+          "text": "feature noted = 1 //* 海🚢 */ . // fraction\n        25;"
         },
         {
           "id": "precise-source",
@@ -10067,6 +10067,272 @@
               "metaclass": "PerformActionUsage"
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "STATE-012",
+      "area": "families-behaviors",
+      "purpose": "Construct the transition source input before its optional payload and preserve typed membership identity and order alongside guards, effects and directed body members.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/transition-construction.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "plain-element",
+          "op": "element",
+          "name": "TransitionConstruction::Driver::plain",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "plain-parameters",
+          "op": "memberships",
+          "owner": "TransitionConstruction::Driver::plain",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "TransitionConstruction::Driver::plain",
+              "target": "TransitionConstruction::Driver::plain::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "triggered-element",
+          "op": "element",
+          "name": "TransitionConstruction::Driver::triggered",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "triggered-parameters",
+          "op": "memberships",
+          "owner": "TransitionConstruction::Driver::triggered",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "TransitionConstruction::Driver::triggered",
+              "target": "TransitionConstruction::Driver::triggered::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "payload",
+              "shortName": null,
+              "namespace": "TransitionConstruction::Driver::triggered",
+              "target": "TransitionConstruction::Driver::triggered::payload",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "guarded-element",
+          "op": "element",
+          "name": "TransitionConstruction::Driver::guarded",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "guarded-parameters",
+          "op": "memberships",
+          "owner": "TransitionConstruction::Driver::guarded",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "TransitionConstruction::Driver::guarded",
+              "target": "TransitionConstruction::Driver::guarded::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "effectful-element",
+          "op": "element",
+          "name": "TransitionConstruction::Driver::effectful",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "effectful-parameters",
+          "op": "memberships",
+          "owner": "TransitionConstruction::Driver::effectful",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "TransitionConstruction::Driver::effectful",
+              "target": "TransitionConstruction::Driver::effectful::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "full-element",
+          "op": "element",
+          "name": "TransitionConstruction::Driver::full",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "full-parameters",
+          "op": "memberships",
+          "owner": "TransitionConstruction::Driver::full",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "TransitionConstruction::Driver::full",
+              "target": "TransitionConstruction::Driver::full::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "data",
+              "shortName": null,
+              "namespace": "TransitionConstruction::Driver::full",
+              "target": "TransitionConstruction::Driver::full::data",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "feature-memberships",
+          "op": "memberships",
+          "owner": "TransitionConstruction::Driver::full",
+          "mode": "owned",
+          "metaclass": "TransitionFeatureMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "accepter",
+              "shortName": null,
+              "namespace": "TransitionConstruction::Driver::full",
+              "target": "TransitionConstruction::Driver::full::accepter",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": null,
+              "shortName": null,
+              "namespace": "TransitionConstruction::Driver::full",
+              "target": null,
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "work",
+              "shortName": null,
+              "namespace": "TransitionConstruction::Driver::full",
+              "target": "TransitionConstruction::Driver::full::work",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "trigger-kind",
+          "op": "element",
+          "name": "TransitionConstruction::Driver::full::accepter",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "effect-kind",
+          "op": "element",
+          "name": "TransitionConstruction::Driver::full::work",
+          "metaclass": "PerformActionUsage"
+        }
+      ]
+    },
+    {
+      "id": "STATE-013",
+      "area": "families-behaviors",
+      "purpose": "State subaction memberships require a StateDefinition or StateUsage owner, including state subtypes; invalid part/action contexts retain structural and semantic diagnostics.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/state-membership-owners.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "WrongPart-structure",
+          "op": "diagnostic",
+          "owner": "StateMembershipOwners::WrongPart",
+          "stage": "structure"
+        },
+        {
+          "id": "WrongPart-owner",
+          "op": "diagnostic",
+          "owner": "StateMembershipOwners::WrongPart",
+          "stage": "semantic",
+          "code": "validateStateSubactionMembershipOwningType"
+        },
+        {
+          "id": "WrongAction-structure",
+          "op": "diagnostic",
+          "owner": "StateMembershipOwners::WrongAction",
+          "stage": "structure"
+        },
+        {
+          "id": "WrongAction-owner",
+          "op": "diagnostic",
+          "owner": "StateMembershipOwners::WrongAction",
+          "stage": "semantic",
+          "code": "validateStateSubactionMembershipOwningType"
+        },
+        {
+          "id": "ValidDefinition-valid-owner",
+          "op": "noDiagnostics",
+          "owner": "StateMembershipOwners::ValidDefinition",
+          "stage": "semantic",
+          "code": "validateStateSubactionMembershipOwningType"
+        },
+        {
+          "id": "validUsage-valid-owner",
+          "op": "noDiagnostics",
+          "owner": "StateMembershipOwners::validUsage",
+          "stage": "semantic",
+          "code": "validateStateSubactionMembershipOwningType"
+        },
+        {
+          "id": "validExhibit-valid-owner",
+          "op": "noDiagnostics",
+          "owner": "StateMembershipOwners::validExhibit",
+          "stage": "semantic",
+          "code": "validateStateSubactionMembershipOwningType"
         }
       ]
     }
