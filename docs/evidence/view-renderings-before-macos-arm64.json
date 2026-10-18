@@ -1,0 +1,449 @@
+{
+  "buildPerformed": false,
+  "binarySha256": "2ec7e2d9337f1dacc62d7894de77aaeb9e5fb85d3fc02a56600e1ec0854cd126",
+  "cases": {
+    "boundaries": {
+      "file": "tests/conformance/fixtures/view-renderings-boundaries.sysml",
+      "sha256": "1a1bbdcb12fce146be605cec59e873a635f0bdf8f6ca374c872b93016335e696",
+      "engine": "open-mbee/0.10.2@821221767c3c+sysml-kernel.18",
+      "diagnostics": [],
+      "source": "package ViewRenderingBoundaries {\n    rendering def Rendering;\n    view def Parent { render rendering displayed : Rendering; }\n    view def Other { render rendering another : Rendering; }\n    view def Override :> Parent {\n        render rendering displayed :>> Parent::displayed;\n    }\n    view def Renamed :> Parent {\n        render rendering replacement :>> Parent::displayed;\n    }\n    view def Transitive :> Renamed {\n        render rendering replacementAgain :>> Renamed::replacement;\n    }\n    view instance : Transitive;\n    view def PrivateParent { private render rendering hidden : Rendering; }\n    view def PrivateChild :> PrivateParent, Parent;\n    view def ProtectedParent { protected render rendering visible : Rendering; }\n    view def ProtectedChild :> ProtectedParent;\n    view def Reexport { public import Parent::displayed; }\n    view def Imported :> Reexport;\n    view def PrivateReexport { private import Parent::displayed; }\n    view def PrivateImported :> PrivateReexport, Other;\n    view def OwnImport {\n        public import Parent::displayed;\n        render rendering local : Rendering;\n    }\n    view def Ordinary { rendering ordinary : Rendering; }\n    view def OrdinaryChild :> Ordinary, Parent;\n}\n"
+    },
+    "memberships-negative": {
+      "file": "tests/conformance/fixtures/view-renderings-memberships-negative.sysml",
+      "sha256": "4c4fba188a014ebdd77add39cc7a46661a54ab3d412cc8e4b6855ab99e39575a",
+      "engine": "open-mbee/0.10.2@821221767c3c+sysml-kernel.18",
+      "diagnostics": [],
+      "source": "package ViewRenderingMembershipsNegative {\n    rendering def Rendering;\n    view def Parent { render rendering displayed : Rendering; }\n    view def Other { render rendering another : Rendering; }\n    view def SameName :> Parent { render rendering displayed : Rendering; }\n    view sameName : Parent { render rendering displayed : Rendering; }\n    view def ProtectedParent { protected render rendering protectedRendering : Rendering; }\n    view def ProtectedCombined :> ProtectedParent, Parent;\n    view def Reexport { public import Parent::displayed; }\n    view def ImportedCombined :> Reexport, Other;\n    view importedCombined : ImportedCombined;\n    view def ValidPeer :> Parent;\n}\n"
+    },
+    "incomplete": {
+      "file": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+      "sha256": "c15af904e91226824107d63fe027942f1ca886e7410edbc19bcd53fb7e112e45",
+      "engine": "open-mbee/0.10.2@821221767c3c+sysml-kernel.18",
+      "diagnostics": [
+        {
+          "code": "incomplete-inheritance",
+          "severity": "warning",
+          "stage": "capability",
+          "message": "The engine could not completely determine this element's inherited members.",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 192,
+              "utf16Offset": 192,
+              "line": 5,
+              "column": 5
+            },
+            "end": {
+              "byteOffset": 239,
+              "utf16Offset": 239,
+              "line": 5,
+              "column": 52
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `Missing`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 231,
+              "utf16Offset": 231,
+              "line": 5,
+              "column": 44
+            },
+            "end": {
+              "byteOffset": 238,
+              "utf16Offset": 238,
+              "line": 5,
+              "column": 51
+            }
+          }
+        },
+        {
+          "code": "incomplete-inheritance",
+          "severity": "warning",
+          "stage": "capability",
+          "message": "The engine could not completely determine this element's inherited members.",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 244,
+              "utf16Offset": 244,
+              "line": 6,
+              "column": 5
+            },
+            "end": {
+              "byteOffset": 281,
+              "utf16Offset": 281,
+              "line": 6,
+              "column": 42
+            }
+          }
+        },
+        {
+          "code": "incomplete-inheritance",
+          "severity": "warning",
+          "stage": "capability",
+          "message": "The engine could not completely determine this element's inherited members.",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 286,
+              "utf16Offset": 286,
+              "line": 7,
+              "column": 5
+            },
+            "end": {
+              "byteOffset": 314,
+              "utf16Offset": 314,
+              "line": 7,
+              "column": 33
+            }
+          }
+        },
+        {
+          "code": "incomplete-inheritance",
+          "severity": "warning",
+          "stage": "capability",
+          "message": "The engine could not completely determine this element's inherited members.",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 375,
+              "utf16Offset": 375,
+              "line": 9,
+              "column": 9
+            },
+            "end": {
+              "byteOffset": 427,
+              "utf16Offset": 427,
+              "line": 9,
+              "column": 61
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `Missing::displayed`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 408,
+              "utf16Offset": 408,
+              "line": 9,
+              "column": 42
+            },
+            "end": {
+              "byteOffset": 426,
+              "utf16Offset": 426,
+              "line": 9,
+              "column": 60
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `Missing`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 539,
+              "utf16Offset": 539,
+              "line": 12,
+              "column": 44
+            },
+            "end": {
+              "byteOffset": 546,
+              "utf16Offset": 546,
+              "line": 12,
+              "column": 51
+            }
+          }
+        },
+        {
+          "code": "incomplete-inheritance",
+          "severity": "warning",
+          "stage": "capability",
+          "message": "The engine could not completely determine this element's inherited members.",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 557,
+              "utf16Offset": 557,
+              "line": 13,
+              "column": 5
+            },
+            "end": {
+              "byteOffset": 617,
+              "utf16Offset": 617,
+              "line": 13,
+              "column": 65
+            }
+          }
+        },
+        {
+          "code": "incomplete-inheritance",
+          "severity": "warning",
+          "stage": "capability",
+          "message": "The engine could not completely determine this element's inherited members.",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 622,
+              "utf16Offset": 622,
+              "line": 14,
+              "column": 5
+            },
+            "end": {
+              "byteOffset": 656,
+              "utf16Offset": 656,
+              "line": 14,
+              "column": 39
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "circular specialization: this definition transitively specializes itself",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 641,
+              "utf16Offset": 641,
+              "line": 14,
+              "column": 24
+            },
+            "end": {
+              "byteOffset": 647,
+              "utf16Offset": 647,
+              "line": 14,
+              "column": 30
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "circular specialization: this definition transitively specializes itself",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 649,
+              "utf16Offset": 649,
+              "line": 14,
+              "column": 32
+            },
+            "end": {
+              "byteOffset": 655,
+              "utf16Offset": 655,
+              "line": 14,
+              "column": 38
+            }
+          }
+        },
+        {
+          "code": "incomplete-inheritance",
+          "severity": "warning",
+          "stage": "capability",
+          "message": "The engine could not completely determine this element's inherited members.",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 661,
+              "utf16Offset": 661,
+              "line": 15,
+              "column": 5
+            },
+            "end": {
+              "byteOffset": 694,
+              "utf16Offset": 694,
+              "line": 15,
+              "column": 38
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "circular specialization: this definition transitively specializes itself",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 680,
+              "utf16Offset": 680,
+              "line": 15,
+              "column": 24
+            },
+            "end": {
+              "byteOffset": 686,
+              "utf16Offset": 686,
+              "line": 15,
+              "column": 30
+            }
+          }
+        },
+        {
+          "code": "semantic",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "circular specialization: this definition transitively specializes itself",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 688,
+              "utf16Offset": 688,
+              "line": 15,
+              "column": 32
+            },
+            "end": {
+              "byteOffset": 693,
+              "utf16Offset": 693,
+              "line": 15,
+              "column": 37
+            }
+          }
+        },
+        {
+          "code": "incomplete-inheritance",
+          "severity": "warning",
+          "stage": "capability",
+          "message": "The engine could not completely determine this element's inherited members.",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 699,
+              "utf16Offset": 699,
+              "line": 16,
+              "column": 5
+            },
+            "end": {
+              "byteOffset": 824,
+              "utf16Offset": 824,
+              "line": 19,
+              "column": 6
+            }
+          }
+        },
+        {
+          "code": "validateViewDefinitionOnlyOneViewRendering",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A view may have at most one rendering [validateViewDefinitionOnlyOnvViewRendering]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 708,
+              "utf16Offset": 708,
+              "line": 16,
+              "column": 14
+            },
+            "end": {
+              "byteOffset": 721,
+              "utf16Offset": 721,
+              "line": 16,
+              "column": 27
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `Missing`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 725,
+              "utf16Offset": 725,
+              "line": 16,
+              "column": 31
+            },
+            "end": {
+              "byteOffset": 732,
+              "utf16Offset": 732,
+              "line": 16,
+              "column": 38
+            }
+          }
+        },
+        {
+          "code": "incomplete-inheritance",
+          "severity": "warning",
+          "stage": "capability",
+          "message": "The engine could not completely determine this element's inherited members.",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 829,
+              "utf16Offset": 829,
+              "line": 20,
+              "column": 5
+            },
+            "end": {
+              "byteOffset": 949,
+              "utf16Offset": 949,
+              "line": 23,
+              "column": 6
+            }
+          }
+        },
+        {
+          "code": "validateViewUsageOnlyOneViewRendering",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A view may have at most one rendering [validateViewUsageOnlyOneRendering]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 834,
+              "utf16Offset": 834,
+              "line": 20,
+              "column": 10
+            },
+            "end": {
+              "byteOffset": 847,
+              "utf16Offset": 847,
+              "line": 20,
+              "column": 23
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `Missing`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/view-renderings-incomplete.sysml",
+            "start": {
+              "byteOffset": 850,
+              "utf16Offset": 850,
+              "line": 20,
+              "column": 26
+            },
+            "end": {
+              "byteOffset": 857,
+              "utf16Offset": 857,
+              "line": 20,
+              "column": 33
+            }
+          }
+        }
+      ],
+      "source": "package ViewRenderingIncomplete {\n    rendering def Rendering;\n    view def Parent { render rendering displayed : Rendering; }\n    view def Other { render rendering another : Rendering; }\n    view def MissingBase :> Parent, Other, Missing;\n    view def MissingChild :> MissingBase;\n    view missing : MissingChild;\n    view def MissingRedefinition :> Parent, Other {\n        render rendering replacement :>> Missing::displayed;\n    }\n    view def MissingRedefinitionChild :> MissingRedefinition;\n    view def MissingImport { public import Missing::*; }\n    view def MissingImportChild :> MissingImport, Parent, Other;\n    view def CycleA :> CycleB, Parent;\n    view def CycleB :> CycleA, Other;\n    view def DefiniteOwned :> Missing {\n        render rendering one : Rendering;\n        render rendering two : Rendering;\n    }\n    view definiteOwned : Missing {\n        render rendering one : Rendering;\n        render rendering two : Rendering;\n    }\n    view def CompleteInvalidPeer :> Parent, Other;\n    view completeInvalidPeer : CompleteInvalidPeer;\n    view def ValidPeer :> Parent;\n}\n"
+    }
+  },
+  "scope": "KERNEL-018 exploratory full-library probes using the existing .18 native executable before this correction; no fresh baseline build."
+}

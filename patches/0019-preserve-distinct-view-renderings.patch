@@ -1,0 +1,48 @@
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs
+@@ -9453,13 +9453,26 @@
+                 shadow.insert(e);
+             }
+         }
+-        // (c) SysML implicit same-name usage redefinition: a usage-family
++        // (c) Compatibility same-name usage shadowing: a usage-family
+         //     member whose owning type strictly conforms over another
+         //     candidate's owner redefines the same-named candidate
+         //     without a spelled `:>>`. Not a parameter of a behavior or
+         //     step, a result or an end: those redefine by position
+         //     (`redefines_by_position`), and a reused name at another
+-        //     position is a collision, not a redefinition.
++        //     position is a collision, not a redefinition. View renderings
++        //     are also excluded: checkRenderingUsageRedefinition targets
++        //     Views::View::viewRendering, not an arbitrary inherited rendering
++        //     with the same name. Only actual redefinition removes that member.
++        let view_renderings: HashSet<_> = owned
++            .iter()
++            .chain(&collected)
++            .copied()
++            .filter(|&e| {
++                self.elements[e].owning_relationship.is_some_and(|rel| {
++                    crate::metaclass::conforms(self.elements[rel].ty, "ViewRenderingMembership")
++                })
++            })
++            .collect();
+         let mut by_name: HashMap<&str, Vec<usize>> = HashMap::new();
+         for e in owned.iter().copied().chain(collected.iter().copied()) {
+             // Both spellings share the lookup name space: a short name can
+@@ -9477,6 +9490,7 @@
+                 if !self.elements[x].ty.ends_with("Usage")
+                     || shadow.contains(&x)
+                     || self.redefines_by_position(x)
++                    || view_renderings.contains(&x)
+                 {
+                     continue;
+                 }
+@@ -9485,7 +9499,7 @@
+                 };
+                 for &y in &group {
+                     charge!(1);
+-                    if x == y || shadow.contains(&y) {
++                    if x == y || shadow.contains(&y) || view_renderings.contains(&y) {
+                         continue;
+                     }
+                     let Some(oy) = self.owner_elem(y) else {

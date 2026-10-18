@@ -222,7 +222,7 @@ This queue includes deliberate compatibility aliases and labels for other checks
 | validateInterfaceDefinitionEnd | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs:394](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs#L394) |
 | validateInterfaceUsageEnd | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs:396](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs#L396) |
 | validateLibraryPackageNotStandard | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs:278](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs#L278) |
-| validateMetadataFeatureMetadataNotAbstract | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs:654](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs#L654) |
+| validateMetadataFeatureMetadataNotAbstract | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs:632](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs#L632) |
 | validateMultiplicityRangeResultTypes | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs:138](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs#L138) |
 | validateOperatorExpressionBracketOperator | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs:427](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs#L427) |
 | validateOperatorExpressionCastConformance | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs:364](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs#L364) |

@@ -36,7 +36,7 @@ automatic background update or a replacement of failing expected results.
    Preserve matrix/benchmark reports for comparison. CI must run on all three OSes
    before calling an upgrade cross-platform verified.
    `vendor:test` copies the verified toolkit and library to a disposable workspace
-   and runs explicit usage typing, type-relation, model-level evaluability, cardinality, invocation,
+   and runs explicit usage typing, view-rendering validation, type-relation, model-level evaluability, cardinality, invocation,
    constructor, dynamic graph, owned-result and end-constancy private suites in
    release mode. Its pruned `tools/vendor-tests.Cargo.lock` must contain only unchanged
    package records from the application lock. Regenerate and review this lock when

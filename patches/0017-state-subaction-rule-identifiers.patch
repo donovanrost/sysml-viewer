@@ -1,8 +1,6 @@
-diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs
-index 132ed05..5050f0a 100644
 --- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs
 +++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs
-@@ -116,7 +116,9 @@ pub const IMPLEMENTED_NORMATIVE_SEMANTIC_RULES: &[&str] = &[
+@@ -116,7 +116,9 @@
      "validateRequirementVerificationMembershipOwningType",
      "validateSatisfyRequirementUsageReference",
      "validateStateDefinitionParallelSubactions",
@@ -12,7 +10,7 @@ index 132ed05..5050f0a 100644
      "validateStructureSpecialization",
      "validateSubsettingConstantConformance",
      "validateSubsettingFeaturingTypes",
-@@ -314,12 +316,19 @@ pub(crate) fn rule_warning(
+@@ -314,12 +316,19 @@
  }
  
  /// The identifier of a rule in the spelling the pinned abstract syntax
@@ -33,3 +31,11 @@ index 132ed05..5050f0a 100644
          "validateViewDefinitionOnlyOnvViewRendering" => {
              "validateViewDefinitionOnlyOneViewRendering"
          }
+@@ -402,6 +411,7 @@
+     let facts = facts::Facts::new(&mut r.b);
+     out.extend(connectors::validate(r, model, &facts));
+     out.extend(structural::validate(r, model, &facts));
++    out.extend(structural::validate_view_renderings(r, model, &facts));
+     out.extend(structural::validate_directions(r, model, &facts));
+     out.extend(endpoints::validate(r, model, &facts));
+     out.extend(values::validate(r, model, &facts));

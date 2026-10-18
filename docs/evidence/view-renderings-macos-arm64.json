@@ -1,0 +1,302 @@
+{
+  "generatedAt": "2026-10-18T00:08:26.082639+00:00",
+  "platform": "darwin",
+  "arch": "arm64",
+  "scope": "KERNEL-018 inherited view rendering validation, actual redefinition and dependency uncertainty. Bounded VIEW-001\u2013006 evidence, not complete view or standards conformance.",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.19",
+  "kernelInputSha256": "ff6e919805c8c2c1a03716a8f4f27e71daa645e3e629121e27d02fac4e4afddd",
+  "binarySha256": "07ddd56926a9b79e353106295cc467f0d8b534758b591075af206ead17deec29",
+  "inputs": {
+    "crates/sysml-kernel/src/lib.rs": "1c56ca9a37f63b71dea6f19410e7b273609ef88cf55e5d9000665dfeeb7e4fb9",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs": "30dbb8ac764d640cf1a513a92546d7a1564d6f023fc3183b1aaeb30f263b8495",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs": "903071a8d32f3e61448225ed3ce3a4315ed375da5073c064a7fdd5f3a1ee5788",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e",
+    "patches/manifest.json": "4311cc20b291144ca3fff7336595023a53de3bd658048c89be7112c64ddcee9e",
+    "patches/0017-state-subaction-rule-identifiers.patch": "669de68cf60062fbba07a2b5705b8c1c8161bc1c4be818f2138375feab7252c4",
+    "patches/0018-inherited-view-rendering-validation.patch": "8f66ff49c36ea06eb2616d05c679d00fc327d0ff23aee0c4be1344ac4f39cd24",
+    "patches/0019-preserve-distinct-view-renderings.patch": "537b5b0e1316f23389896e618f6bcc3c9317ce782405d1a6437b19406b71f782",
+    "tools/lib/conformance.mjs": "d2fc2ec4ad58e059e12df0d0ef196b522934466cf8d34673ae92d99cd448d817",
+    "tools/benchmark-kernel.mjs": "fb7947ec3d2eaacb52866b0a726c25dc5bc16a2f968b53b74eb73f324d0254f7",
+    "tools/test-vendor.mjs": "16c7e33d58fb0b717c23354c15b1c45c883b8ca29fdb308feea95662d54fa8f4",
+    "tests/conformance-runner.test.mjs": "f0a4ffffdeb26d81e3d2b274f5c2ce1fdf8156dcac31678d14204e1ff1448e56",
+    "tests/families.test.ts": "c7b753f11c97f7bf16259fc9c6be5fd88e6c6989f5437f1481cbe5a91bf8092d",
+    "tests/conformance/matrix.json": "06d885eb79894cc8bd09ebd6b556ed77d02342149325f4c243f58b43f52c1127",
+    "standards/assessments.json": "4cda1983546683d2df67ccb49e2127f53092ad8c52b00095b913de961410ea11",
+    "tests/conformance/fixtures/view-renderings-boundaries.sysml": "1a1bbdcb12fce146be605cec59e873a635f0bdf8f6ca374c872b93016335e696",
+    "tests/conformance/fixtures/view-renderings-memberships-negative.sysml": "4c4fba188a014ebdd77add39cc7a46661a54ab3d412cc8e4b6855ab99e39575a",
+    "tests/conformance/fixtures/view-renderings-incomplete.sysml": "c15af904e91226824107d63fe027942f1ca886e7410edbc19bcd53fb7e112e45"
+  },
+  "reports": {
+    "docs/evidence/conformance-macos-arm64.json": "d0efdb5b48b1d4f90ab16bc51f460e74470225443992483a9f20cb7306829c6d",
+    "docs/evidence/requirements-macos-arm64.json": "fcbadb6c772e9561c6796c0d057a8e92aa0faf9d694489e2f88f953783724a53",
+    "docs/evidence/view-renderings-before-macos-arm64.json": "00d35eee548fc14580bd50b3b9598976ead8c8a82bb40fb92bc7fec373e5c76e",
+    "docs/evidence/validation-audit.json": "f4f94b0adb727bf365a49bff425d263d22e47fcc6e52ddcc43397f68fdad4d0b",
+    "docs/evidence/benchmark-view-renderings-macos-arm64.json": "a7bf5283805dc0705b78fef1cf29c67bcb28d4a335ff33bf88687a60700d5413"
+  },
+  "passing": {
+    "rust": 77,
+    "vendor": 275,
+    "node": 47,
+    "conformance": 119,
+    "benchmarkSamples": 132
+  },
+  "knownGapCases": 0,
+  "knownGapAssertions": 0,
+  "casesAdded": 3,
+  "assertionsAdded": 52,
+  "assessments": 64,
+  "validationNameInventory": {
+    "rules": 180,
+    "registered": 91,
+    "withSourceMentions": 92,
+    "withoutSourceMentions": 88,
+    "withDirectAssessments": 6,
+    "withoutDirectAssessments": 174,
+    "unmatchedNames": 36
+  },
+  "verification": [
+    {
+      "step": "vendor",
+      "command": [
+        "node",
+        "tools/verify-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.33,
+      "log": "target/view-validation/vendor.log"
+    },
+    {
+      "step": "vendor-tests",
+      "command": [
+        "npm",
+        "run",
+        "vendor:test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 66.48,
+      "log": "target/view-validation/vendor-tests.log"
+    },
+    {
+      "step": "rust-format",
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "fmt",
+        "-p",
+        "sysml-kernel",
+        "-p",
+        "sysml-cli",
+        "-p",
+        "sysml-wasm",
+        "--",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.16,
+      "log": "target/view-validation/rust-format.log"
+    },
+    {
+      "step": "clippy",
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 2.43,
+      "log": "target/view-validation/clippy.log"
+    },
+    {
+      "step": "format",
+      "command": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.8,
+      "log": "target/view-validation/format.log"
+    },
+    {
+      "step": "contract",
+      "command": [
+        "npm",
+        "run",
+        "contract:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 3.69,
+      "log": "target/view-validation/contract.log"
+    },
+    {
+      "step": "matrix-docs",
+      "command": [
+        "npm",
+        "run",
+        "conformance:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.18,
+      "log": "target/view-validation/matrix-docs.log"
+    },
+    {
+      "step": "inventory",
+      "command": [
+        "npm",
+        "run",
+        "requirements:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.28,
+      "log": "target/view-validation/inventory.log"
+    },
+    {
+      "step": "rust-tests",
+      "command": [
+        "npm",
+        "run",
+        "kernel:test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 264.25,
+      "log": "target/view-validation/rust-tests.log"
+    },
+    {
+      "step": "conformance",
+      "command": [
+        "npm",
+        "run",
+        "conformance"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 359.63,
+      "log": "target/view-validation/conformance.log"
+    },
+    {
+      "step": "requirements-report",
+      "command": [
+        "npm",
+        "run",
+        "requirements:report"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.82,
+      "log": "target/view-validation/requirements-report.log"
+    },
+    {
+      "step": "node-tests",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 108.57,
+      "log": "target/view-validation/node-tests.log"
+    },
+    {
+      "step": "benchmark",
+      "command": [
+        "npm",
+        "run",
+        "benchmark"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 361.15,
+      "log": "target/view-validation/benchmark.log"
+    },
+    {
+      "step": "desktop",
+      "command": [
+        "npm",
+        "run",
+        "desktop:build",
+        "--",
+        "--bundles",
+        "app,dmg",
+        "--ci"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 60.69,
+      "log": "target/view-validation/desktop.log"
+    }
+  ],
+  "finalReadOnlyChecks": [
+    {
+      "command": [
+        "node",
+        "tools/verify-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.4,
+      "output": "Verified 270 vendored files and 19 recorded patch(es).\n"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "conformance:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.25,
+      "output": "\n> sysml-viewer@0.3.0 conformance:check\n> node tools/conformance.mjs --check-docs\n\n"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "requirements:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.3,
+      "output": "\n> sysml-viewer@0.3.0 requirements:check\n> node tools/requirements.mjs\n\n{\n  \"sourceUnits\": 6167,\n  \"clauses\": 1571,\n  \"grammarProductions\": 620,\n  \"metamodelConstraints\": 724,\n  \"proseCandidates\": 1008,\n  \"libraryModels\": 94,\n  \"schemaDefinitions\": 270,\n  \"assessments\": 64,\n  \"executableCases\": 119,\n  \"plannedCases\": 0,\n  \"coveragePercent\": null,\n  \"reason\": \"Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.\"\n}\n"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tests/requirements.test.mjs",
+        "tests/validation-audit.test.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.78,
+      "output": "\u2714 inventory preserves complete extraction counts without manufacturing coverage (52.985083ms)\n\u2714 dropping a source unit or its provenance fails the extraction audit (72.6855ms)\n\u2714 unknown assertion edges, planned evidence and unmapped new checks fail closed (132.259666ms)\n\u2714 stale implementation mappings and unsupported full-coverage claims require review (55.924583ms)\n\u2714 a mapped case is not counted as executed and planned cases never pass by implication (8.820333ms)\n\u2714 execution evidence rejects stale inputs, wrong pins and a planned case reported as passed (355.054334ms)\n\u2714 validation audit inventories every named rule without promoting search hits to coverage (185.9425ms)\n\u2714 parent clauses and planned tests cannot silently qualify a rule (152.68ms)\n\u2714 unmatched labels remain visible and unknown registry claims fail (118.405042ms)\n\u2139 tests 9\n\u2139 suites 0\n\u2139 pass 9\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 744.68475\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.06,
+      "output": ""
+    }
+  ],
+  "platforms": {
+    "macOS-arm64": "verified",
+    "Windows": "not run",
+    "Linux": "not run"
+  },
+  "artifacts": {
+    "app": "src-tauri/target/release/bundle/macos/SysML Viewer.app",
+    "appBytes": 12567249,
+    "dmg": "src-tauri/target/release/bundle/dmg/SysML Viewer_0.3.0_aarch64.dmg",
+    "dmgBytes": 4482840,
+    "dmgSha256": "238251dc5e8175c4dc6a39caee3b8e008d2c1d5cd450ca116066d299c7a7fd1b",
+    "localApp": "release/SysML Viewer.app",
+    "previousApp": "release/SysML Viewer.previous-8d323cb.app",
+    "localAppMatchesBundle": true,
+    "bundleFilesSha256": {
+      "Contents/Info.plist": "20db7018a2cce012107f2822dc27761cb6e8a6cfcb4f78cdd50184f39dc115e5",
+      "Contents/MacOS/sysml-viewer": "f08d48e5414e9c69575ad04d5cd352db0a3afb2cbb56b390d997745b5acf83bc",
+      "Contents/Resources/icon.icns": "90028bb4ea3a018ec8de8f1afb4dccce9cb2a1e3376e89981094c0e9cb5a54bb"
+    }
+  }
+}

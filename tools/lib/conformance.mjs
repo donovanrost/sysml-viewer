@@ -8,7 +8,7 @@ const ops = {
   cardinality: ['owner', 'status', 'lower', 'upper', 'reason'],
   memberships: ['owner', 'mode', 'bindings', 'status', 'reason'],
   diagnostic: ['stage', 'code', 'severity', 'messageIncludes', 'owner'],
-  noDiagnostics: ['stage', 'owner'],
+  noDiagnostics: ['stage', 'owner', 'code', 'severity', 'messageIncludes'],
   source: ['owner', 'text'],
   connection: ['name', 'chains', 'statuses'],
 };
@@ -336,7 +336,12 @@ export function checkSnapshot(snapshot, check) {
     case 'noDiagnostics':
       assert.deepEqual(
         snapshot.diagnostics.filter(
-          (d) => inDiagnosticScope(d) && (!check.stage || d.stage === check.stage),
+          (d) =>
+            inDiagnosticScope(d) &&
+            (!check.stage || d.stage === check.stage) &&
+            (!check.code || d.code === check.code) &&
+            (!check.messageIncludes || d.message.includes(check.messageIncludes)) &&
+            (!check.severity || d.severity === check.severity),
         ),
         [],
         'Unexpected diagnostics',

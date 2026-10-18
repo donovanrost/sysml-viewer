@@ -45,7 +45,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn effective_features(",
       "role": "candidate upstream graph and resolution implementation; presence does not prove every rule",
-      "sha256": "4bcbae4ec8a3fe2847ac48a00b3661fb4c53d8ee0e1dbac8120e089821caa565"
+      "sha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e"
     },
     "typing": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/typing.rs",
@@ -81,13 +81,13 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn resolve_in(",
       "role": "candidate upstream scoped-name resolution",
-      "sha256": "4bcbae4ec8a3fe2847ac48a00b3661fb4c53d8ee0e1dbac8120e089821caa565"
+      "sha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e"
     },
     "connector-ends": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn connector_end_targets(",
       "role": "candidate upstream connector-chain query",
-      "sha256": "4bcbae4ec8a3fe2847ac48a00b3661fb4c53d8ee0e1dbac8120e089821caa565"
+      "sha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e"
     },
     "diagram": {
       "path": "src/viewer/diagram.ts",
@@ -303,7 +303,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
       "symbol": "pub fn validate_semantics_with(",
       "role": "Runs semantic validators including metadata type checks",
-      "sha256": "eeeaf06ea4ad0f8995151df58784521610a26d0841859fd7e32337e9f04d1fca"
+      "sha256": "30dbb8ac764d640cf1a513a92546d7a1564d6f023fc3183b1aaeb30f263b8495"
     },
     "family-tests": {
       "path": "crates/sysml-kernel/tests/families.rs",
@@ -314,8 +314,14 @@
     "structural-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
       "symbol": "pub(super) fn validate(",
-      "role": "Owned-membership structural constraint candidates; view inheritance remains incomplete",
-      "sha256": "d5164c5fe6ffd955bf2de70c22e08ff5f87fcc4979e024fe5197f7eafed2ef55"
+      "role": "Static ownership, specialization and feature-property validation candidates",
+      "sha256": "903071a8d32f3e61448225ed3ce3a4315ed375da5073c064a7fdd5f3a1ee5788"
+    },
+    "view-rendering-validation": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+      "symbol": "pub(super) fn validate_view_renderings(",
+      "role": "Owned and inherited view-rendering membership validation with query-local dependency preflight",
+      "sha256": "903071a8d32f3e61448225ed3ce3a4315ed375da5073c064a7fdd5f3a1ee5788"
     }
   },
   "assessments": [
@@ -4084,8 +4090,9 @@
       "implementation": {
         "status": "partial",
         "evidence": [
-          "structural-validation",
-          "semantic-driver"
+          "view-rendering-validation",
+          "semantic-driver",
+          "graph"
         ]
       },
       "api": {
@@ -4128,9 +4135,67 @@
             "LocalAndInherited-element",
             "LocalAndInherited-code"
           ]
+        },
+        {
+          "case": "VIEW-004",
+          "checks": [
+            "clean",
+            "Override-members",
+            "Renamed-members",
+            "Transitive-members",
+            "PrivateChild-members",
+            "ProtectedChild-members",
+            "Imported-members",
+            "PrivateImported-members",
+            "OwnImport-members",
+            "OrdinaryChild-members"
+          ]
+        },
+        {
+          "case": "VIEW-005",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "SameName-members",
+            "SameName-code",
+            "ProtectedCombined-members",
+            "ProtectedCombined-code",
+            "ImportedCombined-members",
+            "ImportedCombined-code",
+            "valid-peer"
+          ]
+        },
+        {
+          "case": "VIEW-006",
+          "checks": [
+            "syntax",
+            "structure",
+            "MissingBase-element",
+            "MissingBase-code",
+            "MissingChild-element",
+            "MissingChild-code",
+            "MissingRedefinition-element",
+            "MissingRedefinition-code",
+            "MissingRedefinitionChild-element",
+            "MissingRedefinitionChild-code",
+            "MissingImportChild-element",
+            "MissingImportChild-code",
+            "CycleA-element",
+            "CycleA-code",
+            "CycleB-element",
+            "CycleB-code",
+            "missing-base",
+            "missing-redefinition",
+            "missing-import",
+            "cycle",
+            "DefiniteOwned-code",
+            "CompleteInvalidPeer-code",
+            "valid-peer"
+          ]
         }
       ],
-      "limits": "Absent/single, owned duplicates and diamond inheritance have representative cases. KERNEL-018 records missed errors for distinct inherited renderings and local-plus-inherited renderings. Unresolved/cyclic bases, explicit/implicit redefinition, imports, incomplete membership evidence and general view semantics remain unqualified. Legacy message labels already map to canonical public codes."
+      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001\u2013006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
     },
     {
       "id": "VIEW-USAGE-RENDERINGS",
@@ -4144,8 +4209,9 @@
       "implementation": {
         "status": "partial",
         "evidence": [
-          "structural-validation",
-          "semantic-driver"
+          "view-rendering-validation",
+          "semantic-driver",
+          "graph"
         ]
       },
       "api": {
@@ -4184,9 +4250,39 @@
             "localAndInherited-element",
             "localAndInherited-code"
           ]
+        },
+        {
+          "case": "VIEW-004",
+          "checks": [
+            "clean",
+            "instance-members"
+          ]
+        },
+        {
+          "case": "VIEW-005",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "sameName-members",
+            "sameName-code",
+            "importedCombined-members",
+            "importedCombined-code"
+          ]
+        },
+        {
+          "case": "VIEW-006",
+          "checks": [
+            "syntax",
+            "structure",
+            "missing-element",
+            "missing-code",
+            "definiteOwned-code",
+            "completeInvalidPeer-code"
+          ]
         }
       ],
-      "limits": "Absent/single, owned duplicates and diamond inheritance have representative cases. KERNEL-018 records missed errors for distinct inherited renderings and local-plus-inherited renderings. Unresolved/cyclic bases, explicit/implicit redefinition, imports, incomplete membership evidence and general view semantics remain unqualified. Legacy message labels already map to canonical public codes."
+      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001\u2013006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
     }
   ]
 }

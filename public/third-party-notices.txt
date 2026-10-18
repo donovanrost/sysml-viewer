@@ -2,7 +2,7 @@ SysML Viewer third-party notices
 
 Open-MBEE sysml-toolkit 0.10.2
 https://github.com/Open-MBEE/sysml-toolkit/tree/821221767c3c56cb1ebe7da22666197a47c9c645
-Pinned Rust source snapshot with recorded local patches KERNEL-001 and KERNEL-002; Cargo workspace packaging adapted.
+Pinned Rust source snapshot with recorded local patches listed in patches/manifest.json; Cargo workspace packaging adapted.
 
 
                                  Apache License

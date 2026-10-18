@@ -711,8 +711,8 @@ existing view-rendering alias policy. Engine `.18` keeps schema 3 and package
 `VIEW-001/002` retain absent/single/diamond-inherited renderings and rejection of
 owned duplicates. `VIEW-003` exposes KERNEL-018: the validator misses multiple
 inherited renderings and local-plus-inherited renderings on both a definition and
-a usage. Its four expected failures remain explicit; they are not counted as
-passing coverage. The XMI uses `featureMembership`, which includes inherited
+a usage. The `.18` record retained four expected failures. The `.19` correction
+is described below. The XMI uses `featureMembership`, which includes inherited
 FeatureMemberships. Redefinition and incomplete ancestry must be reviewed before
 repairing that predicate. The [pre-fix probes](evidence/validation-before-macos-arm64.json)
 retain actual `.17` outputs for both issues, with the existing-binary limitation.
@@ -728,6 +728,47 @@ These are four additional bounded rule assessments, not closure of whole state
 or view semantics. Membership kinds and derived state action slots are still
 absent from the facade. The [review plan](requirements.md#validation-rule-audit)
 records these and the remaining validation work.
+
+## KERNEL-018: inherited view rendering memberships
+
+The pinned ViewDefinition and ViewUsage rules select ViewRenderingMembership from
+`Type::featureMembership`, which unions owned and inherited feature memberships.
+Engine `.19` applies the existing membership projection to these checks, retaining
+membership identity, visibility, imports and actual/transitive redefinition. It
+also removes view-rendering participation in compatibility same-name shadowing:
+`checkRenderingUsageRedefinition` requires redefinition of the library feature
+`Views::View::viewRendering`, not automatic replacement of another user rendering.
+The canonical rule codes and snapshot schema 3 remain unchanged.
+
+`VIEW-003` now requires all four previously missing findings. `VIEW-004` adds
+explicit and transitive replacements, private/protected inherited renderings,
+public/private re-export, root imports and ordinary RenderingUsage memberships.
+`VIEW-005` rejects same-named local renderings and distinct renderings inherited
+through protected memberships or public imports, with exact member-set assertions.
+`VIEW-006` preserves unknown outcomes for unresolved bases, redefinitions and
+imports and for cyclic heritage. Two owned renderings still produce a definite
+error, and complete invalid peers remain diagnosable in that same source.
+The [pre-fix record](evidence/view-renderings-before-macos-arm64.json) uses the
+existing `.18` binary and records its hash; it is not a fresh baseline build.
+
+The completeness preflight follows the membership projection's base/import
+namespaces, owned features and explicit redefinition chains. It audits private
+import dependencies conservatively because import-all paths can admit them.
+Syntax recovery in any contributing user document also prevents an inherited-count
+verdict. Nested expression-body failures do not automatically poison an enclosing
+view's membership set. Five private regressions cover reduction, incomplete input,
+repeat queries, this dependency boundary and refusal of elements added after the
+static index was built. The harness can now assert the
+absence of a particular diagnostic code without requiring unrelated cycle errors
+to disappear. The three new public cases join the full previous family/body corpus
+in both file orders for native/WASM comparison.
+
+These are bounded validation assessments. General semantic metadata, all filtered
+and import-all interactions, malformed raw graph injection and complete view
+semantics remain unqualified. An absent diagnostic or a complete membership query
+is not certification of whole-model validity. The correction is recorded in
+patches 0018/0019 and the combined driver patch 0017; all original vendor hashes
+remain immutable. The package remains 0.3.0.
 
 ## Remaining foundation work
 
@@ -756,20 +797,26 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the current matrix has **115 passing conformance cases**, **one
-known-gap case** (`VIEW-003`, four KERNEL-018 assertions), and **no planned cases**.
-All **77 Rust kernel tests**, **46 Node tests**, and **270 dependency proof tests** pass.
-The dependency suites cover lexical boundaries (5), rational arithmetic (13), explicit usage typing (2), type relations (41), model-level evaluability (33),
+On macOS arm64, the current matrix has **119 passing conformance cases**, **no
+known-gap cases**, and **no planned cases**. All **77 Rust kernel tests**, **47 Node
+tests**, and **275 dependency proof tests** pass. The dependency suites cover
+lexical boundaries (5), rational arithmetic (13), explicit usage typing (2), view
+rendering validation (5), type relations (41), model-level evaluability (33),
 cardinality (34), invocation bindings (19), constructor bindings (17), dynamic graph
-(19), dynamic invocations (27), owned results (4), semantic ownership (5), end constancy (10) and checked
-namespace operations (41). The corpus and the 32 import-rule partitions are included
-in the Rust suite, not additional independently qualified specification counts.
-Native and WebAssembly outputs match exactly, including the known-gap behavior.
-The [KERNEL-017 validation record](evidence/validation-macos-arm64.json) records the
-audit and state diagnostic-code correction. The earlier
-[family validation](evidence/families-macos-arm64.json) retains the state/concern
-typing findings and its original scope. The prior [connection validation](evidence/connections-macos-arm64.json)
-and [vocabulary audit](evidence/keywords-macos-arm64.json) remain available.
+(19), dynamic invocations (27), owned results (4), semantic ownership (5), end
+constancy (10) and checked namespace operations (41). The corpus and the 32 import-rule
+partitions are included in the Rust suite, not additional independently qualified
+specification counts. Native and WebAssembly outputs match exactly, including the
+expanded family/body corpus in both file orders.
+
+The [KERNEL-018 validation record](evidence/view-renderings-macos-arm64.json) records
+the inherited-rendering correction, three added cases and 52 added assertions.
+The prior [KERNEL-017 record](evidence/validation-macos-arm64.json) retains the
+named-rule audit and state diagnostic-code correction at its earlier engine/input
+fingerprints. The earlier [family validation](evidence/families-macos-arm64.json)
+retains the state/concern typing findings and its original scope. The prior
+[connection validation](evidence/connections-macos-arm64.json) and
+[vocabulary audit](evidence/keywords-macos-arm64.json) remain available. This finite passing matrix does not establish complete standards conformance.
 
 Rust formatting, Clippy with warnings denied, TypeScript checking, Prettier,
 generated-contract consistency, source/patch verification and inventory checks
@@ -786,6 +833,14 @@ passed in 2.0–4.1 seconds, with identical snapshots within each case. Subseque
 validation used a temporary process-scoped sleep assertion, released at completion.
 The 30-second conformance and 60-second benchmark deadlines are unchanged. Earlier unexplained
 benchmark timeouts below remain separate evidence.
+
+The [KERNEL-018 benchmark](evidence/benchmark-view-renderings-macos-arm64.json)
+records 132 successful samples across 22 workloads, retaining every previous
+scenario and adding inherited view-rendering validation. Each sample checks the
+expected memberships and diagnostic codes. Repeated and native/WASM snapshots
+agree exactly. The new workload's median is 2,309 ms native and 2,500 ms WASM;
+maximum peak RSS is 404.0 MiB and 359.9 MiB respectively. These observations include
+fresh process startup and are not production-model latency guarantees.
 
 The [KERNEL-017 benchmark](evidence/benchmark-validation-macos-arm64.json) records
 126 successful samples across 21 workloads, retaining all earlier scenarios and

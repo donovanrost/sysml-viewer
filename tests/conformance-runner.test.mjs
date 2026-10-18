@@ -80,6 +80,46 @@ test('coverage catalogue rejects empty cases, unknown operations and orphan gaps
   }
 });
 
+test('negative diagnostic assertions select the exact rule without suppressing other findings', () => {
+  const source = { documentId: 'model', start: { byteOffset: 10 }, end: { byteOffset: 20 } };
+  const base = {
+    ...snapshot,
+    elements: [{ id: 'owner', qualifiedName: 'P::View', source }],
+    diagnostics: [
+      { stage: 'semantic', code: 'cycle', severity: 'error', message: 'cycle', source },
+      { stage: 'semantic', code: 'rendering', severity: 'warning', message: 'candidate', source },
+    ],
+  };
+  const check = {
+    id: 'no-rendering-error',
+    op: 'noDiagnostics',
+    owner: 'P::View',
+    stage: 'semantic',
+    code: 'rendering',
+    severity: 'error',
+    messageIncludes: 'rendering',
+  };
+  assert.equal(assessCase(base, { checks: [check] })[0].status, 'pass');
+  assert.equal(
+    assessCase(base, { checks: [{ ...check, code: 'cycle', messageIncludes: 'cycle' }] })[0].status,
+    'fail',
+  );
+  const withError = {
+    ...base,
+    diagnostics: [
+      ...base.diagnostics,
+      {
+        stage: 'semantic',
+        code: 'rendering',
+        severity: 'error',
+        message: 'extra rendering',
+        source,
+      },
+    ],
+  };
+  assert.equal(assessCase(withError, { checks: [check] })[0].status, 'fail');
+});
+
 test('a known gap accepts only its named assertion failure', () => {
   assert.equal(assessCase(snapshot, caseWithGap)[0].status, 'known-gap');
   const otherFailure = {

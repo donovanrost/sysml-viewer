@@ -147,13 +147,31 @@
       "reason": "StateUsage and ExhibitStateUsage allow the Behavior range of StateUsage::stateDefinition; ConcernUsage narrows RequirementUsage to ConcernDefinition. Private and public regressions retain invalid/missing type separation, nonredundant type limits, and RequirementUsage acceptance of ConcernDefinition. Normative anchors are the pinned SysML XMI property redefinitions. TYPE-005/006 preserve the pre-fix failures."
     },
     {
-      "id": "KERNEL-017",
+      "id": "KERNEL-017/018",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
       "patch": "patches/0017-state-subaction-rule-identifiers.patch",
-      "sha256": "d438e704fde3ae2d28831d9e10ead1526379708720ff87f516db4203b3d316a4",
+      "sha256": "669de68cf60062fbba07a2b5705b8c1c8161bc1c4be818f2138375feab7252c4",
       "baseSha256": "89e5002bbc63b860c1e1881986268860c24ef01a358133a40f7ae0eade724e77",
-      "resultSha256": "eeeaf06ea4ad0f8995151df58784521610a26d0841859fd7e32337e9f04d1fca",
-      "reason": "The pinned StateDefinition/StateUsage StateSubactionKind rule names include State before SubactionKind. Preserve imported-probe message text while publishing canonical diagnostic codes, following existing view aliases. STATE-001/002 cover owned-only uniqueness, each kind, named/anonymous actions, source-scoped findings and valid peers. No validation predicate or wire shape changes."
+      "resultSha256": "30dbb8ac764d640cf1a513a92546d7a1564d6f023fc3183b1aaeb30f263b8495",
+      "reason": "Retain canonical state-subaction rule codes and dispatch view-rendering validation through the shared inherited-membership projection."
+    },
+    {
+      "id": "KERNEL-018",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+      "patch": "patches/0018-inherited-view-rendering-validation.patch",
+      "sha256": "8f66ff49c36ea06eb2616d05c679d00fc327d0ff23aee0c4be1344ac4f39cd24",
+      "baseSha256": "d5164c5fe6ffd955bf2de70c22e08ff5f87fcc4979e024fe5197f7eafed2ef55",
+      "resultSha256": "903071a8d32f3e61448225ed3ce3a4315ed375da5073c064a7fdd5f3a1ee5788",
+      "reason": "KERNEL-018: count ViewRenderingMembership across owned and inherited featureMembership after actual redefinition, visibility and import selection. Missing/ambiguous references, recovery, cycles and incomplete dependencies cannot certify a candidate-count violation; two owned memberships remain a definite error. Reuse the shared projection and bound the query-local dependency preflight."
+    },
+    {
+      "id": "KERNEL-018",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+      "patch": "patches/0019-preserve-distinct-view-renderings.patch",
+      "sha256": "537b5b0e1316f23389896e618f6bcc3c9317ce782405d1a6437b19406b71f782",
+      "baseSha256": "4bcbae4ec8a3fe2847ac48a00b3661fb4c53d8ee0e1dbac8120e089821caa565",
+      "resultSha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e",
+      "reason": "KERNEL-018: same-name compatibility shadowing must not remove a ViewRenderingMembership. checkRenderingUsageRedefinition targets the library viewRendering feature, not every inherited same-name user rendering. Preserve actual explicit/transitive redefinition and shared membership identity/visibility reduction."
     }
   ]
 }

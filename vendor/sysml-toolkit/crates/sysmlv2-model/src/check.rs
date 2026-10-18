@@ -411,6 +411,7 @@ pub fn validate_semantics_with(
     let facts = facts::Facts::new(&mut r.b);
     out.extend(connectors::validate(r, model, &facts));
     out.extend(structural::validate(r, model, &facts));
+    out.extend(structural::validate_view_renderings(r, model, &facts));
     out.extend(structural::validate_directions(r, model, &facts));
     out.extend(endpoints::validate(r, model, &facts));
     out.extend(values::validate(r, model, &facts));

@@ -224,30 +224,40 @@ The first behavioral review found two concrete issues:
   `SubactionKind`. `STATE-001/002` retain all three kinds on definitions and usages,
   named and anonymous actions, valid peers, and local actions sharing an inherited
   kind. Canonical codes now follow the XMI; legacy message text stays compatible.
-- **KERNEL-018, open:** view rendering validation counts only owned memberships.
-  SysML's rules use `featureMembership`, which includes inherited
-  FeatureMemberships under KerML's `deriveTypeFeatureMembership`. `VIEW-003`
-  reproduces four missed errors: two inherited renderings and a local plus an
-  inherited rendering, each on a definition and a usage. `VIEW-001/002` preserve
-  absent/single/diamond cases and owned duplicates. Correct canonical view codes
-  were already supplied by the existing alias mapping.
+- **KERNEL-018, corrected for VIEW-001–006:** view rendering validation now
+  counts owned and inherited ViewRenderingMemberships using the shared membership
+  projection. Actual/transitive redefinition, visibility, public re-export and
+  diamond identity are retained. Same-name compatibility shadowing no longer
+  removes a view rendering: the required implicit RenderingUsage redefinition
+  targets the library's `Views::View::viewRendering`, not every inherited user
+  rendering. Missing/ambiguous references, recovered contributing documents,
+  cycles and other incomplete dependencies cannot certify an inherited-count
+  violation. Two owned renderings remain a definite error. Complete peer views
+  are still validated beside unresolved models. The assessments retain the
+  remaining metadata, filter/import-all and general view-semantics limits.
 
-Diagnostic assertions now support an exact qualified owner and require the
+Diagnostic assertions support an exact qualified owner and require the
 finding's byte range to be within that owner's source in the same document.
+Absence checks can select a specific rule, severity and message, so a cyclic
+model may retain its cycle error while proving that no rendering-count error was
+invented from an incomplete candidate set.
 A failure on a peer cannot satisfy a missing finding. Known gaps are restricted
 to named assertions; crashes, syntax errors and unrelated failures are not waived.
 The [pre-fix probes](evidence/validation-before-macos-arm64.json) retain the actual
 earlier codes and missed findings. They used the existing `.17` executable and
 are explicitly distinguished from the fresh qualification run.
 
-The next implementation priority is KERNEL-018. Its acceptance criteria must also
-cover explicit/implicit redefinition, private memberships, unresolved or cyclic
-bases, and mixed valid/invalid peers. Inherited candidates can be removed by
-redefinition, so counting candidates from an incomplete traversal cannot by itself
-certify a cardinality violation. Two owned renderings remain a definite violation.
-After this fix, continue the body/member and derived-property audit: state action
+The next review is the body/member and derived-property boundary: state action
 slots and membership kinds are still missing from the facade, and state parallel
-transition rules need behavioral review beyond registration-name presence.
+transition rules need behavioral review beyond registration-name presence. The
+pinned `validateStateDefinitionParallelSubactions` refers to `ownedAction` incoming
+and outgoing transitions; the StateUsage rule uses `nestedAction`. The current
+structural check instead looks for directly owned TransitionUsage or Succession
+members. This is a review finding, not yet a demonstrated behavioral defect:
+focused positive/negative cases must establish the consequences of that difference.
+The broader audit should classify complete obligation sets by implementation, API
+exposure and verified behavior before forecasting the remaining work. Closing the
+last named failure in the current matrix does not close the standards inventory.
 
 For each remaining validation rule, review its XMI expression and prose, locate
 the actual execution path, derive positive/negative partitions, and map exact

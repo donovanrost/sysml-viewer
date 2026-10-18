@@ -27,6 +27,16 @@ if (process.argv.includes('--wasm-child')) {
   );
   const scenarios = [
     {
+      name: 'inherited-view-renderings',
+      text: readFileSync(
+        join(root, 'tests/conformance/fixtures/view-renderings-memberships-negative.sysml'),
+        'utf8',
+      ),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'VIEW-005').checks,
+    },
+    {
       name: 'state-subaction-validation',
       text: readFileSync(
         join(root, 'tests/conformance/fixtures/state-subactions-negative.sysml'),

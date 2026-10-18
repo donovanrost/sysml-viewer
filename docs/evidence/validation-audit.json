@@ -36,7 +36,7 @@
     },
     {
       "path": "crates/sysml-kernel/src/lib.rs",
-      "sha256": "d2dd60fd97229ccf5bf06e11bb4b584b25ba8dd9132213a646955b627b2cc588"
+      "sha256": "1c56ca9a37f63b71dea6f19410e7b273609ef88cf55e5d9000665dfeeb7e4fb9"
     },
     {
       "path": "crates/sysml-kernel/src/namespaces.rs",
@@ -72,7 +72,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-      "sha256": "eeeaf06ea4ad0f8995151df58784521610a26d0841859fd7e32337e9f04d1fca"
+      "sha256": "30dbb8ac764d640cf1a513a92546d7a1564d6f023fc3183b1aaeb30f263b8495"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
@@ -140,7 +140,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-      "sha256": "d5164c5fe6ffd955bf2de70c22e08ff5f87fcc4979e024fe5197f7eafed2ef55"
+      "sha256": "903071a8d32f3e61448225ed3ce3a4315ed375da5073c064a7fdd5f3a1ee5788"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/typing.rs",
@@ -180,7 +180,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
-      "sha256": "4bcbae4ec8a3fe2847ac48a00b3661fb4c53d8ee0e1dbac8120e089821caa565"
+      "sha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/behavior.rs",
@@ -633,8 +633,8 @@
   ],
   "structuredInputHashEncoding": "JSON.stringify(parsed input), UTF-8",
   "catalogueSha256": "141adece74e8e7581cc744729bf2e96356ff2e983204c68f48acae64ea339e35",
-  "assessmentsSha256": "7cdcf1e125ce04b332f101f3ebfbae40b739d36dfb4a313f09782d75d74deebc",
-  "matrixSha256": "82f78ae5e36de0c277c823a2edc1337cc375f5f820027c2ba041c5e425d4da62",
+  "assessmentsSha256": "85bb25a3fe0c0561a9ae120f93b2c3425050ec34eb138db7bbac6827a607e252",
+  "matrixSha256": "613477fe3023d38aa2a5e8858ee1dcdab11cd9d11109358fe56c64ba5575e35a",
   "counts": {
     "rules": 180,
     "registered": 91,
@@ -785,7 +785,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 621
+          "line": 599
         }
       ],
       "assessments": [],
@@ -809,7 +809,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 607
+          "line": 585
         }
       ],
       "assessments": [],
@@ -1289,7 +1289,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 593
+          "line": 571
         }
       ],
       "assessments": [],
@@ -1601,7 +1601,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 459
+          "line": 437
         }
       ],
       "assessments": [],
@@ -1625,7 +1625,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 479
+          "line": 457
         }
       ],
       "assessments": [],
@@ -1693,7 +1693,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 532
+          "line": 510
         }
       ],
       "assessments": [],
@@ -1717,7 +1717,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 540
+          "line": 518
         }
       ],
       "assessments": [],
@@ -1891,7 +1891,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 504
+          "line": 482
         }
       ],
       "assessments": [],
@@ -1915,7 +1915,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 502
+          "line": 480
         }
       ],
       "assessments": [],
@@ -2167,7 +2167,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 457
+          "line": 435
         }
       ],
       "assessments": [],
@@ -2191,7 +2191,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 477
+          "line": 455
         }
       ],
       "assessments": [],
@@ -2918,7 +2918,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 691
+          "line": 843
         }
       ],
       "assessments": [],
@@ -3158,7 +3158,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 643
+          "line": 621
         }
       ],
       "assessments": [],
@@ -3271,7 +3271,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 579
+          "line": 557
         }
       ],
       "assessments": [],
@@ -3371,7 +3371,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 581
+          "line": 559
         }
       ],
       "assessments": [],
@@ -3800,7 +3800,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 495
+          "line": 473
         }
       ],
       "assessments": [],
@@ -3923,6 +3923,14 @@
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
           "line": 333
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 899
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 907
         }
       ],
       "assessments": [
@@ -3931,7 +3939,7 @@
           "obligation": "A ViewDefinition has at most one ViewRenderingMembership among its owned and inherited feature memberships.",
           "implementation": "partial",
           "api": "partial",
-          "limits": "Absent/single, owned duplicates and diamond inheritance have representative cases. KERNEL-018 records missed errors for distinct inherited renderings and local-plus-inherited renderings. Unresolved/cyclic bases, explicit/implicit redefinition, imports, incomplete membership evidence and general view semantics remain unqualified. Legacy message labels already map to canonical public codes.",
+          "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001–006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged.",
           "tests": [
             {
               "case": "VIEW-001",
@@ -3971,6 +3979,70 @@
               ],
               "polarity": "negative",
               "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "VIEW-004",
+              "checks": [
+                "clean",
+                "Override-members",
+                "Renamed-members",
+                "Transitive-members",
+                "PrivateChild-members",
+                "ProtectedChild-members",
+                "Imported-members",
+                "PrivateImported-members",
+                "OwnImport-members",
+                "OrdinaryChild-members"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "VIEW-005",
+              "checks": [
+                "syntax",
+                "structure",
+                "resolution",
+                "SameName-members",
+                "SameName-code",
+                "ProtectedCombined-members",
+                "ProtectedCombined-code",
+                "ImportedCombined-members",
+                "ImportedCombined-code",
+                "valid-peer"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "VIEW-006",
+              "checks": [
+                "syntax",
+                "structure",
+                "MissingBase-element",
+                "MissingBase-code",
+                "MissingChild-element",
+                "MissingChild-code",
+                "MissingRedefinition-element",
+                "MissingRedefinition-code",
+                "MissingRedefinitionChild-element",
+                "MissingRedefinitionChild-code",
+                "MissingImportChild-element",
+                "MissingImportChild-code",
+                "CycleA-element",
+                "CycleA-code",
+                "CycleB-element",
+                "CycleB-code",
+                "missing-base",
+                "missing-redefinition",
+                "missing-import",
+                "cycle",
+                "DefiniteOwned-code",
+                "CompleteInvalidPeer-code",
+                "valid-peer"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
             }
           ]
         }
@@ -4006,6 +4078,14 @@
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
           "line": 335
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 903
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+          "line": 911
         }
       ],
       "assessments": [
@@ -4014,7 +4094,7 @@
           "obligation": "A ViewUsage has at most one ViewRenderingMembership among its owned and inherited feature memberships.",
           "implementation": "partial",
           "api": "partial",
-          "limits": "Absent/single, owned duplicates and diamond inheritance have representative cases. KERNEL-018 records missed errors for distinct inherited renderings and local-plus-inherited renderings. Unresolved/cyclic bases, explicit/implicit redefinition, imports, incomplete membership evidence and general view semantics remain unqualified. Legacy message labels already map to canonical public codes.",
+          "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001–006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged.",
           "tests": [
             {
               "case": "VIEW-001",
@@ -4047,6 +4127,42 @@
                 "combined-code",
                 "localAndInherited-element",
                 "localAndInherited-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "VIEW-004",
+              "checks": [
+                "clean",
+                "instance-members"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "VIEW-005",
+              "checks": [
+                "syntax",
+                "structure",
+                "resolution",
+                "sameName-members",
+                "sameName-code",
+                "importedCombined-members",
+                "importedCombined-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "VIEW-006",
+              "checks": [
+                "syntax",
+                "structure",
+                "missing-element",
+                "missing-code",
+                "definiteOwned-code",
+                "completeInvalidPeer-code"
               ],
               "polarity": "negative",
               "status": "mapped-not-execution-evidence"
@@ -4234,7 +4350,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 654
+          "line": 632
         }
       ]
     },
@@ -4337,7 +4453,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 562
+          "line": 540
         }
       ]
     },
@@ -4350,7 +4466,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 564
+          "line": 542
         }
       ]
     },
@@ -4399,7 +4515,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 438
+          "line": 686
         }
       ]
     },
@@ -4412,7 +4528,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 440
+          "line": 688
         }
       ]
     }

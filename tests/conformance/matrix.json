@@ -8540,27 +8540,418 @@
           "owner": "ViewRenderingsInheritedNegative::localAndInherited",
           "code": "validateViewUsageOnlyOneViewRendering"
         }
-      ],
-      "knownFailures": [
+      ]
+    },
+    {
+      "id": "VIEW-004",
+      "area": "families-views",
+      "purpose": "Actual and transitive redefinition, private/protected visibility and imported membership identity determine the surviving rendering memberships. Root imports and ordinary RenderingUsage memberships are not view renderings.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/view-renderings-boundaries.sysml"],
+      "checks": [
         {
-          "check": "Combined-code",
-          "issue": "KERNEL-018",
-          "reason": "The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted."
+          "id": "clean",
+          "op": "noDiagnostics"
         },
         {
-          "check": "combined-code",
-          "issue": "KERNEL-018",
-          "reason": "The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted."
+          "id": "Override-members",
+          "op": "members",
+          "owner": "ViewRenderingBoundaries::Override",
+          "mode": "effective",
+          "names": ["ViewRenderingBoundaries::Override::displayed"],
+          "complete": true
         },
         {
-          "check": "LocalAndInherited-code",
-          "issue": "KERNEL-018",
-          "reason": "The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted."
+          "id": "Renamed-members",
+          "op": "members",
+          "owner": "ViewRenderingBoundaries::Renamed",
+          "mode": "effective",
+          "names": ["ViewRenderingBoundaries::Renamed::replacement"],
+          "complete": true
         },
         {
-          "check": "localAndInherited-code",
-          "issue": "KERNEL-018",
-          "reason": "The structural validator counts owned renderings only. SysML requires featureMembership, which includes inherited FeatureMemberships; the public graph preserves both renderings but no error is emitted."
+          "id": "Transitive-members",
+          "op": "members",
+          "owner": "ViewRenderingBoundaries::Transitive",
+          "mode": "effective",
+          "names": ["ViewRenderingBoundaries::Transitive::replacementAgain"],
+          "complete": true
+        },
+        {
+          "id": "instance-members",
+          "op": "members",
+          "owner": "ViewRenderingBoundaries::instance",
+          "mode": "effective",
+          "names": ["ViewRenderingBoundaries::Transitive::replacementAgain"],
+          "complete": true
+        },
+        {
+          "id": "PrivateChild-members",
+          "op": "members",
+          "owner": "ViewRenderingBoundaries::PrivateChild",
+          "mode": "effective",
+          "names": ["ViewRenderingBoundaries::Parent::displayed"],
+          "complete": true
+        },
+        {
+          "id": "ProtectedChild-members",
+          "op": "members",
+          "owner": "ViewRenderingBoundaries::ProtectedChild",
+          "mode": "effective",
+          "names": ["ViewRenderingBoundaries::ProtectedParent::visible"],
+          "complete": true
+        },
+        {
+          "id": "Imported-members",
+          "op": "members",
+          "owner": "ViewRenderingBoundaries::Imported",
+          "mode": "effective",
+          "names": ["ViewRenderingBoundaries::Parent::displayed"],
+          "complete": true
+        },
+        {
+          "id": "PrivateImported-members",
+          "op": "members",
+          "owner": "ViewRenderingBoundaries::PrivateImported",
+          "mode": "effective",
+          "names": ["ViewRenderingBoundaries::Other::another"],
+          "complete": true
+        },
+        {
+          "id": "OwnImport-members",
+          "op": "members",
+          "owner": "ViewRenderingBoundaries::OwnImport",
+          "mode": "effective",
+          "names": ["ViewRenderingBoundaries::OwnImport::local"],
+          "complete": true
+        },
+        {
+          "id": "OrdinaryChild-members",
+          "op": "members",
+          "owner": "ViewRenderingBoundaries::OrdinaryChild",
+          "mode": "effective",
+          "names": [
+            "ViewRenderingBoundaries::Ordinary::ordinary",
+            "ViewRenderingBoundaries::Parent::displayed"
+          ],
+          "complete": true
+        }
+      ]
+    },
+    {
+      "id": "VIEW-005",
+      "area": "families-views",
+      "purpose": "Same-named local renderings do not implicitly replace user-inherited renderings; protected and publicly re-exported rendering memberships also count.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/view-renderings-memberships-negative.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "SameName-members",
+          "op": "members",
+          "owner": "ViewRenderingMembershipsNegative::SameName",
+          "mode": "effective",
+          "names": [
+            "ViewRenderingMembershipsNegative::SameName::displayed",
+            "ViewRenderingMembershipsNegative::Parent::displayed"
+          ],
+          "complete": true
+        },
+        {
+          "id": "SameName-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingMembershipsNegative::SameName",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "sameName-members",
+          "op": "members",
+          "owner": "ViewRenderingMembershipsNegative::sameName",
+          "mode": "effective",
+          "names": [
+            "ViewRenderingMembershipsNegative::sameName::displayed",
+            "ViewRenderingMembershipsNegative::Parent::displayed"
+          ],
+          "complete": true
+        },
+        {
+          "id": "sameName-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingMembershipsNegative::sameName",
+          "code": "validateViewUsageOnlyOneViewRendering"
+        },
+        {
+          "id": "ProtectedCombined-members",
+          "op": "members",
+          "owner": "ViewRenderingMembershipsNegative::ProtectedCombined",
+          "mode": "effective",
+          "names": [
+            "ViewRenderingMembershipsNegative::ProtectedParent::protectedRendering",
+            "ViewRenderingMembershipsNegative::Parent::displayed"
+          ],
+          "complete": true
+        },
+        {
+          "id": "ProtectedCombined-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingMembershipsNegative::ProtectedCombined",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "ImportedCombined-members",
+          "op": "members",
+          "owner": "ViewRenderingMembershipsNegative::ImportedCombined",
+          "mode": "effective",
+          "names": [
+            "ViewRenderingMembershipsNegative::Parent::displayed",
+            "ViewRenderingMembershipsNegative::Other::another"
+          ],
+          "complete": true
+        },
+        {
+          "id": "ImportedCombined-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingMembershipsNegative::ImportedCombined",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "importedCombined-members",
+          "op": "members",
+          "owner": "ViewRenderingMembershipsNegative::importedCombined",
+          "mode": "effective",
+          "names": [
+            "ViewRenderingMembershipsNegative::Parent::displayed",
+            "ViewRenderingMembershipsNegative::Other::another"
+          ],
+          "complete": true
+        },
+        {
+          "id": "importedCombined-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingMembershipsNegative::importedCombined",
+          "code": "validateViewUsageOnlyOneViewRendering"
+        },
+        {
+          "id": "valid-peer",
+          "op": "noDiagnostics",
+          "owner": "ViewRenderingMembershipsNegative::ValidPeer"
+        }
+      ]
+    },
+    {
+      "id": "VIEW-006",
+      "area": "families-views",
+      "purpose": "Unresolved bases, redefinitions, imports and cycles cannot certify an inherited rendering-count error; owned duplicates and complete invalid peers still produce findings.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/view-renderings-incomplete.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "MissingBase-element",
+          "op": "element",
+          "name": "ViewRenderingIncomplete::MissingBase",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "MissingBase-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::MissingBase",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "MissingChild-element",
+          "op": "element",
+          "name": "ViewRenderingIncomplete::MissingChild",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "MissingChild-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::MissingChild",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "missing-element",
+          "op": "element",
+          "name": "ViewRenderingIncomplete::missing",
+          "metaclass": "ViewUsage"
+        },
+        {
+          "id": "missing-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::missing",
+          "code": "validateViewUsageOnlyOneViewRendering"
+        },
+        {
+          "id": "MissingRedefinition-element",
+          "op": "element",
+          "name": "ViewRenderingIncomplete::MissingRedefinition",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "MissingRedefinition-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::MissingRedefinition",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "MissingRedefinitionChild-element",
+          "op": "element",
+          "name": "ViewRenderingIncomplete::MissingRedefinitionChild",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "MissingRedefinitionChild-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::MissingRedefinitionChild",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "MissingImportChild-element",
+          "op": "element",
+          "name": "ViewRenderingIncomplete::MissingImportChild",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "MissingImportChild-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::MissingImportChild",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "CycleA-element",
+          "op": "element",
+          "name": "ViewRenderingIncomplete::CycleA",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "CycleA-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::CycleA",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "CycleB-element",
+          "op": "element",
+          "name": "ViewRenderingIncomplete::CycleB",
+          "metaclass": "ViewDefinition"
+        },
+        {
+          "id": "CycleB-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::CycleB",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "missing-base",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "owner": "ViewRenderingIncomplete::MissingBase"
+        },
+        {
+          "id": "missing-redefinition",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "owner": "ViewRenderingIncomplete::MissingRedefinition"
+        },
+        {
+          "id": "missing-import",
+          "op": "diagnostic",
+          "stage": "resolution",
+          "owner": "ViewRenderingIncomplete::MissingImport"
+        },
+        {
+          "id": "cycle",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "owner": "ViewRenderingIncomplete::CycleA",
+          "messageIncludes": "circular specialization"
+        },
+        {
+          "id": "DefiniteOwned-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::DefiniteOwned",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "definiteOwned-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::definiteOwned",
+          "code": "validateViewUsageOnlyOneViewRendering"
+        },
+        {
+          "id": "CompleteInvalidPeer-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::CompleteInvalidPeer",
+          "code": "validateViewDefinitionOnlyOneViewRendering"
+        },
+        {
+          "id": "completeInvalidPeer-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "ViewRenderingIncomplete::completeInvalidPeer",
+          "code": "validateViewUsageOnlyOneViewRendering"
+        },
+        {
+          "id": "valid-peer",
+          "op": "noDiagnostics",
+          "owner": "ViewRenderingIncomplete::ValidPeer"
         }
       ]
     }

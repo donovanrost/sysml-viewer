@@ -8573,8 +8573,9 @@
       "implementation": {
         "status": "partial",
         "evidence": [
-          "structural-validation",
-          "semantic-driver"
+          "view-rendering-validation",
+          "semantic-driver",
+          "graph"
         ]
       },
       "api": {
@@ -8670,7 +8671,7 @@
             "LocalAndInherited-code"
           ],
           "polarity": "negative",
-          "status": "known-gap",
+          "status": "pass",
           "results": [
             {
               "id": "syntax",
@@ -8690,7 +8691,7 @@
             },
             {
               "id": "Combined-code",
-              "status": "known-gap"
+              "status": "pass"
             },
             {
               "id": "LocalAndInherited-element",
@@ -8698,12 +8699,254 @@
             },
             {
               "id": "LocalAndInherited-code",
-              "status": "known-gap"
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "VIEW-004",
+          "checks": [
+            "clean",
+            "Override-members",
+            "Renamed-members",
+            "Transitive-members",
+            "PrivateChild-members",
+            "ProtectedChild-members",
+            "Imported-members",
+            "PrivateImported-members",
+            "OwnImport-members",
+            "OrdinaryChild-members"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "Override-members",
+              "status": "pass"
+            },
+            {
+              "id": "Renamed-members",
+              "status": "pass"
+            },
+            {
+              "id": "Transitive-members",
+              "status": "pass"
+            },
+            {
+              "id": "PrivateChild-members",
+              "status": "pass"
+            },
+            {
+              "id": "ProtectedChild-members",
+              "status": "pass"
+            },
+            {
+              "id": "Imported-members",
+              "status": "pass"
+            },
+            {
+              "id": "PrivateImported-members",
+              "status": "pass"
+            },
+            {
+              "id": "OwnImport-members",
+              "status": "pass"
+            },
+            {
+              "id": "OrdinaryChild-members",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "VIEW-005",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "SameName-members",
+            "SameName-code",
+            "ProtectedCombined-members",
+            "ProtectedCombined-code",
+            "ImportedCombined-members",
+            "ImportedCombined-code",
+            "valid-peer"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "resolution",
+              "status": "pass"
+            },
+            {
+              "id": "SameName-members",
+              "status": "pass"
+            },
+            {
+              "id": "SameName-code",
+              "status": "pass"
+            },
+            {
+              "id": "ProtectedCombined-members",
+              "status": "pass"
+            },
+            {
+              "id": "ProtectedCombined-code",
+              "status": "pass"
+            },
+            {
+              "id": "ImportedCombined-members",
+              "status": "pass"
+            },
+            {
+              "id": "ImportedCombined-code",
+              "status": "pass"
+            },
+            {
+              "id": "valid-peer",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "VIEW-006",
+          "checks": [
+            "syntax",
+            "structure",
+            "MissingBase-element",
+            "MissingBase-code",
+            "MissingChild-element",
+            "MissingChild-code",
+            "MissingRedefinition-element",
+            "MissingRedefinition-code",
+            "MissingRedefinitionChild-element",
+            "MissingRedefinitionChild-code",
+            "MissingImportChild-element",
+            "MissingImportChild-code",
+            "CycleA-element",
+            "CycleA-code",
+            "CycleB-element",
+            "CycleB-code",
+            "missing-base",
+            "missing-redefinition",
+            "missing-import",
+            "cycle",
+            "DefiniteOwned-code",
+            "CompleteInvalidPeer-code",
+            "valid-peer"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "MissingBase-element",
+              "status": "pass"
+            },
+            {
+              "id": "MissingBase-code",
+              "status": "pass"
+            },
+            {
+              "id": "MissingChild-element",
+              "status": "pass"
+            },
+            {
+              "id": "MissingChild-code",
+              "status": "pass"
+            },
+            {
+              "id": "MissingRedefinition-element",
+              "status": "pass"
+            },
+            {
+              "id": "MissingRedefinition-code",
+              "status": "pass"
+            },
+            {
+              "id": "MissingRedefinitionChild-element",
+              "status": "pass"
+            },
+            {
+              "id": "MissingRedefinitionChild-code",
+              "status": "pass"
+            },
+            {
+              "id": "MissingImportChild-element",
+              "status": "pass"
+            },
+            {
+              "id": "MissingImportChild-code",
+              "status": "pass"
+            },
+            {
+              "id": "CycleA-element",
+              "status": "pass"
+            },
+            {
+              "id": "CycleA-code",
+              "status": "pass"
+            },
+            {
+              "id": "CycleB-element",
+              "status": "pass"
+            },
+            {
+              "id": "CycleB-code",
+              "status": "pass"
+            },
+            {
+              "id": "missing-base",
+              "status": "pass"
+            },
+            {
+              "id": "missing-redefinition",
+              "status": "pass"
+            },
+            {
+              "id": "missing-import",
+              "status": "pass"
+            },
+            {
+              "id": "cycle",
+              "status": "pass"
+            },
+            {
+              "id": "DefiniteOwned-code",
+              "status": "pass"
+            },
+            {
+              "id": "CompleteInvalidPeer-code",
+              "status": "pass"
+            },
+            {
+              "id": "valid-peer",
+              "status": "pass"
             }
           ]
         }
       ],
-      "limits": "Absent/single, owned duplicates and diamond inheritance have representative cases. KERNEL-018 records missed errors for distinct inherited renderings and local-plus-inherited renderings. Unresolved/cyclic bases, explicit/implicit redefinition, imports, incomplete membership evidence and general view semantics remain unqualified. Legacy message labels already map to canonical public codes."
+      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001–006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
     },
     {
       "id": "VIEW-USAGE-RENDERINGS",
@@ -8717,8 +8960,9 @@
       "implementation": {
         "status": "partial",
         "evidence": [
-          "structural-validation",
-          "semantic-driver"
+          "view-rendering-validation",
+          "semantic-driver",
+          "graph"
         ]
       },
       "api": {
@@ -8794,7 +9038,7 @@
             "localAndInherited-code"
           ],
           "polarity": "negative",
-          "status": "known-gap",
+          "status": "pass",
           "results": [
             {
               "id": "syntax",
@@ -8814,7 +9058,7 @@
             },
             {
               "id": "combined-code",
-              "status": "known-gap"
+              "status": "pass"
             },
             {
               "id": "localAndInherited-element",
@@ -8822,33 +9066,135 @@
             },
             {
               "id": "localAndInherited-code",
-              "status": "known-gap"
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "VIEW-004",
+          "checks": [
+            "clean",
+            "instance-members"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "instance-members",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "VIEW-005",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "sameName-members",
+            "sameName-code",
+            "importedCombined-members",
+            "importedCombined-code"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "resolution",
+              "status": "pass"
+            },
+            {
+              "id": "sameName-members",
+              "status": "pass"
+            },
+            {
+              "id": "sameName-code",
+              "status": "pass"
+            },
+            {
+              "id": "importedCombined-members",
+              "status": "pass"
+            },
+            {
+              "id": "importedCombined-code",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "VIEW-006",
+          "checks": [
+            "syntax",
+            "structure",
+            "missing-element",
+            "missing-code",
+            "definiteOwned-code",
+            "completeInvalidPeer-code"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "missing-element",
+              "status": "pass"
+            },
+            {
+              "id": "missing-code",
+              "status": "pass"
+            },
+            {
+              "id": "definiteOwned-code",
+              "status": "pass"
+            },
+            {
+              "id": "completeInvalidPeer-code",
+              "status": "pass"
             }
           ]
         }
       ],
-      "limits": "Absent/single, owned duplicates and diamond inheritance have representative cases. KERNEL-018 records missed errors for distinct inherited renderings and local-plus-inherited renderings. Unresolved/cyclic bases, explicit/implicit redefinition, imports, incomplete membership evidence and general view semantics remain unqualified. Legacy message labels already map to canonical public codes."
+      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001–006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
     }
   ],
-  "executableCases": 116,
+  "executableCases": 119,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "58eb901e9ca20be5a9be7f6fffcc0cfac0591d02ff0e3166fa7e3c8c47166e86",
+  "assessmentsSha256": "4cda1983546683d2df67ccb49e2127f53092ad8c52b00095b913de961410ea11",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "327c7bb311253a134edf2edce5f132f295bc1b70030ebfd08b91720bbf1c2991",
-    "generatedAt": "2026-10-17T23:10:33.817Z",
-    "kernelInputSha256": "18da269c205184a573c20bfd6716fb18a569864ecad6e2aa33c8e92f5fd3ce1a",
-    "binarySha256": "2ec7e2d9337f1dacc62d7894de77aaeb9e5fb85d3fc02a56600e1ec0854cd126",
+    "sha256": "d0efdb5b48b1d4f90ab16bc51f460e74470225443992483a9f20cb7306829c6d",
+    "generatedAt": "2026-10-17T23:58:56.409Z",
+    "kernelInputSha256": "ff6e919805c8c2c1a03716a8f4f27e71daa645e3e629121e27d02fac4e4afddd",
+    "binarySha256": "07ddd56926a9b79e353106295cc467f0d8b534758b591075af206ead17deec29",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.18",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.19",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 115,
-      "known-gap": 1,
+      "pass": 119,
+      "known-gap": 0,
       "planned": 0,
       "fail": 0
     }

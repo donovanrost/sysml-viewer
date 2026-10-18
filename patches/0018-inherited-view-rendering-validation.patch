@@ -1,0 +1,369 @@
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs
+@@ -1,7 +1,7 @@
+ //! Static ownership, specialization, and feature-property constraints.
+ use super::facts::{Facts, flag, is};
+ use crate::{
+-    json::{Builder, ResolvedModel},
++    json::{Builder, ElementRef, ResolvedModel},
+     model::Model,
+ };
+ use sysmlv2_syntax::{Span, diag::Diagnostic};
+@@ -419,28 +419,6 @@
+                 if !g.effective_kind(b, target, required) {
+                     report(e, span, rule, &format!("{ty} must reference a {required}"));
+                 }
+-            }
+-        }
+-        if is(b, e, "ViewDefinition") || is(b, e, "ViewUsage") {
+-            let count = g.members[e]
+-                .iter()
+-                .filter(|&&m| {
+-                    b.elements[m]
+-                        .owning_relationship
+-                        .is_some_and(|rel| b.elements[rel].ty == "ViewRenderingMembership")
+-                })
+-                .count();
+-            if count > 1 {
+-                report(
+-                    e,
+-                    span,
+-                    if is(b, e, "ViewDefinition") {
+-                        "validateViewDefinitionOnlyOnvViewRendering"
+-                    } else {
+-                        "validateViewUsageOnlyOneRendering"
+-                    },
+-                    "A view may have at most one rendering",
+-                );
+             }
+         }
+         if is(b, e, "Function") || is(b, e, "Expression") {
+@@ -660,6 +638,180 @@
+     out
+ }
+ 
++/// SysML selects ViewRenderingMembership from Type::featureMembership, which
++/// includes inherited memberships after KerML's redefinition/visibility rules.
++/// Use the shared projection rather than recounting all transitive declarations.
++pub(super) fn validate_view_renderings(
++    r: &mut ResolvedModel,
++    model: &Model,
++    g: &Facts,
++) -> Vec<(usize, Diagnostic)> {
++    let views: Vec<_> = (r.b.lib_boundary..r.b.explicit_len())
++        .filter(|&e| {
++            (is(&r.b, e, "ViewDefinition") || is(&r.b, e, "ViewUsage"))
++                && !model.is_library_unit(r.b.unit_of_elem(e))
++        })
++        .collect();
++    if views.is_empty() {
++        return Vec::new();
++    }
++    let inputs = ViewRenderingInputs::new(r, model, g);
++    let mut out = Vec::new();
++    for e in views {
++        let owned = r.b.elements[e]
++            .owned_relationships
++            .iter()
++            .filter(|&&rel| is(&r.b, rel, "ViewRenderingMembership"))
++            .count();
++        // Owned memberships cannot be removed by inheritance/redefinition.
++        // Retain this definite error even if another dependency is incomplete.
++        let invalid = if owned > 1 {
++            true
++        } else {
++            let inherited = r.inherited_memberships(ElementRef(e), true);
++            owned
++                + inherited
++                    .iter()
++                    .filter(|m| is(&r.b, m.0, "ViewRenderingMembership"))
++                    .count()
++                > 1
++                && inputs.complete(r, g, e)
++        };
++        if invalid {
++            out.push((
++                r.b.unit_of_elem(e),
++                super::rule_error(
++                    g.span(&r.b, e),
++                    if is(&r.b, e, "ViewDefinition") {
++                        "validateViewDefinitionOnlyOnvViewRendering"
++                    } else {
++                        "validateViewUsageOnlyOneRendering"
++                    },
++                    "A view may have at most one rendering",
++                ),
++            ));
++        }
++    }
++    out
++}
++
++/// Completeness preflight, not a second membership reducer. Missing written
++/// bases and redefinitions are not all represented by inheritance_incomplete.
++/// A later-resolved redefinition could remove a currently retained rendering,
++/// so an incomplete candidate count cannot certify a violation.
++struct ViewRenderingInputs {
++    unresolved: std::collections::HashSet<usize>,
++    recovered_units: std::collections::HashSet<usize>,
++}
++impl ViewRenderingInputs {
++    fn new(r: &ResolvedModel, model: &Model, g: &Facts) -> Self {
++        let mut unresolved = std::collections::HashSet::new();
++        // A missing relationship endpoint affects its source, not every
++        // enclosing namespace. Nested expression bodies do not change their
++        // enclosing view's membership set. The dependency walk below follows
++        // bases, import targets, owned features and redefinition chains.
++        for reference in r.unresolved_references() {
++            let e = reference.owner.0;
++            unresolved.insert(e);
++            if is(&r.b, e, "Relationship") {
++                if let Some(owner) = g.owner.get(e).copied().flatten() {
++                    unresolved.insert(owner);
++                }
++            }
++        }
++        let recovered_units = (0..model.unit_count())
++            .filter(|&unit| {
++                !model.is_library_unit(unit)
++                    && model
++                        .unit(unit)
++                        .diagnostics
++                        .iter()
++                        .any(|d| d.severity == sysmlv2_syntax::diag::Severity::Error)
++            })
++            .collect();
++        Self {
++            unresolved,
++            recovered_units,
++        }
++    }
++
++    fn complete(&self, r: &mut ResolvedModel, g: &Facts, root: usize) -> bool {
++        let mut steps = 0usize;
++        let mut namespaces = vec![(root, false, false)];
++        let mut seen_namespaces = std::collections::HashSet::new();
++        let mut features = Vec::new();
++        let mut seen_features = std::collections::HashSet::new();
++        macro_rules! ready {
++            ($e:expr) => {{
++                let e = $e;
++                steps = steps.saturating_add(1);
++                if steps > crate::eval::MAX_STEPS
++                    // Facts index the explicit graph. A generated element
++                    // outside that snapshot has no certified dependencies here.
++                    || e >= g.owner.len()
++                    || self.unresolved.contains(&e)
++                    || self.recovered_units.contains(&r.b.unit_of_elem(e))
++                {
++                    return false;
++                }
++            }};
++        }
++        while let Some((e, exports, recursive)) = namespaces.pop() {
++            ready!(e);
++            if !seen_namespaces.insert((e, exports, recursive)) {
++                continue;
++            }
++            if r.inheritance_incomplete(ElementRef(e), true) {
++                return false;
++            }
++            namespaces.extend(
++                r.b.context_bases(e)
++                    .into_iter()
++                    .map(|base| (base, true, false)),
++            );
++            steps = steps.saturating_add(g.members[e].len());
++            if steps > crate::eval::MAX_STEPS {
++                return false;
++            }
++            for &member in &g.members[e] {
++                if is(&r.b, member, "Feature") {
++                    features.push(member);
++                }
++                if recursive && is(&r.b, member, "Namespace") {
++                    namespaces.push((member, true, true));
++                }
++            }
++            if exports {
++                // Root imports are not Type::featureMembership. Bases and
++                // namespace-import targets can re-export memberships. Audit
++                // their dependencies even if a candidate was later suppressed.
++                // Include private dependencies in this conservative audit:
++                // an import-all path can admit them. The projection itself
++                // decides visibility; this walk never adds memberships.
++                for (target, namespace, recursive, _) in r.import_details(ElementRef(e)) {
++                    if namespace {
++                        namespaces.push((target.0, true, recursive));
++                    } else {
++                        features.push(target.0);
++                        if recursive && is(&r.b, target.0, "Namespace") {
++                            namespaces.push((target.0, true, true));
++                        }
++                    }
++                }
++            }
++        }
++        // Redefinition is transitive. An unavailable target on a removed
++        // ancestor still affects the surviving feature's replacement set.
++        while let Some(e) = features.pop() {
++            ready!(e);
++            if seen_features.insert(e) {
++                features.extend(g.relations(&r.b, e, "Redefinition", "redefinedFeature"));
++            }
++        }
++        true
++    }
++}
++
+ /// Direction conformance shares the same contextual proof as repair proposals.
+ pub(super) fn validate_directions(
+     r: &mut ResolvedModel,
+@@ -695,3 +847,147 @@
+         })
+         .collect()
+ }
++
++#[cfg(test)]
++mod view_rendering_tests {
++    use super::*;
++
++    fn findings(source: &str) -> Vec<(String, String)> {
++        let mut model = Model::new();
++        model.add_source("views.sysml", source);
++        assert!(
++            model.unit(0).diagnostics.is_empty(),
++            "{:?}",
++            model.unit(0).diagnostics
++        );
++        let mut graph = ResolvedModel::build(&model);
++        let facts = Facts::new(&mut graph.b);
++        let first = validate_view_renderings(&mut graph, &model, &facts);
++        let second = validate_view_renderings(&mut graph, &model, &facts);
++        assert_eq!(first, second, "cached queries must preserve diagnostics");
++        first
++            .into_iter()
++            .map(|(_, d)| {
++                (
++                    source[d.span.start as usize..d.span.end as usize].into(),
++                    d.code.unwrap().into(),
++                )
++            })
++            .collect()
++    }
++
++    #[test]
++    fn inherited_renderings_include_same_names_and_imported_memberships() {
++        let findings = findings(
++            "package P {
++            rendering def R;
++            view def A { render rendering displayed : R; }
++            view def B { protected render rendering another : R; }
++            view def Same :> A { render rendering displayed : R; }
++            view same : A { render rendering displayed : R; }
++            view def Imported { public import A::displayed; }
++            view def Combined :> Imported, B;
++            view combined : Combined;
++            view def LocalImport { public import A::displayed; render rendering local : R; }
++        }",
++        );
++        assert_eq!(
++            findings,
++            [
++                (
++                    "Same".into(),
++                    "validateViewDefinitionOnlyOneViewRendering".into()
++                ),
++                (
++                    "same".into(),
++                    "validateViewUsageOnlyOneViewRendering".into()
++                ),
++                (
++                    "Combined".into(),
++                    "validateViewDefinitionOnlyOneViewRendering".into()
++                ),
++                (
++                    "combined".into(),
++                    "validateViewUsageOnlyOneViewRendering".into()
++                ),
++            ]
++        );
++    }
++
++    #[test]
++    fn actual_redefinition_visibility_and_membership_identity_are_preserved() {
++        assert!(
++            findings(
++                "package P {
++            rendering def R;
++            view def A { render rendering displayed : R; }
++            view def Renamed :> A { render rendering replacement :>> A::displayed; }
++            view def Transitive :> Renamed { render rendering again :>> Renamed::replacement; }
++            view def Left :> A; view def Right :> A; view def Diamond :> Left, Right;
++            view diamond : Diamond;
++            view def Hidden { private render rendering hidden : R; }
++            view def Child :> Hidden, A;
++            view def Imported { private import A::displayed; }
++            view def PrivateChild :> Imported, A;
++        }"
++            )
++            .is_empty()
++        );
++    }
++
++    #[test]
++    fn incomplete_dependencies_do_not_hide_owned_errors_or_complete_peers() {
++        let findings = findings(
++            "package P {
++            rendering def R;
++            view def A { render rendering a : R; }
++            view def B { render rendering b : R; }
++            view def MissingBase :> A, B, Missing;
++            view def MissingChild :> MissingBase;
++            view def MissingRedefinition :> A, B { render rendering replacement :>> Missing::a; }
++            view def MissingRedefinitionChild :> MissingRedefinition;
++            view def MissingImport { public import Missing::*; }
++            view def MissingImportChild :> MissingImport, A, B;
++            view def CycleA :> CycleB, A; view def CycleB :> CycleA, B;
++            view def Owned :> Missing { render rendering a : R; render rendering b : R; }
++            view def CompletePeer :> A, B;
++            view def ValidPeer :> A;
++        }",
++        );
++        assert_eq!(
++            findings.iter().map(|f| f.0.as_str()).collect::<Vec<_>>(),
++            ["Owned", "CompletePeer"]
++        );
++    }
++
++    #[test]
++    fn unrelated_nested_bodies_do_not_change_the_membership_dependency_set() {
++        let findings = findings(
++            "package P {
++            rendering def R;
++            view def A {
++                render rendering a : R;
++                requirement req { attribute value : Missing; }
++            }
++            view def B { render rendering b : R; }
++            view def Combined :> A, B;
++        }",
++        );
++        assert_eq!(
++            findings.iter().map(|f| f.0.as_str()).collect::<Vec<_>>(),
++            ["Combined"]
++        );
++    }
++
++    #[test]
++    fn elements_added_after_the_static_index_cannot_supply_complete_inputs() {
++        let mut model = Model::new();
++        model.add_source("views.sysml", "view def V;");
++        let mut graph = ResolvedModel::build(&model);
++        let facts = Facts::new(&mut graph.b);
++        let added = graph.b.elements.len();
++        graph.b.elements.push(graph.b.elements[0].clone());
++        let inputs = ViewRenderingInputs::new(&graph, &model, &facts);
++        assert!(!inputs.complete(&mut graph, &facts, added));
++    }
++}
