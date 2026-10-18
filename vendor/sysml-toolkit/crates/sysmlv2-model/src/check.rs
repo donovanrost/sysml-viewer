@@ -52,6 +52,7 @@ pub fn incompatible_typings(r: &crate::json::ResolvedModel) -> Vec<IncompatibleT
 /// introduced by later validator versions are tracked separately in the
 /// external-fixture contracts and do not enlarge the normative denominator.
 pub const IMPLEMENTED_NORMATIVE_SEMANTIC_RULES: &[&str] = &[
+    "validateAcceptActionUsageParameters",
     "validateAssertConstraintUsageReference",
     "validateAssignmentActionUsageReferent",
     "validateAssociationBinarySpecialization",

@@ -1,0 +1,219 @@
+{
+  "reviewedAt": "2026-10-18T02:49:13.087047+00:00",
+  "scope": "First closure-decomposition pass for all directly owned constraints and operations of AcceptActionUsage and TriggerInvocationExpression. It does not close their grammar, inherited metamodel, semantic prose or library dependency obligations.",
+  "source": "https://www.omg.org/spec/SysML/20250201/SysML.xmi",
+  "sourceSha256": "caa65d54f56798bf7582d173f7567e1eea37a49c45984f8bd7df145011cf8c6f",
+  "catalogueSha256": "fa5f9d95017d14d95682976629f05daf22bd64fcf2fe79b6faa731931bb1b08e",
+  "method": "Enumerated both classes in the pinned XMI, read every local operation/constraint expression and accept semantics in SysML 8.4.13.6, then drafted positive/negative boundary partitions. Statuses are bounded evidence observations or code-location candidates, not claims of complete implementation. No second review or new execution is implied.",
+  "items": [
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-instantiatedType_",
+      "owner": "TriggerInvocationExpression",
+      "name": "instantiatedType",
+      "sourceExpressionSha256": [
+        "c4520310c2ae9f50a9811dff6c048fc8b294c08c37e95e89bec4965696570f9e"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "candidate",
+      "acceptancePartitions": [
+        "when/at/after select designated Triggers::TriggerWhen/TriggerAt/TriggerAfter respectively",
+        "Global library authority, user shadowing, absent library and invalid raw kind",
+        "Derived instantiated type and invocation parameter construction must agree"
+      ]
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAfterArgument",
+      "owner": "TriggerInvocationExpression",
+      "name": "validateTriggerInvocationExpressionAfterArgument",
+      "sourceExpressionSha256": [
+        "90aa2967bd3b00b05451f0c2187955ddc1db079f328a9ab2edbeda6e855b0dd7"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "unassessed",
+      "acceptancePartitions": [
+        "First result conforms to Quantities::ScalarQuantityValue",
+        "Measurement-reference feature redefinition closure reaches Quantities::TensorQuantityValue::mRef and specializes ISQBase::DurationUnit",
+        "Wrong units, missing measurement reference, transitive redefinition, quantity subclasses and unavailable library facts"
+      ]
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAtArgument",
+      "owner": "TriggerInvocationExpression",
+      "name": "validateTriggerInvocationExpressionAtArgument",
+      "sourceExpressionSha256": [
+        "a7591f09322270ce7b916bd21533ceb71d461d7b4f81a31b43ee329aa7b96217"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "unassessed",
+      "acceptancePartitions": [
+        "Nonempty argument list and first argument result conforming to Time::TimeInstantValue",
+        "Wrong result kind/type, unavailable expression result and inherited/conjugated typing",
+        "Other trigger kinds do not trigger this conditional constraint"
+      ]
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionWhenArgument",
+      "owner": "TriggerInvocationExpression",
+      "name": "validateTriggerInvocationExpressionWhenArgument",
+      "sourceExpressionSha256": [
+        "8bc1c03741e973977d4462bbf920e844dbc4aaf064ab4800c520e41801306664"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "unassessed",
+      "acceptancePartitions": [
+        "First argument is a FeatureReferenceExpression referring to an Expression",
+        "Referenced expression result conforms to ScalarValues::Boolean",
+        "Missing argument/referent/result, non-expression referent, wrong result type and inherited type facts; wrapper construction alone does not prove validation"
+      ],
+      "evidenceBoundary": "KERNEL-022 proves construction of the referenced-expression wrapper, not implementation or execution of this named validation constraint."
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-isTriggerAction_",
+      "owner": "AcceptActionUsage",
+      "name": "isTriggerAction",
+      "sourceExpressionSha256": [
+        "0cba9f6d4f0f2a6a3800d0de4d40d77100f8e2827d661ff08114a436633cf307"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "unassessed",
+      "acceptancePartitions": [
+        "Transition owner with actual triggerAction membership versus unrelated owned accept",
+        "Missing owner, non-transition owner and transition subtype",
+        "Membership identity and inconsistent/cyclic ownership cannot be inferred from a name"
+      ]
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-deriveAcceptActionUsagePayloadArgument",
+      "owner": "AcceptActionUsage",
+      "name": "deriveAcceptActionUsagePayloadArgument",
+      "sourceExpressionSha256": [
+        "f35de7ce2869094f5f28977cf462f3a510f854f54f04dabc80b98e307eadae4d"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "partial",
+      "acceptancePartitions": [
+        "Absent payload value, written bound value and each trigger kind",
+        "First input argument identity and ownership; unavailable or invalid value relationships",
+        "Canonical layout and explicitly delimited legacy compatibility behavior"
+      ]
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-checkAcceptActionUsageReceiverBindingConnector",
+      "owner": "AcceptActionUsage",
+      "name": "checkAcceptActionUsageReceiverBindingConnector",
+      "sourceExpressionSha256": [
+        "22dc798edcff0eee729e55281dc21120991a46e719655c1c4461ce0629262be3"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "known-gap-for-probed-cases",
+      "acceptancePartitions": [
+        "Each trigger kind has the required accept-owned BindingConnector",
+        "Related feature identities include second accept parameter and second invocation parameter",
+        "Missing invocation receiver, absent/wrong-owner connector, reversed ends, unrelated same-named features",
+        "Explicit via versus omitted/default receiver; inherited/implicit relationship interactions"
+      ],
+      "executionEvidence": "accept-receiver-binding-before-macos-arm64.json"
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-deriveAcceptActionUsagePayloadParameter",
+      "owner": "AcceptActionUsage",
+      "name": "deriveAcceptActionUsagePayloadParameter",
+      "sourceExpressionSha256": [
+        "246b4f4f6cc4870aee84d9cac36287008d1d5ac2b59046206aae646ce47cfbbe"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "partial",
+      "acceptancePartitions": [
+        "Empty parameter list yields absence; otherwise actual first parameter identity",
+        "Mixed input/output parameters and inherited parameters; parameter order after redefinition",
+        "No substitution of a same-named or body feature for the header payload"
+      ]
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-checkAcceptActionUsageTriggerActionSpecialization",
+      "owner": "AcceptActionUsage",
+      "name": "checkAcceptActionUsageTriggerActionSpecialization",
+      "sourceExpressionSha256": [
+        "adb01c681458fe9eaac0e0e776e4499020173648b6acca05e53c09cfca7db7dc"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "unassessed",
+      "acceptancePartitions": [
+        "Actual transition trigger specializes Actions::TransitionAction::accepter",
+        "Non-trigger action cannot qualify only because its name or owner resembles a transition",
+        "Resolve the designated library feature and verify complete specialization dependency"
+      ]
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-validateAcceptActionUsageParameters",
+      "owner": "AcceptActionUsage",
+      "name": "validateAcceptActionUsageParameters",
+      "sourceExpressionSha256": [
+        "956aeb8d7ae72f2a1d1ff79b49b77d63a639fa6cedbe3ba1b2735cee823368f2"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "partial",
+      "acceptancePartitions": [
+        "Zero/one/two/more owned inputs; written and omitted receiver",
+        "in/out/inout directions; inherited versus owned inputs; body input features",
+        "Canonical and legacy constructed graphs; malformed graphs with ownership inconsistencies require separate review"
+      ]
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-deriveAcceptActionUsageReceiverArgument",
+      "owner": "AcceptActionUsage",
+      "name": "deriveAcceptActionUsageReceiverArgument",
+      "sourceExpressionSha256": [
+        "88e4e8cb4e0e15eee528fedaee4baa0468887e59daa388e91efa0b12045b0f99"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "partial",
+      "acceptancePartitions": [
+        "Absent receiver expression versus written via value; exact second argument identity",
+        "Additional directed body members cannot become the receiver",
+        "Default inherited value and contextual this semantics require separate library review"
+      ]
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-checkAcceptActionUsageSubactionSpecialization",
+      "owner": "AcceptActionUsage",
+      "name": "checkAcceptActionUsageSubactionSpecialization",
+      "sourceExpressionSha256": [
+        "d80d8f9b47daadb7ab1027a74bc4ec2978945f5e4b6577fc591f5ec5e59a7e77"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "unassessed",
+      "acceptancePartitions": [
+        "isSubactionUsage true/false partitions and trigger-action exclusion",
+        "Action/state entry/do/exit/part ownership and composition conditions from inherited operation",
+        "Designated Actions::Action::acceptSubactions identity and inherited specialization"
+      ]
+    },
+    {
+      "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-checkAcceptActionUsageSpecialization",
+      "owner": "AcceptActionUsage",
+      "name": "checkAcceptActionUsageSpecialization",
+      "sourceExpressionSha256": [
+        "081390c7779e39c71f32a5ad6a91e56007f7e5591fe96e40273b4f50ddefad61"
+      ],
+      "reviewStatus": "open",
+      "implementationEvidence": "unassessed",
+      "acceptancePartitions": [
+        "Ordinary accept specializes the designated Actions::acceptActions identity",
+        "Trigger accept follows its separate specialization rule",
+        "Library identity, missing libraries, inherited/transitive specialization and user-name shadowing"
+      ]
+    }
+  ],
+  "dependenciesStillToDecompose": [
+    "SysML AcceptNode/AcceptParameterPart/TriggerValuePart/TriggerExpression and referenced KerML argument/expression grammar alternatives",
+    "All inherited ActionUsage, OccurrenceUsage, Usage, Feature and Type obligations, including isSubactionUsage and inputParameters",
+    "InvocationExpression/InstantiationExpression and callable input/result/default/argument semantics",
+    "Actions::AcceptAction, AcceptMessageAction, TransitionAction::accepter and contextual this/default receiver behavior",
+    "Triggers functions and their receiver, clock, monitor defaults, plus time/quantity/measurement-reference dependencies",
+    "BindingConnector, relatedFeatures, implied connector/end construction and specialization/redefinition closure",
+    "State/transition membership derivation discrepancies already recorded in state-property-review.json"
+  ],
+  "nextImplementationReview": "Trace the trigger receiver parameter and accept-owned binding connector together. Positive payload-wrapper construction does not establish this semantic binding. Assess existing implied-construction code before deciding whether to repair or implement.",
+  "nextFailureProbe": "accept-receiver-binding-before-macos-arm64.json"
+}

@@ -10693,26 +10693,452 @@
         }
       ],
       "limits": "KERNEL-021 checks the explicit membership owner and actual member metaclass. The public PerformActionUsage effect is admitted; private mutation to ReferenceUsage is rejected without following its referent. The public textual grammar supplies valid typed memberships; malformed-kind/owner negative evidence is the registered private dependency suite. Arbitrary inconsistent raw ownership graphs, semantic metadata construction, guard Boolean/multiplicity qualification and complete transition-feature derivations remain open."
+    },
+    {
+      "category": "standard",
+      "applicability": "current-product",
+      "priority": "P0",
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query",
+          "accept-parity"
+        ]
+      },
+      "tests": [
+        {
+          "case": "ACCEPT-001",
+          "checks": [
+            "clean",
+            "simple-element",
+            "simple-parameters",
+            "simple-payload",
+            "directed-element",
+            "directed-parameters",
+            "directed-payload",
+            "boundValue-element",
+            "boundValue-parameters",
+            "boundValue-payload",
+            "bodyParameters-element",
+            "bodyParameters-parameters",
+            "bodyParameters-payload",
+            "state-subactions",
+            "triggered-parameters",
+            "triggered-accepter"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "simple-element",
+              "status": "pass"
+            },
+            {
+              "id": "simple-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "simple-payload",
+              "status": "pass"
+            },
+            {
+              "id": "directed-element",
+              "status": "pass"
+            },
+            {
+              "id": "directed-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "directed-payload",
+              "status": "pass"
+            },
+            {
+              "id": "boundValue-element",
+              "status": "pass"
+            },
+            {
+              "id": "boundValue-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "boundValue-payload",
+              "status": "pass"
+            },
+            {
+              "id": "bodyParameters-element",
+              "status": "pass"
+            },
+            {
+              "id": "bodyParameters-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "bodyParameters-payload",
+              "status": "pass"
+            },
+            {
+              "id": "state-subactions",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-accepter",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "ACCEPT-002",
+          "checks": [
+            "clean",
+            "absolute-element",
+            "absolute-parameters",
+            "absolute-payload",
+            "relative-element",
+            "relative-parameters",
+            "relative-payload",
+            "conditional-element",
+            "conditional-parameters",
+            "conditional-payload",
+            "atTime-parameters",
+            "atTime-accepter",
+            "afterDelay-parameters",
+            "afterDelay-accepter",
+            "onCondition-parameters",
+            "onCondition-accepter"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "absolute-element",
+              "status": "pass"
+            },
+            {
+              "id": "absolute-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "absolute-payload",
+              "status": "pass"
+            },
+            {
+              "id": "relative-element",
+              "status": "pass"
+            },
+            {
+              "id": "relative-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "relative-payload",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-element",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-payload",
+              "status": "pass"
+            },
+            {
+              "id": "atTime-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "atTime-accepter",
+              "status": "pass"
+            },
+            {
+              "id": "afterDelay-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "afterDelay-accepter",
+              "status": "pass"
+            },
+            {
+              "id": "onCondition-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "onCondition-accepter",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "id": "ACCEPT-PARAMETER-CONSTRUCTION",
+      "obligation": "AcceptActionUsage has at least two owned input parameters: its inout payload precedes its input receiver, including when via is omitted.",
+      "sources": [
+        "SYSML-GRAMMAR-AcceptParameterPart",
+        "SYSML-XMI-Systems-Actions-AcceptActionUsage-validateAcceptActionUsageParameters",
+        "SYSML-XMI-Systems-Actions-ActionUsage-inputParameters_",
+        "SYSML-XMI-Systems-Actions-AcceptActionUsage-payloadParameter",
+        "SYSML-XMI-Systems-Actions-AcceptActionUsage-receiverArgument"
+      ],
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "accept-construction",
+          "accept-validation",
+          "accept-tests"
+        ]
+      },
+      "limits": "KERNEL-022 covers written and omitted receivers, payload values, directed body members, state subactions and transition triggers. Raw graph tests check ownership, direction, parameter ordering and omitted-receiver isImplied provenance. A registered private test mutates receivers to out/inout and excludes inherited input from the owned count. Public ordinary accepts expose ordered parameters; transition accepter records remain navigation stubs with membersAvailable false. Default receiver value/binding, full trigger receiver binding, all implicit relationships, arbitrary inconsistent graphs and execution remain open."
+    },
+    {
+      "category": "standard",
+      "applicability": "current-product",
+      "priority": "P0",
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query",
+          "accept-parity"
+        ]
+      },
+      "tests": [
+        {
+          "case": "ACCEPT-001",
+          "checks": [
+            "clean",
+            "simple-element",
+            "simple-parameters",
+            "simple-payload",
+            "directed-element",
+            "directed-parameters",
+            "directed-payload",
+            "boundValue-element",
+            "boundValue-parameters",
+            "boundValue-payload",
+            "bodyParameters-element",
+            "bodyParameters-parameters",
+            "bodyParameters-payload",
+            "state-subactions",
+            "triggered-parameters",
+            "triggered-accepter"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "simple-element",
+              "status": "pass"
+            },
+            {
+              "id": "simple-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "simple-payload",
+              "status": "pass"
+            },
+            {
+              "id": "directed-element",
+              "status": "pass"
+            },
+            {
+              "id": "directed-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "directed-payload",
+              "status": "pass"
+            },
+            {
+              "id": "boundValue-element",
+              "status": "pass"
+            },
+            {
+              "id": "boundValue-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "boundValue-payload",
+              "status": "pass"
+            },
+            {
+              "id": "bodyParameters-element",
+              "status": "pass"
+            },
+            {
+              "id": "bodyParameters-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "bodyParameters-payload",
+              "status": "pass"
+            },
+            {
+              "id": "state-subactions",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "triggered-accepter",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "ACCEPT-002",
+          "checks": [
+            "clean",
+            "absolute-element",
+            "absolute-parameters",
+            "absolute-payload",
+            "relative-element",
+            "relative-parameters",
+            "relative-payload",
+            "conditional-element",
+            "conditional-parameters",
+            "conditional-payload",
+            "atTime-parameters",
+            "atTime-accepter",
+            "afterDelay-parameters",
+            "afterDelay-accepter",
+            "onCondition-parameters",
+            "onCondition-accepter"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "absolute-element",
+              "status": "pass"
+            },
+            {
+              "id": "absolute-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "absolute-payload",
+              "status": "pass"
+            },
+            {
+              "id": "relative-element",
+              "status": "pass"
+            },
+            {
+              "id": "relative-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "relative-payload",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-element",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "conditional-payload",
+              "status": "pass"
+            },
+            {
+              "id": "atTime-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "atTime-accepter",
+              "status": "pass"
+            },
+            {
+              "id": "afterDelay-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "afterDelay-accepter",
+              "status": "pass"
+            },
+            {
+              "id": "onCondition-parameters",
+              "status": "pass"
+            },
+            {
+              "id": "onCondition-accepter",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "id": "ACCEPT-TRIGGER-VALUES",
+      "obligation": "At/after/when triggers are payload FeatureValues; their argument parameters own value expressions, with an OwnedExpressionReference wrapper for when.",
+      "sources": [
+        "SYSML-GRAMMAR-TriggerValuePart",
+        "SYSML-GRAMMAR-TriggerFeatureValue",
+        "SYSML-GRAMMAR-TriggerExpression",
+        "SYSML-GRAMMAR-ArgumentMember",
+        "SYSML-GRAMMAR-ArgumentExpressionMember",
+        "KERML-GRAMMAR-OwnedExpressionReference",
+        "SYSML-XMI-Systems-Actions-AcceptActionUsage-payloadArgument"
+      ],
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "accept-construction",
+          "accept-lifting",
+          "accept-tests"
+        ]
+      },
+      "limits": "KERNEL-022 raw graph tests distinguish trigger values from sibling accept parameters and check at/after versus when argument wrappers. Two full-library public cases retain typed trigger forms, distinct accept/transition input order and clean diagnostics; native/WASM parity runs beside previous transition and recovered-syntax cases in both file orders. Generated canonical and legacy compact graphs survive lifting/printing/reparsing with body features and payload/receiver expressions. Earlier sibling-trigger input readers remain compatibility code, not normative interchange qualification. Full trigger parameter construction, receiver binding, time/change-event semantics, execution and external-model interchange remain open."
     }
   ],
-  "executableCases": 130,
+  "executableCases": 132,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "fa5f9d95017d14d95682976629f05daf22bd64fcf2fe79b6faa731931bb1b08e",
-  "assessmentsSha256": "d1667a1f0d812b984eb7ba29228fcf9cd03576ed03bca583824c61e1f4dfc86c",
+  "assessmentsSha256": "f894d6c28d69ea5f8c4dec3e70917ac7b5a06b27306f3c20e5a64e94386b5bcf",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "f95d953fd421703dc59e4f87a7997e393c79b53d2b8c9a428f5287364999ca28",
-    "generatedAt": "2026-10-18T02:11:11.307Z",
-    "kernelInputSha256": "f926d5b79b5507cfbfdfbc998f92a3f44e82d883ec40c87026d405dc682cec3e",
-    "binarySha256": "b90367eb24420db44d04051619284c66cd52c2192a3f16029a041d1c78a872f3",
+    "sha256": "f67274225323ea08961273f8430fadf74bded01f8e9c16fcd076b6ccfa44377a",
+    "generatedAt": "2026-10-18T02:54:51.046Z",
+    "kernelInputSha256": "60e6a6f6d42169e71c829bbee89cbfefee4afebb260a246189dad68b0c3ffda5",
+    "binarySha256": "403190ab66c5e94aa8ed8b29468d4d418f506b56624aecc996c63c7c8e49d366",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.22",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.23",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 130,
+      "pass": 132,
       "known-gap": 0,
       "planned": 0,
       "fail": 0

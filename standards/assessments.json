@@ -45,7 +45,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn effective_features(",
       "role": "candidate upstream graph and resolution implementation; presence does not prove every rule",
-      "sha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
+      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
     },
     "typing": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/typing.rs",
@@ -81,13 +81,13 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn resolve_in(",
       "role": "candidate upstream scoped-name resolution",
-      "sha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
+      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
     },
     "connector-ends": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn connector_end_targets(",
       "role": "candidate upstream connector-chain query",
-      "sha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
+      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
     },
     "diagram": {
       "path": "src/viewer/diagram.ts",
@@ -303,7 +303,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
       "symbol": "pub fn validate_semantics_with(",
       "role": "Runs semantic validators including metadata type checks",
-      "sha256": "1fbfd50483bece8409891f579d56db232b0a16a38c08ba2f9540077b3d86942f"
+      "sha256": "0d6adf4c0ba1cf041edb3e46aa51b77b743f7c7b12768d6aec3e2f081098efd7"
     },
     "family-tests": {
       "path": "crates/sysml-kernel/tests/families.rs",
@@ -327,13 +327,13 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "fn validate_parallel_states(",
       "role": "Checked source/target incidence of transitions on directly owned parallel-state actions, with independent unresolved endpoint guards",
-      "sha256": "dbe60817afd3f49b4dbe39a317a06188aed2a15cf4ed1e7eabc538561913e159"
+      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
     },
     "transition-target-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "fn target_feature(",
       "role": "Bounded written transition target Feature.featureTarget identity proof before ActionUsage kind validation",
-      "sha256": "dbe60817afd3f49b4dbe39a317a06188aed2a15cf4ed1e7eabc538561913e159"
+      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
     },
     "state-query": {
       "path": "crates/sysml-kernel/src/states.rs",
@@ -351,19 +351,19 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn state_subactions(",
       "role": "Shared semantic library query for written state subaction kinds and action elements",
-      "sha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
+      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
     },
     "trigger-source-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "pub(super) fn validate(",
       "role": "Trigger-source constraint uses shared triggerAction and checked source identity",
-      "sha256": "dbe60817afd3f49b4dbe39a317a06188aed2a15cf4ed1e7eabc538561913e159"
+      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
     },
     "transition-construction": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "\"sourceparam\"",
       "role": "Textual transition source/payload parameter construction",
-      "sha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
+      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
     },
     "transition-construction-tests": {
       "path": "crates/sysml-kernel/tests/transition_construction.rs",
@@ -375,7 +375,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "\"validateTransitionUsageParameters\"",
       "role": "Owned input, state/transition owner and trigger/effect kind checks with private malformed-graph regressions",
-      "sha256": "dbe60817afd3f49b4dbe39a317a06188aed2a15cf4ed1e7eabc538561913e159"
+      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
     },
     "transition-parameter-ast": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/ast.rs",
@@ -388,6 +388,36 @@
       "symbol": "fn print_transition",
       "role": "Preserves source-parameter origin when formatting textual transition forms",
       "sha256": "a5d1432c941e9f728f3768bd49bf375eb00cc7a6e7059156970689e83b44fd87"
+    },
+    "accept-construction": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+      "symbol": "let payload_element = self.emit_payload",
+      "role": "Accept payload/receiver construction and payload-owned trigger argument wrappers",
+      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
+    },
+    "accept-validation": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+      "symbol": "\"validateAcceptActionUsageParameters\"",
+      "role": "Owned input count with private malformed-direction and inherited-input regressions",
+      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
+    },
+    "accept-lifting": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs",
+      "symbol": "fn lift_trigger_value",
+      "role": "Separate payload, trigger and receiver lifting, retaining body features",
+      "sha256": "5e59c965712baa790f43e58df39e0f8e01e14df73ae1a76840076e9e65e5e8b8"
+    },
+    "accept-tests": {
+      "path": "crates/sysml-kernel/tests/accept_construction.rs",
+      "symbol": "fn accepts_construct_owned_payload_and_receiver_inputs_even_without_via",
+      "role": "Raw graph construction, owned trigger values, body preservation and generated canonical/legacy round trips",
+      "sha256": "9de9a4c39945b31c19d05491ba5cdc3486a34eed0a09a1983e0c800711dd0a94"
+    },
+    "accept-parity": {
+      "path": "tests/accept-actions.test.ts",
+      "symbol": "membersAvailable",
+      "role": "Native/WASM accept and transition parity with explicit navigation-stub completeness boundary",
+      "sha256": "4cb3afad85f500b5cc5b6a8eae258c7f9212cb80150fa49aa69636b4c15e685e"
     }
   },
   "assessments": [
@@ -4964,6 +4994,160 @@
         }
       ],
       "limits": "KERNEL-021 checks the explicit membership owner and actual member metaclass. The public PerformActionUsage effect is admitted; private mutation to ReferenceUsage is rejected without following its referent. The public textual grammar supplies valid typed memberships; malformed-kind/owner negative evidence is the registered private dependency suite. Arbitrary inconsistent raw ownership graphs, semantic metadata construction, guard Boolean/multiplicity qualification and complete transition-feature derivations remain open."
+    },
+    {
+      "category": "standard",
+      "applicability": "current-product",
+      "priority": "P0",
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query",
+          "accept-parity"
+        ]
+      },
+      "tests": [
+        {
+          "case": "ACCEPT-001",
+          "checks": [
+            "clean",
+            "simple-element",
+            "simple-parameters",
+            "simple-payload",
+            "directed-element",
+            "directed-parameters",
+            "directed-payload",
+            "boundValue-element",
+            "boundValue-parameters",
+            "boundValue-payload",
+            "bodyParameters-element",
+            "bodyParameters-parameters",
+            "bodyParameters-payload",
+            "state-subactions",
+            "triggered-parameters",
+            "triggered-accepter"
+          ]
+        },
+        {
+          "case": "ACCEPT-002",
+          "checks": [
+            "clean",
+            "absolute-element",
+            "absolute-parameters",
+            "absolute-payload",
+            "relative-element",
+            "relative-parameters",
+            "relative-payload",
+            "conditional-element",
+            "conditional-parameters",
+            "conditional-payload",
+            "atTime-parameters",
+            "atTime-accepter",
+            "afterDelay-parameters",
+            "afterDelay-accepter",
+            "onCondition-parameters",
+            "onCondition-accepter"
+          ]
+        }
+      ],
+      "id": "ACCEPT-PARAMETER-CONSTRUCTION",
+      "obligation": "AcceptActionUsage has at least two owned input parameters: its inout payload precedes its input receiver, including when via is omitted.",
+      "sources": [
+        "SYSML-GRAMMAR-AcceptParameterPart",
+        "SYSML-XMI-Systems-Actions-AcceptActionUsage-validateAcceptActionUsageParameters",
+        "SYSML-XMI-Systems-Actions-ActionUsage-inputParameters_",
+        "SYSML-XMI-Systems-Actions-AcceptActionUsage-payloadParameter",
+        "SYSML-XMI-Systems-Actions-AcceptActionUsage-receiverArgument"
+      ],
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "accept-construction",
+          "accept-validation",
+          "accept-tests"
+        ]
+      },
+      "limits": "KERNEL-022 covers written and omitted receivers, payload values, directed body members, state subactions and transition triggers. Raw graph tests check ownership, direction, parameter ordering and omitted-receiver isImplied provenance. A registered private test mutates receivers to out/inout and excludes inherited input from the owned count. Public ordinary accepts expose ordered parameters; transition accepter records remain navigation stubs with membersAvailable false. Default receiver value/binding, full trigger receiver binding, all implicit relationships, arbitrary inconsistent graphs and execution remain open."
+    },
+    {
+      "category": "standard",
+      "applicability": "current-product",
+      "priority": "P0",
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire",
+          "query",
+          "accept-parity"
+        ]
+      },
+      "tests": [
+        {
+          "case": "ACCEPT-001",
+          "checks": [
+            "clean",
+            "simple-element",
+            "simple-parameters",
+            "simple-payload",
+            "directed-element",
+            "directed-parameters",
+            "directed-payload",
+            "boundValue-element",
+            "boundValue-parameters",
+            "boundValue-payload",
+            "bodyParameters-element",
+            "bodyParameters-parameters",
+            "bodyParameters-payload",
+            "state-subactions",
+            "triggered-parameters",
+            "triggered-accepter"
+          ]
+        },
+        {
+          "case": "ACCEPT-002",
+          "checks": [
+            "clean",
+            "absolute-element",
+            "absolute-parameters",
+            "absolute-payload",
+            "relative-element",
+            "relative-parameters",
+            "relative-payload",
+            "conditional-element",
+            "conditional-parameters",
+            "conditional-payload",
+            "atTime-parameters",
+            "atTime-accepter",
+            "afterDelay-parameters",
+            "afterDelay-accepter",
+            "onCondition-parameters",
+            "onCondition-accepter"
+          ]
+        }
+      ],
+      "id": "ACCEPT-TRIGGER-VALUES",
+      "obligation": "At/after/when triggers are payload FeatureValues; their argument parameters own value expressions, with an OwnedExpressionReference wrapper for when.",
+      "sources": [
+        "SYSML-GRAMMAR-TriggerValuePart",
+        "SYSML-GRAMMAR-TriggerFeatureValue",
+        "SYSML-GRAMMAR-TriggerExpression",
+        "SYSML-GRAMMAR-ArgumentMember",
+        "SYSML-GRAMMAR-ArgumentExpressionMember",
+        "KERML-GRAMMAR-OwnedExpressionReference",
+        "SYSML-XMI-Systems-Actions-AcceptActionUsage-payloadArgument"
+      ],
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "accept-construction",
+          "accept-lifting",
+          "accept-tests"
+        ]
+      },
+      "limits": "KERNEL-022 raw graph tests distinguish trigger values from sibling accept parameters and check at/after versus when argument wrappers. Two full-library public cases retain typed trigger forms, distinct accept/transition input order and clean diagnostics; native/WASM parity runs beside previous transition and recovered-syntax cases in both file orders. Generated canonical and legacy compact graphs survive lifting/printing/reparsing with body features and payload/receiver expressions. Earlier sibling-trigger input readers remain compatibility code, not normative interchange qualification. Full trigger parameter construction, receiver binding, time/change-event semantics, execution and external-model interchange remain open."
     }
   ]
 }

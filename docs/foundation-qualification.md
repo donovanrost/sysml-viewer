@@ -921,6 +921,48 @@ qualification. Normalized JSON lifting chooses explicit transition grammar;
 external-payload provenance round trips are not established by the textual
 formatting regression.
 
+## KERNEL-022: accept inputs and payload-owned trigger values
+
+Engine `.23` constructs an accept's inout payload followed by its input receiver,
+including when `via` is omitted. The omitted receiver membership is marked implied;
+a written receiver retains its expression value. The [baseline probe](evidence/accept-construction-before-macos-arm64.json)
+records missing receiver inputs and incorrectly owned trigger expressions before
+the production change. The named `validateAcceptActionUsageParameters` check counts
+derived inputs owned by the accept. Its private malformed-model regression rejects
+output-only receivers and does not let inherited inputs satisfy the owned count;
+inout receivers still count as inputs.
+
+At/after/when TriggerInvocationExpressions now belong to the payload's FeatureValue,
+rather than appearing as sibling accept parameters. ArgumentMember constructs the
+Feature/FeatureValue wrapper for at and after. The when argument uses
+ArgumentExpressionMember with an OwnedExpressionReference, retaining the nested
+condition expression. The existing conditional-operand wrapper is shared without
+changing its layout or its private membership visibility.
+
+`ACCEPT-001/002` cover full-library analysis of ordinary accepts, explicit and
+omitted receivers, bound payloads, directed body features, state entry/do/exit
+actions and transition triggers. Native tests inspect the internal ownership,
+direction, wrapper structure and parameter provenance. Generated canonical and
+legacy compact models are lifted, printed and reparsed with exact model equality.
+That broader regression exposed a second defect: a directed body feature could
+replace the payload through an older-layout compatibility reader. The
+[pre-correction probe](evidence/accept-body-lifting-before-macos-arm64.json) retains
+the actual failed reconstruction; the reader now separates later body features
+from the legacy header payload.
+
+The parity test combines both new fixtures with previous transition, invalid-owner
+and recovered-syntax cases in both file orders. The existing 32-document family
+corpus is unchanged. Ordinary accept parameter memberships are queryable; nested
+transition accepter records remain navigation stubs with `membersAvailable: false`.
+Raw graph tests provide the deeper construction evidence for those stubs.
+
+Default receiver value/binding, the trigger invocation's complete receiver binding,
+implicit specialization/subsetting closure, time and change-event semantics,
+execution and arbitrary external-model interchange remain open. The retained
+compatibility readers and bounded generated-model round trips do not qualify the
+complete normative JSON/KPAR format. Package/app version 0.4.0 and snapshot schema
+4 remain unchanged.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -948,11 +990,11 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the current matrix has **130 passing conformance cases**, **no
-known-gap cases**, and **no planned cases**. All **87 Rust kernel tests**, **50 Node
-tests**, and **286 dependency proof tests** pass. The dependency suites cover
+On macOS arm64, the current matrix has **132 passing conformance cases**, **no
+known-gap cases**, and **no planned cases**. All **91 Rust kernel tests**, **51 Node
+tests**, and **287 dependency proof tests** pass. The dependency suites cover
 lexical boundaries (5), rational arithmetic (13), explicit usage typing (2), view
-rendering validation (5), transition incidence/target/trigger and membership/input validation (11), type relations (41), model-level evaluability (33),
+rendering validation (5), transition/accept incidence, target, trigger and membership/input validation (12), type relations (41), model-level evaluability (33),
 cardinality (34), invocation bindings (19), constructor bindings (17), dynamic graph
 (19), dynamic invocations (27), owned results (4), semantic ownership (5), end
 constancy (10) and checked namespace operations (41). The corpus and the 32 import-rule
@@ -960,7 +1002,13 @@ partitions are included in the Rust suite, not additional independently qualifie
 specification counts. Native and WebAssembly outputs match exactly, including the
 expanded family/body corpus in both file orders.
 
-The [KERNEL-021 validation record](evidence/transition-construction-macos-arm64.json)
+The [KERNEL-022 validation record](evidence/accept-construction-macos-arm64.json)
+records payload/receiver construction, trigger value ownership/wrappers and the
+owned-input constraint. Two public cases add 32 assertions. Four native tests
+cover input provenance/direction, trigger wrappers, state/transition accepts and
+exact generated-model round trips, including the body-feature reconstruction fix.
+A private negative regression covers inherited and output-only input exclusion.
+The prior [KERNEL-021 validation record](evidence/transition-construction-macos-arm64.json)
 records the transition input construction and five named input/membership rules,
 two added cases and 22 added assertions. Five native tests cover raw input order,
 canonical/legacy graphs, public identity, ordinary and entry-transition provenance
@@ -997,6 +1045,17 @@ passed in 2.0–4.1 seconds, with identical snapshots within each case. Subseque
 validation used a temporary process-scoped sleep assertion, released at completion.
 The 30-second conformance and 60-second benchmark deadlines are unchanged. Earlier unexplained
 benchmark timeouts below remain separate evidence.
+
+The [KERNEL-022 benchmark](evidence/benchmark-accept-construction-macos-arm64.json)
+records 174 successful samples across 29 workloads. All 27 previous workloads remain;
+the two additions check accept payload/receiver memberships and at/after/when
+trigger forms on every sample. Repeated and native/WASM snapshots agree exactly.
+These fresh-process measurements do not establish production-model latency bounds.
+
+| Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
+| --- | ---: | ---: | ---: |
+| Accept payload/receiver construction | 2,036 | 2,470 | 405.7/349.7 |
+| At/after/when trigger values | 2,038 | 2,475 | 410.4/353.7 |
 
 The [KERNEL-021 benchmark](evidence/benchmark-transition-construction-macos-arm64.json)
 records 162 successful samples across 27 workloads. All 25 earlier workloads remain;

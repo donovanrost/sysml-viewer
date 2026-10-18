@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-10-18T02:26:46.005950+00:00",
+  "baselineCommit": "9798991",
+  "baselineEngineVersionDeclared": "open-mbee/0.10.2@821221767c3c+sysml-kernel.22",
+  "kind": "Raw-model regressions executed before production edits; not a CLI snapshot or normative interchange test.",
+  "command": [
+    "node",
+    "tools/rust.mjs",
+    "test",
+    "--locked",
+    "--release",
+    "-p",
+    "sysml-kernel",
+    "--test",
+    "accept_construction"
+  ],
+  "source": "package AcceptConstruction {\n    item def Signal;\n    part receiver;\n    action simple accept data : Signal;\n    action directed accept routed : Signal via receiver;\n    action absolute accept eventAt at 10;\n    action relative accept eventAfter after 5;\n    action change accept eventWhen when true via receiver;\n    state def Driver {\n        state a; state b;\n        transition triggered first a accept signal : Signal then b;\n    }\n}",
+  "actualOwnedInputs": [
+    1,
+    2,
+    1,
+    1,
+    2,
+    1
+  ],
+  "expectedOwnedInputs": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "triggerOwnership": {
+    "actual": "AcceptActionUsage",
+    "expected": "its payload ReferenceUsage"
+  },
+  "testSourceSha256": "37e1c84573b9b38d01c5c3d0aea899424d09e93f19f3af1f878b12c339a160fe",
+  "logSha256": "e435305f2665f7f21f3fe76749f3bad82917cede84b3ff703a994867ddc359d9",
+  "output": "   Compiling sysml-kernel v0.4.0 (/Users/donovanrost/Documents/ChatGPT/SysML/crates/sysml-kernel)\n    Finished `release` profile [optimized] target(s) in 13.52s\n     Running tests/accept_construction.rs (target/release/deps/accept_construction-914e2c365b306f70)\n\nrunning 2 tests\ntest accept_trigger_expressions_are_payload_values_not_sibling_parameters ... FAILED\ntest accepts_construct_owned_payload_and_receiver_inputs_even_without_via ... FAILED\n\nfailures:\n\n---- accept_trigger_expressions_are_payload_values_not_sibling_parameters stdout ----\n\nthread 'accept_trigger_expressions_are_payload_values_not_sibling_parameters' (63762707) panicked at crates/sysml-kernel/tests/accept_construction.rs:79:9:\nassertion `left == right` failed\n  left: Some(ElementRef(23))\n right: Some(ElementRef(25))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n---- accepts_construct_owned_payload_and_receiver_inputs_even_without_via stdout ----\n\nthread 'accepts_construct_owned_payload_and_receiver_inputs_even_without_via' (63762708) panicked at crates/sysml-kernel/tests/accept_construction.rs:55:9:\nassertion `left == right` failed\n  left: [1, 2, 1, 1, 2, 1]\n right: [2, 2, 2, 2, 2, 2]\n\n\nfailures:\n    accept_trigger_expressions_are_payload_values_not_sibling_parameters\n    accepts_construct_owned_payload_and_receiver_inputs_even_without_via\n\ntest result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `-p sysml-kernel --test accept_construction`\nnode:internal/errors:985\n  const err = new Error(message);\n              ^\n\nError: Command failed: /Users/donovanrost/.cargo/bin/rustup run 1.97.0 cargo test --locked --release -p sysml-kernel --test accept_construction\n    at genericNodeError (node:internal/errors:985:15)\n    at wrappedFn (node:internal/errors:539:14)\n    at checkExecSyncError (node:child_process:925:11)\n    at execFileSync (node:child_process:961:15)\n    at cargo (file:///Users/donovanrost/Documents/ChatGPT/SysML/tools/rust.mjs:17:10)\n    at file:///Users/donovanrost/Documents/ChatGPT/SysML/tools/rust.mjs:25:3\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:633:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  status: 101,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 82265,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.16.0\n"
+}

@@ -36,7 +36,7 @@
     },
     {
       "path": "crates/sysml-kernel/src/lib.rs",
-      "sha256": "7e491fd579fc4bce8cc2eca57c046eca4ae8d3b530ab4b7384578581e135eae5"
+      "sha256": "d95bd7fff97d8f54d6a61f8a233c8f61e21256e4ae842829f6f9b32c67155c86"
     },
     {
       "path": "crates/sysml-kernel/src/namespaces.rs",
@@ -76,11 +76,11 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-      "sha256": "1fbfd50483bece8409891f579d56db232b0a16a38c08ba2f9540077b3d86942f"
+      "sha256": "0d6adf4c0ba1cf041edb3e46aa51b77b743f7c7b12768d6aec3e2f081098efd7"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-      "sha256": "dbe60817afd3f49b4dbe39a317a06188aed2a15cf4ed1e7eabc538561913e159"
+      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/chains.rs",
@@ -184,11 +184,11 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
-      "sha256": "f696f1adfee2348f34a15e3e9d4ba0c03f6e3a0f78c81988d648c742b8529ca7"
+      "sha256": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/behavior.rs",
-      "sha256": "7a3f0fdb73646524472412aec7da7b73e0632af0727ee1477f371d14f52320ef"
+      "sha256": "caa925533e0e836ddcdb4464e3f9edb926f7c326e835875b6829dbfcf975156e"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/callable_bodies.rs",
@@ -528,7 +528,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs",
-      "sha256": "63ca59e582a977a2c10c6fd670d3f1a93420e1b0d28cc831dd615f06b667c483"
+      "sha256": "5e59c965712baa790f43e58df39e0f8e01e14df73ae1a76840076e9e65e5e8b8"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/loader.rs",
@@ -637,15 +637,15 @@
   ],
   "structuredInputHashEncoding": "JSON.stringify(parsed input), UTF-8",
   "catalogueSha256": "6e99879d8d7564e2fb160394b9dcd1c1b05bdb6603a05ca61c5ec2d29bce7f6b",
-  "assessmentsSha256": "4ad855e80f00dfad0b855cb3d73c2368e388e1430f33a9fa264eae7f313b20cb",
-  "matrixSha256": "74324d018cf680198358cf326c2276b3e5a8c889540cb6bb5793390f595d410e",
+  "assessmentsSha256": "5509ba7c322133b0c71ff262a6ca3d6b444b9e9c1907038ad4964be96912b937",
+  "matrixSha256": "3b507ff126b89cee68290f44e854a8223f36346f7d6bb595b3f935672111f873",
   "counts": {
     "rules": 180,
-    "registered": 96,
-    "withSourceMentions": 97,
-    "withoutSourceMentions": 83,
-    "withDirectAssessments": 15,
-    "withoutDirectAssessments": 165,
+    "registered": 97,
+    "withSourceMentions": 98,
+    "withoutSourceMentions": 82,
+    "withDirectAssessments": 16,
+    "withoutDirectAssessments": 164,
     "unmatchedNames": 36
   },
   "rules": [
@@ -654,10 +654,84 @@
       "name": "validateAcceptActionUsageParameters",
       "standard": "sysml",
       "owner": "Systems-Actions-AcceptActionUsage",
-      "registrations": [],
-      "mentions": [],
-      "assessments": [],
-      "nextAction": "locate-or-implement"
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 55
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 348
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 946
+        }
+      ],
+      "assessments": [
+        {
+          "id": "ACCEPT-PARAMETER-CONSTRUCTION",
+          "obligation": "AcceptActionUsage has at least two owned input parameters: its inout payload precedes its input receiver, including when via is omitted.",
+          "implementation": "partial",
+          "api": "partial",
+          "limits": "KERNEL-022 covers written and omitted receivers, payload values, directed body members, state subactions and transition triggers. Raw graph tests check ownership, direction, parameter ordering and omitted-receiver isImplied provenance. A registered private test mutates receivers to out/inout and excludes inherited input from the owned count. Public ordinary accepts expose ordered parameters; transition accepter records remain navigation stubs with membersAvailable false. Default receiver value/binding, full trigger receiver binding, all implicit relationships, arbitrary inconsistent graphs and execution remain open.",
+          "tests": [
+            {
+              "case": "ACCEPT-001",
+              "checks": [
+                "clean",
+                "simple-element",
+                "simple-parameters",
+                "simple-payload",
+                "directed-element",
+                "directed-parameters",
+                "directed-payload",
+                "boundValue-element",
+                "boundValue-parameters",
+                "boundValue-payload",
+                "bodyParameters-element",
+                "bodyParameters-parameters",
+                "bodyParameters-payload",
+                "state-subactions",
+                "triggered-parameters",
+                "triggered-accepter"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "ACCEPT-002",
+              "checks": [
+                "clean",
+                "absolute-element",
+                "absolute-parameters",
+                "absolute-payload",
+                "relative-element",
+                "relative-parameters",
+                "relative-payload",
+                "conditional-element",
+                "conditional-parameters",
+                "conditional-payload",
+                "atTime-parameters",
+                "atTime-accepter",
+                "afterDelay-parameters",
+                "afterDelay-accepter",
+                "onCondition-parameters",
+                "onCondition-accepter"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            }
+          ]
+        }
+      ],
+      "nextAction": "complete-obligation-review"
     },
     {
       "sourceId": "SYSML-XMI-Systems-Requirements-ActorMembership-validateActorMembershipOwningType",
@@ -703,7 +777,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 55
+          "line": 56
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -737,11 +811,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 56
+          "line": 57
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 489
+          "line": 504
         }
       ],
       "assessments": [],
@@ -761,7 +835,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 57
+          "line": 58
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
@@ -785,7 +859,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 58
+          "line": 59
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -809,7 +883,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 59
+          "line": 60
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -873,7 +947,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 60
+          "line": 61
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -897,7 +971,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 61
+          "line": 62
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
@@ -925,7 +999,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 62
+          "line": 63
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1009,7 +1083,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 63
+          "line": 64
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1099,7 +1173,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 64
+          "line": 65
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1173,7 +1247,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 65
+          "line": 66
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
@@ -1197,7 +1271,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 66
+          "line": 67
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
@@ -1231,11 +1305,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 67
+          "line": 68
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 288
+          "line": 301
         }
       ],
       "assessments": [],
@@ -1265,11 +1339,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 68
+          "line": 69
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 293
+          "line": 306
         }
       ],
       "assessments": [],
@@ -1289,7 +1363,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 69
+          "line": 70
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1313,7 +1387,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 70
+          "line": 71
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
@@ -1337,7 +1411,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 71
+          "line": 72
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
@@ -1361,7 +1435,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 72
+          "line": 73
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1385,11 +1459,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 73
+          "line": 74
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 391
+          "line": 411
         }
       ],
       "assessments": [],
@@ -1409,11 +1483,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 74
+          "line": 75
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 303
+          "line": 316
         }
       ],
       "assessments": [],
@@ -1453,7 +1527,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 75
+          "line": 76
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1547,7 +1621,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 76
+          "line": 77
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1601,7 +1675,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 77
+          "line": 78
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1625,7 +1699,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 78
+          "line": 79
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1669,7 +1743,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 79
+          "line": 80
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
@@ -1693,7 +1767,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 80
+          "line": 81
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1717,7 +1791,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 81
+          "line": 82
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1741,7 +1815,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 82
+          "line": 83
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1765,7 +1839,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 83
+          "line": 84
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
@@ -1789,7 +1863,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 84
+          "line": 85
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
@@ -1857,7 +1931,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 85
+          "line": 86
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1891,7 +1965,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 86
+          "line": 87
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1915,7 +1989,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 87
+          "line": 88
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1939,7 +2013,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 88
+          "line": 89
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -1963,7 +2037,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 89
+          "line": 90
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
@@ -1997,7 +2071,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 90
+          "line": 91
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2021,7 +2095,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 91
+          "line": 92
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/distinguishability.rs",
@@ -2113,11 +2187,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 92
+          "line": 93
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 387
+          "line": 407
         }
       ],
       "assessments": [],
@@ -2167,7 +2241,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 93
+          "line": 94
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2191,7 +2265,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 94
+          "line": 95
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2280,7 +2354,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 95
+          "line": 96
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2314,7 +2388,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 96
+          "line": 97
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
@@ -2348,7 +2422,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 97
+          "line": 98
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/expressions.rs",
@@ -2406,11 +2480,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 98
+          "line": 99
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 395
+          "line": 415
         }
       ],
       "assessments": [],
@@ -2430,11 +2504,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 99
+          "line": 100
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 298
+          "line": 311
         }
       ],
       "assessments": [],
@@ -2454,11 +2528,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 100
+          "line": 101
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 399
+          "line": 419
         }
       ],
       "assessments": [],
@@ -2488,7 +2562,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 101
+          "line": 102
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs",
@@ -2512,7 +2586,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 102
+          "line": 103
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs",
@@ -2588,7 +2662,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 103
+          "line": 104
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/distinguishability.rs",
@@ -2700,7 +2774,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 104
+          "line": 105
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2724,7 +2798,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 105
+          "line": 106
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2748,7 +2822,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 106
+          "line": 107
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2812,7 +2886,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 107
+          "line": 108
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2846,7 +2920,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 108
+          "line": 109
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2870,7 +2944,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 109
+          "line": 110
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2894,7 +2968,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 110
+          "line": 111
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2918,7 +2992,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 111
+          "line": 112
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -2942,7 +3016,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 112
+          "line": 113
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/distinguishability.rs",
@@ -2970,7 +3044,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 113
+          "line": 114
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -3032,7 +3106,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 114
+          "line": 115
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -3092,7 +3166,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 115
+          "line": 116
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -3158,7 +3232,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 116
+          "line": 117
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -3202,7 +3276,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 117
+          "line": 118
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -3271,7 +3345,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 118
+          "line": 119
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
@@ -3279,7 +3353,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 662
+          "line": 677
         }
       ],
       "assessments": [
@@ -3382,11 +3456,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 119
+          "line": 120
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 333
+          "line": 334
         }
       ],
       "assessments": [
@@ -3448,15 +3522,15 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 120
+          "line": 121
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 340
+          "line": 360
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 871
+          "line": 886
         }
       ],
       "assessments": [
@@ -3501,7 +3575,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 121
+          "line": 122
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
@@ -3509,11 +3583,11 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 666
+          "line": 681
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 670
+          "line": 685
         }
       ],
       "assessments": [
@@ -3618,11 +3692,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 122
+          "line": 123
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 334
+          "line": 335
         }
       ],
       "assessments": [
@@ -3679,7 +3753,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 123
+          "line": 124
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -3727,7 +3801,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 124
+          "line": 125
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -3751,7 +3825,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 125
+          "line": 126
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/chains.rs",
@@ -3779,7 +3853,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 126
+          "line": 127
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -3803,15 +3877,15 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 127
+          "line": 128
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 364
+          "line": 384
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 909
+          "line": 924
         }
       ],
       "assessments": [
@@ -3862,11 +3936,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 128
+          "line": 129
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 603
+          "line": 618
         }
       ],
       "assessments": [],
@@ -3886,15 +3960,15 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 129
+          "line": 130
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 352
+          "line": 372
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 888
+          "line": 903
         }
       ],
       "assessments": [
@@ -3945,15 +4019,15 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 130
+          "line": 131
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 360
+          "line": 380
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 908
+          "line": 923
         }
       ],
       "assessments": [
@@ -4004,19 +4078,19 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 131
+          "line": 132
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 447
+          "line": 462
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 841
+          "line": 856
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 842
+          "line": 857
         }
       ],
       "assessments": [
@@ -4067,15 +4141,15 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 132
+          "line": 133
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 429
+          "line": 449
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 765
+          "line": 780
         }
       ],
       "assessments": [
@@ -4130,15 +4204,15 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 133
+          "line": 134
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 462
+          "line": 477
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 801
+          "line": 816
         }
       ],
       "assessments": [
@@ -4233,7 +4307,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 134
+          "line": 135
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4257,7 +4331,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 135
+          "line": 136
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4301,7 +4375,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 136
+          "line": 137
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4335,7 +4409,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 137
+          "line": 138
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4389,7 +4463,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 138
+          "line": 139
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4423,11 +4497,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 139
+          "line": 140
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 336
+          "line": 337
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4578,11 +4652,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 140
+          "line": 141
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 338
+          "line": 339
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4694,7 +4768,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 494
+          "line": 509
         }
       ]
     },
@@ -4927,7 +5001,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 516
+          "line": 531
         }
       ]
     },
@@ -4936,7 +5010,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 531
+          "line": 546
         }
       ]
     },
@@ -4954,7 +5028,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 333
+          "line": 334
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4967,7 +5041,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 334
+          "line": 335
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4980,7 +5054,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 551
+          "line": 566
         }
       ]
     },
@@ -4989,7 +5063,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 555
+          "line": 570
         }
       ]
     },
@@ -4998,7 +5072,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 559
+          "line": 574
         }
       ]
     },
@@ -5016,7 +5090,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 335
+          "line": 336
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -5029,7 +5103,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 338
+          "line": 339
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",

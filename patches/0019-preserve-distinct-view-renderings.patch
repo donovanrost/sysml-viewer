@@ -10,13 +10,98 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs b/vendor/sysm
 +//! properties without the later implied-specialization closure, one flat JSON
 +//! array per root namespace, every cross-reference an
  //! `{"@id": ...}` object (clause 10.4.4).
-+//! Lowering-time transition input slots retain their individual `isImplied`
++//! Lowering-time transition and accept input slots retain their individual `isImplied`
 +//! provenance; complete implied-relationship interchange is not qualified by
 +//! this source serialization path.
  //!
  //! Element IDs are deterministic UUIDv5 values derived from each element's
  //! ownership path, so serializing the same source always yields the same
-@@ -5324,6 +5327,7 @@
+@@ -3188,8 +3191,9 @@
+         self.elements[i].id
+     }
+ 
+-    /// The number of explicit elements — the element list without the
+-    /// implied relationships the derivation layer may have appended.
++    /// The initial lowering's element count, before the derivation layer's
++    /// implied publication. Construction-time implied parameter slots are
++    /// already part of this prefix.
+     pub(crate) fn explicit_len(&self) -> usize {
+         self.implied_from.unwrap_or(self.elements.len())
+     }
+@@ -5003,7 +5007,7 @@
+         payload: &PayloadPart,
+         scope: usize,
+         ty: &'static str,
+-    ) {
++    ) -> usize {
+         let (rel_ty, direction) = if ty == "PayloadFeature" {
+             ("FeatureMembership", None)
+         } else {
+@@ -5071,6 +5075,7 @@
+             self.set(fv, "isImplied", json!(false));
+             self.build_expr(&value.expr, fv, scope, "expr");
+         }
++        e
+     }
+ 
+     /// An expression argument as a parameter member (node parameters of
+@@ -5231,32 +5236,39 @@
+                 trigger,
+                 via,
+             } => {
+-                self.emit_payload(e, payload, scope, "ReferenceUsage");
++                let payload_element = self.emit_payload(e, payload, scope, "ReferenceUsage");
+                 if let Some(t) = trigger {
+                     let kind = match t.kind {
+                         TriggerKind::At => "at",
+                         TriggerKind::After => "after",
+                         TriggerKind::When => "when",
+                     };
+-                    let pm = self.new_relationship("ParameterMembership", e, "trigger");
+-                    self.set(pm, "isImplied", json!(false));
+-                    let te = self.new_owned_element("TriggerInvocationExpression", pm, "trigger");
++                    // TriggerValuePart belongs to the payload parameter.
++                    // It does not introduce another input of the accept.
++                    let fv = self.new_relationship("FeatureValue", payload_element, "value");
++                    self.set(fv, "isImplied", json!(false));
++                    let te = self.new_owned_element("TriggerInvocationExpression", fv, "expr");
+                     self.contract_exprs.insert(te, (scope, t.expr.clone()));
+                     self.set(te, "kind", json!(kind));
+-                    let am = self.new_relationship("ParameterMembership", te, "arg");
++                    let am = self.new_relationship("ParameterMembership", te, "arg0");
+                     self.set(am, "isImplied", json!(false));
+-                    self.build_expr(&t.expr, am, scope, "expr");
+-                }
++                    if t.kind == TriggerKind::When {
++                        self.param_wrapped_expression_reference(am, &t.expr, scope);
++                    } else {
++                        self.param_wrapped_expr(am, &t.expr, scope, false);
++                    }
++                }
++                // The receiver is the second owned input even when `via`
++                // is omitted. That missing grammar slot is constructed
++                // semantically; its default value comes from the library.
++                let pm = self.new_relationship("ParameterMembership", e, "via");
++                self.set(pm, "isImplied", json!(via.is_none()));
++                let ru = self.new_owned_element(self.ref_feature_metaclass(), pm, "via");
++                self.set_synth_usage_flags(ru);
++                self.set(ru, "direction", json!("in"));
++                self.set(ru, "isComposite", json!(false));
+                 if let Some(via) = via {
+-                    // The `via` target is the accept's `receiver` parameter
+-                    // (pilot NodeParameterMember — an `in` parameter whose
+-                    // value is the receiver expression).
+-                    let pm = self.new_relationship("ParameterMembership", e, "via");
+-                    self.set(pm, "isImplied", json!(false));
+-                    let ru = self.new_owned_element(self.ref_feature_metaclass(), pm, "via");
+-                    self.set_synth_usage_flags(ru);
+-                    self.set(ru, "direction", json!("in"));
+-                    self.set(ru, "isComposite", json!(false));
++                    self.contract_exprs.insert(ru, (scope, (**via).clone()));
+                     let fv = self.new_relationship("FeatureValue", ru, "value");
+                     self.set(fv, "isImplied", json!(false));
+                     self.build_expr(via, fv, scope, "expr");
+@@ -5324,6 +5336,7 @@
                  self.emit_usage_param(e, "body", body, scope);
              }
              UsageDetail::Transition {
@@ -24,7 +109,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs b/vendor/sysm
                  source,
                  trigger,
                  guard,
-@@ -5336,6 +5340,25 @@
+@@ -5336,6 +5349,25 @@
                      self.set(m, "isImplied", json!(false));
                      self.set_ref(m, "memberElement", scope, source);
                  }
@@ -50,7 +135,58 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs b/vendor/sysm
                  // Trigger payload parameters (`accept pub : Publish`) are
                  // referencable from the guard and effect: give the
                  // transition its own scope for those parts.
-@@ -9453,13 +9476,26 @@
+@@ -5887,21 +5919,11 @@
+         self.build_expr(expr, fv, scope, "expr");
+     }
+ 
+-    fn operand(&mut self, parent: usize, operand: &Expr, scope: usize, i: usize) {
+-        let m = self.new_relationship("ParameterMembership", parent, &format!("operand{i}"));
+-        self.set(m, "isImplied", json!(false));
+-        self.param_wrapped_expr(m, operand, scope, true);
+-    }
+-
+-    fn conditional_operand(&mut self, parent: usize, expr: &Expr, scope: usize, i: usize) {
+-        if self.graph_format == crate::model::GraphFormat::LegacyV2 {
+-            self.operand(parent, expr, scope, i);
+-            return;
+-        }
+-        let m = self.new_relationship("ParameterMembership", parent, &format!("operand{i}"));
+-        self.set(m, "isImplied", json!(false));
+-        self.set(m, "visibility", json!("private"));
+-        let f = self.new_owned_element("Feature", m, "param");
++    /// ArgumentExpressionMember: an input Feature whose value owns an
++    /// OwnedExpressionReference, retaining the referenced expression as
++    /// a nested feature. Used for deferred operands and `when` triggers.
++    fn param_wrapped_expression_reference(&mut self, membership: usize, expr: &Expr, scope: usize) {
++        let f = self.new_owned_element("Feature", membership, "param");
+         self.set(f, "direction", json!("in"));
+         let fv = self.new_relationship("FeatureValue", f, "value");
+         self.set(fv, "isImplied", json!(false));
+@@ -5909,6 +5931,23 @@
+         let member = self.new_relationship("FeatureMembership", reference, "expression");
+         self.set(member, "isImplied", json!(false));
+         self.build_expr(expr, member, scope, "expr");
++    }
++
++    fn operand(&mut self, parent: usize, operand: &Expr, scope: usize, i: usize) {
++        let m = self.new_relationship("ParameterMembership", parent, &format!("operand{i}"));
++        self.set(m, "isImplied", json!(false));
++        self.param_wrapped_expr(m, operand, scope, true);
++    }
++
++    fn conditional_operand(&mut self, parent: usize, expr: &Expr, scope: usize, i: usize) {
++        if self.graph_format == crate::model::GraphFormat::LegacyV2 {
++            self.operand(parent, expr, scope, i);
++            return;
++        }
++        let m = self.new_relationship("ParameterMembership", parent, &format!("operand{i}"));
++        self.set(m, "isImplied", json!(false));
++        self.set(m, "visibility", json!("private"));
++        self.param_wrapped_expression_reference(m, expr, scope);
+     }
+ 
+     /// A positional argument expression (same shape/segments as
+@@ -9453,13 +9492,26 @@
                  shadow.insert(e);
              }
          }
@@ -79,7 +215,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs b/vendor/sysm
          let mut by_name: HashMap<&str, Vec<usize>> = HashMap::new();
          for e in owned.iter().copied().chain(collected.iter().copied()) {
              // Both spellings share the lookup name space: a short name can
-@@ -9477,6 +9513,7 @@
+@@ -9477,6 +9529,7 @@
                  if !self.elements[x].ty.ends_with("Usage")
                      || shadow.contains(&x)
                      || self.redefines_by_position(x)
@@ -87,7 +223,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs b/vendor/sysm
                  {
                      continue;
                  }
-@@ -9485,7 +9522,7 @@
+@@ -9485,7 +9538,7 @@
                  };
                  for &y in &group {
                      charge!(1);
@@ -96,7 +232,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs b/vendor/sysm
                          continue;
                      }
                      let Some(oy) = self.owner_elem(y) else {
-@@ -12745,7 +12782,8 @@
+@@ -12745,7 +12798,8 @@
  
      /// The relationships `e` owns directly (`Element::ownedRelationship`:
      /// its memberships, imports, specializations, typings, annotations,

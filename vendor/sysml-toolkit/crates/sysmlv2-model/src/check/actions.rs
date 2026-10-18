@@ -230,6 +230,19 @@ impl TransitionEndpointProof {
     }
 }
 
+fn owned_input_count(r: &mut ResolvedModel, owner: ElementRef) -> Option<usize> {
+    let crate::json::Derived::Value(input) = r.derived(owner, "input") else {
+        return None;
+    };
+    Some(
+        input
+            .elements()
+            .into_iter()
+            .filter(|&input| r.owner(input) == Some(owner))
+            .count(),
+    )
+}
+
 pub(super) fn validate(
     r: &mut ResolvedModel,
     model: &Model,
@@ -328,6 +341,13 @@ pub(super) fn validate(
             continue;
         }
         let span = g.span(&r.b, e);
+        if is(&r.b, e, "AcceptActionUsage")
+            && owned_input_count(r, ElementRef(e)).is_some_and(|count| count < 2)
+        {
+            out.push((unit, super::rule_error(span,
+                "validateAcceptActionUsageParameters",
+                "An accept action must have at least two owned input parameters (payload and receiver)")));
+        }
         if is(&r.b, e, "StateSubactionMembership") {
             let valid_owner = g.owner[e].is_some_and(|owner| {
                 is(&r.b, owner, "StateDefinition") || is(&r.b, owner, "StateUsage")
@@ -435,12 +455,7 @@ pub(super) fn validate(
                 crate::json::Derived::Value(value) => !value.elements().is_empty(),
                 _ => false,
             };
-            if let crate::json::Derived::Value(input) = r.derived(ElementRef(e), "input") {
-                let owned_inputs = input
-                    .elements()
-                    .into_iter()
-                    .filter(|&input| r.owner(input) == Some(ElementRef(e)))
-                    .count();
+            if let Some(owned_inputs) = owned_input_count(r, ElementRef(e)) {
                 let required = if triggered { 2 } else { 1 };
                 if owned_inputs < required {
                     out.push((unit, super::rule_error(span,
@@ -908,6 +923,37 @@ mod transition_tests {
                 "validateTransitionFeatureMembershipTriggerAction",
                 "validateTransitionFeatureMembershipEffectAction"
             ]
+        );
+    }
+
+    #[test]
+    fn accept_inputs_require_two_owned_inputs_and_exclude_inherited_and_output_only_features() {
+        let source = "action def Base { in inherited; }
+            item def Signal; part receiver;
+            action def Reception {
+                action plain : Base accept data : Signal;
+                action directed accept routed : Signal via receiver;
+            }";
+        assert!(codes_after(source, |_| {}).is_empty());
+        let failures = codes_after(source, |graph| {
+            for accept in graph.elements_of_metaclass("AcceptActionUsage") {
+                let receiver = graph.owned_features(accept)[1];
+                graph.b.elements[receiver.0]
+                    .props
+                    .insert("direction", serde_json::json!("out"));
+            }
+        });
+        assert_eq!(failures, ["validateAcceptActionUsageParameters"; 2]);
+        assert!(
+            codes_after(source, |graph| {
+                for accept in graph.elements_of_metaclass("AcceptActionUsage") {
+                    let receiver = graph.owned_features(accept)[1];
+                    graph.b.elements[receiver.0]
+                        .props
+                        .insert("direction", serde_json::json!("inout"));
+                }
+            })
+            .is_empty()
         );
     }
 }

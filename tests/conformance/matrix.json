@@ -10335,6 +10335,471 @@
           "code": "validateStateSubactionMembershipOwningType"
         }
       ]
+    },
+    {
+      "id": "ACCEPT-001",
+      "area": "families-behaviors",
+      "purpose": "Accept actions construct distinct payload and receiver parameters, including omitted receivers, bound payloads, body features, state subactions and transition triggers.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/accept-construction.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "simple-element",
+          "op": "element",
+          "name": "AcceptConstruction::Reception::simple",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "simple-parameters",
+          "op": "memberships",
+          "owner": "AcceptConstruction::Reception::simple",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "data",
+              "shortName": null,
+              "namespace": "AcceptConstruction::Reception::simple",
+              "target": "AcceptConstruction::Reception::simple::data",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptConstruction::Reception::simple",
+              "target": "AcceptConstruction::Reception::simple::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "simple-payload",
+          "op": "element",
+          "name": "AcceptConstruction::Reception::simple::data",
+          "metaclass": "ReferenceUsage"
+        },
+        {
+          "id": "directed-element",
+          "op": "element",
+          "name": "AcceptConstruction::Reception::directed",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "directed-parameters",
+          "op": "memberships",
+          "owner": "AcceptConstruction::Reception::directed",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "routed",
+              "shortName": null,
+              "namespace": "AcceptConstruction::Reception::directed",
+              "target": "AcceptConstruction::Reception::directed::routed",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptConstruction::Reception::directed",
+              "target": "AcceptConstruction::Reception::directed::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "directed-payload",
+          "op": "element",
+          "name": "AcceptConstruction::Reception::directed::routed",
+          "metaclass": "ReferenceUsage"
+        },
+        {
+          "id": "boundValue-element",
+          "op": "element",
+          "name": "AcceptConstruction::Reception::boundValue",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "boundValue-parameters",
+          "op": "memberships",
+          "owner": "AcceptConstruction::Reception::boundValue",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "boundPayload",
+              "shortName": null,
+              "namespace": "AcceptConstruction::Reception::boundValue",
+              "target": "AcceptConstruction::Reception::boundValue::boundPayload",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptConstruction::Reception::boundValue",
+              "target": "AcceptConstruction::Reception::boundValue::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "boundValue-payload",
+          "op": "element",
+          "name": "AcceptConstruction::Reception::boundValue::boundPayload",
+          "metaclass": "ReferenceUsage"
+        },
+        {
+          "id": "bodyParameters-element",
+          "op": "element",
+          "name": "AcceptConstruction::Reception::bodyParameters",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "bodyParameters-parameters",
+          "op": "memberships",
+          "owner": "AcceptConstruction::Reception::bodyParameters",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "bodyPayload",
+              "shortName": null,
+              "namespace": "AcceptConstruction::Reception::bodyParameters",
+              "target": "AcceptConstruction::Reception::bodyParameters::bodyPayload",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptConstruction::Reception::bodyParameters",
+              "target": "AcceptConstruction::Reception::bodyParameters::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "bodyParameters-payload",
+          "op": "element",
+          "name": "AcceptConstruction::Reception::bodyParameters::bodyPayload",
+          "metaclass": "ReferenceUsage"
+        },
+        {
+          "id": "state-subactions",
+          "op": "stateSubactions",
+          "owner": "AcceptConstruction::Driver",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "entry",
+              "target": null,
+              "metaclass": "AcceptActionUsage"
+            },
+            {
+              "kind": "do",
+              "target": null,
+              "metaclass": "AcceptActionUsage"
+            },
+            {
+              "kind": "exit",
+              "target": null,
+              "metaclass": "AcceptActionUsage"
+            }
+          ]
+        },
+        {
+          "id": "triggered-parameters",
+          "op": "memberships",
+          "owner": "AcceptConstruction::Driver::triggered",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "AcceptConstruction::Driver::triggered",
+              "target": "AcceptConstruction::Driver::triggered::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "signal",
+              "shortName": null,
+              "namespace": "AcceptConstruction::Driver::triggered",
+              "target": "AcceptConstruction::Driver::triggered::signal",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "triggered-accepter",
+          "op": "element",
+          "name": "AcceptConstruction::Driver::triggered::accepter",
+          "metaclass": "AcceptActionUsage"
+        }
+      ]
+    },
+    {
+      "id": "ACCEPT-002",
+      "area": "families-behaviors",
+      "purpose": "At, after and when trigger forms retain the accept payload/receiver order and separate outer transition parameters through full-library public analysis.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/accept-triggers.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "absolute-element",
+          "op": "element",
+          "name": "AcceptTriggers::Reception::absolute",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "absolute-parameters",
+          "op": "memberships",
+          "owner": "AcceptTriggers::Reception::absolute",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "eventAt",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Reception::absolute",
+              "target": "AcceptTriggers::Reception::absolute::eventAt",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Reception::absolute",
+              "target": "AcceptTriggers::Reception::absolute::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "absolute-payload",
+          "op": "element",
+          "name": "AcceptTriggers::Reception::absolute::eventAt",
+          "metaclass": "ReferenceUsage"
+        },
+        {
+          "id": "relative-element",
+          "op": "element",
+          "name": "AcceptTriggers::Reception::relative",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "relative-parameters",
+          "op": "memberships",
+          "owner": "AcceptTriggers::Reception::relative",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "eventAfter",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Reception::relative",
+              "target": "AcceptTriggers::Reception::relative::eventAfter",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Reception::relative",
+              "target": "AcceptTriggers::Reception::relative::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "relative-payload",
+          "op": "element",
+          "name": "AcceptTriggers::Reception::relative::eventAfter",
+          "metaclass": "ReferenceUsage"
+        },
+        {
+          "id": "conditional-element",
+          "op": "element",
+          "name": "AcceptTriggers::Reception::conditional",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "conditional-parameters",
+          "op": "memberships",
+          "owner": "AcceptTriggers::Reception::conditional",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "eventWhen",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Reception::conditional",
+              "target": "AcceptTriggers::Reception::conditional::eventWhen",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "receiver",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Reception::conditional",
+              "target": "AcceptTriggers::Reception::conditional::receiver",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "conditional-payload",
+          "op": "element",
+          "name": "AcceptTriggers::Reception::conditional::eventWhen",
+          "metaclass": "ReferenceUsage"
+        },
+        {
+          "id": "atTime-parameters",
+          "op": "memberships",
+          "owner": "AcceptTriggers::Driver::atTime",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Driver::atTime",
+              "target": "AcceptTriggers::Driver::atTime::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "timePayload",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Driver::atTime",
+              "target": "AcceptTriggers::Driver::atTime::timePayload",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "atTime-accepter",
+          "op": "element",
+          "name": "AcceptTriggers::Driver::atTime::accepter",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "afterDelay-parameters",
+          "op": "memberships",
+          "owner": "AcceptTriggers::Driver::afterDelay",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Driver::afterDelay",
+              "target": "AcceptTriggers::Driver::afterDelay::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "delayPayload",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Driver::afterDelay",
+              "target": "AcceptTriggers::Driver::afterDelay::delayPayload",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "afterDelay-accepter",
+          "op": "element",
+          "name": "AcceptTriggers::Driver::afterDelay::accepter",
+          "metaclass": "AcceptActionUsage"
+        },
+        {
+          "id": "onCondition-parameters",
+          "op": "memberships",
+          "owner": "AcceptTriggers::Driver::onCondition",
+          "mode": "owned",
+          "metaclass": "ParameterMembership",
+          "ordered": true,
+          "bindings": [
+            {
+              "name": "transitionLinkSource",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Driver::onCondition",
+              "target": "AcceptTriggers::Driver::onCondition::transitionLinkSource",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            },
+            {
+              "name": "conditionPayload",
+              "shortName": null,
+              "namespace": "AcceptTriggers::Driver::onCondition",
+              "target": "AcceptTriggers::Driver::onCondition::conditionPayload",
+              "status": "resolved",
+              "visibility": "public",
+              "alias": false
+            }
+          ]
+        },
+        {
+          "id": "onCondition-accepter",
+          "op": "element",
+          "name": "AcceptTriggers::Driver::onCondition::accepter",
+          "metaclass": "AcceptActionUsage"
+        }
+      ]
     }
   ]
 }

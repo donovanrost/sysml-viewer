@@ -27,6 +27,8 @@ if (process.argv.includes('--wasm-child')) {
   );
   const scenarios = [
     ...[
+      ['accept-construction', 'ACCEPT-001'],
+      ['accept-triggers', 'ACCEPT-002'],
       ['transition-construction', 'STATE-012'],
       ['state-membership-owners', 'STATE-013'],
     ].map(([name, id]) => ({

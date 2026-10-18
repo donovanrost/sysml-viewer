@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-10-18T02:53:49.752015+00:00",
+  "scope": "Open receiver-binding obligation after KERNEL-022 construction changes; diagnostic-only probe, separate from the passing acceptance matrix.",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.23",
+  "sourceUnit": "SYSML-XMI-Systems-Actions-AcceptActionUsage-checkAcceptActionUsageReceiverBindingConnector",
+  "sourceSha256": "caa65d54f56798bf7582d173f7567e1eea37a49c45984f8bd7df145011cf8c6f",
+  "expected": "For each trigger-valued accept, its trigger invocation has at least two parameters and the accept owns a BindingConnector relating its second parameter to the invocation second parameter.",
+  "observed": "All three ordinary trigger kinds have one derived invocation parameter and no accept-owned BindingConnector, including subtypes, after shared implied relationships are materialized with the full pinned library.",
+  "output": "absolute: trigger parameters=1, accept-owned BindingConnectors=0\nrelative: trigger parameters=1, accept-owned BindingConnectors=0\nconditional: trigger parameters=1, accept-owned BindingConnectors=0\n",
+  "exitCode": 0,
+  "probeInterpretation": "The probe executed successfully and exposes an unsatisfied semantic construction obligation. Exit zero is not evidence that this constraint passes; the program prints model facts rather than asserting conformance.",
+  "graphFormat": "CanonicalV3",
+  "librarySourceFiles": 94,
+  "probeSource": "use std::path::Path;\nuse sysmlv2_model::{model::{Model, GraphFormat}, json::{Derived, ResolvedModel}};\nfn library(model: &mut Model, path: &Path) {\n    let mut entries: Vec<_> = std::fs::read_dir(path).unwrap().map(|e| e.unwrap().path()).collect();\n    entries.sort();\n    for entry in entries {\n        if entry.is_dir() { library(model, &entry); }\n        else if matches!(entry.extension().and_then(|x|x.to_str()), Some(\"sysml\"|\"kerml\")) {\n            model.add_library_source(entry.to_string_lossy(), &std::fs::read_to_string(&entry).unwrap());\n        }\n    }\n}\nfn main() {\n std::thread::Builder::new().stack_size(16*1024*1024).spawn(|| {\n    let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);\n    library(&mut model, Path::new(\"vendor/sysml-library/sources\"));\n    model.add_source(\"accept-triggers.sysml\", &std::fs::read_to_string(\"tests/conformance/fixtures/accept-triggers.sysml\").unwrap());\n    assert!(model.unit(0).diagnostics.is_empty());\n    let mut graph = ResolvedModel::build(&model);\n    let package = graph.resolve_qualified(\"AcceptTriggers\").unwrap();\n    graph.implied_relationships(package);\n    for name in [\"absolute\", \"relative\", \"conditional\"] {\n        let accept = graph.resolve_qualified(&format!(\"AcceptTriggers::Reception::{name}\")).unwrap();\n        let Derived::Value(value) = graph.derived(accept,\"payloadArgument\") else { panic!(\"missing payload\"); };\n        let trigger = value.element().unwrap();\n        assert_eq!(graph.element_type(trigger),\"TriggerInvocationExpression\");\n        let Derived::Value(value) = graph.derived(trigger,\"parameter\") else { panic!(\"missing parameters\"); };\n        let count = value.elements().len();\n        let Derived::Value(value) = graph.derived(accept,\"ownedFeature\") else { panic!(\"missing owned features\"); };\n        let connectors = value.elements().into_iter().filter(|&e|sysmlv2_model::json::metaclass_conforms(graph.element_type(e),\"BindingConnector\")).count();\n        println!(\"{name}: trigger parameters={count}, accept-owned BindingConnectors={connectors}\");\n    }\n }).unwrap().join().unwrap();\n}\n",
+  "build": {
+    "command": [
+      "/Users/donovanrost/.cargo/bin/rustup",
+      "run",
+      "1.97.0",
+      "rustc",
+      "--edition=2021",
+      "-C",
+      "lto=thin",
+      "-C",
+      "opt-level=2",
+      "target/accept-construction/receiver-binding-probe.rs",
+      "--extern",
+      "sysmlv2_model=target/release/deps/libsysmlv2_model-a26fbaa0c1aa74b0.rlib",
+      "-L",
+      "dependency=target/release/deps",
+      "-o",
+      "target/accept-construction/receiver-binding-probe"
+    ],
+    "sourceSha256": "a630c9543c7a208e57a437ab7140529db3153e0deda0ffcbf21538cab6e6f7ba",
+    "library": "target/release/deps/libsysmlv2_model-a26fbaa0c1aa74b0.rlib",
+    "librarySha256": "e67d1e85572ab39d521ea37aed89caf7467d40501773c32088307068329c7c19"
+  },
+  "inputs": {
+    "dependencies.json": "a44f5d8ef5d356c667dc3b2f16ec70bc5637c3bec09cca8a4b839535969d2aa5",
+    "vendor/SHA256SUMS.json": "09f602051a448913c53dbce19a5edcc9ebaaceb4091ea0f7973aad48fd8dec29",
+    "patches/manifest.json": "f3a6a12485de0ee94c72a88d8dda89fcac0000efb3bf7ab0fa183720e02ddd7a",
+    "tests/conformance/fixtures/accept-triggers.sysml": "45f95b6060361b8487defde3a41c6a899643015c1095392c4b865886caf2b581",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "507578ab8012094a71bfb5760535b27ddf9685c20b0c371acf8a8145fdc6c4e1",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/behavior.rs": "caa925533e0e836ddcdb4464e3f9edb926f7c326e835875b6829dbfcf975156e",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "b1fc09b8c36591db402bf7715139a09a789e7088b348f179167f379c99ede4e2",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/derived.rs": "dece28f6c99d8ca59ba2b0e270493701517f819d0d3fae830f9d8a950b3a6844"
+  },
+  "limits": "Three ordinary accepts, one per kind, with the full library. Transition/state contexts, library defaults, arbitrary raw models, complete trigger argument validation and execution remain unreviewed. This record is a next-step failure reproduction, not a new passing case."
+}

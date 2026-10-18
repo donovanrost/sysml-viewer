@@ -148,6 +148,10 @@ exceptions. Tool versions are pinned because text normalization affects passage
 digests. Changes to source editions require reviewing IDs, mappings, counts and
 normative differences before adopting a new baseline.
 
+The [completion plan](completion-plan.md) defines work packages, dependency
+boundaries and closure evidence for the full goal. Its effort ranges remain
+provisional until obligation decomposition is complete.
+
 ## Review order
 
 1. Define the intended kernel and tool-conformance profiles, keeping viewer usability
@@ -217,9 +221,9 @@ source trees of the syntax library, model library and public kernel, fingerprint
 each file, and joins only direct assessment source edges. `requirements:check`
 rejects generated drift and registry names outside the pinned catalogue.
 
-After KERNEL-021, the registries name 96 rules and source text mentions 97. The
-other 83 names were not located by this search. Fifteen rules have direct bounded
-assessments; 165 still need direct obligation review. These are separate measures:
+After KERNEL-022, the registries name 97 rules and source text mentions 98. The
+other 82 names were not located by this search. Sixteen rules have direct bounded
+assessments; 164 still need direct obligation review. These are separate measures:
 comments, private tests and registration lists are search hints, and a missing
 name does not establish missing behavior. The 36 labels outside the catalogue
 include deliberate compatibility aliases and checks needing further classification.
@@ -285,6 +289,14 @@ binding, payload chains, guard semantics, complete implicit construction and
 normative interchange. The next state-family review must decompose those
 dependencies together with accept-action parameters rather than infer closure
 from these five rule mappings.
+
+KERNEL-022 adds accept payload/receiver construction, the owned-input count rule,
+and payload-owned trigger values with at/after/when argument wrappers. The two
+new cases and raw graph regressions cover ordinary accepts, state subactions and
+transition triggers. Generated-model lifting preserves bound payloads, receiver
+expressions and directed body features. Full receiver/trigger binding, event
+semantics, implicit closure and normative interchange remain open. The validation
+rule mapping does not close the complete accept-action obligation set.
 
 The broader audit should classify complete obligation sets by implementation, API
 exposure and verified behavior before refining the remaining-work forecast.

@@ -17,13 +17,12 @@
 //! `directedFeature`/`parameter` families read too), as the pilot's
 //! lowering of the action kinds relies on (a node's expression and body
 //! parameters carry no direction on the wire). `argument(i)` is
-//! `inputParameter(i)`'s `FeatureValue.value`. One lowering shape is
-//! compensated for rather than read literally: an accept action's
-//! trigger (`accept x at t`) is lowered as a TriggerInvocationExpression
-//! that is itself a parameter member, where the pilot's grammar makes it
-//! the payload parameter's value — it is not counted
-//! as an input parameter, and an accept's `payloadArgument` falls back to
-//! it.
+//! `inputParameter(i)`'s `FeatureValue.value`. Current accept lowering
+//! places a trigger invocation under the payload's FeatureValue and
+//! constructs a separate receiver input. Compatibility readers retain
+//! the older sibling-trigger layout: that expression is excluded from
+//! input parameters and supplies the fallback payload argument. These
+//! fallbacks do not qualify arbitrary external JSON interchange.
 
 use super::derived::{Reference, dangling_id};
 use super::{ElementRef, ResolvedModel};
@@ -119,8 +118,8 @@ impl ResolvedModel {
     /// spelled `direction`, else the default of its owning
     /// ParameterMembership (`in`; `out` for a ReturnParameterMembership),
     /// else none. A TriggerInvocationExpression owned as a parameter
-    /// member is an accept action's trigger value, not a parameter (see
-    /// the module documentation), and has none.
+    /// member in the legacy layout is an accept action's trigger value,
+    /// not a parameter (see the module documentation), and has none.
     pub(super) fn effective_direction(&self, f: ElementRef) -> Option<&str> {
         if let Some(d) = self.prop_str(f.0, "direction") {
             return Some(d);
@@ -158,8 +157,8 @@ impl ResolvedModel {
     }
 
     /// The argument an input parameter carries: its FeatureValue's value
-    /// — or, for a trigger invocation's argument, which this lowering owns
-    /// as the parameter itself without the Feature-and-FeatureValue
+    /// — or, for a legacy trigger invocation's argument, which the old
+    /// lowering owned as the parameter itself without the Feature-and-FeatureValue
     /// wrapper, the expression that is the parameter.
     fn d_argument_of(&self, p: ElementRef) -> Option<ElementRef> {
         self.d_feature_value_of(p).or_else(|| {
@@ -183,8 +182,7 @@ impl ResolvedModel {
     }
 
     /// `AcceptActionUsage::payloadArgument = argument(1)`: the payload
-    /// parameter's value, else the trigger this lowering owns beside the
-    /// payload (the pilot's grammar makes the trigger the payload's value).
+    /// parameter's value, else a legacy trigger owned beside the payload.
     pub(super) fn d_accept_payload_argument(&self, e: ElementRef) -> Option<ElementRef> {
         self.d_argument(e, 1).or_else(|| {
             self.d_owned_features(e)

@@ -76,6 +76,17 @@ conditional target and guarded entry-transition context, across textual formatti
 The public snapshot does not expose a complete implied-relationship graph or certify normative interchange.
 See KERNEL-021 in [foundation qualification](foundation-qualification.md).
 
+Accept construction supplies an inout payload and a separate input receiver, even
+without a written `via`. Named ordinary accepts expose their ordered parameter
+memberships; state subaction identities remain available through the state query.
+A transition's nested accepter may be a navigation stub, so callers must check
+`membersAvailable` before inspecting its parameters. Internal trigger expressions
+are payload values with argument wrappers, not additional accept inputs. Generated
+model lifting preserves payload/receiver expressions and directed body members;
+this is not a public interchange guarantee. Default receiver bindings, complete
+trigger semantics and execution are not qualified by these queries.
+See KERNEL-022 in [foundation qualification](foundation-qualification.md).
+
 Ranges are half-open. Byte/UTF-16 offsets are zero-based; line and UTF-16 column
 numbers are one-based. Original encoding after UTF-8 decoding and line endings
 are preserved. Indexed query construction verifies coordinate agreement.

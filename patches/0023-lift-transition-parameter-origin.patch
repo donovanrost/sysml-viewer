@@ -1,7 +1,22 @@
 diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs
 --- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs
 +++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs
-@@ -2921,6 +2921,7 @@
+@@ -2690,9 +2690,12 @@
+                     body_rels.push(rel);
+                 }
+                 "FeatureMembership"
+-                    if matches!(t, "AcceptActionUsage") && flow_payload.is_none() =>
++                    if matches!(t, "AcceptActionUsage")
++                        && flow_payload.is_none()
++                        && params.is_empty() =>
+                 {
+-                    // Accept payload (emitted as a reference feature).
++                    // Legacy accept payload precedes its parameter slots.
++                    // Later feature memberships belong to the accept body.
+                     if let Some(p) = self.first_related(rel) {
+                         flow_payload = Some(self.lift_payload(p)?);
+                         continue;
+@@ -2921,6 +2924,7 @@
                  negated: bval(el, "isNegated"),
              },
              UsageKind::Transition => UsageDetail::Transition {
@@ -9,3 +24,126 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs b/vendor/sysm
                  source,
                  trigger,
                  guard: guard.map(Box::new),
+@@ -2930,32 +2934,28 @@
+             },
+             UsageKind::Accept => {
+                 // Payload is a ParameterMembership-owned parameter (legacy
+-                // emissions used FeatureMembership → flow_payload);
+-                // trigger/via also arrive as params.
++                // emissions used FeatureMembership → flow_payload). Its
++                // value may be a trigger; the next parameter is receiver.
+                 let mut payload_part = flow_payload;
+                 let mut trigger_part = None;
+                 let mut via = None;
+                 for rel in params {
+                     if let Some(inner) = self.first_related(rel) {
+                         if ty(inner) == "TriggerInvocationExpression" {
+-                            let kind = match sval(inner, "kind") {
+-                                Some("at") => TriggerKind::At,
+-                                Some("after") => TriggerKind::After,
+-                                _ => TriggerKind::When,
+-                            };
+-                            for arel in self.owned_rels(inner) {
+-                                if ty(arel) == "ParameterMembership" {
+-                                    if let Some(ex) = self.first_related(arel) {
+-                                        if let Some(expr) = self.lift_expr(ex) {
+-                                            trigger_part = Some(Trigger { kind, expr });
+-                                        }
+-                                    }
+-                                }
++                            // Read the older sibling-trigger layout too.
++                            trigger_part = self.lift_trigger_value(inner);
++                        } else if payload_part.is_none() {
++                            if let Some(value) = self
++                                .param_value_element(inner)
++                                .filter(|value| ty(value) == "TriggerInvocationExpression")
++                            {
++                                payload_part = self.lift_payload_declaration(inner);
++                                trigger_part = self.lift_trigger_value(value);
++                            } else {
++                                payload_part = self.lift_payload(inner);
+                             }
+                         } else if let Some(expr) = self.param_value(inner) {
+                             via = Some(expr);
+-                        } else if payload_part.is_none() {
+-                            payload_part = self.lift_payload(inner);
+                         }
+                     }
+                 }
+@@ -3108,14 +3108,38 @@
+ 
+     /// The expression bound as a parameter's FeatureValue.
+     fn param_value(&mut self, param_el: El<'a>) -> Option<Expr> {
++        let value = self.param_value_element(param_el)?;
++        self.lift_expr(value)
++    }
++
++    fn param_value_element(&self, param_el: El<'a>) -> Option<El<'a>> {
+         for rel in self.owned_rels(param_el) {
+             if ty(rel) == "FeatureValue" {
+-                if let Some(ex) = self.first_related(rel) {
+-                    return self.lift_expr(ex);
+-                }
++                return self.first_related(rel);
+             }
+         }
+         None
++    }
++
++    fn lift_trigger_value(&mut self, value: El<'a>) -> Option<Trigger> {
++        let kind = match sval(value, "kind") {
++            Some("at") => TriggerKind::At,
++            Some("after") => TriggerKind::After,
++            Some("when") => TriggerKind::When,
++            _ => return None,
++        };
++        let parameter = self
++            .owned_rels(value)
++            .into_iter()
++            .find(|rel| ty(rel) == "ParameterMembership")
++            .and_then(|rel| self.first_related(rel))?;
++        let expr = if crate::metaclass::conforms(ty(parameter), "Expression") {
++            // Compatibility with the former direct-expression argument.
++            self.lift_expr(parameter)
++        } else {
++            self.param_value(parameter)
++        }?;
++        Some(Trigger { kind, expr })
+     }
+ 
+     /// Is this end membership a bare connector-part end (exactly what the
+@@ -3215,6 +3239,17 @@
+     }
+ 
+     fn lift_payload(&mut self, el: El<'a>) -> Option<PayloadPart> {
++        let mut payload = self.lift_payload_declaration(el)?;
++        if let Some(expr) = self.param_value(el) {
++            payload.value = Some(Box::new(FeatureValue {
++                kind: ValueKind::Bound,
++                expr,
++            }));
++        }
++        Some(payload)
++    }
++
++    fn lift_payload_declaration(&mut self, el: El<'a>) -> Option<PayloadPart> {
+         let mut payload = PayloadPart {
+             id: Self::identification(el),
+             is_ordered: bval(el, "isOrdered"),
+@@ -3256,16 +3291,6 @@
+                         if ty(inner) == "MultiplicityRange" {
+                             let bounds = self.range_bounds(inner);
+                             payload.multiplicity = self.bounds_to_multiplicity(bounds);
+-                        }
+-                    }
+-                }
+-                "FeatureValue" => {
+-                    if let Some(ex) = self.first_related(rel) {
+-                        if let Some(expr) = self.lift_expr(ex) {
+-                            payload.value = Some(Box::new(FeatureValue {
+-                                kind: ValueKind::Bound,
+-                                expr,
+-                            }));
+                         }
+                     }
+                 }

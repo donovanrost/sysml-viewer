@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-10-18T02:41:20.897015+00:00",
+  "scope": "In-progress KERNEL-022 generated compact-model round trip; full-library fixture includes directed accept-body features. This is a pre-correction probe of working-tree engine .23, not the committed .22 baseline.",
+  "command": [
+    "node",
+    "tools/rust.mjs",
+    "test",
+    "--locked",
+    "--release",
+    "-p",
+    "sysml-kernel",
+    "--test",
+    "accept_construction"
+  ],
+  "exitCode": 101,
+  "passed": 3,
+  "failed": 1,
+  "failedTest": "generated_accept_payload_values_triggers_and_receivers_survive_lifting",
+  "failure": "A directed accept-body FeatureMembership was mistaken for a legacy payload, replacing bodyPayload and consuming additional into the accept header.",
+  "outputExcerpt": "\n---- generated_accept_payload_values_triggers_and_receivers_survive_lifting stdout ----\n\nthread 'generated_accept_payload_values_triggers_and_receivers_survive_lifting' (63815824) panicked at crates/sysml-kernel/tests/accept_construction.rs:153:13:\nassertion `left == right` failed: package AcceptConstruction {\n    item def Signal;\n    item sample : $::AcceptConstruction::Signal;\n    part receiver;\n    action def Reception {\n        action simple accept data : $::AcceptConstruction::Signal;\n        action directed accept routed : $::AcceptConstruction::Signal via $::AcceptConstruction::receiver;\n        action boundValue accept boundPayload : $::AcceptConstruction::Signal = $::AcceptConstruction::sample via $::AcceptConstruction::receiver;\n        action bodyParameters accept additional = $::AcceptConstruction::sample {\n            out report = $::AcceptConstruction::sample;\n        }\n    }\n    state def Driver {\n        entry accept entering : $::AcceptConstruction::Signal;\n        do accept running : $::AcceptConstruction::Signal via $::AcceptConstruction::receiver;\n        exit accept leaving : $::AcceptConstruction::Signal;\n        state a;\n        state b;\n        transition triggered first $::AcceptConstruction::Driver::a accept signal : $::AcceptConstruction::Signal then $::AcceptConstruction::Driver::b;\n    }\n}\n",
+  "logSha256": "5dbed0dc16251f789c1f705acfe557cad1c42b9de861c2a72e81b8f4c60e81b4",
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs": "c4b8b36cca00b7b7579654196a9284f5595dc1c759d656aa353f37de9ed0e724",
+    "crates/sysml-kernel/tests/accept_construction.rs": "9de9a4c39945b31c19d05491ba5cdc3486a34eed0a09a1983e0c800711dd0a94",
+    "tests/conformance/fixtures/accept-construction.sysml": "c0a3d4547cee27ddad90faa60209b07ab6feed89e77656b6a2c1514c9d1defae",
+    "tests/conformance/fixtures/accept-triggers.sysml": "45f95b6060361b8487defde3a41c6a899643015c1095392c4b865886caf2b581"
+  }
+}

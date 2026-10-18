@@ -5,7 +5,7 @@
 //! properties without the later implied-specialization closure, one flat JSON
 //! array per root namespace, every cross-reference an
 //! `{"@id": ...}` object (clause 10.4.4).
-//! Lowering-time transition input slots retain their individual `isImplied`
+//! Lowering-time transition and accept input slots retain their individual `isImplied`
 //! provenance; complete implied-relationship interchange is not qualified by
 //! this source serialization path.
 //!
@@ -3191,8 +3191,9 @@ impl Builder {
         self.elements[i].id
     }
 
-    /// The number of explicit elements — the element list without the
-    /// implied relationships the derivation layer may have appended.
+    /// The initial lowering's element count, before the derivation layer's
+    /// implied publication. Construction-time implied parameter slots are
+    /// already part of this prefix.
     pub(crate) fn explicit_len(&self) -> usize {
         self.implied_from.unwrap_or(self.elements.len())
     }
@@ -5006,7 +5007,7 @@ impl Builder {
         payload: &PayloadPart,
         scope: usize,
         ty: &'static str,
-    ) {
+    ) -> usize {
         let (rel_ty, direction) = if ty == "PayloadFeature" {
             ("FeatureMembership", None)
         } else {
@@ -5074,6 +5075,7 @@ impl Builder {
             self.set(fv, "isImplied", json!(false));
             self.build_expr(&value.expr, fv, scope, "expr");
         }
+        e
     }
 
     /// An expression argument as a parameter member (node parameters of
@@ -5234,32 +5236,39 @@ impl Builder {
                 trigger,
                 via,
             } => {
-                self.emit_payload(e, payload, scope, "ReferenceUsage");
+                let payload_element = self.emit_payload(e, payload, scope, "ReferenceUsage");
                 if let Some(t) = trigger {
                     let kind = match t.kind {
                         TriggerKind::At => "at",
                         TriggerKind::After => "after",
                         TriggerKind::When => "when",
                     };
-                    let pm = self.new_relationship("ParameterMembership", e, "trigger");
-                    self.set(pm, "isImplied", json!(false));
-                    let te = self.new_owned_element("TriggerInvocationExpression", pm, "trigger");
+                    // TriggerValuePart belongs to the payload parameter.
+                    // It does not introduce another input of the accept.
+                    let fv = self.new_relationship("FeatureValue", payload_element, "value");
+                    self.set(fv, "isImplied", json!(false));
+                    let te = self.new_owned_element("TriggerInvocationExpression", fv, "expr");
                     self.contract_exprs.insert(te, (scope, t.expr.clone()));
                     self.set(te, "kind", json!(kind));
-                    let am = self.new_relationship("ParameterMembership", te, "arg");
+                    let am = self.new_relationship("ParameterMembership", te, "arg0");
                     self.set(am, "isImplied", json!(false));
-                    self.build_expr(&t.expr, am, scope, "expr");
+                    if t.kind == TriggerKind::When {
+                        self.param_wrapped_expression_reference(am, &t.expr, scope);
+                    } else {
+                        self.param_wrapped_expr(am, &t.expr, scope, false);
+                    }
                 }
+                // The receiver is the second owned input even when `via`
+                // is omitted. That missing grammar slot is constructed
+                // semantically; its default value comes from the library.
+                let pm = self.new_relationship("ParameterMembership", e, "via");
+                self.set(pm, "isImplied", json!(via.is_none()));
+                let ru = self.new_owned_element(self.ref_feature_metaclass(), pm, "via");
+                self.set_synth_usage_flags(ru);
+                self.set(ru, "direction", json!("in"));
+                self.set(ru, "isComposite", json!(false));
                 if let Some(via) = via {
-                    // The `via` target is the accept's `receiver` parameter
-                    // (pilot NodeParameterMember — an `in` parameter whose
-                    // value is the receiver expression).
-                    let pm = self.new_relationship("ParameterMembership", e, "via");
-                    self.set(pm, "isImplied", json!(false));
-                    let ru = self.new_owned_element(self.ref_feature_metaclass(), pm, "via");
-                    self.set_synth_usage_flags(ru);
-                    self.set(ru, "direction", json!("in"));
-                    self.set(ru, "isComposite", json!(false));
+                    self.contract_exprs.insert(ru, (scope, (**via).clone()));
                     let fv = self.new_relationship("FeatureValue", ru, "value");
                     self.set(fv, "isImplied", json!(false));
                     self.build_expr(via, fv, scope, "expr");
@@ -5910,6 +5919,20 @@ impl Builder {
         self.build_expr(expr, fv, scope, "expr");
     }
 
+    /// ArgumentExpressionMember: an input Feature whose value owns an
+    /// OwnedExpressionReference, retaining the referenced expression as
+    /// a nested feature. Used for deferred operands and `when` triggers.
+    fn param_wrapped_expression_reference(&mut self, membership: usize, expr: &Expr, scope: usize) {
+        let f = self.new_owned_element("Feature", membership, "param");
+        self.set(f, "direction", json!("in"));
+        let fv = self.new_relationship("FeatureValue", f, "value");
+        self.set(fv, "isImplied", json!(false));
+        let reference = self.new_owned_element("FeatureReferenceExpression", fv, "expr");
+        let member = self.new_relationship("FeatureMembership", reference, "expression");
+        self.set(member, "isImplied", json!(false));
+        self.build_expr(expr, member, scope, "expr");
+    }
+
     fn operand(&mut self, parent: usize, operand: &Expr, scope: usize, i: usize) {
         let m = self.new_relationship("ParameterMembership", parent, &format!("operand{i}"));
         self.set(m, "isImplied", json!(false));
@@ -5924,14 +5947,7 @@ impl Builder {
         let m = self.new_relationship("ParameterMembership", parent, &format!("operand{i}"));
         self.set(m, "isImplied", json!(false));
         self.set(m, "visibility", json!("private"));
-        let f = self.new_owned_element("Feature", m, "param");
-        self.set(f, "direction", json!("in"));
-        let fv = self.new_relationship("FeatureValue", f, "value");
-        self.set(fv, "isImplied", json!(false));
-        let reference = self.new_owned_element("FeatureReferenceExpression", fv, "expr");
-        let member = self.new_relationship("FeatureMembership", reference, "expression");
-        self.set(member, "isImplied", json!(false));
-        self.build_expr(expr, member, scope, "expr");
+        self.param_wrapped_expression_reference(m, expr, scope);
     }
 
     /// A positional argument expression (same shape/segments as

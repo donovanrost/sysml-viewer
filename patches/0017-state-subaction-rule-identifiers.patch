@@ -1,7 +1,15 @@
 diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs
 --- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs
 +++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs
-@@ -116,12 +116,19 @@
+@@ -52,6 +52,7 @@
+ /// introduced by later validator versions are tracked separately in the
+ /// external-fixture contracts and do not enlarge the normative denominator.
+ pub const IMPLEMENTED_NORMATIVE_SEMANTIC_RULES: &[&str] = &[
++    "validateAcceptActionUsageParameters",
+     "validateAssertConstraintUsageReference",
+     "validateAssignmentActionUsageReferent",
+     "validateAssociationBinarySpecialization",
+@@ -116,12 +117,19 @@
      "validateRequirementVerificationMembershipOwningType",
      "validateSatisfyRequirementUsageReference",
      "validateStateDefinitionParallelSubactions",
@@ -21,7 +29,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs b/vendor/sys
      "validateTransitionUsageSuccession",
      "validateTransitionUsageTriggerActions",
      "validateTypeDifferencingTypesNotSelf",
-@@ -314,12 +321,17 @@
+@@ -314,12 +322,17 @@
  }
  
  /// The identifier of a rule in the spelling the pinned abstract syntax
@@ -40,7 +48,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs b/vendor/sys
          "validateViewDefinitionOnlyOnvViewRendering" => {
              "validateViewDefinitionOnlyOneViewRendering"
          }
-@@ -402,6 +414,7 @@
+@@ -402,6 +415,7 @@
      let facts = facts::Facts::new(&mut r.b);
      out.extend(connectors::validate(r, model, &facts));
      out.extend(structural::validate(r, model, &facts));
