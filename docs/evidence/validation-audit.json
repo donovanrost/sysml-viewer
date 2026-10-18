@@ -36,7 +36,7 @@
     },
     {
       "path": "crates/sysml-kernel/src/lib.rs",
-      "sha256": "1c56ca9a37f63b71dea6f19410e7b273609ef88cf55e5d9000665dfeeb7e4fb9"
+      "sha256": "5d5f7fd3986af28916df292b1e8e36f13ff834e0214dafdda7d06e63259587ae"
     },
     {
       "path": "crates/sysml-kernel/src/namespaces.rs",
@@ -76,7 +76,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-      "sha256": "88c4211d4f3331b13519139e02da09855bc49030aa5f8904c8751b80e7371f67"
+      "sha256": "705c5cc5e6e61f3d1562449162cf9108d9a872ba30359e25edb507d767b56f27"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/chains.rs",
@@ -140,7 +140,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-      "sha256": "903071a8d32f3e61448225ed3ce3a4315ed375da5073c064a7fdd5f3a1ee5788"
+      "sha256": "4d1636387ebb334f513748330fef19d9a3e54221afb10ded1d9ba30ca13fa4ba"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/typing.rs",
@@ -633,15 +633,15 @@
   ],
   "structuredInputHashEncoding": "JSON.stringify(parsed input), UTF-8",
   "catalogueSha256": "141adece74e8e7581cc744729bf2e96356ff2e983204c68f48acae64ea339e35",
-  "assessmentsSha256": "85bb25a3fe0c0561a9ae120f93b2c3425050ec34eb138db7bbac6827a607e252",
-  "matrixSha256": "613477fe3023d38aa2a5e8858ee1dcdab11cd9d11109358fe56c64ba5575e35a",
+  "assessmentsSha256": "0f5a602a097b184e43811110ea7e89c60f02b8bfcae561f1c8787bc3ee2537a5",
+  "matrixSha256": "29799c0a82d7c033e57dc0a7821adc5d55035c3e114e3833461ffdaadd2ba415",
   "counts": {
     "rules": 180,
     "registered": 91,
     "withSourceMentions": 92,
     "withoutSourceMentions": 88,
-    "withDirectAssessments": 6,
-    "withoutDirectAssessments": 174,
+    "withDirectAssessments": 9,
+    "withoutDirectAssessments": 171,
     "unmatchedNames": 36
   },
   "rules": [
@@ -737,7 +737,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 201
+          "line": 422
         }
       ],
       "assessments": [],
@@ -785,7 +785,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 599
+          "line": 583
         }
       ],
       "assessments": [],
@@ -809,7 +809,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 585
+          "line": 569
         }
       ],
       "assessments": [],
@@ -1231,7 +1231,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 80
+          "line": 288
         }
       ],
       "assessments": [],
@@ -1265,7 +1265,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 85
+          "line": 293
         }
       ],
       "assessments": [],
@@ -1289,7 +1289,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 571
+          "line": 555
         }
       ],
       "assessments": [],
@@ -1385,7 +1385,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 130
+          "line": 338
         }
       ],
       "assessments": [],
@@ -1409,7 +1409,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 95
+          "line": 303
         }
       ],
       "assessments": [],
@@ -2113,7 +2113,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 126
+          "line": 334
         }
       ],
       "assessments": [],
@@ -2406,7 +2406,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 134
+          "line": 342
         }
       ],
       "assessments": [],
@@ -2430,7 +2430,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 90
+          "line": 298
         }
       ],
       "assessments": [],
@@ -2454,7 +2454,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 138
+          "line": 346
         }
       ],
       "assessments": [],
@@ -2918,7 +2918,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 843
+          "line": 827
         }
       ],
       "assessments": [],
@@ -3158,7 +3158,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 621
+          "line": 605
         }
       ],
       "assessments": [],
@@ -3270,12 +3270,99 @@
           "line": 118
         },
         {
-          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 557
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 72
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 595
         }
       ],
-      "assessments": [],
-      "nextAction": "review-code-candidate"
+      "assessments": [
+        {
+          "id": "STATE-DEFINITION-PARALLEL",
+          "obligation": "A parallel StateDefinition has no directly owned ActionUsage with an incoming or outgoing TransitionUsage, regardless of the transition owner.",
+          "implementation": "partial",
+          "api": "partial",
+          "limits": "KERNEL-019 checks source and target independently across the explicit model, including imported cross-file endpoints, and reports the owning state once. Plain Successions, inherited actions, grandchildren and nonowning aliases do not count as directly owned actions. PerformActionUsage retains its own identity instead of following its ReferenceSubsetting. State subaction memberships contribute their owned actions. Missing first/middle/final chain links and ambiguous references cannot establish an endpoint, but a known opposite endpoint remains a violation witness. The endpoint preflight uses shared derived source/target queries, checks written relationship resolution and explicit index bounds, and limits each endpoint proof to the existing work allowance. STATE-003 through STATE-005 and STATE-007 exercise these boundaries; private tests also retain repeated-query and index/work refusal behavior. The target-end selection follows the current lowering representation with an implicit source end. Full transition construction, inherited/implicit connector ends, all endpoint derivations, triggers/guards/effects, arbitrary raw graph consistency and complete state semantics remain unqualified. No public state-slot or membership-metaclass API is added.",
+          "tests": [
+            {
+              "case": "STATE-003",
+              "checks": [
+                "clean",
+                "SuccessionOnly-element",
+                "SuccessionOnly-code",
+                "Unrelated-element",
+                "Unrelated-code",
+                "Deep-element",
+                "Deep-code",
+                "Inherited-element",
+                "Inherited-code",
+                "Empty-element",
+                "Empty-code"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "STATE-004",
+              "checks": [
+                "syntax",
+                "structure",
+                "resolution",
+                "Outgoing-element",
+                "Outgoing-code",
+                "Incoming-element",
+                "Incoming-code",
+                "Local-element",
+                "Local-code",
+                "ValidPeer-element",
+                "ValidPeer-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "STATE-005",
+              "checks": [
+                "syntax",
+                "structure",
+                "Unknown-element",
+                "Unknown-code",
+                "Left-element",
+                "Left-code",
+                "Right-element",
+                "Right-code",
+                "ValidPeer-element",
+                "ValidPeer-code",
+                "SourceKnown-element",
+                "SourceKnown-code",
+                "TargetKnown-element",
+                "TargetKnown-code",
+                "CompleteInvalidPeer-element",
+                "CompleteInvalidPeer-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "STATE-007",
+              "checks": [
+                "syntax",
+                "structure",
+                "resolution",
+                "Outgoing-element",
+                "Outgoing-code",
+                "ValidPeer-element",
+                "ValidPeer-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            }
+          ]
+        }
+      ],
+      "nextAction": "complete-obligation-review"
     },
     {
       "sourceId": "SYSML-XMI-Systems-States-StateDefinition-validateStateDefinitionStateSubactionKind",
@@ -3370,12 +3457,105 @@
           "line": 120
         },
         {
-          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 559
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 74
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 599
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 603
         }
       ],
-      "assessments": [],
-      "nextAction": "review-code-candidate"
+      "assessments": [
+        {
+          "id": "STATE-USAGE-PARALLEL",
+          "obligation": "A parallel StateUsage has no directly owned ActionUsage with an incoming or outgoing TransitionUsage, regardless of the transition owner.",
+          "implementation": "partial",
+          "api": "partial",
+          "limits": "KERNEL-019 checks source and target independently across the explicit model, including imported cross-file endpoints, and reports the owning state once. Plain Successions, inherited actions, grandchildren and nonowning aliases do not count as directly owned actions. PerformActionUsage retains its own identity instead of following its ReferenceSubsetting. State subaction memberships contribute their owned actions. Missing first/middle/final chain links and ambiguous references cannot establish an endpoint, but a known opposite endpoint remains a violation witness. The endpoint preflight uses shared derived source/target queries, checks written relationship resolution and explicit index bounds, and limits each endpoint proof to the existing work allowance. STATE-003 through STATE-005 and STATE-007 exercise these boundaries; private tests also retain repeated-query and index/work refusal behavior. The target-end selection follows the current lowering representation with an implicit source end. Full transition construction, inherited/implicit connector ends, all endpoint derivations, triggers/guards/effects, arbitrary raw graph consistency and complete state semantics remain unqualified. No public state-slot or membership-metaclass API is added.",
+          "tests": [
+            {
+              "case": "STATE-003",
+              "checks": [
+                "clean",
+                "successionOnly-element",
+                "successionOnly-code",
+                "unrelated-element",
+                "unrelated-code",
+                "aliases-element",
+                "aliases-code",
+                "inherited-element",
+                "inherited-code",
+                "empty-element",
+                "empty-code"
+              ],
+              "polarity": "positive",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "STATE-004",
+              "checks": [
+                "syntax",
+                "structure",
+                "resolution",
+                "outgoing-element",
+                "outgoing-code",
+                "incoming-element",
+                "incoming-code",
+                "local-element",
+                "local-code",
+                "performed-element",
+                "performed-code",
+                "subactions-element",
+                "subactions-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "STATE-005",
+              "checks": [
+                "syntax",
+                "structure",
+                "unknown-element",
+                "unknown-code",
+                "sourceBroken-element",
+                "sourceBroken-code",
+                "targetBroken-element",
+                "targetBroken-code",
+                "middleBroken-element",
+                "middleBroken-code",
+                "rootBroken-element",
+                "rootBroken-code",
+                "ambiguous-element",
+                "ambiguous-code",
+                "sourceKnown-element",
+                "sourceKnown-code",
+                "targetKnown-element",
+                "targetKnown-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "STATE-007",
+              "checks": [
+                "syntax",
+                "structure",
+                "resolution",
+                "incoming-element",
+                "incoming-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            }
+          ]
+        }
+      ],
+      "nextAction": "complete-obligation-review"
     },
     {
       "sourceId": "SYSML-XMI-Systems-States-StateUsage-validateStateUsageStateSubactionKind",
@@ -3590,7 +3770,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 315
+          "line": 536
         }
       ],
       "assessments": [],
@@ -3644,11 +3824,50 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 64
+          "line": 376
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 695
         }
       ],
-      "assessments": [],
-      "nextAction": "review-code-candidate"
+      "assessments": [
+        {
+          "id": "TRANSITION-TARGET-KIND",
+          "obligation": "A resolved written transition succession target has an ActionUsage as its Feature.featureTarget; incomplete targets do not establish a wrong-kind diagnostic.",
+          "implementation": "partial",
+          "api": "partial",
+          "limits": "KERNEL-019 prevents an incomplete target chain from becoming a known non-action target. A general ReferenceUsage that references an action is still not an ActionUsage; a PerformActionUsage retains its own ActionUsage identity. The check uses the first owned Succession and its second owned end, matching the shared transition target query and current textual lowering. This is bounded target-kind validation, not qualification of the complete validateTransitionUsageSuccession obligation: missing-succession cases, every target of nonbinary/raw connector forms, implied ends and all malformed ownership configurations remain open. Resolution diagnostics remain independently visible.",
+          "tests": [
+            {
+              "case": "STATE-005",
+              "checks": [
+                "no-invented-target-kind"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            },
+            {
+              "case": "STATE-006",
+              "checks": [
+                "syntax",
+                "structure",
+                "toScalar-element",
+                "toScalar-code",
+                "toReference-element",
+                "toReference-code",
+                "toPerformed-element",
+                "toPerformed-code",
+                "toMissing-element",
+                "toMissing-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            }
+          ]
+        }
+      ],
+      "nextAction": "complete-obligation-review"
     },
     {
       "sourceId": "SYSML-XMI-Systems-States-TransitionUsage-validateTransitionUsageTriggerActions",
@@ -3668,7 +3887,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 174
+          "line": 395
         }
       ],
       "assessments": [],
@@ -3926,11 +4145,11 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 899
+          "line": 883
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 907
+          "line": 891
         }
       ],
       "assessments": [
@@ -4081,11 +4300,11 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 903
+          "line": 887
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 911
+          "line": 895
         }
       ],
       "assessments": [
@@ -4189,7 +4408,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 206
+          "line": 427
         }
       ]
     },
@@ -4350,7 +4569,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 632
+          "line": 616
         }
       ]
     },
@@ -4422,7 +4641,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 228
+          "line": 449
         }
       ]
     },
@@ -4431,7 +4650,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 243
+          "line": 464
         }
       ]
     },
@@ -4475,7 +4694,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 263
+          "line": 484
         }
       ]
     },
@@ -4484,7 +4703,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 267
+          "line": 488
         }
       ]
     },
@@ -4493,7 +4712,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 271
+          "line": 492
         }
       ]
     },
@@ -4515,7 +4734,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 686
+          "line": 670
         }
       ]
     },
@@ -4528,7 +4747,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
-          "line": 688
+          "line": 672
         }
       ]
     }

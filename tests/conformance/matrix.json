@@ -8954,6 +8954,687 @@
           "owner": "ViewRenderingIncomplete::ValidPeer"
         }
       ]
+    },
+    {
+      "id": "STATE-003",
+      "area": "families-behaviors",
+      "purpose": "Plain successions, unrelated transitions, nonowning aliases, inherited actions and grandchildren do not violate direct parallel-state action incidence.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/state-parallel-positive.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        },
+        {
+          "id": "SuccessionOnly-element",
+          "op": "element",
+          "name": "StateParallelPositive::Driver::SuccessionOnly",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "SuccessionOnly-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelPositive::Driver::SuccessionOnly",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "Unrelated-element",
+          "op": "element",
+          "name": "StateParallelPositive::Driver::Unrelated",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Unrelated-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelPositive::Driver::Unrelated",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "Deep-element",
+          "op": "element",
+          "name": "StateParallelPositive::Driver::Deep",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Deep-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelPositive::Driver::Deep",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "Inherited-element",
+          "op": "element",
+          "name": "StateParallelPositive::Driver::Inherited",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Inherited-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelPositive::Driver::Inherited",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "Empty-element",
+          "op": "element",
+          "name": "StateParallelPositive::Driver::Empty",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Empty-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelPositive::Driver::Empty",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "successionOnly-element",
+          "op": "element",
+          "name": "StateParallelPositive::Driver::successionOnly",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "successionOnly-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelPositive::Driver::successionOnly",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "unrelated-element",
+          "op": "element",
+          "name": "StateParallelPositive::Driver::unrelated",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "unrelated-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelPositive::Driver::unrelated",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "aliases-element",
+          "op": "element",
+          "name": "StateParallelPositive::Driver::aliases",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "aliases-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelPositive::Driver::aliases",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "inherited-element",
+          "op": "element",
+          "name": "StateParallelPositive::Driver::inherited",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "inherited-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelPositive::Driver::inherited",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "empty-element",
+          "op": "element",
+          "name": "StateParallelPositive::Driver::empty",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "empty-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelPositive::Driver::empty",
+          "code": "validateStateUsageParallelSubactions"
+        }
+      ]
+    },
+    {
+      "id": "STATE-004",
+      "area": "families-behaviors",
+      "purpose": "Incoming and outgoing transitions anywhere in the model reject parallel states with directly owned actions; perform and state-subaction identities are preserved.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/state-parallel-negative.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "Outgoing-element",
+          "op": "element",
+          "name": "StateParallelNegative::Driver::Outgoing",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Outgoing-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelNegative::Driver::Outgoing",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "Incoming-element",
+          "op": "element",
+          "name": "StateParallelNegative::Driver::Incoming",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Incoming-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelNegative::Driver::Incoming",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "Local-element",
+          "op": "element",
+          "name": "StateParallelNegative::Driver::Local",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Local-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelNegative::Driver::Local",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "outgoing-element",
+          "op": "element",
+          "name": "StateParallelNegative::Driver::outgoing",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "outgoing-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelNegative::Driver::outgoing",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "incoming-element",
+          "op": "element",
+          "name": "StateParallelNegative::Driver::incoming",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "incoming-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelNegative::Driver::incoming",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "local-element",
+          "op": "element",
+          "name": "StateParallelNegative::Driver::local",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "local-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelNegative::Driver::local",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "performed-element",
+          "op": "element",
+          "name": "StateParallelNegative::Driver::performed",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "performed-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelNegative::Driver::performed",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "subactions-element",
+          "op": "element",
+          "name": "StateParallelNegative::Driver::subactions",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "subactions-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelNegative::Driver::subactions",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "ValidPeer-element",
+          "op": "element",
+          "name": "StateParallelNegative::Driver::ValidPeer",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "ValidPeer-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelNegative::Driver::ValidPeer",
+          "code": "validateStateDefinitionParallelSubactions"
+        }
+      ]
+    },
+    {
+      "id": "STATE-005",
+      "area": "families-behaviors",
+      "purpose": "Missing or ambiguous endpoints cannot become resolved prefixes; a known endpoint independently establishes incidence even if the opposite endpoint is missing.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/state-parallel-incomplete.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "no-invented-target-kind",
+          "op": "noDiagnostics",
+          "code": "validateTransitionUsageSuccession"
+        },
+        {
+          "id": "Unknown-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::Unknown",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Unknown-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::Unknown",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "Left-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::Left",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Left-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::Left",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "Right-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::Right",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Right-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::Right",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "ValidPeer-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::ValidPeer",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "ValidPeer-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::ValidPeer",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "SourceKnown-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::SourceKnown",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "SourceKnown-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::SourceKnown",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "TargetKnown-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::TargetKnown",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "TargetKnown-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::TargetKnown",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "CompleteInvalidPeer-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::CompleteInvalidPeer",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "CompleteInvalidPeer-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::CompleteInvalidPeer",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "unknown-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::unknown",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "unknown-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::unknown",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "sourceBroken-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::sourceBroken",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "sourceBroken-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::sourceBroken",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "targetBroken-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::targetBroken",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "targetBroken-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::targetBroken",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "middleBroken-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::middleBroken",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "middleBroken-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::middleBroken",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "rootBroken-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::rootBroken",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "rootBroken-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::rootBroken",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "ambiguous-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::ambiguous",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "ambiguous-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::ambiguous",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "sourceKnown-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::sourceKnown",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "sourceKnown-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::sourceKnown",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "targetKnown-element",
+          "op": "element",
+          "name": "StateParallelIncomplete::Driver::targetKnown",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "targetKnown-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelIncomplete::Driver::targetKnown",
+          "code": "validateStateUsageParallelSubactions"
+        }
+      ]
+    },
+    {
+      "id": "STATE-006",
+      "area": "families-behaviors",
+      "purpose": "Transition target kind uses Feature.featureTarget identity: non-action references are invalid, perform actions are valid and incomplete chains remain unknown.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/state-transition-targets.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "toScalar-element",
+          "op": "element",
+          "name": "StateTransitionTargets::Driver::toScalar",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "toScalar-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateTransitionTargets::Driver::toScalar",
+          "code": "validateTransitionUsageSuccession"
+        },
+        {
+          "id": "toReference-element",
+          "op": "element",
+          "name": "StateTransitionTargets::Driver::toReference",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "toReference-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateTransitionTargets::Driver::toReference",
+          "code": "validateTransitionUsageSuccession"
+        },
+        {
+          "id": "toPerformed-element",
+          "op": "element",
+          "name": "StateTransitionTargets::Driver::toPerformed",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "toPerformed-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateTransitionTargets::Driver::toPerformed",
+          "code": "validateTransitionUsageSuccession"
+        },
+        {
+          "id": "toMissing-element",
+          "op": "element",
+          "name": "StateTransitionTargets::Driver::toMissing",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "toMissing-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateTransitionTargets::Driver::toMissing",
+          "code": "validateTransitionUsageSuccession"
+        }
+      ]
+    },
+    {
+      "id": "STATE-007",
+      "area": "families-behaviors",
+      "purpose": "Imported cross-file transition endpoints report the owning parallel state in its original source document.",
+      "polarity": "negative",
+      "files": [
+        "tests/conformance/fixtures/state-parallel-cross-owners.sysml",
+        "tests/conformance/fixtures/state-parallel-cross-transitions.sysml"
+      ],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "Outgoing-element",
+          "op": "element",
+          "name": "StateParallelCross::Outgoing",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "Outgoing-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelCross::Outgoing",
+          "code": "validateStateDefinitionParallelSubactions"
+        },
+        {
+          "id": "incoming-element",
+          "op": "element",
+          "name": "StateParallelCross::incoming",
+          "metaclass": "StateUsage"
+        },
+        {
+          "id": "incoming-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelCross::incoming",
+          "code": "validateStateUsageParallelSubactions"
+        },
+        {
+          "id": "ValidPeer-element",
+          "op": "element",
+          "name": "StateParallelCross::ValidPeer",
+          "metaclass": "StateDefinition"
+        },
+        {
+          "id": "ValidPeer-code",
+          "op": "noDiagnostics",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateParallelCross::ValidPeer",
+          "code": "validateStateDefinitionParallelSubactions"
+        }
+      ]
     }
   ]
 }

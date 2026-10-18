@@ -1,0 +1,452 @@
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs
+@@ -9,12 +9,234 @@
+ };
+ use sysmlv2_syntax::diag::Diagnostic;
+ 
++/// StateDefinition::ownedAction and StateUsage::nestedAction both select
++/// ActionUsages from ownedFeature. The inverse TransitionUsage source/target
++/// associations matter, not the namespace that happens to own the transition.
++fn validate_parallel_states(
++    r: &mut ResolvedModel,
++    model: &Model,
++    g: &Facts,
++) -> Vec<(usize, Diagnostic)> {
++    let states: Vec<_> = (r.b.lib_boundary..r.b.explicit_len())
++        .filter(|&e| {
++            (is(&r.b, e, "StateDefinition") || is(&r.b, e, "StateUsage"))
++                && flag(&r.b, e, "isParallel")
++                && !model.is_library_unit(r.b.unit_of_elem(e))
++        })
++        .collect();
++    if states.is_empty() {
++        return Vec::new();
++    }
++    let mut owners = std::collections::HashMap::new();
++    for &state in &states {
++        for action in r.owned_features(ElementRef(state)) {
++            if is(&r.b, action.0, "ActionUsage")
++                && g.owner.get(action.0).copied().flatten() == Some(state)
++            {
++                owners.insert(action.0, state);
++            }
++        }
++    }
++    if owners.is_empty() {
++        return Vec::new();
++    }
++    let mut proof = TransitionEndpointProof::new(r);
++    let mut violations = std::collections::HashSet::new();
++    for transition in 0..r.b.explicit_len() {
++        if !is(&r.b, transition, "TransitionUsage") {
++            continue;
++        }
++        // Incidence is an existence witness. A missing opposite endpoint or
++        // an unrelated body failure cannot invalidate a known source/target.
++        for endpoint in [
++            proof.source(r, g, transition),
++            proof.target(r, g, transition),
++        ]
++        .into_iter()
++        .flatten()
++        {
++            if let Some(&owner) = owners.get(&endpoint) {
++                violations.insert(owner);
++            }
++        }
++    }
++    states
++        .into_iter()
++        .filter(|e| violations.contains(e))
++        .map(|e| {
++            (
++                r.b.unit_of_elem(e),
++                super::rule_error(
++                    g.span(&r.b, e),
++                    if is(&r.b, e, "StateDefinition") {
++                        "validateStateDefinitionParallelSubactions"
++                    } else {
++                        "validateStateUsageParallelSubactions"
++                    },
++                    "An action owned by a parallel state has an incoming or outgoing transition",
++                ),
++            )
++        })
++        .collect()
++}
++
++/// Guard the shared derived source/target queries against incomplete written
++/// inputs. In particular a broken chain must not become its last resolved
++/// prefix. This proof does not follow an action's own ReferenceSubsetting:
++/// Feature::featureTarget selects its last chainingFeature, or itself.
++struct TransitionEndpointProof {
++    uncertain: std::collections::HashSet<usize>,
++    steps: usize,
++}
++impl TransitionEndpointProof {
++    fn new(r: &ResolvedModel) -> Self {
++        Self {
++            uncertain: r
++                .unresolved_references()
++                .into_iter()
++                .map(|reference| reference.owner.0)
++                .collect(),
++            steps: 0,
++        }
++    }
++
++    fn charge(&mut self, count: usize) -> Option<()> {
++        self.steps = self.steps.saturating_add(count);
++        (self.steps <= crate::eval::MAX_STEPS).then_some(())
++    }
++
++    fn node(&mut self, r: &ResolvedModel, g: &Facts, e: usize) -> Option<()> {
++        self.charge(1)?;
++        // Facts only index the explicit graph. Generated rows and stale or
++        // malformed indices cannot supply a checked endpoint through this path.
++        (e < r.b.elements.len() && e < g.owner.len()).then_some(())
++    }
++
++    fn reference(&mut self, r: &ResolvedModel, g: &Facts, rel: usize, key: &str) -> Option<usize> {
++        self.node(r, g, rel)?;
++        if self.uncertain.contains(&rel) {
++            return None;
++        }
++        let target = g.target(&r.b, rel, key)?;
++        self.node(r, g, target)?;
++        Some(target)
++    }
++
++    fn derived_element(r: &mut ResolvedModel, e: usize, property: &str) -> Option<usize> {
++        match r.derived(ElementRef(e), property) {
++            crate::json::Derived::Value(value) => value.element().map(|e| e.0),
++            _ => None,
++        }
++    }
++
++    fn feature_target(
++        &mut self,
++        r: &mut ResolvedModel,
++        g: &Facts,
++        feature: usize,
++    ) -> Option<usize> {
++        self.node(r, g, feature)?;
++        if !is(&r.b, feature, "Feature") {
++            return None;
++        }
++        self.charge(r.b.elements[feature].owned_relationships.len())?;
++        for rel in r.b.elements[feature].owned_relationships.to_vec() {
++            self.node(r, g, rel)?;
++            if is(&r.b, rel, "FeatureChaining") {
++                let target = self.reference(r, g, rel, "chainingFeature")?;
++                if g.owner[rel] != Some(feature)
++                    || !is(&r.b, target, "Feature")
++                    || target == feature
++                {
++                    return None;
++                }
++            }
++        }
++        let target = Self::derived_element(r, feature, "featureTarget")?;
++        self.node(r, g, target)?;
++        Some(target)
++    }
++
++    fn source(&mut self, r: &mut ResolvedModel, g: &Facts, transition: usize) -> Option<usize> {
++        self.steps = 0;
++        self.node(r, g, transition)?;
++        self.charge(r.b.elements[transition].owned_relationships.len())?;
++        for rel in r.b.elements[transition].owned_relationships.to_vec() {
++            self.node(r, g, rel)?;
++            if !is(&r.b, rel, "Membership") || is(&r.b, rel, "FeatureMembership") {
++                continue;
++            }
++            // Unknown earlier members cannot be skipped in sourceFeature's
++            // ordered selection. Later unrelated members cannot veto a witness.
++            let member = self.reference(r, g, rel, "memberElement")?;
++            if !is(&r.b, member, "Feature") {
++                continue;
++            }
++            let target = self.feature_target(r, g, member)?;
++            if is(&r.b, target, "ActionUsage") {
++                return (Self::derived_element(r, transition, "source") == Some(target))
++                    .then_some(target);
++            }
++        }
++        None
++    }
++
++    fn target(&mut self, r: &mut ResolvedModel, g: &Facts, transition: usize) -> Option<usize> {
++        let target = self.target_feature(r, g, transition)?;
++        (is(&r.b, target, "ActionUsage")
++            && Self::derived_element(r, transition, "target") == Some(target))
++        .then_some(target)
++    }
++
++    fn target_feature(
++        &mut self,
++        r: &mut ResolvedModel,
++        g: &Facts,
++        transition: usize,
++    ) -> Option<usize> {
++        self.steps = 0;
++        self.node(r, g, transition)?;
++        self.charge(r.b.elements[transition].owned_relationships.len())?;
++        let succession = r
++            .owned_members(ElementRef(transition))
++            .into_iter()
++            .find(|m| is(&r.b, m.0, "Succession"))?
++            .0;
++        self.node(r, g, succession)?;
++        self.charge(r.b.elements[succession].owned_relationships.len())?;
++        // Match the shared transition derivation's positional target end: the
++        // lowering may leave the first (source) end's reference implicit.
++        let end = r
++            .owned_features(ElementRef(succession))
++            .into_iter()
++            .filter(|m| flag(&r.b, m.0, "isEnd"))
++            .nth(1)?
++            .0;
++        self.node(r, g, end)?;
++        self.charge(r.b.elements[end].owned_relationships.len())?;
++        let mut refs = Vec::new();
++        for rel in r.b.elements[end].owned_relationships.to_vec() {
++            self.node(r, g, rel)?;
++            if is(&r.b, rel, "ReferenceSubsetting") {
++                if g.owner[rel] != Some(end) {
++                    return None;
++                }
++                refs.push(rel);
++            }
++        }
++        let [rel] = refs.as_slice() else { return None };
++        let feature = self.reference(r, g, *rel, "referencedFeature")?;
++        self.feature_target(r, g, feature)
++    }
++}
++
+ pub(super) fn validate(
+     r: &mut ResolvedModel,
+     model: &Model,
+     g: &Facts,
+ ) -> Vec<(usize, Diagnostic)> {
+-    let mut out = Vec::new();
++    let mut out = validate_parallel_states(r, model, g);
++    let mut endpoint_proof = TransitionEndpointProof::new(r);
+     let n = r.b.explicit_len();
+     let mut incoming = vec![0; n];
+     let mut outgoing = vec![0; n];
+@@ -53,20 +275,6 @@
+                 edges.push((e, a, z, *from, *to));
+             }
+         }
+-        if let Some(t) = g.owner[e].filter(|&p| is(&r.b, p, "TransitionUsage")) {
+-            let unit = r.b.unit_of_elem(t);
+-            if !model.is_library_unit(unit) && z != *to && !g.effective_kind(&r.b, z, "ActionUsage")
+-            {
+-                out.push((
+-                    unit,
+-                    super::rule_error(
+-                        g.span(&r.b, t),
+-                        "validateTransitionUsageSuccession",
+-                        "A transition's succession must target an action usage",
+-                    ),
+-                ));
+-            }
+-        }
+     }
+     for (edge, a, z, from, to) in edges {
+         let unit = r.b.unit_of_elem(edge);
+@@ -157,6 +365,19 @@
+             }
+         }
+         if is(&r.b, e, "TransitionUsage") {
++            if endpoint_proof
++                .target_feature(r, g, e)
++                .is_some_and(|target| !is(&r.b, target, "ActionUsage"))
++            {
++                out.push((
++                    unit,
++                    super::rule_error(
++                        span,
++                        "validateTransitionUsageSuccession",
++                        "A transition's succession must target an action usage",
++                    ),
++                ));
++            }
+             let triggered = r.b.elements[e].owned_relationships.iter().any(|&rel| {
+                 is(&r.b, rel, "TransitionFeatureMembership")
+                     && r.b.elements[rel].props.get("kind").and_then(|x| x.as_str())
+@@ -320,3 +541,172 @@
+     }
+     out
+ }
++
++#[cfg(test)]
++mod transition_tests {
++    use super::*;
++
++    fn graph(source: &str) -> (Model, ResolvedModel, Facts) {
++        let mut model = Model::new();
++        model.add_source("states.sysml", source);
++        assert!(
++            model.unit(0).diagnostics.is_empty(),
++            "{:?}",
++            model.unit(0).diagnostics
++        );
++        let mut graph = ResolvedModel::build(&model);
++        let facts = Facts::new(&mut graph.b);
++        (model, graph, facts)
++    }
++
++    fn findings(source: &str) -> Vec<(String, String)> {
++        let (model, mut graph, facts) = graph(source);
++        let first = validate_parallel_states(&mut graph, &model, &facts);
++        let second = validate_parallel_states(&mut graph, &model, &facts);
++        assert_eq!(first, second, "derived query order must preserve findings");
++        first
++            .into_iter()
++            .map(|(_, d)| {
++                (
++                    source[d.span.start as usize..d.span.end as usize].into(),
++                    d.code.unwrap().into(),
++                )
++            })
++            .collect()
++    }
++
++    #[test]
++    fn parallel_state_incidence_is_independent_of_transition_ownership() {
++        let result = findings(
++            "state def Driver {
++            action outside;
++            state def Outgoing parallel { action a; }
++            transition first Outgoing::a then outside;
++            state incoming parallel { action a; }
++            transition first outside then incoming.a;
++            state local parallel { state a; transition first a then a; }
++        }",
++        );
++        assert_eq!(
++            result,
++            [
++                (
++                    "Outgoing".into(),
++                    "validateStateDefinitionParallelSubactions".into()
++                ),
++                (
++                    "incoming".into(),
++                    "validateStateUsageParallelSubactions".into()
++                ),
++                (
++                    "local".into(),
++                    "validateStateUsageParallelSubactions".into()
++                ),
++            ]
++        );
++    }
++
++    #[test]
++    fn plain_successions_aliases_inheritance_and_grandchildren_do_not_count() {
++        assert!(findings("state def Driver {
++            action outsideA; action outsideB;
++            state def Plain parallel { action a; action b; first a then b; }
++            state unrelated parallel { state local; transition first outsideA then outsideB; }
++            state aliases parallel { alias borrowed for outsideA; transition first borrowed then outsideB; }
++            state def Deep parallel { state region { state a; state b; transition first a then b; } }
++            state def Serial { state a; state b; transition first a then b; }
++            state def Inherited :> Serial parallel;
++            state inherited : Serial parallel;
++        }").is_empty());
++    }
++
++    #[test]
++    fn performed_action_identity_and_state_subaction_memberships_are_retained() {
++        let result = findings("state def Driver {
++            action outside;
++            state performed parallel { perform action local references outside; }
++            transition first performed.local then outside;
++            state subactions parallel { entry action entering; do action running; exit action leaving; }
++            transition first subactions.entering then outside;
++            transition first outside then subactions.leaving;
++        }");
++        assert_eq!(
++            result.iter().map(|r| r.0.as_str()).collect::<Vec<_>>(),
++            ["performed", "subactions"]
++        );
++    }
++
++    #[test]
++    fn unknown_chain_links_cannot_supply_endpoints_but_the_other_end_is_independent() {
++        let result = findings(
++            "state def Driver {
++            action outside;
++            state sourceBroken parallel { action a; }
++            transition first sourceBroken.a.missing then outside;
++            state targetBroken parallel { action a; }
++            transition first outside then targetBroken.a.missing;
++            state middleBroken parallel { action a; }
++            transition first middleBroken.missing.a then outside;
++            state rootBroken parallel { action a; }
++            transition first MissingRoot.rootBroken.a then outside;
++            state sourceKnown parallel { action a; }
++            transition first sourceKnown.a then Missing;
++            state targetKnown parallel { action a; }
++            transition first Missing then targetKnown.a;
++            state def ValidPeer parallel { state local; }
++        }",
++        );
++        assert_eq!(
++            result.iter().map(|r| r.0.as_str()).collect::<Vec<_>>(),
++            ["sourceKnown", "targetKnown"]
++        );
++    }
++
++    #[test]
++    fn ambiguous_source_and_target_do_not_become_arbitrary_endpoints() {
++        assert!(
++            findings(
++                "package A { action collision; } package B { action collision; }
++            state def Driver {
++                private import A::*; private import B::*;
++                state p parallel { alias borrowed for collision; }
++                transition first collision then collision;
++            }"
++            )
++            .is_empty()
++        );
++    }
++
++    #[test]
++    fn target_kind_does_not_follow_a_reference_usage_or_invent_a_missing_target() {
++        let source = "state def Driver {
++            action outside;
++            attribute scalar;
++            ref borrowed references outside;
++            perform action local references outside;
++            transition toScalar first outside then scalar;
++            transition toReference first outside then borrowed;
++            transition toPerformed first outside then local;
++            transition toMissing first outside then local.missing;
++        }";
++        let (model, mut graph, facts) = graph(source);
++        let names: Vec<_> = validate(&mut graph, &model, &facts)
++            .into_iter()
++            .filter(|(_, d)| d.code == Some("validateTransitionUsageSuccession"))
++            .map(|(_, d)| &source[d.span.start as usize..d.span.end as usize])
++            .collect();
++        assert_eq!(names, ["toScalar", "toReference"]);
++    }
++
++    #[test]
++    fn generated_indices_and_exhausted_work_cannot_supply_endpoint_proof() {
++        let (_, mut graph, facts) = graph("state def Driver { action a; }");
++        let added = graph.b.elements.len();
++        graph.b.elements.push(graph.b.elements[0].clone());
++        let mut proof = TransitionEndpointProof::new(&graph);
++        assert_eq!(proof.feature_target(&mut graph, &facts, added), None);
++        proof.steps = crate::eval::MAX_STEPS;
++        assert_eq!(proof.node(&graph, &facts, 0), None);
++        assert_eq!(proof.charge(usize::MAX), None);
++    }
++}

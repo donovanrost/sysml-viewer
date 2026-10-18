@@ -545,22 +545,6 @@ pub(super) fn validate(r: &ResolvedModel, model: &Model, g: &Facts) -> Vec<(usiz
                     );
                 }
             }
-            if flag(b, e, "isParallel")
-                && g.members[e]
-                    .iter()
-                    .any(|&m| is(b, m, "TransitionUsage") || is(b, m, "Succession"))
-            {
-                report(
-                    e,
-                    span,
-                    if definition {
-                        "validateStateDefinitionParallelSubactions"
-                    } else {
-                        "validateStateUsageParallelSubactions"
-                    },
-                    "A parallel state cannot own successions or transitions",
-                );
-            }
         }
         if is(b, e, "ControlNode")
             && !g.owner[e].is_some_and(|o| is(b, o, "ActionDefinition") || is(b, o, "ActionUsage"))

@@ -315,13 +315,25 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
       "symbol": "pub(super) fn validate(",
       "role": "Static ownership, specialization and feature-property validation candidates",
-      "sha256": "903071a8d32f3e61448225ed3ce3a4315ed375da5073c064a7fdd5f3a1ee5788"
+      "sha256": "4d1636387ebb334f513748330fef19d9a3e54221afb10ded1d9ba30ca13fa4ba"
     },
     "view-rendering-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
       "symbol": "pub(super) fn validate_view_renderings(",
       "role": "Owned and inherited view-rendering membership validation with query-local dependency preflight",
-      "sha256": "903071a8d32f3e61448225ed3ce3a4315ed375da5073c064a7fdd5f3a1ee5788"
+      "sha256": "4d1636387ebb334f513748330fef19d9a3e54221afb10ded1d9ba30ca13fa4ba"
+    },
+    "transition-validation": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+      "symbol": "fn validate_parallel_states(",
+      "role": "Checked source/target incidence of transitions on directly owned parallel-state actions, with independent unresolved endpoint guards",
+      "sha256": "705c5cc5e6e61f3d1562449162cf9108d9a872ba30359e25edb507d767b56f27"
+    },
+    "transition-target-validation": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+      "symbol": "fn target_feature(",
+      "role": "Bounded written transition target Feature.featureTarget identity proof before ActionUsage kind validation",
+      "sha256": "705c5cc5e6e61f3d1562449162cf9108d9a872ba30359e25edb507d767b56f27"
     }
   },
   "assessments": [
@@ -4283,6 +4295,252 @@
         }
       ],
       "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001\u2013006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
+    },
+    {
+      "id": "STATE-DEFINITION-PARALLEL",
+      "obligation": "A parallel StateDefinition has no directly owned ActionUsage with an incoming or outgoing TransitionUsage, regardless of the transition owner.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateDefinition-validateStateDefinitionParallelSubactions",
+        "SYSML-XMI-Systems-DefinitionAndUsage-Definition-deriveDefinitionOwnedAction",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageSource",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageTarget",
+        "KERML-XMI-Core-Features-Feature-deriveFeatureFeatureTarget"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-validation",
+          "semantic-driver",
+          "graph"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-003",
+          "checks": [
+            "clean",
+            "SuccessionOnly-element",
+            "SuccessionOnly-code",
+            "Unrelated-element",
+            "Unrelated-code",
+            "Deep-element",
+            "Deep-code",
+            "Inherited-element",
+            "Inherited-code",
+            "Empty-element",
+            "Empty-code"
+          ]
+        },
+        {
+          "case": "STATE-004",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "Outgoing-element",
+            "Outgoing-code",
+            "Incoming-element",
+            "Incoming-code",
+            "Local-element",
+            "Local-code",
+            "ValidPeer-element",
+            "ValidPeer-code"
+          ]
+        },
+        {
+          "case": "STATE-005",
+          "checks": [
+            "syntax",
+            "structure",
+            "Unknown-element",
+            "Unknown-code",
+            "Left-element",
+            "Left-code",
+            "Right-element",
+            "Right-code",
+            "ValidPeer-element",
+            "ValidPeer-code",
+            "SourceKnown-element",
+            "SourceKnown-code",
+            "TargetKnown-element",
+            "TargetKnown-code",
+            "CompleteInvalidPeer-element",
+            "CompleteInvalidPeer-code"
+          ]
+        },
+        {
+          "case": "STATE-007",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "Outgoing-element",
+            "Outgoing-code",
+            "ValidPeer-element",
+            "ValidPeer-code"
+          ]
+        }
+      ],
+      "limits": "KERNEL-019 checks source and target independently across the explicit model, including imported cross-file endpoints, and reports the owning state once. Plain Successions, inherited actions, grandchildren and nonowning aliases do not count as directly owned actions. PerformActionUsage retains its own identity instead of following its ReferenceSubsetting. State subaction memberships contribute their owned actions. Missing first/middle/final chain links and ambiguous references cannot establish an endpoint, but a known opposite endpoint remains a violation witness. The endpoint preflight uses shared derived source/target queries, checks written relationship resolution and explicit index bounds, and limits each endpoint proof to the existing work allowance. STATE-003 through STATE-005 and STATE-007 exercise these boundaries; private tests also retain repeated-query and index/work refusal behavior. The target-end selection follows the current lowering representation with an implicit source end. Full transition construction, inherited/implicit connector ends, all endpoint derivations, triggers/guards/effects, arbitrary raw graph consistency and complete state semantics remain unqualified. No public state-slot or membership-metaclass API is added."
+    },
+    {
+      "id": "STATE-USAGE-PARALLEL",
+      "obligation": "A parallel StateUsage has no directly owned ActionUsage with an incoming or outgoing TransitionUsage, regardless of the transition owner.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateUsage-validateStateUsageParallelSubactions",
+        "SYSML-XMI-Systems-DefinitionAndUsage-Usage-deriveUsageNestedAction",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageSource",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageTarget",
+        "KERML-XMI-Core-Features-Feature-deriveFeatureFeatureTarget"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-validation",
+          "semantic-driver",
+          "graph"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-003",
+          "checks": [
+            "clean",
+            "successionOnly-element",
+            "successionOnly-code",
+            "unrelated-element",
+            "unrelated-code",
+            "aliases-element",
+            "aliases-code",
+            "inherited-element",
+            "inherited-code",
+            "empty-element",
+            "empty-code"
+          ]
+        },
+        {
+          "case": "STATE-004",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "outgoing-element",
+            "outgoing-code",
+            "incoming-element",
+            "incoming-code",
+            "local-element",
+            "local-code",
+            "performed-element",
+            "performed-code",
+            "subactions-element",
+            "subactions-code"
+          ]
+        },
+        {
+          "case": "STATE-005",
+          "checks": [
+            "syntax",
+            "structure",
+            "unknown-element",
+            "unknown-code",
+            "sourceBroken-element",
+            "sourceBroken-code",
+            "targetBroken-element",
+            "targetBroken-code",
+            "middleBroken-element",
+            "middleBroken-code",
+            "rootBroken-element",
+            "rootBroken-code",
+            "ambiguous-element",
+            "ambiguous-code",
+            "sourceKnown-element",
+            "sourceKnown-code",
+            "targetKnown-element",
+            "targetKnown-code"
+          ]
+        },
+        {
+          "case": "STATE-007",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "incoming-element",
+            "incoming-code"
+          ]
+        }
+      ],
+      "limits": "KERNEL-019 checks source and target independently across the explicit model, including imported cross-file endpoints, and reports the owning state once. Plain Successions, inherited actions, grandchildren and nonowning aliases do not count as directly owned actions. PerformActionUsage retains its own identity instead of following its ReferenceSubsetting. State subaction memberships contribute their owned actions. Missing first/middle/final chain links and ambiguous references cannot establish an endpoint, but a known opposite endpoint remains a violation witness. The endpoint preflight uses shared derived source/target queries, checks written relationship resolution and explicit index bounds, and limits each endpoint proof to the existing work allowance. STATE-003 through STATE-005 and STATE-007 exercise these boundaries; private tests also retain repeated-query and index/work refusal behavior. The target-end selection follows the current lowering representation with an implicit source end. Full transition construction, inherited/implicit connector ends, all endpoint derivations, triggers/guards/effects, arbitrary raw graph consistency and complete state semantics remain unqualified. No public state-slot or membership-metaclass API is added."
+    },
+    {
+      "id": "TRANSITION-TARGET-KIND",
+      "obligation": "A resolved written transition succession target has an ActionUsage as its Feature.featureTarget; incomplete targets do not establish a wrong-kind diagnostic.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-TransitionUsage-validateTransitionUsageSuccession",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageTarget",
+        "KERML-XMI-Core-Features-Feature-deriveFeatureFeatureTarget"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-target-validation",
+          "semantic-driver"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-005",
+          "checks": [
+            "no-invented-target-kind"
+          ]
+        },
+        {
+          "case": "STATE-006",
+          "checks": [
+            "syntax",
+            "structure",
+            "toScalar-element",
+            "toScalar-code",
+            "toReference-element",
+            "toReference-code",
+            "toPerformed-element",
+            "toPerformed-code",
+            "toMissing-element",
+            "toMissing-code"
+          ]
+        }
+      ],
+      "limits": "KERNEL-019 prevents an incomplete target chain from becoming a known non-action target. A general ReferenceUsage that references an action is still not an ActionUsage; a PerformActionUsage retains its own ActionUsage identity. The check uses the first owned Succession and its second owned end, matching the shared transition target query and current textual lowering. This is bounded target-kind validation, not qualification of the complete validateTransitionUsageSuccession obligation: missing-succession cases, every target of nonbinary/raw connector forms, implied ends and all malformed ownership configurations remain open. Resolution diagnostics remain independently visible."
     }
   ]
 }

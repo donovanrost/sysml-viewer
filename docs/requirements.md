@@ -210,9 +210,9 @@ source trees of the syntax library, model library and public kernel, fingerprint
 each file, and joins only direct assessment source edges. `requirements:check`
 rejects generated drift and registry names outside the pinned catalogue.
 
-After KERNEL-017, the registries name 91 rules and source text mentions 92. The
-other 88 names were not located by this search. Six rules have direct bounded
-assessments; 174 still need direct obligation review. These are separate measures:
+After KERNEL-019, the registries name 91 rules and source text mentions 92. The
+other 88 names were not located by this search. Nine rules have direct bounded
+assessments; 171 still need direct obligation review. These are separate measures:
 comments, private tests and registration lists are search hints, and a missing
 name does not establish missing behavior. The 36 labels outside the catalogue
 include deliberate compatibility aliases and checks needing further classification.
@@ -247,17 +247,27 @@ The [pre-fix probes](evidence/validation-before-macos-arm64.json) retain the act
 earlier codes and missed findings. They used the existing `.17` executable and
 are explicitly distinguished from the fresh qualification run.
 
-The next review is the body/member and derived-property boundary: state action
-slots and membership kinds are still missing from the facade, and state parallel
-transition rules need behavioral review beyond registration-name presence. The
-pinned `validateStateDefinitionParallelSubactions` refers to `ownedAction` incoming
-and outgoing transitions; the StateUsage rule uses `nestedAction`. The current
-structural check instead looks for directly owned TransitionUsage or Succession
-members. This is a review finding, not yet a demonstrated behavioral defect:
-focused positive/negative cases must establish the consequences of that difference.
+KERNEL-019 corrects parallel-state validation using transition incidence on direct
+owned actions, rather than the ownership of the transition itself. `STATE-003–007`
+cover plain successions, external and cross-file transitions, aliases, inherited
+and nested actions, performed actions, state subactions, missing/ambiguous endpoints
+and independently known opposite endpoints. The same endpoint proof prevents an
+unresolved target chain from producing a false `validateTransitionUsageSuccession`
+kind error. A ReferenceUsage referencing an action retains its non-action kind;
+a PerformActionUsage retains its own ActionUsage identity.
+
+These three additional assessments remain bounded. The target check uses the
+current lowering representation's first succession and positional target end;
+missing successions, nonbinary/raw targets, implied connector construction and
+all transition source/target derivations remain open. The next body/member review
+must also expose state action slots and membership kinds through a considered
+public API. Trigger, guard and effect constraints, other action forms and the
+remaining family obligations still need independent review.
+
 The broader audit should classify complete obligation sets by implementation, API
-exposure and verified behavior before forecasting the remaining work. Closing the
-last named failure in the current matrix does not close the standards inventory.
+exposure and verified behavior before refining the remaining-work forecast.
+Closing the last named failure in the current matrix does not close the standards
+inventory.
 
 For each remaining validation rule, review its XMI expression and prose, locate
 the actual execution path, derive positive/negative partitions, and map exact

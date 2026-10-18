@@ -38,7 +38,30 @@
              }
          }
          if is(b, e, "Function") || is(b, e, "Expression") {
-@@ -660,6 +638,180 @@
+@@ -567,22 +545,6 @@
+                     );
+                 }
+             }
+-            if flag(b, e, "isParallel")
+-                && g.members[e]
+-                    .iter()
+-                    .any(|&m| is(b, m, "TransitionUsage") || is(b, m, "Succession"))
+-            {
+-                report(
+-                    e,
+-                    span,
+-                    if definition {
+-                        "validateStateDefinitionParallelSubactions"
+-                    } else {
+-                        "validateStateUsageParallelSubactions"
+-                    },
+-                    "A parallel state cannot own successions or transitions",
+-                );
+-            }
+         }
+         if is(b, e, "ControlNode")
+             && !g.owner[e].is_some_and(|o| is(b, o, "ActionDefinition") || is(b, o, "ActionUsage"))
+@@ -660,6 +622,180 @@
      out
  }
  
@@ -219,7 +242,7 @@
  /// Direction conformance shares the same contextual proof as repair proposals.
  pub(super) fn validate_directions(
      r: &mut ResolvedModel,
-@@ -695,3 +847,147 @@
+@@ -695,3 +831,147 @@
          })
          .collect()
  }

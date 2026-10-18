@@ -1,0 +1,304 @@
+{
+  "generatedAt": "2026-10-18T00:49:41.119243+00:00",
+  "platform": "darwin",
+  "arch": "arm64",
+  "scope": "KERNEL-019 parallel-state validation through direct owned action transition incidence, independent endpoint uncertainty, cross-file source ownership and bounded transition target-kind identity. STATE-003\u2013007 evidence does not qualify complete state, transition or language semantics.",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.20",
+  "kernelInputSha256": "91522fc952ad33a37757360bb00278e2c566c112f6fb22d9adfb92dc017757fd",
+  "binarySha256": "ac5456b4a24cd9b82076f964ae354d795a44e17bd8349a20f8f0e594fa8def62",
+  "inputs": {
+    "crates/sysml-kernel/src/lib.rs": "5d5f7fd3986af28916df292b1e8e36f13ff834e0214dafdda7d06e63259587ae",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs": "705c5cc5e6e61f3d1562449162cf9108d9a872ba30359e25edb507d767b56f27",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs": "4d1636387ebb334f513748330fef19d9a3e54221afb10ded1d9ba30ca13fa4ba",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/behavior.rs": "7a3f0fdb73646524472412aec7da7b73e0632af0727ee1477f371d14f52320ef",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/derived.rs": "dece28f6c99d8ca59ba2b0e270493701517f819d0d3fae830f9d8a950b3a6844",
+    "patches/manifest.json": "b55eb96c29fa3b574c3a4f103c3d4235c9389ce635c7ef2139bae9ca2d5cb543",
+    "patches/0018-inherited-view-rendering-validation.patch": "bb2ad7e99e9c5a4fb56a0789c5927224cede47c01100cea0f483a9406472ad69",
+    "patches/0020-parallel-state-transitions.patch": "4233b3d077f3b3f4652a839db5bf0bae28814eae8bc881ffc22e27d54bfd6528",
+    "tools/lib/conformance.mjs": "d2fc2ec4ad58e059e12df0d0ef196b522934466cf8d34673ae92d99cd448d817",
+    "tools/benchmark-kernel.mjs": "09559695e67017db06368aa41f0e2ad7e1363508f2cecca972120775f1a6c425",
+    "tools/test-vendor.mjs": "312a8494d45baa791240f35acfde53b3c8445ab37b051bd7ab06d2342add2ea4",
+    "tests/families.test.ts": "c7b753f11c97f7bf16259fc9c6be5fd88e6c6989f5437f1481cbe5a91bf8092d",
+    "tests/conformance/matrix.json": "6ccf562e6c5cf2e0a617a0bd4d1ee52170de5df7e2117d36ec566644811b6494",
+    "standards/assessments.json": "0938927ac567d16e19ff9f3bd412f2ae1d855fce372e00a7b2ade9af6910df65",
+    "tests/conformance/fixtures/state-parallel-positive.sysml": "ec2f9492de28f5429d87fa26dd265c9285fd41a9d2cc46a30e60949b1de5565f",
+    "tests/conformance/fixtures/state-parallel-negative.sysml": "e976ca39e83ba5a649115f4539cd42de608a78ec0f4911f3649d460fd293a56d",
+    "tests/conformance/fixtures/state-parallel-incomplete.sysml": "ba2b817cb93f0b44aaa4496033fa24c98b7a239a3e829dbc736767ecf0764d4b",
+    "tests/conformance/fixtures/state-transition-targets.sysml": "ce6e00aacc511d8588473236c3e5bc1679cd4f8e4798466802a58e6e2cfefa2d",
+    "tests/conformance/fixtures/state-parallel-cross-owners.sysml": "2c577bd257fb8146db891bafb93ebf18bc27b72c64f69826e1d7bb808036de03",
+    "tests/conformance/fixtures/state-parallel-cross-transitions.sysml": "5634fc7a231b247ba480bfbf58ae26b2a566bb526885fcf2d9285922c95999d7"
+  },
+  "reports": {
+    "docs/evidence/conformance-macos-arm64.json": "4c581b7b0b7f18a3be6a6db2e11ab2cccd20bfb48e7422f7026a5e1441603ca9",
+    "docs/evidence/requirements-macos-arm64.json": "6aa4ef62d03531d991c0c98dd22aaab501f9d95a0b3778607520a5c1e800abf8",
+    "docs/evidence/state-transitions-before-macos-arm64.json": "462122d72bd436819de0ec59a7b6eecfac0d43c014bf0e2f59ac0add9bb86cb8",
+    "docs/evidence/validation-audit.json": "e5fe35886336780b68e2592966bf22c7af8debedaf9fda0bc80f049170d38cb3",
+    "docs/evidence/benchmark-state-transitions-macos-arm64.json": "02c5a9bc7076d38f721b59cc19a892dff7d52e4573b2daf03bd46053840c4c35"
+  },
+  "passing": {
+    "rust": 77,
+    "vendor": 282,
+    "node": 47,
+    "conformance": 124,
+    "benchmarkSamples": 138
+  },
+  "knownGapCases": 0,
+  "knownGapAssertions": 0,
+  "casesAdded": 5,
+  "assertionsAdded": 94,
+  "assessments": 67,
+  "validationNameInventory": {
+    "rules": 180,
+    "registered": 91,
+    "withSourceMentions": 92,
+    "withoutSourceMentions": 88,
+    "withDirectAssessments": 9,
+    "withoutDirectAssessments": 171,
+    "unmatchedNames": 36
+  },
+  "verification": [
+    {
+      "step": "vendor-tests",
+      "command": [
+        "npm",
+        "run",
+        "vendor:test"
+      ],
+      "exitCode": 0,
+      "log": "target/state-transition-audit/vendor-initial.log",
+      "note": "Completed on the identical semantic source and patch inputs before starting remaining gates."
+    },
+    {
+      "step": "vendor",
+      "command": [
+        "node",
+        "tools/verify-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.37,
+      "log": "target/state-transition-audit/vendor.log"
+    },
+    {
+      "step": "rust-format",
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "fmt",
+        "-p",
+        "sysml-kernel",
+        "-p",
+        "sysml-cli",
+        "-p",
+        "sysml-wasm",
+        "--",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.29,
+      "log": "target/state-transition-audit/rust-format.log"
+    },
+    {
+      "step": "clippy",
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 3.19,
+      "log": "target/state-transition-audit/clippy.log"
+    },
+    {
+      "step": "format",
+      "command": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.84,
+      "log": "target/state-transition-audit/format.log"
+    },
+    {
+      "step": "contract",
+      "command": [
+        "npm",
+        "run",
+        "contract:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 7.78,
+      "log": "target/state-transition-audit/contract.log"
+    },
+    {
+      "step": "matrix-docs",
+      "command": [
+        "npm",
+        "run",
+        "conformance:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.18,
+      "log": "target/state-transition-audit/matrix-docs.log"
+    },
+    {
+      "step": "inventory",
+      "command": [
+        "npm",
+        "run",
+        "requirements:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.28,
+      "log": "target/state-transition-audit/inventory.log"
+    },
+    {
+      "step": "rust-tests",
+      "command": [
+        "npm",
+        "run",
+        "kernel:test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 248.75,
+      "log": "target/state-transition-audit/rust-tests.log"
+    },
+    {
+      "step": "conformance",
+      "command": [
+        "npm",
+        "run",
+        "conformance"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 291.88,
+      "log": "target/state-transition-audit/conformance.log"
+    },
+    {
+      "step": "requirements-report",
+      "command": [
+        "npm",
+        "run",
+        "requirements:report"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.81,
+      "log": "target/state-transition-audit/requirements-report.log"
+    },
+    {
+      "step": "node-tests",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 102.62,
+      "log": "target/state-transition-audit/node-tests.log"
+    },
+    {
+      "step": "benchmark",
+      "command": [
+        "npm",
+        "run",
+        "benchmark"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 340.16,
+      "log": "target/state-transition-audit/benchmark.log"
+    },
+    {
+      "step": "desktop",
+      "command": [
+        "npm",
+        "run",
+        "desktop:build",
+        "--",
+        "--bundles",
+        "app,dmg",
+        "--ci"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 60.73,
+      "log": "target/state-transition-audit/desktop.log"
+    }
+  ],
+  "finalReadOnlyChecks": [
+    {
+      "check": "vendor",
+      "command": [
+        "node",
+        "tools/verify-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.44
+    },
+    {
+      "check": "matrix-docs",
+      "command": [
+        "npm",
+        "run",
+        "conformance:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.25
+    },
+    {
+      "check": "inventory",
+      "command": [
+        "npm",
+        "run",
+        "requirements:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.32
+    },
+    {
+      "check": "qualification-evidence",
+      "command": [
+        "node",
+        "--test",
+        "tests/requirements.test.mjs",
+        "tests/validation-audit.test.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 1.21
+    },
+    {
+      "check": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.05
+    }
+  ],
+  "platforms": {
+    "macOS-arm64": "verified",
+    "Windows": "not run",
+    "Linux": "not run"
+  },
+  "artifacts": {
+    "app": "src-tauri/target/release/bundle/macos/SysML Viewer.app",
+    "appBytes": 12649809,
+    "dmg": "src-tauri/target/release/bundle/dmg/SysML Viewer_0.3.0_aarch64.dmg",
+    "dmgBytes": 4574452,
+    "dmgSha256": "2bdeaafc8d267c2ecf44fd4dfbed4487bc58a3b13c3df7243f49d054ff3962fb",
+    "localApp": "release/SysML Viewer.app",
+    "previousApp": "release/SysML Viewer.previous-9a8f17c.app",
+    "localAppMatchesBundle": true,
+    "bundleFilesSha256": {
+      "Contents/Info.plist": "20db7018a2cce012107f2822dc27761cb6e8a6cfcb4f78cdd50184f39dc115e5",
+      "Contents/MacOS/sysml-viewer": "3cd18ed0702f9f85fec6116386395051232009aff18e869ab8528607821dc579",
+      "Contents/Resources/icon.icns": "90028bb4ea3a018ec8de8f1afb4dccce9cb2a1e3376e89981094c0e9cb5a54bb"
+    }
+  }
+}

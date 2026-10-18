@@ -156,13 +156,13 @@
       "reason": "Retain canonical state-subaction rule codes and dispatch view-rendering validation through the shared inherited-membership projection."
     },
     {
-      "id": "KERNEL-018",
+      "id": "KERNEL-018/019",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
       "patch": "patches/0018-inherited-view-rendering-validation.patch",
-      "sha256": "8f66ff49c36ea06eb2616d05c679d00fc327d0ff23aee0c4be1344ac4f39cd24",
+      "sha256": "bb2ad7e99e9c5a4fb56a0789c5927224cede47c01100cea0f483a9406472ad69",
       "baseSha256": "d5164c5fe6ffd955bf2de70c22e08ff5f87fcc4979e024fe5197f7eafed2ef55",
-      "resultSha256": "903071a8d32f3e61448225ed3ce3a4315ed375da5073c064a7fdd5f3a1ee5788",
-      "reason": "KERNEL-018: count ViewRenderingMembership across owned and inherited featureMembership after actual redefinition, visibility and import selection. Missing/ambiguous references, recovery, cycles and incomplete dependencies cannot certify a candidate-count violation; two owned memberships remain a definite error. Reuse the shared projection and bound the query-local dependency preflight."
+      "resultSha256": "4d1636387ebb334f513748330fef19d9a3e54221afb10ded1d9ba30ca13fa4ba",
+      "reason": "KERNEL-018: count ViewRenderingMembership across owned and inherited featureMembership after actual redefinition, visibility and import selection. Missing/ambiguous references, recovery, cycles and incomplete dependencies cannot certify a candidate-count violation; two owned memberships remain a definite error. Reuse the shared projection and bound the query-local dependency preflight. KERNEL-019 moves parallel-state validation from lexical transition/succession ownership to checked action endpoint incidence in the action validator."
     },
     {
       "id": "KERNEL-018",
@@ -172,6 +172,15 @@
       "baseSha256": "4bcbae4ec8a3fe2847ac48a00b3661fb4c53d8ee0e1dbac8120e089821caa565",
       "resultSha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e",
       "reason": "KERNEL-018: same-name compatibility shadowing must not remove a ViewRenderingMembership. checkRenderingUsageRedefinition targets the library viewRendering feature, not every inherited same-name user rendering. Preserve actual explicit/transitive redefinition and shared membership identity/visibility reduction."
+    },
+    {
+      "id": "KERNEL-019",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+      "patch": "patches/0020-parallel-state-transitions.patch",
+      "baseSha256": "88c4211d4f3331b13519139e02da09855bc49030aa5f8904c8751b80e7371f67",
+      "reason": "Check parallel-state restrictions through independent, resolved TransitionUsage endpoint incidence on direct owned actions. Preserve action identity, reject incomplete chains and retain known opposite endpoints. Transition target-kind validation uses Feature.featureTarget rather than following a final ReferenceSubsetting. STATE-003 through STATE-007 cover ownership, alias/inheritance boundaries, unresolved and ambiguous names, action kinds and cross-file incidence. This does not qualify all transition or connector derivations.",
+      "sha256": "4233b3d077f3b3f4652a839db5bf0bae28814eae8bc881ffc22e27d54bfd6528",
+      "resultSha256": "705c5cc5e6e61f3d1562449162cf9108d9a872ba30359e25edb507d767b56f27"
     }
   ]
 }

@@ -9174,26 +9174,724 @@
         }
       ],
       "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001–006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
+    },
+    {
+      "id": "STATE-DEFINITION-PARALLEL",
+      "obligation": "A parallel StateDefinition has no directly owned ActionUsage with an incoming or outgoing TransitionUsage, regardless of the transition owner.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateDefinition-validateStateDefinitionParallelSubactions",
+        "SYSML-XMI-Systems-DefinitionAndUsage-Definition-deriveDefinitionOwnedAction",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageSource",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageTarget",
+        "KERML-XMI-Core-Features-Feature-deriveFeatureFeatureTarget"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-validation",
+          "semantic-driver",
+          "graph"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-003",
+          "checks": [
+            "clean",
+            "SuccessionOnly-element",
+            "SuccessionOnly-code",
+            "Unrelated-element",
+            "Unrelated-code",
+            "Deep-element",
+            "Deep-code",
+            "Inherited-element",
+            "Inherited-code",
+            "Empty-element",
+            "Empty-code"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "SuccessionOnly-element",
+              "status": "pass"
+            },
+            {
+              "id": "SuccessionOnly-code",
+              "status": "pass"
+            },
+            {
+              "id": "Unrelated-element",
+              "status": "pass"
+            },
+            {
+              "id": "Unrelated-code",
+              "status": "pass"
+            },
+            {
+              "id": "Deep-element",
+              "status": "pass"
+            },
+            {
+              "id": "Deep-code",
+              "status": "pass"
+            },
+            {
+              "id": "Inherited-element",
+              "status": "pass"
+            },
+            {
+              "id": "Inherited-code",
+              "status": "pass"
+            },
+            {
+              "id": "Empty-element",
+              "status": "pass"
+            },
+            {
+              "id": "Empty-code",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "STATE-004",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "Outgoing-element",
+            "Outgoing-code",
+            "Incoming-element",
+            "Incoming-code",
+            "Local-element",
+            "Local-code",
+            "ValidPeer-element",
+            "ValidPeer-code"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "resolution",
+              "status": "pass"
+            },
+            {
+              "id": "Outgoing-element",
+              "status": "pass"
+            },
+            {
+              "id": "Outgoing-code",
+              "status": "pass"
+            },
+            {
+              "id": "Incoming-element",
+              "status": "pass"
+            },
+            {
+              "id": "Incoming-code",
+              "status": "pass"
+            },
+            {
+              "id": "Local-element",
+              "status": "pass"
+            },
+            {
+              "id": "Local-code",
+              "status": "pass"
+            },
+            {
+              "id": "ValidPeer-element",
+              "status": "pass"
+            },
+            {
+              "id": "ValidPeer-code",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "STATE-005",
+          "checks": [
+            "syntax",
+            "structure",
+            "Unknown-element",
+            "Unknown-code",
+            "Left-element",
+            "Left-code",
+            "Right-element",
+            "Right-code",
+            "ValidPeer-element",
+            "ValidPeer-code",
+            "SourceKnown-element",
+            "SourceKnown-code",
+            "TargetKnown-element",
+            "TargetKnown-code",
+            "CompleteInvalidPeer-element",
+            "CompleteInvalidPeer-code"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "Unknown-element",
+              "status": "pass"
+            },
+            {
+              "id": "Unknown-code",
+              "status": "pass"
+            },
+            {
+              "id": "Left-element",
+              "status": "pass"
+            },
+            {
+              "id": "Left-code",
+              "status": "pass"
+            },
+            {
+              "id": "Right-element",
+              "status": "pass"
+            },
+            {
+              "id": "Right-code",
+              "status": "pass"
+            },
+            {
+              "id": "ValidPeer-element",
+              "status": "pass"
+            },
+            {
+              "id": "ValidPeer-code",
+              "status": "pass"
+            },
+            {
+              "id": "SourceKnown-element",
+              "status": "pass"
+            },
+            {
+              "id": "SourceKnown-code",
+              "status": "pass"
+            },
+            {
+              "id": "TargetKnown-element",
+              "status": "pass"
+            },
+            {
+              "id": "TargetKnown-code",
+              "status": "pass"
+            },
+            {
+              "id": "CompleteInvalidPeer-element",
+              "status": "pass"
+            },
+            {
+              "id": "CompleteInvalidPeer-code",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "STATE-007",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "Outgoing-element",
+            "Outgoing-code",
+            "ValidPeer-element",
+            "ValidPeer-code"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "resolution",
+              "status": "pass"
+            },
+            {
+              "id": "Outgoing-element",
+              "status": "pass"
+            },
+            {
+              "id": "Outgoing-code",
+              "status": "pass"
+            },
+            {
+              "id": "ValidPeer-element",
+              "status": "pass"
+            },
+            {
+              "id": "ValidPeer-code",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-019 checks source and target independently across the explicit model, including imported cross-file endpoints, and reports the owning state once. Plain Successions, inherited actions, grandchildren and nonowning aliases do not count as directly owned actions. PerformActionUsage retains its own identity instead of following its ReferenceSubsetting. State subaction memberships contribute their owned actions. Missing first/middle/final chain links and ambiguous references cannot establish an endpoint, but a known opposite endpoint remains a violation witness. The endpoint preflight uses shared derived source/target queries, checks written relationship resolution and explicit index bounds, and limits each endpoint proof to the existing work allowance. STATE-003 through STATE-005 and STATE-007 exercise these boundaries; private tests also retain repeated-query and index/work refusal behavior. The target-end selection follows the current lowering representation with an implicit source end. Full transition construction, inherited/implicit connector ends, all endpoint derivations, triggers/guards/effects, arbitrary raw graph consistency and complete state semantics remain unqualified. No public state-slot or membership-metaclass API is added."
+    },
+    {
+      "id": "STATE-USAGE-PARALLEL",
+      "obligation": "A parallel StateUsage has no directly owned ActionUsage with an incoming or outgoing TransitionUsage, regardless of the transition owner.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateUsage-validateStateUsageParallelSubactions",
+        "SYSML-XMI-Systems-DefinitionAndUsage-Usage-deriveUsageNestedAction",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageSource",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageTarget",
+        "KERML-XMI-Core-Features-Feature-deriveFeatureFeatureTarget"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-validation",
+          "semantic-driver",
+          "graph"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-003",
+          "checks": [
+            "clean",
+            "successionOnly-element",
+            "successionOnly-code",
+            "unrelated-element",
+            "unrelated-code",
+            "aliases-element",
+            "aliases-code",
+            "inherited-element",
+            "inherited-code",
+            "empty-element",
+            "empty-code"
+          ],
+          "polarity": "positive",
+          "status": "pass",
+          "results": [
+            {
+              "id": "clean",
+              "status": "pass"
+            },
+            {
+              "id": "successionOnly-element",
+              "status": "pass"
+            },
+            {
+              "id": "successionOnly-code",
+              "status": "pass"
+            },
+            {
+              "id": "unrelated-element",
+              "status": "pass"
+            },
+            {
+              "id": "unrelated-code",
+              "status": "pass"
+            },
+            {
+              "id": "aliases-element",
+              "status": "pass"
+            },
+            {
+              "id": "aliases-code",
+              "status": "pass"
+            },
+            {
+              "id": "inherited-element",
+              "status": "pass"
+            },
+            {
+              "id": "inherited-code",
+              "status": "pass"
+            },
+            {
+              "id": "empty-element",
+              "status": "pass"
+            },
+            {
+              "id": "empty-code",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "STATE-004",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "outgoing-element",
+            "outgoing-code",
+            "incoming-element",
+            "incoming-code",
+            "local-element",
+            "local-code",
+            "performed-element",
+            "performed-code",
+            "subactions-element",
+            "subactions-code"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "resolution",
+              "status": "pass"
+            },
+            {
+              "id": "outgoing-element",
+              "status": "pass"
+            },
+            {
+              "id": "outgoing-code",
+              "status": "pass"
+            },
+            {
+              "id": "incoming-element",
+              "status": "pass"
+            },
+            {
+              "id": "incoming-code",
+              "status": "pass"
+            },
+            {
+              "id": "local-element",
+              "status": "pass"
+            },
+            {
+              "id": "local-code",
+              "status": "pass"
+            },
+            {
+              "id": "performed-element",
+              "status": "pass"
+            },
+            {
+              "id": "performed-code",
+              "status": "pass"
+            },
+            {
+              "id": "subactions-element",
+              "status": "pass"
+            },
+            {
+              "id": "subactions-code",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "STATE-005",
+          "checks": [
+            "syntax",
+            "structure",
+            "unknown-element",
+            "unknown-code",
+            "sourceBroken-element",
+            "sourceBroken-code",
+            "targetBroken-element",
+            "targetBroken-code",
+            "middleBroken-element",
+            "middleBroken-code",
+            "rootBroken-element",
+            "rootBroken-code",
+            "ambiguous-element",
+            "ambiguous-code",
+            "sourceKnown-element",
+            "sourceKnown-code",
+            "targetKnown-element",
+            "targetKnown-code"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "unknown-element",
+              "status": "pass"
+            },
+            {
+              "id": "unknown-code",
+              "status": "pass"
+            },
+            {
+              "id": "sourceBroken-element",
+              "status": "pass"
+            },
+            {
+              "id": "sourceBroken-code",
+              "status": "pass"
+            },
+            {
+              "id": "targetBroken-element",
+              "status": "pass"
+            },
+            {
+              "id": "targetBroken-code",
+              "status": "pass"
+            },
+            {
+              "id": "middleBroken-element",
+              "status": "pass"
+            },
+            {
+              "id": "middleBroken-code",
+              "status": "pass"
+            },
+            {
+              "id": "rootBroken-element",
+              "status": "pass"
+            },
+            {
+              "id": "rootBroken-code",
+              "status": "pass"
+            },
+            {
+              "id": "ambiguous-element",
+              "status": "pass"
+            },
+            {
+              "id": "ambiguous-code",
+              "status": "pass"
+            },
+            {
+              "id": "sourceKnown-element",
+              "status": "pass"
+            },
+            {
+              "id": "sourceKnown-code",
+              "status": "pass"
+            },
+            {
+              "id": "targetKnown-element",
+              "status": "pass"
+            },
+            {
+              "id": "targetKnown-code",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "STATE-007",
+          "checks": [
+            "syntax",
+            "structure",
+            "resolution",
+            "incoming-element",
+            "incoming-code"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "resolution",
+              "status": "pass"
+            },
+            {
+              "id": "incoming-element",
+              "status": "pass"
+            },
+            {
+              "id": "incoming-code",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-019 checks source and target independently across the explicit model, including imported cross-file endpoints, and reports the owning state once. Plain Successions, inherited actions, grandchildren and nonowning aliases do not count as directly owned actions. PerformActionUsage retains its own identity instead of following its ReferenceSubsetting. State subaction memberships contribute their owned actions. Missing first/middle/final chain links and ambiguous references cannot establish an endpoint, but a known opposite endpoint remains a violation witness. The endpoint preflight uses shared derived source/target queries, checks written relationship resolution and explicit index bounds, and limits each endpoint proof to the existing work allowance. STATE-003 through STATE-005 and STATE-007 exercise these boundaries; private tests also retain repeated-query and index/work refusal behavior. The target-end selection follows the current lowering representation with an implicit source end. Full transition construction, inherited/implicit connector ends, all endpoint derivations, triggers/guards/effects, arbitrary raw graph consistency and complete state semantics remain unqualified. No public state-slot or membership-metaclass API is added."
+    },
+    {
+      "id": "TRANSITION-TARGET-KIND",
+      "obligation": "A resolved written transition succession target has an ActionUsage as its Feature.featureTarget; incomplete targets do not establish a wrong-kind diagnostic.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-TransitionUsage-validateTransitionUsageSuccession",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageTarget",
+        "KERML-XMI-Core-Features-Feature-deriveFeatureFeatureTarget"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "transition-target-validation",
+          "semantic-driver"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-005",
+          "checks": [
+            "no-invented-target-kind"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "no-invented-target-kind",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "STATE-006",
+          "checks": [
+            "syntax",
+            "structure",
+            "toScalar-element",
+            "toScalar-code",
+            "toReference-element",
+            "toReference-code",
+            "toPerformed-element",
+            "toPerformed-code",
+            "toMissing-element",
+            "toMissing-code"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "toScalar-element",
+              "status": "pass"
+            },
+            {
+              "id": "toScalar-code",
+              "status": "pass"
+            },
+            {
+              "id": "toReference-element",
+              "status": "pass"
+            },
+            {
+              "id": "toReference-code",
+              "status": "pass"
+            },
+            {
+              "id": "toPerformed-element",
+              "status": "pass"
+            },
+            {
+              "id": "toPerformed-code",
+              "status": "pass"
+            },
+            {
+              "id": "toMissing-element",
+              "status": "pass"
+            },
+            {
+              "id": "toMissing-code",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-019 prevents an incomplete target chain from becoming a known non-action target. A general ReferenceUsage that references an action is still not an ActionUsage; a PerformActionUsage retains its own ActionUsage identity. The check uses the first owned Succession and its second owned end, matching the shared transition target query and current textual lowering. This is bounded target-kind validation, not qualification of the complete validateTransitionUsageSuccession obligation: missing-succession cases, every target of nonbinary/raw connector forms, implied ends and all malformed ownership configurations remain open. Resolution diagnostics remain independently visible."
     }
   ],
-  "executableCases": 119,
+  "executableCases": 124,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "4cda1983546683d2df67ccb49e2127f53092ad8c52b00095b913de961410ea11",
+  "assessmentsSha256": "0938927ac567d16e19ff9f3bd412f2ae1d855fce372e00a7b2ade9af6910df65",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "d0efdb5b48b1d4f90ab16bc51f460e74470225443992483a9f20cb7306829c6d",
-    "generatedAt": "2026-10-17T23:58:56.409Z",
-    "kernelInputSha256": "ff6e919805c8c2c1a03716a8f4f27e71daa645e3e629121e27d02fac4e4afddd",
-    "binarySha256": "07ddd56926a9b79e353106295cc467f0d8b534758b591075af206ead17deec29",
+    "sha256": "4c581b7b0b7f18a3be6a6db2e11ab2cccd20bfb48e7422f7026a5e1441603ca9",
+    "generatedAt": "2026-10-18T00:41:10.356Z",
+    "kernelInputSha256": "91522fc952ad33a37757360bb00278e2c566c112f6fb22d9adfb92dc017757fd",
+    "binarySha256": "ac5456b4a24cd9b82076f964ae354d795a44e17bd8349a20f8f0e594fa8def62",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.19",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.20",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 119,
+      "pass": 124,
       "known-gap": 0,
       "planned": 0,
       "fail": 0

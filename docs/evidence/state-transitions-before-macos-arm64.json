@@ -1,0 +1,556 @@
+{
+  "scope": "KERNEL-019 exploratory existing-binary probes before the parallel-state transition correction.",
+  "buildPerformed": false,
+  "binarySha256": "07ddd56926a9b79e353106295cc467f0d8b534758b591075af206ead17deec29",
+  "cases": [
+    {
+      "file": "tests/conformance/fixtures/state-parallel-positive.sysml",
+      "source": "package StateParallelPositive {\n    state def Driver {\n        action outsideA;\n        action outsideB;\n        state def SuccessionOnly parallel {\n            action a;\n            action b;\n            first a then b;\n        }\n        state successionOnly parallel {\n            action a;\n            action b;\n            first a then b;\n        }\n        state def Unrelated parallel {\n            state local;\n            transition first outsideA then outsideB;\n        }\n        state unrelated parallel {\n            state local;\n            transition first outsideA then outsideB;\n        }\n        state aliases parallel {\n            alias borrowed for outsideA;\n            transition first borrowed then outsideB;\n        }\n        state def Deep parallel {\n            state region {\n                state a;\n                state b;\n                transition first a then b;\n            }\n        }\n        state def Serial {\n            state a;\n            state b;\n            transition first a then b;\n        }\n        state def Inherited :> Serial parallel;\n        state inherited : Serial parallel;\n        state def Empty parallel;\n        state empty parallel;\n    }\n}\n",
+      "sha256": "ec2f9492de28f5429d87fa26dd265c9285fd41a9d2cc46a30e60949b1de5565f",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.19",
+      "diagnostics": [
+        {
+          "code": "validateStateDefinitionParallelSubactions",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A parallel state cannot own successions or transitions [validateStateDefinitionParallelSubactions]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-positive.sysml",
+            "start": {
+              "byteOffset": 123,
+              "utf16Offset": 123,
+              "line": 5,
+              "column": 19
+            },
+            "end": {
+              "byteOffset": 137,
+              "utf16Offset": 137,
+              "line": 5,
+              "column": 33
+            }
+          }
+        },
+        {
+          "code": "validateStateUsageParallelSubactions",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A parallel state cannot own successions or transitions [validateStateUsageParallelSubactions]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-positive.sysml",
+            "start": {
+              "byteOffset": 245,
+              "utf16Offset": 245,
+              "line": 10,
+              "column": 15
+            },
+            "end": {
+              "byteOffset": 259,
+              "utf16Offset": 259,
+              "line": 10,
+              "column": 29
+            }
+          }
+        },
+        {
+          "code": "validateStateDefinitionParallelSubactions",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A parallel state cannot own successions or transitions [validateStateDefinitionParallelSubactions]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-positive.sysml",
+            "start": {
+              "byteOffset": 371,
+              "utf16Offset": 371,
+              "line": 15,
+              "column": 19
+            },
+            "end": {
+              "byteOffset": 380,
+              "utf16Offset": 380,
+              "line": 15,
+              "column": 28
+            }
+          }
+        },
+        {
+          "code": "validateStateUsageParallelSubactions",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A parallel state cannot own successions or transitions [validateStateUsageParallelSubactions]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-positive.sysml",
+            "start": {
+              "byteOffset": 494,
+              "utf16Offset": 494,
+              "line": 19,
+              "column": 15
+            },
+            "end": {
+              "byteOffset": 503,
+              "utf16Offset": 503,
+              "line": 19,
+              "column": 24
+            }
+          }
+        },
+        {
+          "code": "validateStateUsageParallelSubactions",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A parallel state cannot own successions or transitions [validateStateUsageParallelSubactions]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-positive.sysml",
+            "start": {
+              "byteOffset": 617,
+              "utf16Offset": 617,
+              "line": 23,
+              "column": 15
+            },
+            "end": {
+              "byteOffset": 624,
+              "utf16Offset": 624,
+              "line": 23,
+              "column": 22
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "tests/conformance/fixtures/state-parallel-negative.sysml",
+      "source": "package StateParallelNegative {\n    state def Driver {\n        action outside;\n        state def Outgoing parallel { action ownedAction; }\n        transition first Outgoing::ownedAction then outside;\n        state def Incoming parallel { action ownedAction; }\n        transition first outside then Incoming::ownedAction;\n        state outgoing parallel { action ownedAction; }\n        transition first outgoing.ownedAction then outside;\n        state incoming parallel { action ownedAction; }\n        transition first outside then incoming.ownedAction;\n        state def Local parallel {\n            state a;\n            state b;\n            transition first a then b;\n        }\n        state local parallel {\n            state a;\n            transition first a then a;\n        }\n        state performed parallel { perform action local references outside; }\n        transition first performed.local then outside;\n        state subactions parallel { entry action entering; do action running; exit action leaving; }\n        transition first subactions.entering then outside;\n        transition first outside then subactions.leaving;\n        state def ValidPeer parallel { state local; }\n    }\n}\n",
+      "sha256": "e976ca39e83ba5a649115f4539cd42de608a78ec0f4911f3649d460fd293a56d",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.19",
+      "diagnostics": [
+        {
+          "code": "validateStateDefinitionParallelSubactions",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A parallel state cannot own successions or transitions [validateStateDefinitionParallelSubactions]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-negative.sysml",
+            "start": {
+              "byteOffset": 571,
+              "utf16Offset": 571,
+              "line": 12,
+              "column": 19
+            },
+            "end": {
+              "byteOffset": 576,
+              "utf16Offset": 576,
+              "line": 12,
+              "column": 24
+            }
+          }
+        },
+        {
+          "code": "validateStateUsageParallelSubactions",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A parallel state cannot own successions or transitions [validateStateUsageParallelSubactions]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-negative.sysml",
+            "start": {
+              "byteOffset": 693,
+              "utf16Offset": 693,
+              "line": 17,
+              "column": 15
+            },
+            "end": {
+              "byteOffset": 698,
+              "utf16Offset": 698,
+              "line": 17,
+              "column": 20
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+      "source": "package StateParallelIncomplete {\n    state def Driver {\n        action outside;\n        state def Unknown parallel {\n            state local;\n            transition first MissingSource then MissingTarget;\n        }\n        state unknown parallel {\n            state local;\n            transition first MissingSource then MissingTarget;\n        }\n        state sourceBroken parallel { action ownedAction; }\n        transition first sourceBroken.ownedAction.missing then outside;\n        state targetBroken parallel { action ownedAction; }\n        transition first outside then targetBroken.ownedAction.missing;\n        state middleBroken parallel { action ownedAction; }\n        transition first middleBroken.missing.ownedAction then outside;\n        state rootBroken parallel { action ownedAction; }\n        transition first MissingRoot.rootBroken.ownedAction then outside;\n        state sourceKnown parallel { action ownedAction; }\n        transition first sourceKnown.ownedAction then MissingTarget;\n        state targetKnown parallel { action ownedAction; }\n        transition first MissingSource then targetKnown.ownedAction;\n        state def SourceKnown parallel { action ownedAction; }\n        transition first SourceKnown::ownedAction then MissingTarget;\n        state def TargetKnown parallel { action ownedAction; }\n        transition first MissingSource then TargetKnown::ownedAction;\n        state def CompleteInvalidPeer parallel { action ownedAction; }\n        transition first CompleteInvalidPeer::ownedAction then outside;\n        state def ValidPeer parallel { state local; }\n    }\n}\n",
+      "sha256": "92839470dbdb66372d32c25b7831dfcad385d1de5ecf359edb3688207b136ed0",
+      "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.19",
+      "diagnostics": [
+        {
+          "code": "validateStateDefinitionParallelSubactions",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A parallel state cannot own successions or transitions [validateStateDefinitionParallelSubactions]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 99,
+              "utf16Offset": 99,
+              "line": 4,
+              "column": 19
+            },
+            "end": {
+              "byteOffset": 106,
+              "utf16Offset": 106,
+              "line": 4,
+              "column": 26
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `MissingSource`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 172,
+              "utf16Offset": 172,
+              "line": 6,
+              "column": 30
+            },
+            "end": {
+              "byteOffset": 185,
+              "utf16Offset": 185,
+              "line": 6,
+              "column": 43
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `MissingTarget`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 191,
+              "utf16Offset": 191,
+              "line": 6,
+              "column": 49
+            },
+            "end": {
+              "byteOffset": 204,
+              "utf16Offset": 204,
+              "line": 6,
+              "column": 62
+            }
+          }
+        },
+        {
+          "code": "validateStateUsageParallelSubactions",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A parallel state cannot own successions or transitions [validateStateUsageParallelSubactions]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 230,
+              "utf16Offset": 230,
+              "line": 8,
+              "column": 15
+            },
+            "end": {
+              "byteOffset": 237,
+              "utf16Offset": 237,
+              "line": 8,
+              "column": 22
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `MissingSource`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 303,
+              "utf16Offset": 303,
+              "line": 10,
+              "column": 30
+            },
+            "end": {
+              "byteOffset": 316,
+              "utf16Offset": 316,
+              "line": 10,
+              "column": 43
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `MissingTarget`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 322,
+              "utf16Offset": 322,
+              "line": 10,
+              "column": 49
+            },
+            "end": {
+              "byteOffset": 335,
+              "utf16Offset": 335,
+              "line": 10,
+              "column": 62
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `missing`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 457,
+              "utf16Offset": 457,
+              "line": 13,
+              "column": 51
+            },
+            "end": {
+              "byteOffset": 464,
+              "utf16Offset": 464,
+              "line": 13,
+              "column": 58
+            }
+          }
+        },
+        {
+          "code": "validateTransitionUsageSuccession",
+          "severity": "error",
+          "stage": "semantic",
+          "message": "A transition's succession must target an action usage [validateTransitionUsageSuccession]",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 547,
+              "utf16Offset": 547,
+              "line": 15,
+              "column": 9
+            },
+            "end": {
+              "byteOffset": 610,
+              "utf16Offset": 610,
+              "line": 15,
+              "column": 72
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `missing`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 602,
+              "utf16Offset": 602,
+              "line": 15,
+              "column": 64
+            },
+            "end": {
+              "byteOffset": 609,
+              "utf16Offset": 609,
+              "line": 15,
+              "column": 71
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `missing`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 709,
+              "utf16Offset": 709,
+              "line": 17,
+              "column": 39
+            },
+            "end": {
+              "byteOffset": 716,
+              "utf16Offset": 716,
+              "line": 17,
+              "column": 46
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `ownedAction`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 717,
+              "utf16Offset": 717,
+              "line": 17,
+              "column": 47
+            },
+            "end": {
+              "byteOffset": 728,
+              "utf16Offset": 728,
+              "line": 17,
+              "column": 58
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `MissingRoot`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 826,
+              "utf16Offset": 826,
+              "line": 19,
+              "column": 26
+            },
+            "end": {
+              "byteOffset": 837,
+              "utf16Offset": 837,
+              "line": 19,
+              "column": 37
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `rootBroken`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 838,
+              "utf16Offset": 838,
+              "line": 19,
+              "column": 38
+            },
+            "end": {
+              "byteOffset": 848,
+              "utf16Offset": 848,
+              "line": 19,
+              "column": 48
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `ownedAction`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 849,
+              "utf16Offset": 849,
+              "line": 19,
+              "column": 49
+            },
+            "end": {
+              "byteOffset": 860,
+              "utf16Offset": 860,
+              "line": 19,
+              "column": 60
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `MissingTarget`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 988,
+              "utf16Offset": 988,
+              "line": 21,
+              "column": 55
+            },
+            "end": {
+              "byteOffset": 1001,
+              "utf16Offset": 1001,
+              "line": 21,
+              "column": 68
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `MissingSource`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 1087,
+              "utf16Offset": 1087,
+              "line": 23,
+              "column": 26
+            },
+            "end": {
+              "byteOffset": 1100,
+              "utf16Offset": 1100,
+              "line": 23,
+              "column": 39
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `MissingTarget`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 1249,
+              "utf16Offset": 1249,
+              "line": 25,
+              "column": 56
+            },
+            "end": {
+              "byteOffset": 1262,
+              "utf16Offset": 1262,
+              "line": 25,
+              "column": 69
+            }
+          }
+        },
+        {
+          "code": "resolution",
+          "severity": "warning",
+          "stage": "resolution",
+          "message": "unresolved reference `MissingSource`",
+          "source": {
+            "documentId": "tests/conformance/fixtures/state-parallel-incomplete.sysml",
+            "start": {
+              "byteOffset": 1352,
+              "utf16Offset": 1352,
+              "line": 27,
+              "column": 26
+            },
+            "end": {
+              "byteOffset": 1365,
+              "utf16Offset": 1365,
+              "line": 27,
+              "column": 39
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

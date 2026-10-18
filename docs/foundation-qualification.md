@@ -770,6 +770,50 @@ is not certification of whole-model validity. The correction is recorded in
 patches 0018/0019 and the combined driver patch 0017; all original vendor hashes
 remain immutable. The package remains 0.3.0.
 
+## KERNEL-019: parallel-state transition incidence
+
+Engine `.20` checks the inverse `TransitionUsage::source` and `target` associations
+for actions directly owned by a parallel StateDefinition or StateUsage. The pinned
+rules select `ownedAction` and `nestedAction` respectively; both derive from owned
+feature memberships. A transition may be declared in another state or source file.
+Plain Successions, nonowning aliases, inherited actions and actions owned by a
+nested region do not belong to this direct incidence set.
+
+The old ownership-only check both rejected legal cases and missed externally
+declared transitions. `STATE-003` retains those positive boundaries; `STATE-004`
+requires incoming and outgoing findings, including performed actions and entry/
+do/exit memberships. `STATE-005` retains missing first/middle/final chain links,
+ambiguous endpoints, complete peers and independently known opposite endpoints.
+`STATE-007` checks imported cross-file transitions and diagnostic source ownership.
+The full family/body integration corpus includes all these documents in both file
+orders for native/WASM comparison.
+
+A private endpoint preflight guards the shared derived queries: all written chain
+links must resolve, and a known ActionUsage keeps its own `featureTarget` identity
+rather than following its ReferenceSubsetting. Each endpoint has an independent
+work allowance, so missing opposite endpoints cannot hide a known violation.
+Repeated queries, explicit-index bounds and exhausted proof work have private
+regressions. Each violating state receives one canonical rule diagnostic.
+
+The same preflight corrects target-kind validation. `STATE-006` distinguishes
+resolved non-action targets, ReferenceUsage targets referencing actions, valid
+PerformActionUsage targets and incomplete chains. An unresolved chain no longer
+becomes a known wrong-kind target. Resolution diagnostics remain visible.
+
+The [pre-fix probes](evidence/state-transitions-before-macos-arm64.json) retain the
+original source and diagnostics from the existing `.19` binary, whose hash is
+recorded; they are not a fresh baseline build. The incomplete-source probe predates
+the additional ambiguous-reference cases in the final fixture. Patches 0018/0020
+record the structural-check removal and action-validator correction; original
+vendor hashes remain unchanged. Package 0.3.0 and snapshot schema 3 are unchanged.
+
+These assessments do not close complete state or transition semantics. The target
+projection follows the current lowering's second end of the first succession,
+including its unspelled source end. Missing-succession validation, arbitrary
+nonbinary/raw connector targets, implicit end construction, every source/target
+derivation, triggers, guards and effects remain open. State-slot and membership-
+metaclass facade queries still need contracts and independent qualification.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -797,11 +841,11 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the current matrix has **119 passing conformance cases**, **no
+On macOS arm64, the current matrix has **124 passing conformance cases**, **no
 known-gap cases**, and **no planned cases**. All **77 Rust kernel tests**, **47 Node
-tests**, and **275 dependency proof tests** pass. The dependency suites cover
+tests**, and **282 dependency proof tests** pass. The dependency suites cover
 lexical boundaries (5), rational arithmetic (13), explicit usage typing (2), view
-rendering validation (5), type relations (41), model-level evaluability (33),
+rendering validation (5), transition incidence/target validation (7), type relations (41), model-level evaluability (33),
 cardinality (34), invocation bindings (19), constructor bindings (17), dynamic graph
 (19), dynamic invocations (27), owned results (4), semantic ownership (5), end
 constancy (10) and checked namespace operations (41). The corpus and the 32 import-rule
@@ -809,8 +853,10 @@ partitions are included in the Rust suite, not additional independently qualifie
 specification counts. Native and WebAssembly outputs match exactly, including the
 expanded family/body corpus in both file orders.
 
-The [KERNEL-018 validation record](evidence/view-renderings-macos-arm64.json) records
-the inherited-rendering correction, three added cases and 52 added assertions.
+The [KERNEL-019 validation record](evidence/state-transitions-macos-arm64.json) records
+the parallel-state and target-kind corrections, five added cases and 94 added
+assertions. The prior [KERNEL-018 record](evidence/view-renderings-macos-arm64.json)
+retains the inherited-rendering correction at its original source fingerprint.
 The prior [KERNEL-017 record](evidence/validation-macos-arm64.json) retains the
 named-rule audit and state diagnostic-code correction at its earlier engine/input
 fingerprints. The earlier [family validation](evidence/families-macos-arm64.json)
@@ -833,6 +879,15 @@ passed in 2.0–4.1 seconds, with identical snapshots within each case. Subseque
 validation used a temporary process-scoped sleep assertion, released at completion.
 The 30-second conformance and 60-second benchmark deadlines are unchanged. Earlier unexplained
 benchmark timeouts below remain separate evidence.
+
+The [KERNEL-019 benchmark](evidence/benchmark-state-transitions-macos-arm64.json)
+records 138 successful samples across 23 workloads, retaining every previous
+scenario and adding parallel-state transition validation. Each sample checks its
+expected endpoint-incidence diagnostics. Repeated and native/WASM snapshots agree
+exactly. The new workload's median is 2,009 ms native and
+2,446 ms WASM; maximum peak RSS is
+419.2 MiB and 355.2 MiB respectively. These observations include fresh
+process startup and do not establish production-model latency guarantees.
 
 The [KERNEL-018 benchmark](evidence/benchmark-view-renderings-macos-arm64.json)
 records 132 successful samples across 22 workloads, retaining every previous
