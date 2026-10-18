@@ -9872,26 +9872,324 @@
         }
       ],
       "limits": "KERNEL-019 prevents an incomplete target chain from becoming a known non-action target. A general ReferenceUsage that references an action is still not an ActionUsage; a PerformActionUsage retains its own ActionUsage identity. The check uses the first owned Succession and its second owned end, matching the shared transition target query and current textual lowering. This is bounded target-kind validation, not qualification of the complete validateTransitionUsageSuccession obligation: missing-succession cases, every target of nonbinary/raw connector forms, implied ends and all malformed ownership configurations remain open. Resolution diagnostics remain independently visible."
+    },
+    {
+      "id": "STATE-SUBACTION-QUERY",
+      "obligation": "Expose every owned written state subaction binding in declaration order with its entry/do/exit kind, membership identity and action identity; preserve duplicates and distinguish unknown from empty enumeration.",
+      "category": "product",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateSubactionMembership-kind",
+        "SYSML-XMI-Systems-States-StateSubactionMembership-action",
+        "SYSML-XMI-Systems-States-StateDefinition-entryAction",
+        "SYSML-XMI-Systems-States-StateUsage-entryAction"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "state-query",
+          "state-body-query",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "state-query-tests"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-009",
+          "checks": [
+            "syntax",
+            "structure",
+            "Ordered",
+            "Inherited",
+            "inherited",
+            "local",
+            "Duplicates",
+            "missing",
+            "performed",
+            "libraryState",
+            "Anonymous",
+            "not-state",
+            "library-stub",
+            "duplicate-diagnostic"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "Ordered",
+              "status": "pass"
+            },
+            {
+              "id": "Inherited",
+              "status": "pass"
+            },
+            {
+              "id": "inherited",
+              "status": "pass"
+            },
+            {
+              "id": "local",
+              "status": "pass"
+            },
+            {
+              "id": "Duplicates",
+              "status": "pass"
+            },
+            {
+              "id": "missing",
+              "status": "pass"
+            },
+            {
+              "id": "performed",
+              "status": "pass"
+            },
+            {
+              "id": "libraryState",
+              "status": "pass"
+            },
+            {
+              "id": "Anonymous",
+              "status": "pass"
+            },
+            {
+              "id": "not-state",
+              "status": "pass"
+            },
+            {
+              "id": "library-stub",
+              "status": "pass"
+            },
+            {
+              "id": "duplicate-diagnostic",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "STATE-010",
+          "checks": [
+            "Empty",
+            "Named",
+            "instance",
+            "DuplicateEntry",
+            "duplicateDo"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "Empty",
+              "status": "pass"
+            },
+            {
+              "id": "Named",
+              "status": "pass"
+            },
+            {
+              "id": "instance",
+              "status": "pass"
+            },
+            {
+              "id": "DuplicateEntry",
+              "status": "pass"
+            },
+            {
+              "id": "duplicateDo",
+              "status": "pass"
+            }
+          ]
+        },
+        {
+          "case": "STATE-011",
+          "checks": [
+            "syntax",
+            "recovered",
+            "peer"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "recovered",
+              "status": "pass"
+            },
+            {
+              "id": "peer",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-020 adds schema 4 StateSubactions and SnapshotQuery::state_subactions. Complete certifies the owned written binding enumeration, not a valid state, an effective/inherited action set or execution order. The shared model query must account for every StateSubactionMembership with reciprocal state/action ownership and a resolved ActionUsage member. Kind and both identities are retained; duplicate kinds remain visible alongside their existing diagnostic. Recovered syntax anywhere in the state source document returns unknown/invalidSyntax; independent documents retain their queries. Missing types or perform referents do not remove an already constructed owned action. Navigation stubs return unknown/unavailable and non-states return notApplicable. Native tests verify JSON round trip, stale handles, omitted/reordered/rebound bindings and schema-3 rejection. The pinned state entry/do/exit derivation expressions return memberships despite their ActionUsage property type and prose; this API exposes binding and action separately without claiming those derived slots are fully qualified. Implicit body construction, general membership role properties, transition feature collections and full state semantics remain open."
+    },
+    {
+      "id": "TRANSITION-TRIGGER-SOURCE",
+      "obligation": "A triggered transition with a known non-StateUsage source is invalid; the source is its first qualifying ActionUsage feature target, not an unrelated membership or a performed action referent.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-TransitionUsage-validateTransitionUsageTriggerActions",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageSource",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageTriggerAction"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "trigger-source-validation",
+          "transition-validation",
+          "semantic-driver"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-008",
+          "checks": [
+            "syntax",
+            "structure",
+            "performed-element",
+            "performed-code",
+            "performChain-element",
+            "performChain-code",
+            "direct-element",
+            "direct-code",
+            "chained-element",
+            "chained-code",
+            "broken-element",
+            "broken-code",
+            "missing-element",
+            "missing-code",
+            "invalid-element",
+            "invalid-code",
+            "untriggered-element",
+            "untriggered-code"
+          ],
+          "polarity": "negative",
+          "status": "pass",
+          "results": [
+            {
+              "id": "syntax",
+              "status": "pass"
+            },
+            {
+              "id": "structure",
+              "status": "pass"
+            },
+            {
+              "id": "performed-element",
+              "status": "pass"
+            },
+            {
+              "id": "performed-code",
+              "status": "pass"
+            },
+            {
+              "id": "performChain-element",
+              "status": "pass"
+            },
+            {
+              "id": "performChain-code",
+              "status": "pass"
+            },
+            {
+              "id": "direct-element",
+              "status": "pass"
+            },
+            {
+              "id": "direct-code",
+              "status": "pass"
+            },
+            {
+              "id": "chained-element",
+              "status": "pass"
+            },
+            {
+              "id": "chained-code",
+              "status": "pass"
+            },
+            {
+              "id": "broken-element",
+              "status": "pass"
+            },
+            {
+              "id": "broken-code",
+              "status": "pass"
+            },
+            {
+              "id": "missing-element",
+              "status": "pass"
+            },
+            {
+              "id": "missing-code",
+              "status": "pass"
+            },
+            {
+              "id": "invalid-element",
+              "status": "pass"
+            },
+            {
+              "id": "invalid-code",
+              "status": "pass"
+            },
+            {
+              "id": "untriggered-element",
+              "status": "pass"
+            },
+            {
+              "id": "untriggered-code",
+              "status": "pass"
+            }
+          ]
+        }
+      ],
+      "limits": "KERNEL-020 uses the shared triggerAction derivation and the KERNEL-019 checked source proof. STATE-008 includes a state source with an unrelated alias, a chained state source, direct and chained PerformActionUsage sources referencing states, ordinary action sources, absent and broken sources, and an untriggered action source. A missing source cannot establish the non-StateUsage antecedent; valid state identity is not replaced by an unrelated membership. Private coverage retains meaningful ambiguous endpoint candidates. Complete transition construction, raw/nonbinary graph forms, all trigger payloads, transition feature validation, guard/effect semantics and execution remain unqualified."
     }
   ],
-  "executableCases": 124,
+  "executableCases": 128,
   "plannedCases": 0,
   "coveragePercent": null,
   "reason": "Clause and prose decomposition is pending; overlapping source-unit counts are not a requirements denominator.",
   "catalogueSha256": "82e88bb4eda917125ece7c24c66da793b37044454479f7f7cfed4915d09a5132",
-  "assessmentsSha256": "0938927ac567d16e19ff9f3bd412f2ae1d855fce372e00a7b2ade9af6910df65",
+  "assessmentsSha256": "0703cf443c8c1d1560fb85c0f666f8e326057f2549364cac985d83f11bbdc9ab",
   "sourcesSha256": "ddfa49f2536668f9cfe6872df59a81817912c57174e220695c0613214c199294",
   "execution": {
-    "sha256": "4c581b7b0b7f18a3be6a6db2e11ab2cccd20bfb48e7422f7026a5e1441603ca9",
-    "generatedAt": "2026-10-18T00:41:10.356Z",
-    "kernelInputSha256": "91522fc952ad33a37757360bb00278e2c566c112f6fb22d9adfb92dc017757fd",
-    "binarySha256": "ac5456b4a24cd9b82076f964ae354d795a44e17bd8349a20f8f0e594fa8def62",
+    "sha256": "374a8bb3d17f024d737b34c3c8fb9a0b1dc9cfe4c0cd1a885221da4b055266c8",
+    "generatedAt": "2026-10-18T01:16:00.377Z",
+    "kernelInputSha256": "f7d1a94d3f4a471f8042a3f321d4f03b9d934352fba477b79577a85958b87141",
+    "binarySha256": "c63624380086002d83e49244b8381091d113ff6681e2d007a08fa983e18a4525",
     "platform": "darwin",
     "arch": "arm64",
-    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.20",
+    "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.21",
     "libraryVersion": "SysML-v2-Release/2026-03@cd99f7ca70b9",
     "counts": {
-      "pass": 124,
+      "pass": 128,
       "known-gap": 0,
       "planned": 0,
       "fail": 0

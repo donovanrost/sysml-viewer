@@ -210,9 +210,9 @@ source trees of the syntax library, model library and public kernel, fingerprint
 each file, and joins only direct assessment source edges. `requirements:check`
 rejects generated drift and registry names outside the pinned catalogue.
 
-After KERNEL-019, the registries name 91 rules and source text mentions 92. The
-other 88 names were not located by this search. Nine rules have direct bounded
-assessments; 171 still need direct obligation review. These are separate measures:
+After KERNEL-020, the registries name 91 rules and source text mentions 92. The
+other 88 names were not located by this search. Ten rules have direct bounded
+assessments; 170 still need direct obligation review. These are separate measures:
 comments, private tests and registration lists are search hints, and a missing
 name does not establish missing behavior. The 36 labels outside the catalogue
 include deliberate compatibility aliases and checks needing further classification.
@@ -259,10 +259,14 @@ a PerformActionUsage retains its own ActionUsage identity.
 These three additional assessments remain bounded. The target check uses the
 current lowering representation's first succession and positional target end;
 missing successions, nonbinary/raw targets, implied connector construction and
-all transition source/target derivations remain open. The next body/member review
-must also expose state action slots and membership kinds through a considered
-public API. Trigger, guard and effect constraints, other action forms and the
-remaining family obligations still need independent review.
+all transition source/target derivations remain open. KERNEL-020 adds an owned state-subaction query with typed kinds and separate
+membership/action identities, preserving duplicates and explicit unknown results.
+It also corrects triggered-source validation to use the first checked source
+rather than unrelated memberships or a performed action's referent. The pinned
+state-slot and transition-feature derivations have documented internal conflicts;
+see [the source review](evidence/state-property-review.json). General membership
+role properties, transition feature collections, implicit construction, the
+remaining trigger/guard/effect constraints and other action forms remain open.
 
 The broader audit should classify complete obligation sets by implementation, API
 exposure and verified behavior before refining the remaining-work forecast.

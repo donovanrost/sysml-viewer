@@ -26,6 +26,7 @@ we do not disguise that coupling by re-exporting its types from `sysml-kernel`.
 | `query.inherited_memberships(id)` | Binding records plus `inheritance_complete` | Preserves the original declaring namespace; imports have their own checked query. |
 | `query.imported_memberships(id)` | Complete ordered bindings with contextual visibility, or an unknown reason | Uses checked Namespace/Package operations; incomplete evidence never becomes an empty set. Navigation stubs return unknown/unavailable. |
 | `query.membership(id)` | Binding or explicit failure | Membership identity is separate from member-element identity. |
+| `query.state_subactions(id)` | Complete ordered owned bindings, unknown reason, or not applicable | Retains entry/do/exit kind, membership identity and action identity; duplicates remain visible and inherited actions are separate. |
 | `query.cardinality(id)` | Evaluated interval, unknown reason, or not applicable | Integer bounds are decimal strings; a null upper bound means infinity only within an evaluated result. |
 | `query.references_from/at(...)` | Written references with `Resolution` | User sources only. Library reference enumeration reports `ReferencesUnavailable`. Multiple source sites can overlap. |
 | `query.diagnostics(document_id)` | Findings for a user document | Library diagnostics are not projected and report `DiagnosticsUnavailable`. Empty findings do not certify a model. |
@@ -63,7 +64,7 @@ Analysis builds the upstream CanonicalV3 graph and requests shared implied
 relationship publication before validation and projection. Checked operator
 queries consume this published callee/input/argument evidence. Publication can
 decline a family; its checked query still returns unknown. The graph format is
-internal and distinct from snapshot schema 3; this is not an interchange API.
+internal and distinct from snapshot schema 4; this is not an interchange API.
 
 Ranges are half-open. Byte/UTF-16 offsets are zero-based; line and UTF-16 column
 numbers are one-based. Original encoding after UTF-8 decoding and line endings
@@ -214,10 +215,10 @@ serialization of every relationship, annotation or implied element in the graph.
 
 ## Compatibility and release policy
 
-The current Rust packages are experimental `0.3.x`, unpublished and consumed as
+The current Rust packages are experimental `0.4.x`, unpublished and consumed as
 workspace/path dependencies. This milestone does not freeze a 1.0 API.
 
-The JSON wire contract is schema version 3. Generated TypeScript describes
+The JSON wire contract is schema version 4. Generated TypeScript describes
 that contract; native query methods borrow the same results. Incompatible field
 changes, meaning changes, removals or enum variants require a schema version bump
 and coordinated consumer changes. Additive optional fields require compatibility
@@ -266,3 +267,53 @@ worker and viewer reject older schemas. Rust package and application versions
 advance to 0.3.0 for this pre-1.0 API change. Existing owned/inherited arrays and
 `Membership.visibility` retain their meanings; import visibility is contextual
 and lives on the imported binding. No UI-side resolution is introduced.
+
+## Schema 4: owned state subactions
+
+Schema 4 requires `Element.stateSubactions`; package and app versions are 0.4.0.
+Consumers must reanalyze schema-3 snapshots and regenerate/recompile their types.
+The worker, viewer and native query constructor reject old schemas. No default
+empty action list is synthesized for a snapshot that lacks the new field.
+
+`StateSubactions::Complete` contains an ordered `actions` array of
+`{ kind, membershipId, actionId }` records. `kind` is `entry`, `do` or `exit`.
+The membership is a StateSubactionMembership owned by the queried state, and its
+member is the identified ActionUsage, including a PerformActionUsage. A performed
+action retains its own identity rather than being replaced by its referent.
+The shared library query supplies the selection and order; the facade requires it
+to account for every owned subaction membership with consistent ownership.
+
+The result describes owned, written bindings. It excludes inherited actions,
+ordinary action members and aliases. A complete empty set is meaningful even if
+the state's definition contributes inherited entry/do/exit actions. Duplicate
+roles remain separate records alongside the semantic diagnostic; enumeration
+completeness does not imply a valid state or specify execution order.
+
+Any syntax error in the state's source document gives `unknown/invalidSyntax`,
+since recovery can omit a binding. Errors in another document do not change this
+owned-body enumeration. Missing action types or perform referents do not remove a
+known owned action. Library/navigation records return `unknown/unavailable`;
+non-state elements return `notApplicable`. Incomplete membership construction
+returns `unknown/incompleteMembership` without a partial array.
+
+Native query construction validates that complete records exactly enumerate the
+owned subaction memberships in order, and that membership/action IDs, ownership,
+and ActionUsage kinds agree. It rejects omitted, duplicated, reordered or rebound
+handles. As with other snapshot checks, this is structural integrity validation,
+not proof that arbitrary externally modified source facts are true.
+
+The pinned XMI has internal discrepancies in its six entry/do/exit derivations:
+the property type and prose specify an ActionUsage, but the OCL expression returns
+a StateSubactionMembership. Transition guard/effect derivations also contain
+inconsistent selectors or assignments. The [source review](evidence/state-property-review.json)
+retains their exact expressions, comments and artifact hash. This API exposes the
+unambiguous binding, kind and action facts separately; it does not certify those
+higher-level derived slots. General transition-feature collections, implicit body
+construction and execution semantics remain open.
+
+The issue review also records the historical [trigger-source rule resolution](https://issues.omg.org/issues/SYSML2_-89)
+and [feature-chain correction](https://issues.omg.org/issues/SYSML2_-222), which
+corroborate the checked endpoint behavior. The closed [effect-action wording issue](https://issues.omg.org/issues/SYSML2-398)
+does not establish that the copied effect OCL in our pinned artifact was corrected.
+The separate [library state-action self-redefinition issue](https://issues.omg.org/issues/SYSML21-297)
+remains open at review. No new conformance claim follows from issue status alone.

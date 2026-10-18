@@ -1,0 +1,101 @@
+{
+  "scope": "Pinned SysML XMI internal discrepancies encountered during the state-query audit. No normative source is amended; related historical resolutions do not by themselves close the listed pinned-artifact discrepancies.",
+  "source": "https://www.omg.org/spec/SysML/20250201/SysML.xmi",
+  "sourceSha256": "caa65d54f56798bf7582d173f7567e1eea37a49c45984f8bd7df145011cf8c6f",
+  "items": [
+    {
+      "id": "Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipGuardExpression",
+      "name": "validateTransitionFeatureMembershipGuardExpression",
+      "expression": "kind = TransitionFeatureKind::guard implies     transitionFeature.oclIsKindOf(Expression) and     let guard : Expression = transitionFeature.oclIsKindOf(Expression) in     guard.result.specializesFromLibrary('ScalarValues::Boolean') and     guard.result.multiplicity <> null and     guard.result.multiplicity.hasBounds(1,1)",
+      "comment": "<p>If the <code>kind</code> of a <code>TransitionUsage</code> is <code>guard</code>, then its <code>transitionFeature</code> must be a kind of <code>Expression</code> whose result is a <em><code>Boolean</code></em> value.</p>",
+      "finding": "Local guard is assigned the Boolean oclIsKindOf result and then accessed as an Expression."
+    },
+    {
+      "id": "Systems-States-StateUsage-deriveStateUsageDoAction",
+      "name": "deriveStateUsageDoAction",
+      "expression": "doAction =     let doMemberships : Sequence(StateSubactionMembership) =         ownedMembership->             selectByKind(StateSubactionMembership)->             select(kind = StateSubactionKind::do) in     if doMemberships->isEmpty() then null     else doMemberships->at(1)     endif",
+      "comment": "<p>The <code>doAction</code> of a <code>StateUsage</code> is the <code>action</code> of the owned <code>StateSubactionMembership</code> with <code>kind = do</code>.</p>",
+      "finding": "State slot property/prose require an ActionUsage, while the expression returns a StateSubactionMembership."
+    },
+    {
+      "id": "Systems-States-StateUsage-deriveStateUsageEntryAction",
+      "name": "deriveStateUsageEntryAction",
+      "expression": "entryAction =     let entryMemberships : Sequence(StateSubactionMembership) =         ownedMembership->             selectByKind(StateSubactionMembership)->             select(kind = StateSubactionKind::entry) in     if entryMemberships->isEmpty() then null     else entryMemberships->at(1)     endif",
+      "comment": "<p>The <code>entryAction</code> of a <code>StateUsage</code> is the <code>action</code> of the owned <code>StateSubactionMembership</code> with <code>kind = entry</code>.</p>",
+      "finding": "State slot property/prose require an ActionUsage, while the expression returns a StateSubactionMembership."
+    },
+    {
+      "id": "Systems-States-StateUsage-deriveStateUsageExitAction",
+      "name": "deriveStateUsageExitAction",
+      "expression": "exitAction =     let exitMemberships : Sequence(StateSubactionMembership) =         ownedMembership->             selectByKind(StateSubactionMembership)->             select(kind = StateSubactionKind::exit) in     if exitMemberships->isEmpty() then null     else exitMemberships->at(1)     endif",
+      "comment": "<p>The <code>exitAction</code> of a <code>StateUsage</code> is the <code>action</code> of the owned <code>StateSubactionMembership</code> with <code>kind = exit </code>.</p>",
+      "finding": "State slot property/prose require an ActionUsage, while the expression returns a StateSubactionMembership."
+    },
+    {
+      "id": "Systems-States-StateDefinition-deriveStateDefinitionDoAction",
+      "name": "deriveStateDefinitionDoAction",
+      "expression": "doAction =     let doMemberships : Sequence(StateSubactionMembership) =         ownedMembership->             selectByKind(StateSubactionMembership)->             select(kind = StateSubactionKind::do) in     if doMemberships->isEmpty() then null     else doMemberships->at(1)     endif",
+      "comment": "<p>The <code>doAction</code> of a <code>StateDefinition</code> is the <code>action</code> of the owned <code>StateSubactionMembership</code> with <code>kind = do</code>.</p>",
+      "finding": "State slot property/prose require an ActionUsage, while the expression returns a StateSubactionMembership."
+    },
+    {
+      "id": "Systems-States-StateDefinition-deriveStateDefinitionEntryAction",
+      "name": "deriveStateDefinitionEntryAction",
+      "expression": "entryAction =     let entryMemberships : Sequence(StateSubactionMembership) =         ownedMembership->             selectByKind(StateSubactionMembership)->             select(kind = StateSubactionKind::entry) in     if entryMemberships->isEmpty() then null     else entryMemberships->at(1)     endif",
+      "comment": "<p>The <code>entryAction</code> of a <code>StateDefinition</code> is the <code>action</code> of the owned <code>StateSubactionMembership</code> with <code>kind = entry</code>.</p>",
+      "finding": "State slot property/prose require an ActionUsage, while the expression returns a StateSubactionMembership."
+    },
+    {
+      "id": "Systems-States-StateDefinition-deriveStateDefinitionExitAction",
+      "name": "deriveStateDefinitionExitAction",
+      "expression": "exitAction =      let exitMemberships : Sequence(StateSubactionMembership) =         ownedMembership->             selectByKind(StateSubactionMembership)->             select(kind = StateSubactionKind::exit) in     if exitMemberships->isEmpty() then null     else exitMemberships->at(1)     endif",
+      "comment": "<p>The <code>exitAction</code> of a <code>StateDefinition</code> is the <code>action</code> of the owned <code>StateSubactionMembership</code> with <code>kind = exit </code>.</p>",
+      "finding": "State slot property/prose require an ActionUsage, while the expression returns a StateSubactionMembership."
+    },
+    {
+      "id": "Systems-States-TransitionUsage-deriveTransitionUsageGuardExpression",
+      "name": "deriveTransitionUsageGuardExpression",
+      "expression": "guardExpression = ownedFeatureMembership->     selectByKind(TransitionFeatureMembership)->     select(kind = TransitionFeatureKind::trigger).transitionFeature->     selectByKind(Expression)",
+      "comment": "<p>The <code>triggerActions</code> of a <code>TransitionUsage</code> are the <code>transitionFeatures</code> of the <code>ownedFeatureMemberships</code> of the <code>TransitionUsage</code> with <code>kind = trigger</code>, which must all be <code>Expressions</code>.</p>",
+      "finding": "Guard derivation selects trigger memberships rather than guard memberships."
+    },
+    {
+      "id": "Systems-States-TransitionUsage-deriveTransitionUsageEffectAction",
+      "name": "deriveTransitionUsageEffectAction",
+      "expression": "triggerAction = ownedFeatureMembership->     selectByKind(TransitionFeatureMembership)->     select(kind = TransitionFeatureKind::trigger).transitionFeatures->     selectByKind(AcceptActionUsage)",
+      "comment": "<p>The <code>effectActions</code> of a <code>TransitionUsage</code> are the <code>transitionFeatures</code> of the <code>ownedFeatureMemberships</code> of the <code>TransitionUsage</code> with <code>kind = effect</code>, which must all be <code>ActionUsages</code>.</p>",
+      "finding": "Effect derivation assigns triggerAction and selects trigger memberships/AcceptActionUsage rather than effect actions."
+    }
+  ],
+  "issueHistoryReviewedAt": "2026-10-18T01:13:16.337279+00:00",
+  "relatedIssues": [
+    {
+      "id": "SYSML2_-89",
+      "url": "https://issues.omg.org/issues/SYSML2_-89",
+      "observedStatus": "closed",
+      "disposition": "Resolved \u2014 SysML 2.0b4",
+      "relevance": "Introduced the trigger constraint for transition sources that are not StateUsages; corroborates testing source metaclass identity independently of action referents."
+    },
+    {
+      "id": "SYSML2_-222",
+      "url": "https://issues.omg.org/issues/SYSML2_-222",
+      "observedStatus": "closed",
+      "disposition": "Resolved \u2014 SysML 2.0b4",
+      "relevance": "Changed transition source/target derivations to use Feature.featureTarget for chains, consistent with the pinned derivations consumed by the checked endpoint proof."
+    },
+    {
+      "id": "SYSML2-398",
+      "url": "https://issues.omg.org/issues/SYSML2-398",
+      "observedStatus": "closed",
+      "disposition": "Resolved \u2014 SysML 2.0b2",
+      "relevance": "The published disposition corrects effectAction attribute wording. It does not establish a correction to the copied effect derivation expression still present in the pinned XMI."
+    },
+    {
+      "id": "SYSML21-297",
+      "url": "https://issues.omg.org/issues/SYSML21-297",
+      "observedStatus": "open",
+      "relevance": "Identifies self-redefinition problems in the normative library entry/do/exit declarations. This is a distinct unresolved library concern, not a resolution of the six state-slot expression discrepancies."
+    }
+  ],
+  "reviewLimit": "The focused issue search did not establish a directly matching resolution for the six state-slot expression type mismatches or the guard derivation/validation expression problems. This is not a claim that no related issue exists."
+}

@@ -17,7 +17,11 @@ const matrix = JSON.parse(read('tests/conformance/matrix.json')) as {
   }[];
 };
 const cases = matrix.cases.filter(
-  (c) => /^(FAMILY|STATE|VIEW)-/.test(c.id) || ['TYPE-005', 'TYPE-006', 'TYPE-007'].includes(c.id),
+  // Recovery changes workspace-wide import/cardinality policy. Its mixed-document
+  // state-query behavior is verified separately in state-subactions.test.ts.
+  (c) =>
+    c.id !== 'STATE-011' &&
+    (/^(FAMILY|STATE|VIEW)-/.test(c.id) || ['TYPE-005', 'TYPE-006', 'TYPE-007'].includes(c.id)),
 );
 const documents = [...new Set(cases.flatMap((c) => c.files))].map((file) => ({
   id: file,

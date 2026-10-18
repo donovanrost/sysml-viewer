@@ -17,7 +17,7 @@ class TestWorker {
   terminate() {
     this.terminated = true;
   }
-  respond(revision: number, snapshotRevision = revision, schemaVersion = 3) {
+  respond(revision: number, snapshotRevision = revision, schemaVersion = 4) {
     this.onmessage?.({
       data: { revision, snapshot: { revision: snapshotRevision, schemaVersion } },
     });
@@ -55,7 +55,7 @@ test('snapshot revision and schema mismatches fail closed', async (t) => {
   TestWorker.instances.at(-1)!.respond(3, 2);
   await assert.rejects(mismatched, /revision/);
   const unknownSchema = client.analyze([], 4);
-  TestWorker.instances.at(-1)!.respond(4, 4, 2);
+  TestWorker.instances.at(-1)!.respond(4, 4, 3);
   await assert.rejects(unknownSchema, /protocol/);
 });
 

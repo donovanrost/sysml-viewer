@@ -10,6 +10,7 @@ mod imports;
 mod namespaces;
 mod query;
 mod source;
+mod states;
 mod syntax;
 mod types;
 
@@ -23,6 +24,6 @@ pub use types::*;
 /// The WebAssembly build reserves the same amount in its linker configuration.
 pub const ANALYSIS_STACK_BYTES: usize = 16 * 1024 * 1024;
 
-pub const SCHEMA_VERSION: u32 = 3;
-pub const ENGINE_VERSION: &str = "open-mbee/0.10.2@821221767c3c+sysml-kernel.20";
+pub const SCHEMA_VERSION: u32 = 4;
+pub const ENGINE_VERSION: &str = "open-mbee/0.10.2@821221767c3c+sysml-kernel.21";
 pub const LIBRARY_VERSION: &str = "SysML-v2-Release/2026-03@cd99f7ca70b9";

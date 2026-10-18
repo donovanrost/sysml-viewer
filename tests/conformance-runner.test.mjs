@@ -198,3 +198,45 @@ test('import assertions reject unknown as empty and require contextual visibilit
     assert.throws(() => validateMatrix(value));
   }
 });
+
+test('state query assertions reject partial unknowns and inconsistent binding identities', () => {
+  const m = matrix();
+  const c = m.cases.find((c) => c.id === 'STATE-009');
+  const complete = c.checks.find((c) => c.op === 'stateSubactions');
+  complete.status = 'unknown';
+  complete.reason = 'invalidSyntax';
+  assert.throws(() => validateMatrix(m));
+  const check = {
+    id: 'state',
+    op: 'stateSubactions',
+    owner: 'P::S',
+    status: 'complete',
+    actions: [{ kind: 'entry', target: 'P::S::a', metaclass: 'ActionUsage' }],
+  };
+  const value = {
+    ...snapshot,
+    elements: [
+      {
+        id: 's',
+        qualifiedName: 'P::S',
+        ownedMemberships: ['m'],
+        stateSubactions: {
+          status: 'complete',
+          actions: [{ kind: 'entry', membershipId: 'm', actionId: 'a' }],
+        },
+      },
+      { id: 'a', qualifiedName: 'P::S::a', metaclass: 'ActionUsage', parentId: 's' },
+    ],
+    memberships: [
+      {
+        id: 'm',
+        metaclass: 'StateSubactionMembership',
+        namespaceId: 's',
+        member: { status: 'resolved', targetId: 'a' },
+      },
+    ],
+  };
+  assert.equal(assessCase(value, { checks: [check] })[0].status, 'pass');
+  value.memberships[0].member.targetId = 'another-action';
+  assert.equal(assessCase(value, { checks: [check] })[0].status, 'fail');
+});

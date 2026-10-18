@@ -1,0 +1,325 @@
+{
+  "generatedAt": "2026-10-18T01:25:26.487418+00:00",
+  "platform": "darwin",
+  "arch": "arm64",
+  "scope": "KERNEL-020 schema-4 owned state-subaction bindings, identity/integrity and source-local recovery policy; checked triggered-transition source identity. STATE-008\u2013011 evidence does not qualify full state/transition derivations, execution or language conformance.",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.21",
+  "kernelInputSha256": "f7d1a94d3f4a471f8042a3f321d4f03b9d934352fba477b79577a85958b87141",
+  "binarySha256": "c63624380086002d83e49244b8381091d113ff6681e2d007a08fa983e18a4525",
+  "inputs": {
+    "Cargo.toml": "4df0469d74c7413c2d83292b5503a8727aadd1705596ffc3f96d15f9c78a88b7",
+    "Cargo.lock": "860432d6cbb3d019d138b4289d0f042931e56b92bac8c6e1d1a06985c1c6210b",
+    "package.json": "f648de0ed21d4250d00f3d85fdef39b970eb875b5b81ba68d4fa24f973cc592c",
+    "package-lock.json": "0830ea42fa9a63e20536ae61e22fa8846a481b319ee8fb33c540683fe9393210",
+    "src-tauri/Cargo.toml": "7cbd2241a2b190597e4868da042d0436bda057abe993a9697b53556296efaa93",
+    "src-tauri/Cargo.lock": "5fd8c06b438a737eb076b79b42de319f25623d5b3db5fdc5b4c4df64d87dc820",
+    "src-tauri/tauri.conf.json": "faa8b31a2e2d9790886182b5ea886ea1ef2b7d1c9e4102a46bba07a8a4845576",
+    "crates/sysml-kernel/src/lib.rs": "8577ef31242b40051c9b2e64555b391d6099ec2c424fdae08f96d286cc56c61d",
+    "crates/sysml-kernel/src/types.rs": "43229e1590e526ee7e00f06f8f4e9eaa32f8e3c84cec3f4a5448ecd4ca45d66a",
+    "crates/sysml-kernel/src/states.rs": "1aa90f7feee41b3dd790c54463056e7c66938163ca55eb8e733abc647a028d4f",
+    "crates/sysml-kernel/src/query.rs": "8e4095a4d4fe88bc6b0668c265b2c6ba1c803e3cca1a670c5d53700e724829d4",
+    "crates/sysml-kernel/src/engine.rs": "2c98dd9065771916347d50900093322b72849c3f02622d543140aa5e9f0890c0",
+    "crates/sysml-kernel/tests/state_subactions.rs": "62cef6fbb635350c1803577903bdd12b5e8d3514e592792b50b6326020448c58",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs": "fe14dd505f79749f94264220fe648c30e061703f187c7505e0f4d4fd682493d9",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e",
+    "patches/manifest.json": "1d6335586bc69dc0761a616ff4b613ccedb454e394c524f9f11f61fead81fa6a",
+    "patches/0020-parallel-state-transitions.patch": "418d4166babd43ed0840283473a49cd701976694935ad8688dd2b8acd922b8fc",
+    "src/kernel/client.ts": "0c6514a2311cfb32a96338db4f78c4a6fbaa35c97f3764332aea48a605f3dc59",
+    "src/viewer/model.ts": "7fa3342b67cf85ce2182d34894fc1004e305e6962358aadf95c822593a5bee81",
+    "src/kernel/generated/StateSubactions.ts": "f9a5e822a600345e98cc871ef2e816e26793202d9213914d0d1180a7c068dc19",
+    "src/kernel/generated/StateSubaction.ts": "6e7534013f2ac4880f9ab822a8a2f0d317920d5275c84e493747e40bb4362e60",
+    "src/kernel/generated/StateSubactionKind.ts": "d271eaa99ae522463d986bd8e58ad992ad691aee98166f5cfda2a7a155d25000",
+    "src/kernel/generated/StateSubactionIssue.ts": "1bdea5aeaee75662fa4420eb682560fd6fd3ecaf6335d0e473444ce4916dd242",
+    "src/kernel/generated/Element.ts": "bbdb0c2415dfc426019a6c3da553258d0ca60c826bd90b386121e721fbf9b579",
+    "tools/lib/conformance.mjs": "aeb95bcca404074c3d61aa1c8fed9e8b9172fb13368f8f400c48c38b4ad6f29d",
+    "tools/lib/requirements.mjs": "22f65568a4f5d7e65a59f6881b1539b3ccbeee39cbecb6d076600cb067555fe9",
+    "tools/benchmark-kernel.mjs": "7be4e930b7e2fbc70dd1055657fa8e16f833bdb2508dbeed8ea337d8d9f9ecbe",
+    "tools/test-vendor.mjs": "312a8494d45baa791240f35acfde53b3c8445ab37b051bd7ab06d2342add2ea4",
+    "tests/conformance-runner.test.mjs": "a5e29027c39e523612e5fd8f001c9911b066b7dc6bf3317b5ca06a499da6cf5c",
+    "tests/families.test.ts": "ff7c714b5f17c6316c38ea7fae181bab821ff331c4b42b3ca6fd49970f537d90",
+    "tests/state-subactions.test.ts": "a8a47d23b3cb9f4697ce8f2d842296fec4284b4f16f4c10b0d7a36bafec6bbe9",
+    "tests/kernel-client.test.ts": "0436b2cfc457725aa9af72d105da19073e40addf1bc0e5003044cf551c6676b0",
+    "tests/kernel.test.ts": "0ccece0e36e4ecf22e1c2c79c41cac3b7e913bfc589fd53448cca099593d76cb",
+    "tests/conformance/matrix.json": "938d98447d126e1b494efcd956ea04a000a80bdd48b32f8075c8188e7a491115",
+    "standards/assessments.json": "0703cf443c8c1d1560fb85c0f666f8e326057f2549364cac985d83f11bbdc9ab",
+    "tests/conformance/fixtures/state-trigger-sources.sysml": "07221fca28e76d1f08cb2af9caf1cfb98e0d69d18943f3eb834ddc802c5cbec2",
+    "tests/conformance/fixtures/state-query-bindings.sysml": "bcffe64c2555018f81746918222c5348c10117d4a094fb070d43dbbc0c286e11",
+    "tests/conformance/fixtures/state-subactions-positive.sysml": "fcc91f70e87fa2815e2fcdabb3fe09f6646eac58101b2d9f1bcfe7b65fbf18de",
+    "tests/conformance/fixtures/state-subactions-negative.sysml": "50526a015e9c8215e9bf55fab15973b5968a36fb3a5ab8514205f88157d4a223",
+    "tests/conformance/fixtures/state-query-recovery.sysml": "c5e3e1d3e1563ea6e4fe27b1e5f215fc41ec0eee9d73e427862ad6d7659de57e"
+  },
+  "reports": {
+    "docs/evidence/conformance-macos-arm64.json": "374a8bb3d17f024d737b34c3c8fb9a0b1dc9cfe4c0cd1a885221da4b055266c8",
+    "docs/evidence/requirements-macos-arm64.json": "f14d8755e0ed69ace2721c9c24f0796f04600b23bb2ef3b180642d6fc9ef1799",
+    "docs/evidence/state-queries-before-macos-arm64.json": "437f9832d593f20b7d0d2cef651f7e3f4607969492ae3f6c21d25623a6b6ddcc",
+    "docs/evidence/validation-audit.json": "28013847f3fbb15683230b880851bf7c93126e2fe62a251eea34887d4ea05b6c",
+    "docs/evidence/benchmark-state-queries-macos-arm64.json": "bca876af6504f8cb7e19b4faabfef83504ea39eb5135c9b6f487328788cba237",
+    "docs/evidence/state-property-review.json": "d1e496ab53ad8ab9beb4240ff48f26a60fbfc9e907b2ba911ef7c1e246c762c0"
+  },
+  "passing": {
+    "rust": 82,
+    "vendor": 283,
+    "node": 49,
+    "conformance": 128,
+    "benchmarkSamples": 150
+  },
+  "knownGapCases": 0,
+  "knownGapAssertions": 0,
+  "casesAdded": 4,
+  "assertionsAdded": 40,
+  "assessments": 69,
+  "validationNameInventory": {
+    "rules": 180,
+    "registered": 91,
+    "withSourceMentions": 92,
+    "withoutSourceMentions": 88,
+    "withDirectAssessments": 10,
+    "withoutDirectAssessments": 170,
+    "unmatchedNames": 36
+  },
+  "verification": [
+    {
+      "step": "vendor-tests",
+      "command": [
+        "npm",
+        "run",
+        "vendor:test"
+      ],
+      "exitCode": 0,
+      "log": "target/state-queries/vendor-tests.log",
+      "note": "Completed on the identical semantic source and patch inputs before starting remaining gates."
+    },
+    {
+      "step": "vendor",
+      "command": [
+        "node",
+        "tools/verify-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.43,
+      "log": "target/state-queries/vendor.log"
+    },
+    {
+      "step": "rust-format",
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "fmt",
+        "-p",
+        "sysml-kernel",
+        "-p",
+        "sysml-cli",
+        "-p",
+        "sysml-wasm",
+        "--",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.27,
+      "log": "target/state-queries/rust-format.log"
+    },
+    {
+      "step": "clippy",
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 3.27,
+      "log": "target/state-queries/clippy.log"
+    },
+    {
+      "step": "format",
+      "command": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.82,
+      "log": "target/state-queries/format.log"
+    },
+    {
+      "step": "contract",
+      "command": [
+        "npm",
+        "run",
+        "contract:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 2.93,
+      "log": "target/state-queries/contract.log"
+    },
+    {
+      "step": "matrix-docs",
+      "command": [
+        "npm",
+        "run",
+        "conformance:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.17,
+      "log": "target/state-queries/matrix-docs.log"
+    },
+    {
+      "step": "inventory",
+      "command": [
+        "npm",
+        "run",
+        "requirements:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.3,
+      "log": "target/state-queries/inventory.log"
+    },
+    {
+      "step": "rust-tests",
+      "command": [
+        "npm",
+        "run",
+        "kernel:test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 262.53,
+      "log": "target/state-queries/rust-tests.log"
+    },
+    {
+      "step": "conformance",
+      "command": [
+        "npm",
+        "run",
+        "conformance"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 265.44,
+      "log": "target/state-queries/conformance.log"
+    },
+    {
+      "step": "requirements-report",
+      "command": [
+        "npm",
+        "run",
+        "requirements:report"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.74,
+      "log": "target/state-queries/requirements-report.log"
+    },
+    {
+      "step": "node-tests",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 98.42,
+      "log": "target/state-queries/node-tests.log"
+    },
+    {
+      "step": "benchmark",
+      "command": [
+        "npm",
+        "run",
+        "benchmark"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 367.76,
+      "log": "target/state-queries/benchmark.log"
+    },
+    {
+      "step": "desktop",
+      "command": [
+        "npm",
+        "run",
+        "desktop:build",
+        "--",
+        "--bundles",
+        "app,dmg",
+        "--ci"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 61.35,
+      "log": "target/state-queries/desktop.log"
+    }
+  ],
+  "finalReadOnlyChecks": [
+    {
+      "check": "vendor",
+      "command": [
+        "node",
+        "tools/verify-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.39
+    },
+    {
+      "check": "matrix-docs",
+      "command": [
+        "npm",
+        "run",
+        "conformance:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.21
+    },
+    {
+      "check": "inventory",
+      "command": [
+        "npm",
+        "run",
+        "requirements:check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.28
+    },
+    {
+      "check": "qualification-evidence",
+      "command": [
+        "node",
+        "--test",
+        "tests/requirements.test.mjs",
+        "tests/validation-audit.test.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.79
+    },
+    {
+      "check": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.06
+    }
+  ],
+  "platforms": {
+    "macOS-arm64": "verified",
+    "Windows": "not run",
+    "Linux": "not run"
+  },
+  "artifacts": {
+    "app": "src-tauri/target/release/bundle/macos/SysML Viewer.app",
+    "appBytes": 12649809,
+    "dmg": "src-tauri/target/release/bundle/dmg/SysML Viewer_0.4.0_aarch64.dmg",
+    "dmgBytes": 4576165,
+    "dmgSha256": "145745e4340224f3bbfa4f8ab6b9a193dd9ae12c0436e7be8cd9e0f4d104576e",
+    "localApp": "release/SysML Viewer.app",
+    "previousApp": "release/SysML Viewer.previous-b208590.app",
+    "localAppMatchesBundle": true,
+    "bundleFilesSha256": {
+      "Contents/Info.plist": "732197517b8e6b23ee5b5669fbc50764d1bd8c45654642cdffd7949fe3f4855f",
+      "Contents/MacOS/sysml-viewer": "748dce7bd2e3e7975d6ba7ccae2e27bae0fe8fb93f9fbbff3852a39a6469584f",
+      "Contents/Resources/icon.icns": "90028bb4ea3a018ec8de8f1afb4dccce9cb2a1e3376e89981094c0e9cb5a54bb"
+    }
+  }
+}

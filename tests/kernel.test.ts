@@ -357,7 +357,7 @@ test('schema 2 memberships and exact cardinalities agree across native and WebAs
     }),
   );
   assert.deepEqual(wasm, native);
-  assert.equal(wasm.schemaVersion, 3);
+  assert.equal(wasm.schemaVersion, 4);
   assert(wasm.memberships.some((m) => m.isAlias && m.shortName === 'OnlyShort' && m.name === null));
   assert.deepEqual(
     wasm.elements.find((e) => e.qualifiedName === 'ExactBounds::Assembly::large')!.cardinality,

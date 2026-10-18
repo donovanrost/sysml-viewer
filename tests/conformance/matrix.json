@@ -9635,6 +9635,440 @@
           "code": "validateStateDefinitionParallelSubactions"
         }
       ]
+    },
+    {
+      "id": "STATE-008",
+      "area": "families-behaviors",
+      "purpose": "A triggered transition constrains its checked source identity, excluding unrelated memberships and retaining missing sources as unknown.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/state-trigger-sources.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "performed-element",
+          "op": "element",
+          "name": "StateTriggerSources::Driver::performed",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "performed-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateTriggerSources::Driver::performed",
+          "code": "validateTransitionUsageTriggerActions"
+        },
+        {
+          "id": "performChain-element",
+          "op": "element",
+          "name": "StateTriggerSources::Driver::performChain",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "performChain-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateTriggerSources::Driver::performChain",
+          "code": "validateTransitionUsageTriggerActions"
+        },
+        {
+          "id": "direct-element",
+          "op": "element",
+          "name": "StateTriggerSources::Driver::direct",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "direct-code",
+          "op": "noDiagnostics",
+          "owner": "StateTriggerSources::Driver::direct",
+          "code": "validateTransitionUsageTriggerActions"
+        },
+        {
+          "id": "chained-element",
+          "op": "element",
+          "name": "StateTriggerSources::Driver::chained",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "chained-code",
+          "op": "noDiagnostics",
+          "owner": "StateTriggerSources::Driver::chained",
+          "code": "validateTransitionUsageTriggerActions"
+        },
+        {
+          "id": "broken-element",
+          "op": "element",
+          "name": "StateTriggerSources::Driver::broken",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "broken-code",
+          "op": "noDiagnostics",
+          "owner": "StateTriggerSources::Driver::broken",
+          "code": "validateTransitionUsageTriggerActions"
+        },
+        {
+          "id": "missing-element",
+          "op": "element",
+          "name": "StateTriggerSources::Driver::missing",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "missing-code",
+          "op": "noDiagnostics",
+          "owner": "StateTriggerSources::Driver::missing",
+          "code": "validateTransitionUsageTriggerActions"
+        },
+        {
+          "id": "invalid-element",
+          "op": "element",
+          "name": "StateTriggerSources::Driver::invalid",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "invalid-code",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateTriggerSources::Driver::invalid",
+          "code": "validateTransitionUsageTriggerActions"
+        },
+        {
+          "id": "untriggered-element",
+          "op": "element",
+          "name": "StateTriggerSources::Driver::untriggered",
+          "metaclass": "TransitionUsage"
+        },
+        {
+          "id": "untriggered-code",
+          "op": "noDiagnostics",
+          "owner": "StateTriggerSources::Driver::untriggered",
+          "code": "validateTransitionUsageTriggerActions"
+        }
+      ]
+    },
+    {
+      "id": "STATE-009",
+      "area": "families-behaviors",
+      "purpose": "Owned state subaction queries preserve declaration order, binding/action identity, anonymous actions and duplicate roles; inherited actions stay separate.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/state-query-bindings.sysml"],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "Ordered",
+          "op": "stateSubactions",
+          "owner": "StateQueries::Ordered",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "exit",
+              "target": "StateQueries::Ordered::leaving",
+              "metaclass": "PerformActionUsage"
+            },
+            {
+              "kind": "entry",
+              "target": "StateQueries::Ordered::entering",
+              "metaclass": "PerformActionUsage"
+            },
+            {
+              "kind": "do",
+              "target": "StateQueries::Ordered::running",
+              "metaclass": "PerformActionUsage"
+            }
+          ]
+        },
+        {
+          "id": "Inherited",
+          "op": "stateSubactions",
+          "owner": "StateQueries::Inherited",
+          "status": "complete",
+          "actions": []
+        },
+        {
+          "id": "inherited",
+          "op": "stateSubactions",
+          "owner": "StateQueries::inherited",
+          "status": "complete",
+          "actions": []
+        },
+        {
+          "id": "local",
+          "op": "stateSubactions",
+          "owner": "StateQueries::local",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "entry",
+              "target": "StateQueries::local::start",
+              "metaclass": "PerformActionUsage"
+            }
+          ]
+        },
+        {
+          "id": "Duplicates",
+          "op": "stateSubactions",
+          "owner": "StateQueries::Duplicates",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "entry",
+              "target": "StateQueries::Duplicates::firstEntry",
+              "metaclass": "PerformActionUsage"
+            },
+            {
+              "kind": "entry",
+              "target": "StateQueries::Duplicates::secondEntry",
+              "metaclass": "PerformActionUsage"
+            }
+          ]
+        },
+        {
+          "id": "missing",
+          "op": "stateSubactions",
+          "owner": "StateQueries::missing",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "entry",
+              "target": "StateQueries::missing::unresolved",
+              "metaclass": "PerformActionUsage"
+            }
+          ]
+        },
+        {
+          "id": "performed",
+          "op": "stateSubactions",
+          "owner": "StateQueries::performed",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "entry",
+              "target": "StateQueries::performed::invoked",
+              "metaclass": "PerformActionUsage"
+            }
+          ]
+        },
+        {
+          "id": "libraryState",
+          "op": "stateSubactions",
+          "owner": "StateQueries::libraryState",
+          "status": "complete",
+          "actions": []
+        },
+        {
+          "id": "Anonymous",
+          "op": "stateSubactions",
+          "owner": "StateQueries::Anonymous",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "entry",
+              "target": null,
+              "metaclass": "ActionUsage"
+            },
+            {
+              "kind": "do",
+              "target": null,
+              "metaclass": "ActionUsage"
+            },
+            {
+              "kind": "exit",
+              "target": null,
+              "metaclass": "ActionUsage"
+            }
+          ]
+        },
+        {
+          "id": "not-state",
+          "op": "stateSubactions",
+          "owner": "StateQueries::NotState",
+          "status": "notApplicable"
+        },
+        {
+          "id": "library-stub",
+          "op": "stateSubactions",
+          "owner": "States::StateAction",
+          "status": "unknown",
+          "reason": "unavailable"
+        },
+        {
+          "id": "duplicate-diagnostic",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "error",
+          "owner": "StateQueries::Duplicates",
+          "code": "validateStateDefinitionStateSubactionKind"
+        }
+      ]
+    },
+    {
+      "id": "STATE-010",
+      "area": "families-behaviors",
+      "purpose": "Existing state-definition and state-usage fixtures expose anonymous and named bindings without selecting away duplicate kinds.",
+      "polarity": "negative",
+      "files": [
+        "tests/conformance/fixtures/state-subactions-positive.sysml",
+        "tests/conformance/fixtures/state-subactions-negative.sysml"
+      ],
+      "checks": [
+        {
+          "id": "Empty",
+          "op": "stateSubactions",
+          "owner": "StateSubactionsPositive::Empty",
+          "status": "complete",
+          "actions": []
+        },
+        {
+          "id": "Named",
+          "op": "stateSubactions",
+          "owner": "StateSubactionsPositive::Named",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "entry",
+              "target": "StateSubactionsPositive::Named::entering",
+              "metaclass": "PerformActionUsage"
+            },
+            {
+              "kind": "do",
+              "target": "StateSubactionsPositive::Named::running",
+              "metaclass": "PerformActionUsage"
+            },
+            {
+              "kind": "exit",
+              "target": "StateSubactionsPositive::Named::leaving",
+              "metaclass": "PerformActionUsage"
+            }
+          ]
+        },
+        {
+          "id": "instance",
+          "op": "stateSubactions",
+          "owner": "StateSubactionsPositive::instance",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "entry",
+              "target": null,
+              "metaclass": "ActionUsage"
+            },
+            {
+              "kind": "do",
+              "target": null,
+              "metaclass": "ActionUsage"
+            },
+            {
+              "kind": "exit",
+              "target": null,
+              "metaclass": "ActionUsage"
+            }
+          ]
+        },
+        {
+          "id": "DuplicateEntry",
+          "op": "stateSubactions",
+          "owner": "StateSubactionsNegative::DuplicateEntry",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "entry",
+              "target": null,
+              "metaclass": "ActionUsage"
+            },
+            {
+              "kind": "entry",
+              "target": "StateSubactionsNegative::DuplicateEntry::another",
+              "metaclass": "PerformActionUsage"
+            }
+          ]
+        },
+        {
+          "id": "duplicateDo",
+          "op": "stateSubactions",
+          "owner": "StateSubactionsNegative::duplicateDo",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "do",
+              "target": null,
+              "metaclass": "ActionUsage"
+            },
+            {
+              "kind": "do",
+              "target": "StateSubactionsNegative::duplicateDo::another",
+              "metaclass": "PerformActionUsage"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "STATE-011",
+      "area": "families-behaviors",
+      "purpose": "Syntax recovery cannot certify an empty/complete state-body enumeration; an independent document retains its owned binding query.",
+      "polarity": "negative",
+      "files": [
+        "tests/conformance/fixtures/state-query-bindings.sysml",
+        "tests/conformance/fixtures/state-query-recovery.sysml"
+      ],
+      "checks": [
+        {
+          "id": "syntax",
+          "op": "diagnostic",
+          "stage": "syntax",
+          "code": "syntax"
+        },
+        {
+          "id": "recovered",
+          "op": "stateSubactions",
+          "owner": "StateQueryRecovery::Recovered",
+          "status": "unknown",
+          "reason": "invalidSyntax"
+        },
+        {
+          "id": "peer",
+          "op": "stateSubactions",
+          "owner": "StateQueries::Ordered",
+          "status": "complete",
+          "actions": [
+            {
+              "kind": "exit",
+              "target": "StateQueries::Ordered::leaving",
+              "metaclass": "PerformActionUsage"
+            },
+            {
+              "kind": "entry",
+              "target": "StateQueries::Ordered::entering",
+              "metaclass": "PerformActionUsage"
+            },
+            {
+              "kind": "do",
+              "target": "StateQueries::Ordered::running",
+              "metaclass": "PerformActionUsage"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

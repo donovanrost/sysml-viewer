@@ -378,15 +378,16 @@ pub(super) fn validate(
                     ),
                 ));
             }
-            let triggered = r.b.elements[e].owned_relationships.iter().any(|&rel| {
-                is(&r.b, rel, "TransitionFeatureMembership")
-                    && r.b.elements[rel].props.get("kind").and_then(|x| x.as_str())
-                        == Some("trigger")
-            });
+            let triggered = match r.derived(ElementRef(e), "triggerAction") {
+                crate::json::Derived::Value(value) => !value.elements().is_empty(),
+                _ => false,
+            };
+            // The rule constrains the derived source, not every membership or
+            // the action referenced by a PerformActionUsage source.
             if triggered
-                && g.relations(&r.b, e, "Membership", "memberElement")
-                    .iter()
-                    .any(|&s| !g.effective_kind(&r.b, s, "StateUsage"))
+                && endpoint_proof
+                    .source(r, g, e)
+                    .is_some_and(|source| !is(&r.b, source, "StateUsage"))
             {
                 out.push((
                     unit,
@@ -666,12 +667,15 @@ mod transition_tests {
     fn ambiguous_source_and_target_do_not_become_arbitrary_endpoints() {
         assert!(
             findings(
-                "package A { action collision; } package B { action collision; }
-            state def Driver {
-                private import A::*; private import B::*;
-                state p parallel { alias borrowed for collision; }
+                "state def Driver {
+            state def Left parallel { action collision; }
+            state def Right parallel { action collision; }
+            state ambiguous {
+                private import Left::collision;
+                private import Right::collision;
                 transition first collision then collision;
-            }"
+            }
+        }"
             )
             .is_empty()
         );
@@ -708,5 +712,29 @@ mod transition_tests {
         proof.steps = crate::eval::MAX_STEPS;
         assert_eq!(proof.node(&graph, &facts, 0), None);
         assert_eq!(proof.charge(usize::MAX), None);
+    }
+    #[test]
+    fn triggered_sources_use_the_first_action_target_and_preserve_perform_identity() {
+        let source = "package P { item def Signal; state def Driver {
+            state a; state b; action ordinary;
+            state region { state nested; perform action work references nested; }
+            perform action invoked references a;
+            transition performed first invoked accept payload : Signal then b;
+            transition performChain first region.work accept payload : Signal then b;
+            transition valid first a accept payload : Signal then b { alias unrelated for ordinary; }
+            transition chained first region.nested accept payload : Signal then b;
+            transition unknown first Missing accept payload : Signal then b;
+            transition broken first region.nested.missing accept payload : Signal then b;
+            transition invalid first ordinary accept payload : Signal then b;
+            transition untriggered first ordinary then b;
+        } }";
+        let (model, mut graph, facts) = graph(source);
+        let findings = validate(&mut graph, &model, &facts);
+        let names: Vec<_> = findings
+            .iter()
+            .filter(|(_, d)| d.code == Some("validateTransitionUsageTriggerActions"))
+            .map(|(_, d)| &source[d.span.start as usize..d.span.end as usize])
+            .collect();
+        assert_eq!(names, ["performed", "performChain", "invalid"]);
     }
 }

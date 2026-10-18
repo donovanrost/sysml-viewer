@@ -28,7 +28,7 @@
     },
     {
       "path": "crates/sysml-kernel/src/engine.rs",
-      "sha256": "237438a98c0cda465cbd0b146dd37f2c3dc118fc2066cfc74777b797e9ddb422"
+      "sha256": "2c98dd9065771916347d50900093322b72849c3f02622d543140aa5e9f0890c0"
     },
     {
       "path": "crates/sysml-kernel/src/imports.rs",
@@ -36,7 +36,7 @@
     },
     {
       "path": "crates/sysml-kernel/src/lib.rs",
-      "sha256": "5d5f7fd3986af28916df292b1e8e36f13ff834e0214dafdda7d06e63259587ae"
+      "sha256": "8577ef31242b40051c9b2e64555b391d6099ec2c424fdae08f96d286cc56c61d"
     },
     {
       "path": "crates/sysml-kernel/src/namespaces.rs",
@@ -44,11 +44,15 @@
     },
     {
       "path": "crates/sysml-kernel/src/query.rs",
-      "sha256": "3b577ba0440e63bc4f9fd35ffb5f87c4fd503b32e3d3867e7ea8c952e107dbb9"
+      "sha256": "8e4095a4d4fe88bc6b0668c265b2c6ba1c803e3cca1a670c5d53700e724829d4"
     },
     {
       "path": "crates/sysml-kernel/src/source.rs",
       "sha256": "924fd77e780e72a29a69af93a3325e4936cbd9b1b4e98aded05a3ff45e9ac386"
+    },
+    {
+      "path": "crates/sysml-kernel/src/states.rs",
+      "sha256": "1aa90f7feee41b3dd790c54463056e7c66938163ca55eb8e733abc647a028d4f"
     },
     {
       "path": "crates/sysml-kernel/src/syntax.rs",
@@ -56,7 +60,7 @@
     },
     {
       "path": "crates/sysml-kernel/src/types.rs",
-      "sha256": "caf41e8d3c0d50a1c30b6a121d08a36c8b2b95f8661a9aef295def7c5a0d5043"
+      "sha256": "43229e1590e526ee7e00f06f8f4e9eaa32f8e3c84cec3f4a5448ecd4ca45d66a"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/ambient.rs",
@@ -76,7 +80,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-      "sha256": "705c5cc5e6e61f3d1562449162cf9108d9a872ba30359e25edb507d767b56f27"
+      "sha256": "fe14dd505f79749f94264220fe648c30e061703f187c7505e0f4d4fd682493d9"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/chains.rs",
@@ -633,15 +637,15 @@
   ],
   "structuredInputHashEncoding": "JSON.stringify(parsed input), UTF-8",
   "catalogueSha256": "141adece74e8e7581cc744729bf2e96356ff2e983204c68f48acae64ea339e35",
-  "assessmentsSha256": "0f5a602a097b184e43811110ea7e89c60f02b8bfcae561f1c8787bc3ee2537a5",
-  "matrixSha256": "29799c0a82d7c033e57dc0a7821adc5d55035c3e114e3833461ffdaadd2ba415",
+  "assessmentsSha256": "185a044218232201024190685032f3a95ab98f1c3b25140e447b51ae3d53d061",
+  "matrixSha256": "559df1621647adee69a76b3c2eb03e056c55409ec8cb2aa7936404f38b1a67a8",
   "counts": {
     "rules": 180,
     "registered": 91,
     "withSourceMentions": 92,
     "withoutSourceMentions": 88,
-    "withDirectAssessments": 9,
-    "withoutDirectAssessments": 171,
+    "withDirectAssessments": 10,
+    "withoutDirectAssessments": 170,
     "unmatchedNames": 36
   },
   "rules": [
@@ -737,7 +741,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 422
+          "line": 423
         }
       ],
       "assessments": [],
@@ -3275,7 +3279,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 595
+          "line": 596
         }
       ],
       "assessments": [
@@ -3462,11 +3466,11 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 599
+          "line": 600
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 603
+          "line": 604
         }
       ],
       "assessments": [
@@ -3770,7 +3774,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 536
+          "line": 537
         }
       ],
       "assessments": [],
@@ -3828,7 +3832,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 695
+          "line": 699
         }
       ],
       "assessments": [
@@ -3887,11 +3891,50 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 395
+          "line": 396
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 735
         }
       ],
-      "assessments": [],
-      "nextAction": "review-code-candidate"
+      "assessments": [
+        {
+          "id": "TRANSITION-TRIGGER-SOURCE",
+          "obligation": "A triggered transition with a known non-StateUsage source is invalid; the source is its first qualifying ActionUsage feature target, not an unrelated membership or a performed action referent.",
+          "implementation": "partial",
+          "api": "partial",
+          "limits": "KERNEL-020 uses the shared triggerAction derivation and the KERNEL-019 checked source proof. STATE-008 includes a state source with an unrelated alias, a chained state source, direct and chained PerformActionUsage sources referencing states, ordinary action sources, absent and broken sources, and an untriggered action source. A missing source cannot establish the non-StateUsage antecedent; valid state identity is not replaced by an unrelated membership. Private coverage retains meaningful ambiguous endpoint candidates. Complete transition construction, raw/nonbinary graph forms, all trigger payloads, transition feature validation, guard/effect semantics and execution remain unqualified.",
+          "tests": [
+            {
+              "case": "STATE-008",
+              "checks": [
+                "syntax",
+                "structure",
+                "performed-element",
+                "performed-code",
+                "performChain-element",
+                "performChain-code",
+                "direct-element",
+                "direct-code",
+                "chained-element",
+                "chained-code",
+                "broken-element",
+                "broken-code",
+                "missing-element",
+                "missing-code",
+                "invalid-element",
+                "invalid-code",
+                "untriggered-element",
+                "untriggered-code"
+              ],
+              "polarity": "negative",
+              "status": "mapped-not-execution-evidence"
+            }
+          ]
+        }
+      ],
+      "nextAction": "complete-obligation-review"
     },
     {
       "sourceId": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAfterArgument",
@@ -4408,7 +4451,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 427
+          "line": 428
         }
       ]
     },
@@ -4641,7 +4684,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 449
+          "line": 450
         }
       ]
     },
@@ -4650,7 +4693,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 464
+          "line": 465
         }
       ]
     },
@@ -4694,7 +4737,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 484
+          "line": 485
         }
       ]
     },
@@ -4703,7 +4746,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 488
+          "line": 489
         }
       ]
     },
@@ -4712,7 +4755,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 492
+          "line": 493
         }
       ]
     },

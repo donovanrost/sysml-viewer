@@ -395,6 +395,11 @@ impl Engine {
             }
             cursor += 1;
         }
+        let recovered_documents: HashSet<_> = diagnostics
+            .iter()
+            .filter(|d| matches!(d.stage, Stage::Syntax) && d.severity == Severity::Error)
+            .map(|d| d.source.document_id.clone())
+            .collect();
         let mut elements = Vec::new();
         let mut used_units: HashSet<usize> = (user_start..sources.len()).collect();
         for e in registry.included.clone() {
@@ -434,6 +439,15 @@ impl Engine {
                 } else {
                     None
                 };
+            let state_subactions = crate::states::project(
+                &mut graph,
+                e,
+                declaration_set.contains(&e),
+                location
+                    .as_ref()
+                    .is_some_and(|s| recovered_documents.contains(&s.document_id)),
+                |e| registry.id(e),
+            );
             elements.push(Element {
                 id: registry.id(e),
                 metaclass: graph.element_type(e).into(),
@@ -453,6 +467,7 @@ impl Engine {
                 value_expression,
                 declared_multiplicity,
                 cardinality,
+                state_subactions,
                 members_available: declaration_set.contains(&e),
                 owned_members: owned.into_iter().map(|m| registry.id(m)).collect(),
                 effective_members: effective.into_iter().map(|m| registry.id(m)).collect(),

@@ -77,7 +77,7 @@ connections are rendered; other arities remain in the snapshot and receive a
 visible unsupported-view label. A resolved connection establishes endpoint lookup,
 not proof that every semantic rule applicable to it has been validated.
 
-## Snapshot contract v3
+## Snapshot contract v4
 
 Rust types in `crates/sysml-kernel/src/types.rs` are authoritative. `ts-rs` generates
 the checked-in TypeScript files. `npm run contract:check` detects drift.
@@ -102,6 +102,11 @@ the checked-in TypeScript files. `npm run contract:check` detects drift.
   recursive imports and name-collision exclusion stay in the language kernel.
   Cardinality distinguishes exact decimal-string intervals from unknown results;
   its limits and supported provider families are documented in the public contract.
+- State subaction queries enumerate owned entry/do/exit bindings in declaration
+  order with separate membership and action identities. Duplicate kinds remain
+  visible; complete enumeration does not establish state validity or execution
+  order. Syntax recovery in the state's document and unavailable library bodies
+  produce explicit unknown results.
 - Unresolved declared heritage makes dependent member queries incomplete, including
   transitive dependencies. The facade accounts for missing edges that the upstream
   graph's completeness flag does not represent.

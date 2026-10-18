@@ -1,6 +1,7 @@
 use crate::{
     Cardinality, Diagnostic, Element, ImportClosure, ImportIssue, Membership, Reference,
-    Resolution, Snapshot, SourceDocument, SourceIndex, SourceRange, SCHEMA_VERSION,
+    Resolution, Snapshot, SourceDocument, SourceIndex, SourceRange, StateSubactionIssue,
+    StateSubactions, SCHEMA_VERSION,
 };
 use std::collections::HashMap;
 
@@ -161,6 +162,74 @@ impl<'a> SnapshotQuery<'a> {
                     }
                 }
             }
+            let is_state =
+                sysmlv2_model::check::metaclass_conforms(&element.metaclass, "StateDefinition")
+                    || sysmlv2_model::check::metaclass_conforms(&element.metaclass, "StateUsage");
+            match &element.state_subactions {
+                StateSubactions::NotApplicable if is_state => {
+                    return Err(invalid(
+                        "State subaction query is marked not applicable on a state",
+                    ))
+                }
+                StateSubactions::NotApplicable => {}
+                _ if !is_state => {
+                    return Err(invalid(
+                        "State subaction query belongs to a non-state element",
+                    ))
+                }
+                StateSubactions::Complete { actions } => {
+                    if !element.members_available {
+                        return Err(invalid("Navigation stub contains state subactions"));
+                    }
+                    let expected: Vec<_> = element
+                        .owned_memberships
+                        .iter()
+                        .filter(|id| {
+                            sysmlv2_model::check::metaclass_conforms(
+                                &query.memberships[id.as_str()].metaclass,
+                                "StateSubactionMembership",
+                            )
+                        })
+                        .map(String::as_str)
+                        .collect();
+                    if expected
+                        != actions
+                            .iter()
+                            .map(|a| a.membership_id.as_str())
+                            .collect::<Vec<_>>()
+                    {
+                        return Err(invalid("State subactions do not enumerate every owned subaction membership in order"));
+                    }
+                    let mut seen = std::collections::HashSet::new();
+                    for binding in actions {
+                        let membership = query.membership(&binding.membership_id)?;
+                        let action = query.element(&binding.action_id)?;
+                        if !seen.insert(&binding.membership_id)
+                            || membership.namespace_id != element.id
+                            || membership.member
+                                != (Resolution::Resolved {
+                                    target_id: binding.action_id.clone(),
+                                })
+                            || action.parent_id.as_deref() != Some(element.id.as_str())
+                            || !sysmlv2_model::check::metaclass_conforms(
+                                &action.metaclass,
+                                "ActionUsage",
+                            )
+                        {
+                            return Err(invalid("State subaction binding has inconsistent ownership or action identity"));
+                        }
+                    }
+                }
+                StateSubactions::Unknown { reason }
+                    if !element.members_available
+                        && *reason != StateSubactionIssue::Unavailable =>
+                {
+                    return Err(invalid(
+                        "Navigation stub has an invalid state subaction status",
+                    ))
+                }
+                StateSubactions::Unknown { .. } => {}
+            }
             if let Cardinality::Evaluated { lower, upper } = &element.cardinality {
                 let number = |s: &str| -> Result<i128, QueryError> {
                     let n = s
@@ -260,6 +329,11 @@ impl<'a> SnapshotQuery<'a> {
                 .collect::<Result<_, _>>()?,
             inheritance_complete: element.inheritance_complete,
         })
+    }
+
+    /// Owned bindings only. Complete retains duplicates and is not model validity.
+    pub fn state_subactions(&self, id: &str) -> Result<&'a StateSubactions, QueryError> {
+        Ok(&self.element(id)?.state_subactions)
     }
 
     pub fn cardinality(&self, id: &str) -> Result<&'a Cardinality, QueryError> {

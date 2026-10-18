@@ -6,6 +6,7 @@ const ops = {
   members: ['owner', 'mode', 'names', 'complete'],
   multiplicity: ['owner', 'value'],
   cardinality: ['owner', 'status', 'lower', 'upper', 'reason'],
+  stateSubactions: ['owner', 'status', 'actions', 'reason'],
   memberships: ['owner', 'mode', 'bindings', 'status', 'reason'],
   diagnostic: ['stage', 'code', 'severity', 'messageIncludes', 'owner'],
   noDiagnostics: ['stage', 'owner', 'code', 'severity', 'messageIncludes'],
@@ -110,6 +111,23 @@ export function validateMatrix(matrix) {
         );
       if (check.op === 'element') assert(check.name && check.metaclass);
       if (check.op === 'multiplicity') assert(check.owner && Object.hasOwn(check, 'value'));
+      if (check.op === 'stateSubactions') {
+        assert(check.owner && ['complete', 'unknown', 'notApplicable'].includes(check.status));
+        if (check.status === 'complete') {
+          assert(Array.isArray(check.actions) && !Object.hasOwn(check, 'reason'));
+          for (const action of check.actions) {
+            keys(action, ['kind', 'target', 'metaclass'], 'state subaction');
+            assert(['entry', 'do', 'exit'].includes(action.kind));
+            assert(action.target === null || typeof action.target === 'string');
+            assert(typeof action.metaclass === 'string');
+          }
+        } else {
+          assert(!Object.hasOwn(check, 'actions'));
+          if (check.status === 'unknown')
+            assert(['invalidSyntax', 'incompleteMembership', 'unavailable'].includes(check.reason));
+          else assert(!Object.hasOwn(check, 'reason'));
+        }
+      }
       if (check.op === 'cardinality') {
         assert(check.owner && ['evaluated', 'unknown', 'notApplicable'].includes(check.status));
         if (check.status === 'evaluated') {
@@ -258,6 +276,33 @@ export function checkSnapshot(snapshot, check) {
     case 'multiplicity':
       assert.equal(find(check.owner).declaredMultiplicity, check.value);
       break;
+    case 'stateSubactions': {
+      const owner = find(check.owner);
+      const result = owner.stateSubactions;
+      assert.equal(result.status, check.status);
+      if (result.status === 'complete') {
+        const membershipById = new Map(snapshot.memberships.map((m) => [m.id, m]));
+        assert.deepEqual(
+          result.actions.map((binding) => {
+            const action = byId.get(binding.actionId);
+            const membership = membershipById.get(binding.membershipId);
+            assert(action && membership, 'Missing subaction handles');
+            assert.equal(membership.metaclass, 'StateSubactionMembership');
+            assert.equal(membership.namespaceId, owner.id);
+            assert.equal(action.parentId, owner.id);
+            assert(owner.ownedMemberships.includes(membership.id));
+            assert.deepEqual(membership.member, { status: 'resolved', targetId: action.id });
+            return {
+              kind: binding.kind,
+              target: action.qualifiedName,
+              metaclass: action.metaclass,
+            };
+          }),
+          check.actions,
+        );
+      } else if (result.status === 'unknown') assert.equal(result.reason, check.reason);
+      return;
+    }
     case 'cardinality': {
       const { id, op, owner, ...expected } = check;
       assert.deepEqual(find(owner).cardinality, expected);

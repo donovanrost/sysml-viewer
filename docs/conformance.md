@@ -141,6 +141,10 @@ Clause references identify the source of a test, not complete coverage of that c
 | STATE-005 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | Missing or ambiguous endpoints cannot become resolved prefixes; a known endpoint independently establishes incidence even if the opposite endpoint is missing. |
 | STATE-006 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | Transition target kind uses Feature.featureTarget identity: non-action references are invalid, perform actions are valid and incomplete chains remain unknown. |
 | STATE-007 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | Imported cross-file transition endpoints report the owning parallel state in its original source document. |
+| STATE-008 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | A triggered transition constrains its checked source identity, excluding unrelated memberships and retaining missing sources as unknown. |
+| STATE-009 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | Owned state subaction queries preserve declaration order, binding/action identity, anonymous actions and duplicate roles; inherited actions stay separate. |
+| STATE-010 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | Existing state-definition and state-usage fixtures expose anonymous and named bindings without selecting away duplicate kinds. |
+| STATE-011 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | Syntax recovery cannot certify an empty/complete state-body enumeration; an independent document retains its owned binding query. |
 
 ## Coverage limits
 

@@ -2,12 +2,13 @@
 import type { Cardinality } from "./Cardinality";
 import type { ImportClosure } from "./ImportClosure";
 import type { SourceRange } from "./SourceRange";
+import type { StateSubactions } from "./StateSubactions";
 
 /**
  * A declaration's semantic facts. IDs are opaque and snapshot-scoped, never
  * persistent identity or array indexes. Metaclass names follow the pinned schema.
  */
-export type Element = { id: string, metaclass: string, name: string, qualifiedName: string | null, parentId: string | null, library: boolean, source: SourceRange | null, documentation: string, valueExpression: string | null, declaredMultiplicity: string | null, cardinality: Cardinality,
+export type Element = { id: string, metaclass: string, name: string, qualifiedName: string | null, parentId: string | null, library: boolean, source: SourceRange | null, documentation: string, valueExpression: string | null, declaredMultiplicity: string | null, cardinality: Cardinality, stateSubactions: StateSubactions,
 /**
  * Library/navigation stubs have no member-query result in this snapshot.
  */

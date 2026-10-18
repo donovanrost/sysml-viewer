@@ -179,5 +179,5 @@ are also included in the built web/app assets at `third-party-notices.txt`.
 See the evaluation document and `tools/vendor-kernel.py` for the update procedure.
 
 The [foundation qualification record](docs/foundation-qualification.md) describes
-schema 3 membership/import/cardinality queries, namespace validation and the remaining
+schema 4 membership/import/cardinality/state-subaction queries, namespace validation and the remaining
 checked-evaluator gap. Full language conformance remains unestablished.

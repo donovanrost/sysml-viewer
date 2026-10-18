@@ -198,6 +198,46 @@ pub enum CardinalityIssue {
     Unavailable,
 }
 
+/// The role declared by a StateSubactionMembership.
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
+#[serde(rename_all = "camelCase")]
+pub enum StateSubactionKind {
+    Entry,
+    Do,
+    Exit,
+}
+
+/// Binding identity is retained separately from the owned action identity.
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
+#[serde(rename_all = "camelCase")]
+pub struct StateSubaction {
+    pub kind: StateSubactionKind,
+    pub membership_id: String,
+    pub action_id: String,
+}
+
+/// Owned, written state subactions in declaration order. Duplicates remain
+/// visible; complete describes enumeration, never validity or execution order.
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
+#[serde(tag = "status", rename_all = "camelCase")]
+pub enum StateSubactions {
+    Complete { actions: Vec<StateSubaction> },
+    Unknown { reason: StateSubactionIssue },
+    NotApplicable,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "bindings", derive(ts_rs::TS))]
+#[serde(rename_all = "camelCase")]
+pub enum StateSubactionIssue {
+    InvalidSyntax,
+    IncompleteMembership,
+    Unavailable,
+}
+
 /// A declaration's semantic facts. IDs are opaque and snapshot-scoped, never
 /// persistent identity or array indexes. Metaclass names follow the pinned schema.
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -215,6 +255,7 @@ pub struct Element {
     pub value_expression: Option<String>,
     pub declared_multiplicity: Option<String>,
     pub cardinality: Cardinality,
+    pub state_subactions: StateSubactions,
     /// Library/navigation stubs have no member-query result in this snapshot.
     pub members_available: bool,
     pub owned_members: Vec<String>,

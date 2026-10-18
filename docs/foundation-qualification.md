@@ -7,12 +7,16 @@ separate conformance obligations.
 
 ## Implemented behavior
 
-Snapshot schema 3 retains membership records and checked cardinality results,
-and adds checked imported-membership closure. Native
+Snapshot schema 4 retains membership records, checked cardinality results and
+checked imported-membership closure, and adds owned state-subaction queries. Native
 queries preserve alias identity, long and short names, visibility, original owning
 namespace and unresolved/ambiguous target status. Inherited membership queries
 return their completeness flag alongside the records. Canonical element lookup
 continues to identify elements, independently of their aliases.
+
+State queries preserve each owned entry/do/exit membership, its kind and its action
+identity in declaration order. They retain duplicate roles, distinguish unavailable
+or recovered bodies from empty ones, and do not infer inherited execution slots.
 
 A facade validation pass fills a specific upstream omission: plain alias memberships
 are checked for distinguishability against explicit owned and inherited memberships.
@@ -814,6 +818,55 @@ nonbinary/raw connector targets, implicit end construction, every source/target
 derivation, triggers, guards and effects remain open. State-slot and membership-
 metaclass facade queries still need contracts and independent qualification.
 
+## KERNEL-020: owned state queries and triggered source identity
+
+Schema 4 adds `Element.stateSubactions` and the native
+`SnapshotQuery::state_subactions` operation. Package and app versions advance to
+0.4.0; consumers must reanalyze older snapshots. The new discriminated result
+separates complete owned binding enumeration, unknown input and non-applicability.
+It uses the shared semantic library's state-subaction query, then verifies every
+owned StateSubactionMembership is represented with consistent action ownership.
+Each record retains entry/do/exit kind, membership identity and action identity
+in declaration order. Named and anonymous actions are preserved, and performed
+actions keep their own identities rather than their referents.
+
+`STATE-009/010` check state definitions/usages, declared order, inherited-versus-
+owned actions, aliases/ordinary actions, anonymous actions, duplicates, missing
+action types and library navigation stubs. Duplicate kinds remain in the complete
+binding enumeration alongside their semantic diagnostic; complete is not model
+validity. `STATE-011` checks recovered source and an independent document: any
+syntax error in a state's own document prevents a complete body enumeration,
+while known declarations in other files retain their owned-query results.
+The Rust tests also cover JSON round trip, old-schema rejection, missing handles,
+omitted/reordered/duplicated bindings and inconsistent target identities.
+
+The existing full family/body corpus grows with the syntax-valid query and trigger
+fixtures. Recovery is exercised in a separate five-document native/WASM request,
+in both file orders, because it intentionally changes the existing workspace-wide
+import/cardinality availability policy. No earlier corpus fixture is removed.
+
+Engine `.21` also corrects `validateTransitionUsageTriggerActions`. The previous
+check could reject a state source because an unrelated alias referred to an action,
+and could miss a PerformActionUsage source that referred to a StateUsage. The rule
+now consumes shared `triggerAction` derivation and the checked source proof from
+KERNEL-019. `STATE-008` retains these cases, chained state/perform sources, ordinary
+actions, untriggered transitions and missing/broken sources. An unknown source
+cannot establish the rule's non-StateUsage antecedent. The private ambiguity case
+now contains directly owned candidate actions rather than only nonowning aliases.
+
+The [pre-fix record](evidence/state-queries-before-macos-arm64.json) preserves the
+actual exploratory source and `.20` findings from the unchanged previously
+qualified executable. It is not a fresh baseline build. The final trigger fixture
+adds a broken-chain case and uses its own package name.
+
+The [pinned XMI review](evidence/state-property-review.json) records six state-slot
+expressions returning memberships despite their ActionUsage property types, and
+three transition guard/effect expression inconsistencies. No normative artifact
+is amended. The new API exposes unambiguous binding/kind/action facts separately;
+it does not qualify the contradictory derived slots. General membership role
+properties, transition feature collections, implied body construction, all
+trigger/guard/effect constraints and execution remain open.
+
 ## Remaining foundation work
 
 Checked imported membership enumeration now has executable coverage (IMP-020 and
@@ -841,11 +894,11 @@ are rejected.
 
 ## Recorded verification
 
-On macOS arm64, the current matrix has **124 passing conformance cases**, **no
-known-gap cases**, and **no planned cases**. All **77 Rust kernel tests**, **47 Node
-tests**, and **282 dependency proof tests** pass. The dependency suites cover
+On macOS arm64, the current matrix has **128 passing conformance cases**, **no
+known-gap cases**, and **no planned cases**. All **82 Rust kernel tests**, **49 Node
+tests**, and **283 dependency proof tests** pass. The dependency suites cover
 lexical boundaries (5), rational arithmetic (13), explicit usage typing (2), view
-rendering validation (5), transition incidence/target validation (7), type relations (41), model-level evaluability (33),
+rendering validation (5), transition incidence/target/trigger validation (8), type relations (41), model-level evaluability (33),
 cardinality (34), invocation bindings (19), constructor bindings (17), dynamic graph
 (19), dynamic invocations (27), owned results (4), semantic ownership (5), end
 constancy (10) and checked namespace operations (41). The corpus and the 32 import-rule
@@ -853,6 +906,10 @@ partitions are included in the Rust suite, not additional independently qualifie
 specification counts. Native and WebAssembly outputs match exactly, including the
 expanded family/body corpus in both file orders.
 
+The [KERNEL-020 validation record](evidence/state-queries-macos-arm64.json) records
+the schema-4 owned state-subaction query and triggered-source correction, four
+added cases and 40 added assertions. It retains source-local recovery behavior,
+binding integrity checks and explicit limits on derived state/transition slots.
 The [KERNEL-019 validation record](evidence/state-transitions-macos-arm64.json) records
 the parallel-state and target-kind corrections, five added cases and 94 added
 assertions. The prior [KERNEL-018 record](evidence/view-renderings-macos-arm64.json)
@@ -879,6 +936,18 @@ passed in 2.0–4.1 seconds, with identical snapshots within each case. Subseque
 validation used a temporary process-scoped sleep assertion, released at completion.
 The 30-second conformance and 60-second benchmark deadlines are unchanged. Earlier unexplained
 benchmark timeouts below remain separate evidence.
+
+The [KERNEL-020 benchmark](evidence/benchmark-state-queries-macos-arm64.json)
+records 150 successful samples across 25 workloads. All 23 earlier workloads remain;
+the two additions check ordered state-subaction bindings and triggered transition
+source diagnostics on every sample. Repeated and native/WASM snapshots agree
+exactly. Measurements include fresh process startup and do not establish
+production-model latency guarantees.
+
+| Workload | Native median (ms) | WASM median (ms) | Native/WASM maximum RSS (MiB) |
+| --- | ---: | ---: | ---: |
+| Owned state subaction queries | 2,025 | 2,469 | 406.0/355.4 |
+| Triggered transition sources | 2,026 | 2,468 | 412.9/356.9 |
 
 The [KERNEL-019 benchmark](evidence/benchmark-state-transitions-macos-arm64.json)
 records 138 successful samples across 23 workloads, retaining every previous
@@ -968,7 +1037,7 @@ regression budget. Large import-heavy production models and incremental performa
 remain open engineering work.
 
 The production web build and macOS arm64 app and DMG builds pass. The local app
-is `src-tauri/target/release/bundle/macos/SysML Viewer.app` (11.97 MiB), with a
-4.27 MiB installer under `src-tauri/target/release/bundle/dmg/`. This run
+is `src-tauri/target/release/bundle/macos/SysML Viewer.app` (version 0.4.0, 12.06 MiB), with a
+4.36 MiB installer under `src-tauri/target/release/bundle/dmg/`. This run
 checks automated viewer integration and packaging; it does not repeat the earlier
 interactive file-picker/navigation checks or establish Windows/Linux packaging.

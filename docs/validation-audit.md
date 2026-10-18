@@ -13,7 +13,7 @@ The [review plan](requirements.md#validation-rule-audit) explains the next work 
 - Derivations, semantic check constraints, operations, grammar, prose, libraries and interchange remain separate review queues.
 
 180 named rules; 91 registry entries; 92 names mentioned in the scanned Rust source; 88 not located by name.
-9 rules have direct bounded assessments; 171 have no direct assessment. 36 names do not match the pinned validation inventory.
+10 rules have direct bounded assessments; 170 have no direct assessment. 36 names do not match the pinned validation inventory.
 These are independent search/mapping counts, not a completion percentage.
 
 | Rule | Registered | First source mention | Direct bounded assessments | Next action |
@@ -177,7 +177,7 @@ These are independent search/mapping counts, not a completion percentage.
 | [validateTransitionFeatureMembershipTriggerAction](https://www.omg.org/spec/SysML/20250201/SysML.xmi#Systems-States-TransitionFeatureMembership-validateTransitionFeatureMembershipTriggerAction) | no | not located by name | none | locate-or-implement |
 | [validateTransitionUsageParameters](https://www.omg.org/spec/SysML/20250201/SysML.xmi#Systems-States-TransitionUsage-validateTransitionUsageParameters) | no | not located by name | none | locate-or-implement |
 | [validateTransitionUsageSuccession](https://www.omg.org/spec/SysML/20250201/SysML.xmi#Systems-States-TransitionUsage-validateTransitionUsageSuccession) | yes | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs:127](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs#L127) | TRANSITION-TARGET-KIND | complete-obligation-review |
-| [validateTransitionUsageTriggerActions](https://www.omg.org/spec/SysML/20250201/SysML.xmi#Systems-States-TransitionUsage-validateTransitionUsageTriggerActions) | yes | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs:128](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs#L128) | none | review-code-candidate |
+| [validateTransitionUsageTriggerActions](https://www.omg.org/spec/SysML/20250201/SysML.xmi#Systems-States-TransitionUsage-validateTransitionUsageTriggerActions) | yes | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs:128](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs#L128) | TRANSITION-TRIGGER-SOURCE | complete-obligation-review |
 | [validateTriggerInvocationExpressionAfterArgument](https://www.omg.org/spec/SysML/20250201/SysML.xmi#Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAfterArgument) | no | not located by name | none | locate-or-implement |
 | [validateTriggerInvocationExpressionAtArgument](https://www.omg.org/spec/SysML/20250201/SysML.xmi#Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAtArgument) | no | not located by name | none | locate-or-implement |
 | [validateTriggerInvocationExpressionWhenArgument](https://www.omg.org/spec/SysML/20250201/SysML.xmi#Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionWhenArgument) | no | not located by name | none | locate-or-implement |
@@ -205,7 +205,7 @@ This queue includes deliberate compatibility aliases and labels for other checks
 
 | Name | First source mention |
 | --- | --- |
-| validateAssignmentActionUsageReferentIsTimeVarying | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:427](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L427) |
+| validateAssignmentActionUsageReferentIsTimeVarying | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:428](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L428) |
 | validateBindingConnectorTypeConformance | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs:390](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs#L390) |
 | validateClassifierDefaultSupertype | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs:221](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs#L221) |
 | validateConnectorTypeFeaturing | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs:324](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs#L324) |
@@ -230,14 +230,14 @@ This queue includes deliberate compatibility aliases and labels for other checks
 | validateOwnedDifferencingNotOne | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs:252](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs#L252) |
 | validateOwnedIntersectingNotOne | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs:246](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs#L246) |
 | validateOwnedUnioningNotOne | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs:240](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs#L240) |
-| validateSendActionUsagePayloadArgument | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:449](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L449) |
-| validateSendActionUsageReceiver | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:464](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L464) |
+| validateSendActionUsagePayloadArgument | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:450](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L450) |
+| validateSendActionUsageReceiver | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:465](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L465) |
 | validateSpecializationSpecificNotConjugated | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs:239](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs#L239) |
 | validateStateDefinitionSubactionKind | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs:328](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs#L328) |
 | validateStateUsageSubactionKind | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs:331](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs#L331) |
-| validateTriggerInvocationActionAfterArgument | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:484](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L484) |
-| validateTriggerInvocationActionAtArgument | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:488](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L488) |
-| validateTriggerInvocationActionWhenArgument | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:492](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L492) |
+| validateTriggerInvocationActionAfterArgument | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:485](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L485) |
+| validateTriggerInvocationActionAtArgument | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:489](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L489) |
+| validateTriggerInvocationActionWhenArgument | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs:493](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs#L493) |
 | validateUsageVariationMembership | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs:165](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs#L165) |
 | validateViewDefinitionOnlyOnvViewRendering | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs:332](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs#L332) |
 | validateViewUsageOnlyOneRendering | [vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs:335](../vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs#L335) |

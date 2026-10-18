@@ -174,13 +174,13 @@
       "reason": "KERNEL-018: same-name compatibility shadowing must not remove a ViewRenderingMembership. checkRenderingUsageRedefinition targets the library viewRendering feature, not every inherited same-name user rendering. Preserve actual explicit/transitive redefinition and shared membership identity/visibility reduction."
     },
     {
-      "id": "KERNEL-019",
+      "id": "KERNEL-019 / KERNEL-020",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "patch": "patches/0020-parallel-state-transitions.patch",
       "baseSha256": "88c4211d4f3331b13519139e02da09855bc49030aa5f8904c8751b80e7371f67",
-      "reason": "Check parallel-state restrictions through independent, resolved TransitionUsage endpoint incidence on direct owned actions. Preserve action identity, reject incomplete chains and retain known opposite endpoints. Transition target-kind validation uses Feature.featureTarget rather than following a final ReferenceSubsetting. STATE-003 through STATE-007 cover ownership, alias/inheritance boundaries, unresolved and ambiguous names, action kinds and cross-file incidence. This does not qualify all transition or connector derivations.",
-      "sha256": "4233b3d077f3b3f4652a839db5bf0bae28814eae8bc881ffc22e27d54bfd6528",
-      "resultSha256": "705c5cc5e6e61f3d1562449162cf9108d9a872ba30359e25edb507d767b56f27"
+      "reason": "Check parallel-state restrictions through independent, resolved TransitionUsage endpoint incidence on direct owned actions. Preserve action identity, reject incomplete chains and retain known opposite endpoints. Transition target-kind validation uses Feature.featureTarget rather than following a final ReferenceSubsetting. STATE-003 through STATE-007 cover ownership, alias/inheritance boundaries, unresolved and ambiguous names, action kinds and cross-file incidence. This does not qualify all transition or connector derivations. KERNEL-020 constrains triggered transitions through the first checked source ActionUsage and shared triggerAction derivation, preserving PerformActionUsage identity and ignoring unrelated alias members. Missing and ambiguous sources cannot establish an invalid source kind. The private ambiguity regression now contains directly owned candidate actions.",
+      "sha256": "418d4166babd43ed0840283473a49cd701976694935ad8688dd2b8acd922b8fc",
+      "resultSha256": "fe14dd505f79749f94264220fe648c30e061703f187c7505e0f4d4fd682493d9"
     }
   ]
 }

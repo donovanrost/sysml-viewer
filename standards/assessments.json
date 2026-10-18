@@ -27,19 +27,19 @@
       "path": "crates/sysml-kernel/src/engine.rs",
       "symbol": "pub fn analyze(",
       "role": "facade implementation",
-      "sha256": "237438a98c0cda465cbd0b146dd37f2c3dc118fc2066cfc74777b797e9ddb422"
+      "sha256": "2c98dd9065771916347d50900093322b72849c3f02622d543140aa5e9f0890c0"
     },
     "query": {
       "path": "crates/sysml-kernel/src/query.rs",
       "symbol": "pub struct SnapshotQuery",
       "role": "public query boundary",
-      "sha256": "3b577ba0440e63bc4f9fd35ffb5f87c4fd503b32e3d3867e7ea8c952e107dbb9"
+      "sha256": "8e4095a4d4fe88bc6b0668c265b2c6ba1c803e3cca1a670c5d53700e724829d4"
     },
     "wire": {
       "path": "crates/sysml-kernel/src/types.rs",
       "symbol": "pub struct Snapshot",
       "role": "public wire fields",
-      "sha256": "caf41e8d3c0d50a1c30b6a121d08a36c8b2b95f8661a9aef295def7c5a0d5043"
+      "sha256": "43229e1590e526ee7e00f06f8f4e9eaa32f8e3c84cec3f4a5448ecd4ca45d66a"
     },
     "graph": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
@@ -327,13 +327,37 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "fn validate_parallel_states(",
       "role": "Checked source/target incidence of transitions on directly owned parallel-state actions, with independent unresolved endpoint guards",
-      "sha256": "705c5cc5e6e61f3d1562449162cf9108d9a872ba30359e25edb507d767b56f27"
+      "sha256": "fe14dd505f79749f94264220fe648c30e061703f187c7505e0f4d4fd682493d9"
     },
     "transition-target-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "fn target_feature(",
       "role": "Bounded written transition target Feature.featureTarget identity proof before ActionUsage kind validation",
-      "sha256": "705c5cc5e6e61f3d1562449162cf9108d9a872ba30359e25edb507d767b56f27"
+      "sha256": "fe14dd505f79749f94264220fe648c30e061703f187c7505e0f4d4fd682493d9"
+    },
+    "state-query": {
+      "path": "crates/sysml-kernel/src/states.rs",
+      "symbol": "pub(crate) fn project(",
+      "role": "Projects ordered owned state action bindings with syntax and membership completeness guards",
+      "sha256": "1aa90f7feee41b3dd790c54463056e7c66938163ca55eb8e733abc647a028d4f"
+    },
+    "state-query-tests": {
+      "path": "crates/sysml-kernel/tests/state_subactions.rs",
+      "symbol": "fn ordered_bindings_preserve_roles_ownership_and_exact_action_identity",
+      "role": "Native query, source isolation, identity, wire migration and mutation regressions",
+      "sha256": "62cef6fbb635350c1803577903bdd12b5e8d3514e592792b50b6326020448c58"
+    },
+    "state-body-query": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+      "symbol": "pub fn state_subactions(",
+      "role": "Shared semantic library query for written state subaction kinds and action elements",
+      "sha256": "af3af608ba8e64385fda430fe59fc4b01dad6ece402479dec8713a9bc843e22e"
+    },
+    "trigger-source-validation": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+      "symbol": "pub(super) fn validate(",
+      "role": "Trigger-source constraint uses shared triggerAction and checked source identity",
+      "sha256": "fe14dd505f79749f94264220fe648c30e061703f187c7505e0f4d4fd682493d9"
     }
   },
   "assessments": [
@@ -4541,6 +4565,128 @@
         }
       ],
       "limits": "KERNEL-019 prevents an incomplete target chain from becoming a known non-action target. A general ReferenceUsage that references an action is still not an ActionUsage; a PerformActionUsage retains its own ActionUsage identity. The check uses the first owned Succession and its second owned end, matching the shared transition target query and current textual lowering. This is bounded target-kind validation, not qualification of the complete validateTransitionUsageSuccession obligation: missing-succession cases, every target of nonbinary/raw connector forms, implied ends and all malformed ownership configurations remain open. Resolution diagnostics remain independently visible."
+    },
+    {
+      "id": "STATE-SUBACTION-QUERY",
+      "obligation": "Expose every owned written state subaction binding in declaration order with its entry/do/exit kind, membership identity and action identity; preserve duplicates and distinguish unknown from empty enumeration.",
+      "category": "product",
+      "sources": [
+        "SYSML-XMI-Systems-States-StateSubactionMembership-kind",
+        "SYSML-XMI-Systems-States-StateSubactionMembership-action",
+        "SYSML-XMI-Systems-States-StateDefinition-entryAction",
+        "SYSML-XMI-Systems-States-StateUsage-entryAction"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "state-query",
+          "state-body-query",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "query",
+          "wire",
+          "state-query-tests"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-009",
+          "checks": [
+            "syntax",
+            "structure",
+            "Ordered",
+            "Inherited",
+            "inherited",
+            "local",
+            "Duplicates",
+            "missing",
+            "performed",
+            "libraryState",
+            "Anonymous",
+            "not-state",
+            "library-stub",
+            "duplicate-diagnostic"
+          ]
+        },
+        {
+          "case": "STATE-010",
+          "checks": [
+            "Empty",
+            "Named",
+            "instance",
+            "DuplicateEntry",
+            "duplicateDo"
+          ]
+        },
+        {
+          "case": "STATE-011",
+          "checks": [
+            "syntax",
+            "recovered",
+            "peer"
+          ]
+        }
+      ],
+      "limits": "KERNEL-020 adds schema 4 StateSubactions and SnapshotQuery::state_subactions. Complete certifies the owned written binding enumeration, not a valid state, an effective/inherited action set or execution order. The shared model query must account for every StateSubactionMembership with reciprocal state/action ownership and a resolved ActionUsage member. Kind and both identities are retained; duplicate kinds remain visible alongside their existing diagnostic. Recovered syntax anywhere in the state source document returns unknown/invalidSyntax; independent documents retain their queries. Missing types or perform referents do not remove an already constructed owned action. Navigation stubs return unknown/unavailable and non-states return notApplicable. Native tests verify JSON round trip, stale handles, omitted/reordered/rebound bindings and schema-3 rejection. The pinned state entry/do/exit derivation expressions return memberships despite their ActionUsage property type and prose; this API exposes binding and action separately without claiming those derived slots are fully qualified. Implicit body construction, general membership role properties, transition feature collections and full state semantics remain open."
+    },
+    {
+      "id": "TRANSITION-TRIGGER-SOURCE",
+      "obligation": "A triggered transition with a known non-StateUsage source is invalid; the source is its first qualifying ActionUsage feature target, not an unrelated membership or a performed action referent.",
+      "category": "standard",
+      "sources": [
+        "SYSML-XMI-Systems-States-TransitionUsage-validateTransitionUsageTriggerActions",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageSource",
+        "SYSML-XMI-Systems-States-TransitionUsage-deriveTransitionUsageTriggerAction"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "trigger-source-validation",
+          "transition-validation",
+          "semantic-driver"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "engine",
+          "wire"
+        ]
+      },
+      "tests": [
+        {
+          "case": "STATE-008",
+          "checks": [
+            "syntax",
+            "structure",
+            "performed-element",
+            "performed-code",
+            "performChain-element",
+            "performChain-code",
+            "direct-element",
+            "direct-code",
+            "chained-element",
+            "chained-code",
+            "broken-element",
+            "broken-code",
+            "missing-element",
+            "missing-code",
+            "invalid-element",
+            "invalid-code",
+            "untriggered-element",
+            "untriggered-code"
+          ]
+        }
+      ],
+      "limits": "KERNEL-020 uses the shared triggerAction derivation and the KERNEL-019 checked source proof. STATE-008 includes a state source with an unrelated alias, a chained state source, direct and chained PerformActionUsage sources referencing states, ordinary action sources, absent and broken sources, and an untriggered action source. A missing source cannot establish the non-StateUsage antecedent; valid state identity is not replaced by an unrelated membership. Private coverage retains meaningful ambiguous endpoint candidates. Complete transition construction, raw/nonbinary graph forms, all trigger payloads, transition feature validation, guard/effect semantics and execution remain unqualified."
     }
   ]
 }

@@ -1,0 +1,94 @@
+{
+  "scope": "KERNEL-020 triggered transition source probes using the unchanged previously qualified .20 CLI.",
+  "buildPerformed": false,
+  "binarySha256": "ac5456b4a24cd9b82076f964ae354d795a44e17bd8349a20f8f0e594fa8def62",
+  "source": "package TriggerProbe {\n    item def Signal;\n    state def Driver {\n        state a;\n        state b;\n        action ordinary;\n        state region { state nested; perform action work references nested; }\n        perform action invoked references a;\n        transition performed first invoked accept payload : Signal then b;\n        transition performChain first region.work accept payload : Signal then b;\n        transition direct first a accept payload : Signal then b { alias unrelated for ordinary; }\n        transition chained first region.nested accept payload : Signal then b;\n        transition missing first Missing accept payload : Signal then b;\n        transition invalid first ordinary accept payload : Signal then b;\n        transition untriggered first ordinary then b;\n    }\n}\n",
+  "sourceSha256": "468c766756eb9f7589134c34e178345cb14f16b82080f74e6b4dd5a6903cc511",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.20",
+  "diagnostics": [
+    {
+      "code": "validateTransitionUsageTriggerActions",
+      "severity": "error",
+      "stage": "semantic",
+      "message": "A triggered transition must have a state usage as its source [validateTransitionUsageTriggerActions]",
+      "source": {
+        "documentId": "target/state-queries/trigger-probe.sysml",
+        "start": {
+          "byteOffset": 425,
+          "utf16Offset": 425,
+          "line": 11,
+          "column": 20
+        },
+        "end": {
+          "byteOffset": 431,
+          "utf16Offset": 431,
+          "line": 11,
+          "column": 26
+        }
+      }
+    },
+    {
+      "code": "incomplete-inheritance",
+      "severity": "warning",
+      "stage": "capability",
+      "message": "The engine could not completely determine this element's inherited members.",
+      "source": {
+        "documentId": "target/state-queries/trigger-probe.sysml",
+        "start": {
+          "byteOffset": 592,
+          "utf16Offset": 592,
+          "line": 13,
+          "column": 9
+        },
+        "end": {
+          "byteOffset": 656,
+          "utf16Offset": 656,
+          "line": 13,
+          "column": 73
+        }
+      }
+    },
+    {
+      "code": "resolution",
+      "severity": "warning",
+      "stage": "resolution",
+      "message": "unresolved reference `Missing`",
+      "source": {
+        "documentId": "target/state-queries/trigger-probe.sysml",
+        "start": {
+          "byteOffset": 617,
+          "utf16Offset": 617,
+          "line": 13,
+          "column": 34
+        },
+        "end": {
+          "byteOffset": 624,
+          "utf16Offset": 624,
+          "line": 13,
+          "column": 41
+        }
+      }
+    },
+    {
+      "code": "validateTransitionUsageTriggerActions",
+      "severity": "error",
+      "stage": "semantic",
+      "message": "A triggered transition must have a state usage as its source [validateTransitionUsageTriggerActions]",
+      "source": {
+        "documentId": "target/state-queries/trigger-probe.sysml",
+        "start": {
+          "byteOffset": 676,
+          "utf16Offset": 676,
+          "line": 14,
+          "column": 20
+        },
+        "end": {
+          "byteOffset": 683,
+          "utf16Offset": 683,
+          "line": 14,
+          "column": 27
+        }
+      }
+    }
+  ]
+}

@@ -27,6 +27,26 @@ if (process.argv.includes('--wasm-child')) {
   );
   const scenarios = [
     {
+      name: 'state-subaction-queries',
+      text: readFileSync(
+        join(root, 'tests/conformance/fixtures/state-query-bindings.sysml'),
+        'utf8',
+      ),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'STATE-009').checks,
+    },
+    {
+      name: 'triggered-transition-sources',
+      text: readFileSync(
+        join(root, 'tests/conformance/fixtures/state-trigger-sources.sysml'),
+        'utf8',
+      ),
+      checks: JSON.parse(
+        readFileSync(join(root, 'tests/conformance/matrix.json'), 'utf8'),
+      ).cases.find((c) => c.id === 'STATE-008').checks,
+    },
+    {
       name: 'parallel-state-transitions',
       text: readFileSync(
         join(root, 'tests/conformance/fixtures/state-parallel-negative.sysml'),
