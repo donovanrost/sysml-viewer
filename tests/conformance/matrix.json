@@ -41,9 +41,17 @@
         {
           "standard": "KerML 1.0",
           "section": "7.3.4.3"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "8.3.3.3"
+        },
+        {
+          "standard": "KerML 1.0",
+          "section": "9.1"
         }
       ],
-      "uncovered": "Multiple and implicit typing, chained types and all type-kind constraints need further cases."
+      "uncovered": "Scalar identity and conjunctive explicit scalar restrictions are tested; arbitrary subtype predicates, complete implicit/chained typing and all type-kind constraints need further cases."
     },
     {
       "id": "specialization",
@@ -8159,6 +8167,192 @@
           "spelling": "BehaviorType",
           "status": "resolved",
           "target": "StateTypingGuards::BehaviorType"
+        }
+      ]
+    },
+    {
+      "id": "TYPE-008",
+      "area": "typing",
+      "purpose": "SysML scalar checks distinguish user-defined Integer/Boolean/String from standard-library identities and preserve aliases and compatible multiple typing.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/type-008.sysml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        }
+      ]
+    },
+    {
+      "id": "TYPE-009",
+      "area": "typing",
+      "purpose": "SysML scalar values must satisfy every declared and inherited type; base order, aliases and an unclassified co-type cannot hide a known incompatibility.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/type-009.sysml"],
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "clean-structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "clean-resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "fractional",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionSysML::fractional",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "reversed",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionSysML::reversed",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "inherited",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionSysML::inherited",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "inheritedReversed",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionSysML::inheritedReversed",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "incompatible",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionSysML::incompatible",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "partlyKnown",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionSysML::partlyKnown",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "throughAlias",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionSysML::throughAlias",
+          "messageIncludes": "can never conform"
+        }
+      ]
+    },
+    {
+      "id": "TYPE-010",
+      "area": "typing",
+      "purpose": "KerML scalar checks distinguish user-defined Integer/Boolean/String from standard-library identities and preserve aliases and compatible multiple typing.",
+      "polarity": "positive",
+      "files": ["tests/conformance/fixtures/type-010.kerml"],
+      "checks": [
+        {
+          "id": "clean",
+          "op": "noDiagnostics"
+        }
+      ]
+    },
+    {
+      "id": "TYPE-011",
+      "area": "typing",
+      "purpose": "KerML scalar values must satisfy every declared and inherited type; base order, aliases and an unclassified co-type cannot hide a known incompatibility.",
+      "polarity": "negative",
+      "files": ["tests/conformance/fixtures/type-011.kerml"],
+      "checks": [
+        {
+          "id": "clean-syntax",
+          "op": "noDiagnostics",
+          "stage": "syntax"
+        },
+        {
+          "id": "clean-structure",
+          "op": "noDiagnostics",
+          "stage": "structure"
+        },
+        {
+          "id": "clean-resolution",
+          "op": "noDiagnostics",
+          "stage": "resolution"
+        },
+        {
+          "id": "fractional",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionKerML::fractional",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "reversed",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionKerML::reversed",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "inherited",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionKerML::inherited",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "inheritedReversed",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionKerML::inheritedReversed",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "incompatible",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionKerML::incompatible",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "partlyKnown",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionKerML::partlyKnown",
+          "messageIncludes": "can never conform"
+        },
+        {
+          "id": "throughAlias",
+          "op": "diagnostic",
+          "stage": "semantic",
+          "severity": "warning",
+          "owner": "ScalarIntersectionKerML::throughAlias",
+          "messageIncludes": "can never conform"
         }
       ]
     },

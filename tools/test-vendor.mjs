@@ -32,6 +32,7 @@ try {
     ['sysmlv2-syntax', 'lexer::'],
     ['sysmlv2-model', 'rational::tests::'],
     ['sysmlv2-model', 'check::typing::tests::'],
+    ['sysmlv2-model', 'check::scalars::tests::'],
     ['sysmlv2-model', 'check::actions::transition_tests::'],
     ['sysmlv2-model', 'check::structural::view_rendering_tests::'],
     ['sysmlv2-model', 'json::indexed_reads_tests::an_unsettled_table_is_scanned'],

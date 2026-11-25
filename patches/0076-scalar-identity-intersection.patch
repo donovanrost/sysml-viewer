@@ -1,0 +1,267 @@
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/scalars.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/scalars.rs
+@@ -2,7 +2,10 @@
+ //! scalar partition can never inhabit any of the feature's declared
+ //! types.
+ use crate::{json::ResolvedModel, model::Model};
++use std::collections::{HashMap, HashSet, VecDeque};
++use std::sync::OnceLock;
+ use sysmlv2_syntax::diag::Diagnostic;
++use uuid::Uuid;
+ 
+ pub(super) fn validate(r: &mut ResolvedModel, model: &Model) -> Vec<(usize, Diagnostic)> {
+     let mut out = Vec::new();
+@@ -19,13 +22,13 @@
+     // `ScalarValues` partitions its scalars into Boolean, String, and the
+     // Number tower, and a value of one partition is never an instance of
+     // a type in another; within the tower, a non-integral rational is
+-    // never an instance of an `Integer`-conforming type. Declared types
+-    // classify by simple scalar names over the explicit supertype closure
+-    // (the solver's `declared_sort` discipline — works with or without
+-    // the standard library); an untyped redefining feature borrows the
+-    // redefinition target's declared types (one hop). Unclassifiable
+-    // declared types, unevaluable values, quantities, sequences, and
+-    // element values all stay silent. Warnings, per checker policy.
++    // never an instance of an `Integer`-conforming type. Only loaded
++    // standard-library identities establish scalar restrictions (KerML 9.1).
++    // Every explicit typing/specialization restriction applies, including
++    // those inherited through subsetting/redefinition: Feature::type is an
++    // intersection, not a union (KerML 8.3.3.3). Unknown restrictions cannot
++    // cancel a known incompatibility. Unevaluable values, quantities,
++    // sequences, and element values stay silent. Warnings, per checker policy.
+     let value_sites: Vec<(usize, usize, sysmlv2_syntax::ast::Expr)> =
+         r.b.values
+             .iter()
+@@ -37,23 +40,10 @@
+         if model.is_library_unit(unit) {
+             continue;
+         }
+-        let mut tys = r.b.direct_typing_elems(owner);
+-        if tys.is_empty() {
+-            for t in r.b.redefinition_target_elems(owner) {
+-                for ty in r.b.direct_typing_elems(t) {
+-                    if !tys.contains(&ty) {
+-                        tys.push(ty);
+-                    }
+-                }
+-            }
+-        }
+-        // Every declared type must classify — a type this walk cannot
+-        // place may admit the value through bases it cannot see.
+-        let kinds: Vec<ScalarKind> = tys
+-            .iter()
+-            .filter_map(|&ty| declared_scalar_kind(&mut r.b, ty))
+-            .collect();
+-        if kinds.is_empty() || kinds.len() != tys.len() {
++        let Some(constraints) = scalar_constraints(&mut r.b, owner) else {
++            continue;
++        };
++        if constraints.is_empty() {
+             continue;
+         }
+         let origin = r.b.set_identity_origin(owner);
+@@ -65,10 +55,13 @@
+         let Some(value_kind) = value_scalar_kind(&v) else {
+             continue; // quantities, sequences, instances, elements
+         };
+-        if kinds.iter().any(|&k| scalar_kind_admits(k, value_kind)) {
+-            continue;
+-        }
+-        let ty_name = r.b.elements[tys[0]]
++        let Some((ty, kind)) = constraints
++            .into_iter()
++            .find(|(_, kind)| !scalar_kind_admits(*kind, value_kind))
++        else {
++            continue;
++        };
++        let ty_name = r.b.elements[ty]
+             .props
+             .get("declaredName")
+             .and_then(|v| v.as_str())
+@@ -76,11 +69,11 @@
+             .to_string();
+         let msg = match value_kind {
+             ScalarKind::Number { integral: false }
+-                if matches!(kinds[0], ScalarKind::Number { .. }) =>
++                if matches!(kind, ScalarKind::Number { integral: true }) =>
+             {
+                 format!(
+                     "feature value {v} is not an integer and can never conform \
+-                     to the declared type `{ty_name}`"
++                     to the required type `{ty_name}`"
+                 )
+             }
+             _ => {
+@@ -91,7 +84,7 @@
+                 };
+                 format!(
+                     "feature value evaluates to {vdesc}, which can never \
+-                     conform to the declared type `{ty_name}`"
++                     conform to the required type `{ty_name}`"
+                 )
+             }
+         };
+@@ -146,69 +139,95 @@
+     /// The feature-value scalar-conformance verdict the semantic check
+     /// would reach for `value` bound to a feature declaring exactly
+     /// `declared` as its types: `Some(false)` when the check would
+-    /// report the value as never conforming, `Some(true)` when some
+-    /// declared type admits it, `None` where the check stays silent
+-    /// (no declared type, a declared type it cannot classify, or a
+-    /// non-scalar value). Lets a fix that writes a typing verify its
+-    /// result against the value before offering it.
++    /// report the value as never conforming to any required scalar restriction,
++    /// `Some(true)` when every declared type has known scalar restrictions and
++    /// all admit it, `None` when classification is incomplete and no known
++    /// restriction disproves it (or the value is not scalar). This checks only
++    /// scalar partitions/integrality, not arbitrary subtype constraints.
+     pub fn scalar_value_admitted(
+         &mut self,
+         declared: &[crate::json::ElementRef],
+         value: &crate::eval::Value,
+     ) -> Option<bool> {
+-        let kinds: Vec<ScalarKind> = declared
+-            .iter()
+-            .filter_map(|t| declared_scalar_kind(&mut self.b, t.0))
+-            .collect();
+-        if kinds.is_empty() || kinds.len() != declared.len() {
+-            return None;
+-        }
+         let value_kind = value_scalar_kind(value)?;
+-        Some(kinds.iter().any(|&k| scalar_kind_admits(k, value_kind)))
+-    }
+-}
+-
+-/// Classify a declared type into its scalar partition by walking the
+-/// explicit typing/specialization closure and matching the `ScalarValues`
+-/// simple names — the same name-based discipline as the solver's
+-/// `declared_sort`, so it works with or without the standard library.
+-/// Breadth-first, first match wins: the nearest scalar ancestor decides
+-/// integrality (`Size :> Real` classifies non-integral even though `Real`
+-/// has integral subtypes). `None` = not provably a scalar type.
+-fn declared_scalar_kind(b: &mut crate::json::Builder, ty: usize) -> Option<ScalarKind> {
+-    use std::collections::{HashSet, VecDeque};
++        let mut complete = !declared.is_empty();
++        for ty in declared {
++            let Some(constraints) = scalar_constraints(&mut self.b, ty.0) else {
++                complete = false;
++                continue;
++            };
++            if constraints.is_empty() {
++                complete = false;
++            }
++            if constraints
++                .iter()
++                .any(|(_, k)| !scalar_kind_admits(*k, value_kind))
++            {
++                return Some(false);
++            }
++        }
++        complete.then_some(true)
++    }
++}
++
++/// Collect every known restriction in the explicit supertype closure. A wider
++/// ancestor must not hide a narrower one or make results depend on base order.
++/// No matching identity means unknown, not compatibility; an exhausted walk
++/// returns no partial certificate. Cycles are visited once.
++fn scalar_constraints(b: &mut crate::json::Builder, ty: usize) -> Option<Vec<(usize, ScalarKind)>> {
+     let mut queue: VecDeque<usize> = VecDeque::new();
+     queue.push_back(ty);
+     let mut seen: HashSet<usize> = HashSet::new();
+-    let mut steps = 0;
++    let mut constraints = Vec::new();
+     while let Some(t) = queue.pop_front() {
+         if !seen.insert(t) {
+             continue;
+         }
+-        steps += 1;
+-        if steps > 64 {
+-            break;
+-        }
+-        let name = b.elements[t]
+-            .props
+-            .get("declaredName")
+-            .and_then(|v| v.as_str());
+-        match name {
+-            Some("Boolean") => return Some(ScalarKind::Boolean),
+-            Some("String") => return Some(ScalarKind::Str),
+-            Some("Integer" | "Natural" | "Positive") => {
+-                return Some(ScalarKind::Number { integral: true });
+-            }
+-            Some("NumericalValue" | "Number" | "Complex" | "Real" | "Rational") => {
+-                return Some(ScalarKind::Number { integral: false });
+-            }
+-            _ => {}
++        if seen.len() > 64 {
++            return None;
++        }
++        if t < b.lib_boundary {
++            if let Some(kind) = scalar_identities().get(&b.elem_id(t)) {
++                constraints.push((t, *kind));
++            }
+         }
+         for s in b.explicit_supertype_elems(t) {
+             queue.push_back(s);
+         }
+     }
+-    None
++    Some(constraints)
++}
++
++/// Same loaded-library identity discipline as evaluator intrinsic dispatch.
++/// User-owned names, even `ScalarValues::Integer`, never designate primitives.
++fn scalar_identities() -> &'static HashMap<Uuid, ScalarKind> {
++    static IDS: OnceLock<HashMap<Uuid, ScalarKind>> = OnceLock::new();
++    IDS.get_or_init(|| {
++        let namespace = Uuid::new_v5(
++            &Uuid::NAMESPACE_URL,
++            b"https://www.omg.org/spec/KerML/ScalarValues",
++        );
++        [
++            ("Boolean", ScalarKind::Boolean),
++            ("String", ScalarKind::Str),
++            ("Integer", ScalarKind::Number { integral: true }),
++            ("Natural", ScalarKind::Number { integral: true }),
++            ("Positive", ScalarKind::Number { integral: true }),
++            ("NumericalValue", ScalarKind::Number { integral: false }),
++            ("Number", ScalarKind::Number { integral: false }),
++            ("Complex", ScalarKind::Number { integral: false }),
++            ("Real", ScalarKind::Number { integral: false }),
++            ("Rational", ScalarKind::Number { integral: false }),
++        ]
++        .into_iter()
++        .map(|(name, kind)| {
++            (
++                Uuid::new_v5(&namespace, format!("ScalarValues::{name}").as_bytes()),
++                kind,
++            )
++        })
++        .collect()
++    })
+ }
+ 
+ #[cfg(test)]
+@@ -219,8 +238,12 @@
+     #[test]
+     fn scalar_checks_restore_active_source_identity_on_every_outcome() {
+         let mut model = Model::new();
++        model.add_library_source(
++            "scalars.kerml",
++            "standard library package ScalarValues { datatype Integer; }",
++        );
+         model.add_source("first.kerml", "package A;");
+-        model.add_source("second.kerml", "package B { datatype Integer; feature n = 2; feature bound : Integer = '88888888-8888-4888-8888-888888888888'; feature invalid : Integer = true; feature unknown : Integer = missing; feature unbound; feature unconstrained = 3; feature empty : Integer = (); }");
++        model.add_source("second.kerml", "package B { datatype Integer specializes ScalarValues::Integer; feature n = 2; feature bound : Integer = '88888888-8888-4888-8888-888888888888'; feature invalid : Integer = true; feature unknown : Integer = missing; feature unbound; feature unconstrained = 3; feature empty : Integer = (); }");
+         assert!(!model.has_errors());
+         let mut r = ResolvedModel::build(&model);
+         let n = r.resolve_qualified("B::n").unwrap();
+@@ -228,7 +251,7 @@
+         r.override_ids(&HashMap::from([(r.element_id(n), id)]));
+         assert!(r.bind_id_spelled_references().contains(&id));
+         let prior = r.b.set_identity_origin(n.0);
+-        assert_eq!(r.b.identity_origin_unit, Some(1));
++        assert_eq!(r.b.identity_origin_unit, Some(2));
+         r.b.identity_origin_unit = prior;
+         for origin in [None, Some(0)] {
+             r.b.identity_origin_unit = origin;

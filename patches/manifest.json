@@ -649,6 +649,15 @@
       "reason": "KERNEL-024: Test effective inherited/redefined Association ends, required conditional bases for every ancestor, foreign alias identities and role exclusion, malformed source aliases and ownership, edits, bounded work and raw/prepared/serialized standard-library replay.",
       "sha256": "a12036d37033d307663bfc7b879aee90574f8286ba04b3c07dd4452936ba69fd",
       "resultSha256": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d"
+    },
+    {
+      "id": "KERNEL-025",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/scalars.rs",
+      "patch": "patches/0076-scalar-identity-intersection.patch",
+      "sha256": "9bee639bcf026b064a9d736e8ae445092ca2a36ad9db253c737be7c33530e4bc",
+      "baseSha256": "11eb123ec93c192c152fcd783ad3c7c4c3914921e3738d0cbf13b7cc8eb55f5e",
+      "resultSha256": "e757160b1f3ea334ee1735ec8f7d963e213a8a617111c326862dcf3bd1bcf42c",
+      "reason": "Use loaded normative ScalarValues identities instead of simple names when checking scalar values. Apply every typing and specialization restriction, including transitive subsetting/redefinition, rather than accepting any type or the first scalar ancestor. Preserve unknown classification and bounded traversal. KerML 7.3.2.2, 8.3.3.3 Feature::type and 9.1. Public scalar_conformance regressions demonstrate false diagnostics for shadowed names and missing diagnostics for multiple types and base-order changes."
     }
   ]
 }

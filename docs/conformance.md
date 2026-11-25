@@ -24,10 +24,10 @@ Clause references identify the source of a test, not complete coverage of that c
 | IMP-005 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | negative | Covered | Conflicting wildcard imports produce ambiguity. |
 | IMP-006 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Pinned official alias-import example resolves its original definition. |
 | IMP-007 | Imports and visibility: SysML 2.0 §7.5.2, SysML 2.0 §7.5.3, KerML 1.0 §7.2.5.4 | positive | Covered | Pinned official import-all example reaches the privately imported definition. |
-| TYPE-001 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3 | positive | Covered | A SysML usage resolves a KerML classifier across files. |
-| TYPE-002 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3 | negative | Covered | An absent type remains unresolved. |
-| TYPE-003 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3 | negative | Covered | A part typed by an attribute definition receives a semantic diagnostic. |
-| TYPE-004 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3 | positive | Covered | A standard-library scalar type resolves to a library declaration. |
+| TYPE-001 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3, KerML 1.0 §8.3.3.3, KerML 1.0 §9.1 | positive | Covered | A SysML usage resolves a KerML classifier across files. |
+| TYPE-002 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3, KerML 1.0 §8.3.3.3, KerML 1.0 §9.1 | negative | Covered | An absent type remains unresolved. |
+| TYPE-003 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3, KerML 1.0 §8.3.3.3, KerML 1.0 §9.1 | negative | Covered | A part typed by an attribute definition receives a semantic diagnostic. |
+| TYPE-004 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3, KerML 1.0 §8.3.3.3, KerML 1.0 §9.1 | positive | Covered | A standard-library scalar type resolves to a library declaration. |
 | SPEC-001 | Specialization and inheritance: SysML 2.0 §7.6.2, KerML 1.0 §7.3.2.3 | positive | Covered | Diamond inheritance contributes the common member once. |
 | SPEC-002 | Specialization and inheritance: SysML 2.0 §7.6.2, KerML 1.0 §7.3.2.3 | negative | Covered | An absent general type is reported without inventing a target. |
 | SPEC-003 | Specialization and inheritance: SysML 2.0 §7.6.2, KerML 1.0 §7.3.2.3 | negative | Covered | Missing heritage stays incomplete through definitions and typed usages. |
@@ -125,9 +125,13 @@ Clause references identify the source of a test, not complete coverage of that c
 | FAMILY-CASES-002 | Requirements and case declarations: SysML 2.0 §8.2.2.21, SysML 2.0 §8.2.2.22, SysML 2.0 §8.2.2.23, SysML 2.0 §8.2.2.24, SysML 2.0 §8.2.2.25 | negative | Covered | Requirements and case declarations: incompatible explicit type is diagnosed after successful parsing and resolution |
 | FAMILY-VIEWS-001 | View and metadata declarations: SysML 2.0 §8.2.2.26, SysML 2.0 §8.2.2.27 | positive | Covered | View and metadata declarations: nominal definition and usage metaclasses, resolved typing and exact source extents |
 | FAMILY-VIEWS-002 | View and metadata declarations: SysML 2.0 §8.2.2.26, SysML 2.0 §8.2.2.27 | negative | Covered | View and metadata declarations: incompatible explicit type is diagnosed after successful parsing and resolution |
-| TYPE-005 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3 | positive | Covered | SysML usages accept permitted KerML classifiers, including states and exhibits typed by Behavior, multiple behaviors and an ActionDefinition |
-| TYPE-006 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3 | negative | Covered | Concern typing requires ConcernDefinition, retains general RequirementUsage compatibility and enforces the existing independent-type limit |
-| TYPE-007 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3 | negative | Covered | Broadening StateUsage to Behavior still rejects data types for states and exhibits and preserves unresolved targets |
+| TYPE-005 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3, KerML 1.0 §8.3.3.3, KerML 1.0 §9.1 | positive | Covered | SysML usages accept permitted KerML classifiers, including states and exhibits typed by Behavior, multiple behaviors and an ActionDefinition |
+| TYPE-006 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3, KerML 1.0 §8.3.3.3, KerML 1.0 §9.1 | negative | Covered | Concern typing requires ConcernDefinition, retains general RequirementUsage compatibility and enforces the existing independent-type limit |
+| TYPE-007 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3, KerML 1.0 §8.3.3.3, KerML 1.0 §9.1 | negative | Covered | Broadening StateUsage to Behavior still rejects data types for states and exhibits and preserves unresolved targets |
+| TYPE-008 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3, KerML 1.0 §8.3.3.3, KerML 1.0 §9.1 | positive | Covered | SysML scalar checks distinguish user-defined Integer/Boolean/String from standard-library identities and preserve aliases and compatible multiple typing. |
+| TYPE-009 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3, KerML 1.0 §8.3.3.3, KerML 1.0 §9.1 | negative | Covered | SysML scalar values must satisfy every declared and inherited type; base order, aliases and an unclassified co-type cannot hide a known incompatibility. |
+| TYPE-010 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3, KerML 1.0 §8.3.3.3, KerML 1.0 §9.1 | positive | Covered | KerML scalar checks distinguish user-defined Integer/Boolean/String from standard-library identities and preserve aliases and compatible multiple typing. |
+| TYPE-011 | Typing: SysML 2.0 §7.6.3, KerML 1.0 §7.3.4.3, KerML 1.0 §8.3.3.3, KerML 1.0 §9.1 | negative | Covered | KerML scalar values must satisfy every declared and inherited type; base order, aliases and an unclassified co-type cannot hide a known incompatibility. |
 | STATE-001 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | positive | Covered | State subaction uniqueness counts owned memberships: entry, do and exit may coexist and locally repeat inherited kinds. |
 | STATE-002 | Behavior declarations: SysML 2.0 §8.2.2.17, SysML 2.0 §8.2.2.18, SysML 2.0 §8.2.2.19, SysML 2.0 §8.2.2.20 | negative | Covered | Duplicate owned entry, do and exit subactions are rejected separately on definitions and usages, with the pinned normative rule identifier. |
 | VIEW-001 | View and metadata declarations: SysML 2.0 §8.2.2.26, SysML 2.0 §8.2.2.27 | positive | Covered | Absent, single, inherited and diamond-inherited rendering memberships satisfy the at-most-one constraint. |
@@ -154,7 +158,7 @@ Clause references identify the source of a test, not complete coverage of that c
 ## Coverage limits
 
 - **Imports and visibility:** General metadata predicates and filtered imports, all contextual resolution rules, and complete implicit membership construction remain unqualified. Checked enumeration covers the bounded cases below; unknown results are not complete language conformance.
-- **Typing:** Multiple and implicit typing, chained types and all type-kind constraints need further cases.
+- **Typing:** Scalar identity and conjunctive explicit scalar restrictions are tested; arbitrary subtype predicates, complete implicit/chained typing and all type-kind constraints need further cases.
 - **Specialization and inheritance:** Diamond coverage is limited to a common ancestor; conflicts, cycles and all inherited memberships require broader qualification.
 - **Subsetting:** These cases check target identity, not instance-value containment or every conformance constraint.
 - **Redefinition:** Direction, multiplicity, featuring-type conformance and nested redefinitions need additional cases.

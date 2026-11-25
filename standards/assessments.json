@@ -69,7 +69,7 @@
       "path": "crates/sysml-kernel/src/syntax.rs",
       "symbol": "pub fn check_syntax(",
       "role": "public syntax analysis",
-      "sha256": "c4db66790746658cce9d7925ee304447a4904fddc6a182839f88d4018a514370"
+      "sha256": "76251d3762a123a1d51f68a263af7135198cd43bdab5432dfa6169e23c1f233e"
     },
     "source-api": {
       "path": "crates/sysml-kernel/src/source.rs",
@@ -430,6 +430,18 @@
       "symbol": "fn trigger_receiver_parameters_and_owned_bindings_are_constructed_together",
       "role": "Exact raw generated ownership, receiver direction, connector endpoints and stable identities in both graph formats, with and without libraries",
       "sha256": "4c70d91ffcb4a31631c7a93d6ce8b8813db833899051a6c9e13ca4863f5536b2"
+    },
+    "scalar-conformance": {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/scalars.rs",
+      "symbol": "fn scalar_constraints(",
+      "role": "loaded-identity scalar restrictions across every explicit supertype",
+      "sha256": "e757160b1f3ea334ee1735ec8f7d963e213a8a617111c326862dcf3bd1bcf42c"
+    },
+    "scalar-conformance-tests": {
+      "path": "crates/sysml-kernel/tests/scalar_conformance.rs",
+      "symbol": "fn every_declared_type_and_every_supertype_restricts_the_value(",
+      "role": "positive, negative, inherited, unknown and work-limit scalar regressions",
+      "sha256": "c387ba165f64ba6074407f3299bea82c918e0fdc17ce7ec71dab7ccaf7bec903"
     }
   },
   "assessments": [
@@ -5215,6 +5227,79 @@
         }
       ],
       "limits": "KERNEL-023 native graph tests check 11 accepts including nine at/after/when triggers across ordinary actions, state entry/do/exit and transitions, in canonical/legacy graphs with and without the full library. Private graph mutations cover existing receivers, matching/reversed/unrelated connectors, contradictory ownership and endpoint aliases, every generated-ID collision, work exhaustion and replay without source mutation. The public matrix/parity case checks preserved authored memberships and state subaction identities only: the facade intentionally omits these generated binding rows and does not expose their endpoints. No whole-family closure is claimed. Inherited parameter ordering, general abstract-model repair, trigger argument validation, default receiver/clock/monitor behavior, complete binding ancestry, execution and normative interchange remain open."
+    },
+    {
+      "id": "SCALAR-VALUE-RESTRICTIONS",
+      "obligation": "Evaluate known scalar partition and integrality restrictions using loaded library identities and all explicit typing/specialization paths.",
+      "category": "standard",
+      "sources": [
+        "KERML-XMI-Core-Features-Feature-type",
+        "KERML-CLAUSE-7.3.2.2",
+        "KERML-CLAUSE-9.1"
+      ],
+      "applicability": "current-product",
+      "priority": "P0",
+      "implementation": {
+        "status": "partial",
+        "evidence": [
+          "scalar-conformance",
+          "scalar-conformance-tests",
+          "engine"
+        ]
+      },
+      "api": {
+        "status": "partial",
+        "evidence": [
+          "wire",
+          "query"
+        ],
+        "note": "Proven scalar incompatibilities remain semantic warnings under the existing checker policy. No general value-conformance verdict is exposed."
+      },
+      "tests": [
+        {
+          "case": "TYPE-008",
+          "checks": [
+            "clean"
+          ]
+        },
+        {
+          "case": "TYPE-009",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "fractional",
+            "reversed",
+            "inherited",
+            "inheritedReversed",
+            "incompatible",
+            "partlyKnown",
+            "throughAlias"
+          ]
+        },
+        {
+          "case": "TYPE-010",
+          "checks": [
+            "clean"
+          ]
+        },
+        {
+          "case": "TYPE-011",
+          "checks": [
+            "clean-syntax",
+            "clean-structure",
+            "clean-resolution",
+            "fractional",
+            "reversed",
+            "inherited",
+            "inheritedReversed",
+            "incompatible",
+            "partlyKnown",
+            "throughAlias"
+          ]
+        }
+      ],
+      "limits": "KERNEL-025 removes name-based false positives and any-type/first-ancestor false negatives. Only Boolean, String and numeric partition/integrality restrictions are checked; arbitrary subtype predicates, Natural/Positive range restrictions, quantities, non-scalar values and complete implied typing remain unqualified. Bounded explicit ancestry traversal preserves unknown outcomes."
     }
   ]
 }

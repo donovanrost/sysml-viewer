@@ -36,7 +36,7 @@
     },
     {
       "path": "crates/sysml-kernel/src/lib.rs",
-      "sha256": "0cf3d0e84a48eb47593da6dd98c67444b4f4fe34378d6c87aa4fbee8937d419f"
+      "sha256": "81997e9ca96eebca2bd7e9d8eaee85ffe9c42eb5a0dce0c9f814f65943007670"
     },
     {
       "path": "crates/sysml-kernel/src/namespaces.rs",
@@ -56,7 +56,7 @@
     },
     {
       "path": "crates/sysml-kernel/src/syntax.rs",
-      "sha256": "c4db66790746658cce9d7925ee304447a4904fddc6a182839f88d4018a514370"
+      "sha256": "76251d3762a123a1d51f68a263af7135198cd43bdab5432dfa6169e23c1f233e"
     },
     {
       "path": "crates/sysml-kernel/src/types.rs",
@@ -136,7 +136,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/scalars.rs",
-      "sha256": "11eb123ec93c192c152fcd783ad3c7c4c3914921e3738d0cbf13b7cc8eb55f5e"
+      "sha256": "e757160b1f3ea334ee1735ec8f7d963e213a8a617111c326862dcf3bd1bcf42c"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/specialization.rs",
@@ -737,8 +737,8 @@
   ],
   "structuredInputHashEncoding": "JSON.stringify(parsed input), UTF-8",
   "catalogueSha256": "6e99879d8d7564e2fb160394b9dcd1c1b05bdb6603a05ca61c5ec2d29bce7f6b",
-  "assessmentsSha256": "073cd8aeda0309015f6303478a62c12e31a0b74165986418deb96b8463f6e39b",
-  "matrixSha256": "75da18b846b65968c2cc07f2c1fc8d5e77bab29d1815be598a6921800910a004",
+  "assessmentsSha256": "278f95972482a6a426149f3196a728e3593c339084b6324d0d1ce6bf2b4f51d3",
+  "matrixSha256": "596a715c637888f12cfc1189ef5ea112e7274b2810f131127ff0d961a007422d",
   "counts": {
     "rules": 180,
     "registered": 100,

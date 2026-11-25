@@ -773,6 +773,35 @@ test('lexical and connection checks retain source and resolution in both workspa
   }
 });
 
+test('scalar identity and conjunctive typing agree across native and WebAssembly', () => {
+  const documents = ['type-008.sysml', 'type-009.sysml', 'type-010.kerml', 'type-011.kerml'].map(
+    (name) => ({
+      id: name,
+      name,
+      text: readFileSync(new URL(`./conformance/fixtures/${name}`, import.meta.url), 'utf8'),
+    }),
+  );
+  const request = JSON.stringify({ revision: 41, documents });
+  const wasm: Snapshot = JSON.parse(analyze(request));
+  assert.deepEqual(wasm, nativeSnapshot(request));
+  const matrix = JSON.parse(
+    readFileSync(new URL('./conformance/matrix.json', import.meta.url), 'utf8'),
+  );
+  for (const id of ['TYPE-008', 'TYPE-009', 'TYPE-010', 'TYPE-011']) {
+    const item = matrix.cases.find((c: { id: string }) => c.id === id);
+    const documentId = item.files[0].split('/').at(-1);
+    const local = {
+      ...wasm,
+      diagnostics: wasm.diagnostics.filter((d) => d.source.documentId === documentId),
+    };
+    assert.deepEqual(
+      assessCase(local, item).filter((c) => c.status !== 'pass'),
+      [],
+      id,
+    );
+  }
+});
+
 test('lexical diagnostics and recovery match across native and WebAssembly', () => {
   const documents = ['lex-003.sysml', 'lex-004.kerml', 'lex-005.sysml'].map((name) => ({
     id: name,
