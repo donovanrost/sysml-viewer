@@ -182,6 +182,13 @@ pub(super) fn prepare(
                     }
                 })?;
             valid_path(b, rows, role, result, false)
+        } else if b.elements.get(role.anchor).is_some_and(|anchor| {
+            matches!(
+                anchor.ty,
+                "InvocationExpression" | "OperatorExpression" | "TriggerInvocationExpression"
+            )
+        }) {
+            valid_path(b, rows, role, role.anchor, false)
         } else {
             valid(b, rows, role)
         };
@@ -298,7 +305,7 @@ mod tests {
         assert_eq!(defaults.len(), 1);
         for plan in defaults {
             let start = r.b.elements.len() + rows.len();
-            let (_, featuring) = super::super::owned_results::stage_constructor_default(
+            let (_, featuring) = super::super::owned_results::stage_default_binding(
                 &r.b, &mut view, plan, start, &mut rows,
             );
             roles.extend(featuring);

@@ -9,7 +9,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs b/vendor/sys
      "validateAssertConstraintUsageReference",
      "validateAssignmentActionUsageReferent",
      "validateAssociationBinarySpecialization",
-@@ -116,12 +117,19 @@
+@@ -116,14 +117,24 @@
      "validateRequirementVerificationMembershipOwningType",
      "validateSatisfyRequirementUsageReference",
      "validateStateDefinitionParallelSubactions",
@@ -28,8 +28,13 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs b/vendor/sys
 +    "validateTransitionUsageParameters",
      "validateTransitionUsageSuccession",
      "validateTransitionUsageTriggerActions",
++    "validateTriggerInvocationExpressionAfterArgument",
++    "validateTriggerInvocationExpressionAtArgument",
++    "validateTriggerInvocationExpressionWhenArgument",
      "validateTypeDifferencingTypesNotSelf",
-@@ -314,12 +322,17 @@
+     "validateTypeIntersectingTypesNotSelf",
+     "validateTypeOwnedMultiplicity",
+@@ -314,12 +325,17 @@
  }
  
  /// The identifier of a rule in the spelling the pinned abstract syntax
@@ -48,7 +53,21 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs b/vendor/sys
          "validateViewDefinitionOnlyOnvViewRendering" => {
              "validateViewDefinitionOnlyOneViewRendering"
          }
-@@ -402,6 +415,7 @@
+@@ -399,9 +415,21 @@
+     out.extend(chains::validate(r, model));
+     // The immutable facts already index ownership and binary relationship
+     // targets for every later validator. Reuse them for connector checks too.
++    // Trigger argument predicates consume the shared constructed graph. Prepare
++    // before the explicit-only Facts snapshot; generated indices are read only
++    // through checked semantic providers, never through Facts arrays.
++    if (r.b.lib_boundary..r.b.explicit_len())
++        .any(|e| r.b.elements[e].ty == "TriggerInvocationExpression")
++    {
++        let root = r.elements().next();
++        if let Some(root) = root {
++            r.implied_relationships(root);
++        }
++    }
      let facts = facts::Facts::new(&mut r.b);
      out.extend(connectors::validate(r, model, &facts));
      out.extend(structural::validate(r, model, &facts));

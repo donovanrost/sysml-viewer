@@ -155,11 +155,10 @@ fn existing_required_name_without_a_source_path_is_not_completeness() {
 }
 
 #[test]
-fn metadata_valuation_owned_context_and_invocation_remain_outside_bounded_domain() {
+fn metadata_and_inferred_valuations_remain_qualified_while_declared_types_are_checked() {
     for user in [
         "function F specializes Performances::Evaluation; metaclass Mark; expr e:F subsets Performances::evaluations; @Mark about e;",
-        "function F specializes Performances::Evaluation; feature e:F subsets Performances::evaluations=1;",
-        "function F specializes Performances::Evaluation; class C {expr e:F subsets Performances::evaluations;}",
+        "feature e=1;",
     ] {
         let mut r = fixture(user);
         let feature = r
@@ -170,7 +169,32 @@ fn metadata_valuation_owned_context_and_invocation_remain_outside_bounded_domain
         let mut proof = RepositoryTyping::new(&mut r.b, &mut 0).unwrap();
         assert!(proof.project(feature, &mut 0).function(&proof).is_err());
     }
+    let mut r = fixture(
+        "function F specializes Performances::Evaluation; class C {expr e:F subsets Performances::evaluations;}",
+    );
+    let expression = r.resolve_qualified("C::e").unwrap().0;
+    let function = r.resolve_qualified("F").unwrap().0;
+    let mut proof = RepositoryTyping::new(&mut r.b, &mut 0).unwrap();
+    assert_eq!(
+        proof.project(expression, &mut 0).function(&proof),
+        Ok(Some(function))
+    );
 }
+
+#[test]
+fn explicit_typing_is_independent_of_an_incompatible_valuation() {
+    let mut r = fixture(
+        "function F specializes Performances::Evaluation; feature e:F subsets Performances::evaluations=1;",
+    );
+    let feature = r.resolve_qualified("e").unwrap().0;
+    let function = r.resolve_qualified("F").unwrap().0;
+    let mut proof = RepositoryTyping::new(&mut r.b, &mut 0).unwrap();
+    assert_eq!(
+        proof.project(feature, &mut 0).function(&proof),
+        Ok(Some(function))
+    );
+}
+
 #[test]
 fn invocation_waits_for_accepted_dynamic_typing_lifecycle() {
     let mut r = fixture("function F specializes Performances::Evaluation; feature call=F();");

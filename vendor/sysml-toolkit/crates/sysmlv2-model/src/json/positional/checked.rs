@@ -1,0 +1,499 @@
+//! Adapter from the checked semantic membership proof into the shared planner.
+use super::*;
+use crate::json::semantic::certified_types::Stamp;
+
+impl Builder {
+    /// The caller has proved the complete current membership, ancestry and
+    /// authored redefinition closure. Preserve those exact semantic nodes;
+    /// rebuilding stored selectors would discard materialized members.
+    ///
+    /// Only authored redefinitions seed reduction. Previously generated
+    /// positional edges must not justify their own absence from a fresh plan.
+    /// This method neither publishes graph rows nor retains a planning cache.
+    pub(in crate::json) fn plan_checked_positional(
+        &mut self,
+        nodes: &HashMap<usize, Node>,
+        bases: &dyn DirectBases,
+        import_owners: &HashSet<usize>,
+        authored: &HashMap<usize, Vec<usize>>,
+        stamp: &Stamp,
+        steps: &mut usize,
+    ) -> Option<PositionalRedefinitions> {
+        if !stamp.current_builder(self)
+            || self.positional_redefinition_sources_match(authored, steps) != Some(true)
+        {
+            return None;
+        }
+        let mut budget = Some(steps);
+        charge(&mut budget, nodes.len())?;
+        let roots: Vec<_> = nodes.keys().copied().collect();
+        let mut admitted = HashMap::new();
+        for (&owner, node) in nodes {
+            charge(
+                &mut budget,
+                node.owned
+                    .len()
+                    .saturating_add(node.owned_memberships.len())
+                    .saturating_add(node.bases.len().saturating_mul(2))
+                    .saturating_add(node.public_imports.len())
+                    .saturating_add(node.protected_imports.len()),
+            )?;
+            if !node.memberships_complete
+                || bases.get(&owner) != Some(&node.bases)
+                || node.bases.iter().any(|base| !nodes.contains_key(base))
+                || node.owned.iter().any(|f| !authored.contains_key(f))
+            {
+                return None;
+            }
+            admitted.insert(
+                owner,
+                Node {
+                    owned: node.owned.clone(),
+                    owned_memberships: node.owned_memberships.clone(),
+                    bases: node.bases.clone(),
+                    public_imports: node.public_imports.clone(),
+                    protected_imports: node.protected_imports.clone(),
+                    memberships_complete: true,
+                },
+            );
+        }
+        // Import dependency scheduling still uses the central selector and must
+        // agree with the caller's visibility-specific membership proof.
+        let mut import_proof = ImportProof::default();
+        let mut prerequisites = HashMap::new();
+        charge(&mut budget, import_owners.len())?;
+        for &owner in import_owners {
+            let (mut public, mut protected) = self.positional_imports(
+                owner,
+                bases,
+                &HashSet::new(),
+                &mut budget,
+                &mut import_proof,
+                &mut prerequisites,
+            )?;
+            if let Some(required) = prerequisites.get(&owner) {
+                charge(&mut budget, required.len())?;
+                if required
+                    .iter()
+                    .any(|dependency| !nodes.contains_key(dependency))
+                {
+                    return None;
+                }
+            }
+            let node = nodes.get(&owner)?;
+            for (actual, expected) in [
+                (&mut public, &node.public_imports),
+                (&mut protected, &node.protected_imports),
+            ] {
+                charge(&mut budget, actual.len().saturating_add(expected.len()))?;
+                let mut seen = HashSet::new();
+                actual.retain(|m| seen.insert(m.relationship));
+                if actual != expected {
+                    return None;
+                }
+            }
+        }
+        // Nonowning local members can carry the same foreign redefinition
+        // dependencies as imported members. They are proof prerequisites, never
+        // extra bases or inherited contributions of the consuming Type.
+        for (&owner, node) in nodes {
+            let required = self.positional_borrowed_dependencies(
+                &node.owned_memberships,
+                ImportSourceContext {
+                    owner,
+                    bases,
+                    incomplete: &HashSet::new(),
+                    ordinary_only: false,
+                    allow_prerequisites: true,
+                },
+                &mut budget,
+                &mut import_proof,
+            )?;
+            charge(&mut budget, required.len())?;
+            if required
+                .iter()
+                .any(|dependency| !nodes.contains_key(dependency))
+            {
+                return None;
+            }
+            if !required.is_empty() {
+                prerequisites.entry(owner).or_default().extend(required);
+            }
+        }
+        charge_map_vectors(authored, &mut budget)?;
+        let mut incomplete = HashSet::new();
+        let order = positional_order(
+            &roots,
+            &admitted,
+            &prerequisites,
+            None,
+            &mut incomplete,
+            &mut budget,
+        )?;
+        let plan = self.reduce_positional_inputs(
+            ReductionInputs {
+                order,
+                nodes: admitted,
+                prerequisites,
+                incomplete,
+                redefinitions: authored.clone(),
+            },
+            budget,
+            None,
+            &mut PositionalWorkspace::one_shot(),
+            false,
+            true,
+        )?;
+        stamp.current_builder(self).then_some(plan)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        json::{
+            ResolvedModel, membership_evidence, semantic_ownership,
+            structural_index::StoredStructure,
+        },
+        model::{GraphFormat, Model},
+    };
+    use serde_json::json;
+
+    const LIBRARY: &str = "standard library package Base {classifier Anything; feature things:Anything;}
+standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;}
+standard library package Performances {
+ behavior Performance specializes Occurrences::Occurrence;
+ step performances:Performance subsets Occurrences::occurrences;
+ function Evaluation specializes Performance {return result;}
+ expr evaluations:Evaluation subsets performances;
+}";
+
+    fn graph(format: GraphFormat) -> (ResolvedModel, usize, usize, usize) {
+        let mut model = Model::with_graph_format(format);
+        assert!(
+            model
+                .add_library_source("positional-library.kerml", LIBRARY)
+                .diagnostics
+                .is_empty()
+        );
+        assert!(
+            model
+                .add_source("source.kerml", "feature value; feature selected=value;")
+                .diagnostics
+                .is_empty()
+        );
+        let mut r = ResolvedModel::build(&model);
+        let source = r
+            .user_elements()
+            .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
+            .unwrap()
+            .0;
+        let canonical = r
+            .resolve_qualified("Performances::Evaluation::result")
+            .unwrap()
+            .0;
+        r.ensure_implied();
+        let generated =
+            r.b.semantic_ownership
+                .as_ref()
+                .unwrap()
+                .result(source)
+                .unwrap()
+                .feature;
+        (r, source, generated, canonical)
+    }
+
+    struct Inputs {
+        nodes: HashMap<usize, Node>,
+        bases: HashMap<usize, Vec<usize>>,
+        authored: HashMap<usize, Vec<usize>>,
+    }
+
+    // Exercise the planner seam with current semantic memberships. This is not
+    // a certificate of every reference-source obligation or a public provider.
+    fn inputs(r: &mut ResolvedModel, root: usize) -> Inputs {
+        let mut steps = 0;
+        let raw = StoredStructure::for_query(&mut r.b, &mut steps).unwrap();
+        let mut input = Inputs {
+            nodes: HashMap::new(),
+            bases: HashMap::new(),
+            authored: HashMap::new(),
+        };
+        let mut todo = vec![root];
+        while let Some(owner) = todo.pop() {
+            if input.nodes.contains_key(&owner) {
+                continue;
+            }
+            let bases = r.b.value_context_bases(owner, &mut steps).unwrap();
+            todo.extend(bases.iter().copied());
+            let mut node = Node {
+                owned: vec![],
+                owned_memberships: vec![],
+                bases: bases.clone(),
+                public_imports: vec![],
+                protected_imports: vec![],
+                memberships_complete: true,
+            };
+            let rows: Vec<_> = semantic_ownership::owned_relationships(&r.b, owner)
+                .unwrap()
+                .iter()
+                .collect();
+            for relationship in rows {
+                if !conforms(r.b.elements[relationship].ty, "Membership") {
+                    continue;
+                }
+                let member =
+                    membership_evidence::member(&r.b, &raw, owner, relationship, &mut steps)
+                        .unwrap();
+                if conforms(r.b.elements[relationship].ty, "FeatureMembership") {
+                    node.owned.push(member);
+                }
+                if conforms(r.b.elements[member].ty, "Feature") {
+                    input.authored.entry(member).or_default();
+                }
+                if r.b.elements[relationship]
+                    .props
+                    .get("visibility")
+                    .and_then(|v| v.as_str())
+                    != Some("private")
+                {
+                    node.owned_memberships.push(PositionalMembership {
+                        relationship,
+                        member,
+                    });
+                }
+            }
+            input.nodes.insert(owner, node);
+            input.bases.insert(owner, bases);
+        }
+        for (index, &(source, kind, _, _)) in r.b.spec_targets.iter().enumerate() {
+            if kind == "Redefinition" {
+                if let Some(targets) = input.authored.get_mut(&source) {
+                    targets.push(r.b.spec_resolved[index].unwrap());
+                }
+            }
+        }
+        input
+    }
+
+    #[test]
+    fn semantic_memberships_recompute_generated_result_redefinitions_without_publication() {
+        for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
+            let (mut r, source, result, canonical) = graph(format);
+            let input = inputs(&mut r, source);
+            assert!(input.nodes[&source].owned.contains(&result));
+            assert!(!r.b.owned_member_elems(source, true).contains(&result));
+            assert!(input.authored[&result].is_empty());
+            let rows = r.b.elements.len();
+            let stamp = Stamp::capture_builder(&mut r.b);
+            let plan =
+                r.b.plan_checked_positional(
+                    &input.nodes,
+                    &input.bases,
+                    &HashSet::new(),
+                    &input.authored,
+                    &stamp,
+                    &mut 0,
+                )
+                .unwrap();
+            assert!(!plan.incomplete.contains(&source));
+            assert_eq!(plan.targets.get(&result), Some(&vec![canonical]));
+            assert_eq!(r.b.elements.len(), rows);
+        }
+    }
+
+    #[test]
+    fn semantic_positional_inputs_preserve_budget_retry_and_refuse_stale_memberships() {
+        let (mut r, source, result, canonical) = graph(GraphFormat::CanonicalV3);
+        let input = inputs(&mut r, source);
+        let stamp = Stamp::capture_builder(&mut r.b);
+        let mut exhausted = crate::eval::MAX_STEPS;
+        assert!(
+            r.b.plan_checked_positional(
+                &input.nodes,
+                &input.bases,
+                &HashSet::new(),
+                &input.authored,
+                &stamp,
+                &mut exhausted
+            )
+            .is_none()
+        );
+        let plan =
+            r.b.plan_checked_positional(
+                &input.nodes,
+                &input.bases,
+                &HashSet::new(),
+                &input.authored,
+                &stamp,
+                &mut 0,
+            )
+            .unwrap();
+        assert_eq!(plan.targets.get(&result), Some(&vec![canonical]));
+        let membership = r.b.elements[result].owning_relationship.unwrap();
+        r.b.set(membership, "ownedMemberParameter", json!(null));
+        assert!(
+            r.b.plan_checked_positional(
+                &input.nodes,
+                &input.bases,
+                &HashSet::new(),
+                &input.authored,
+                &stamp,
+                &mut 0
+            )
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn semantic_positional_inputs_refuse_missing_domains_and_keep_cycles_incomplete() {
+        let (mut r, source, _, _) = graph(GraphFormat::CanonicalV3);
+        let mut input = inputs(&mut r, source);
+        let stamp = Stamp::capture_builder(&mut r.b);
+        input.nodes.get_mut(&source).unwrap().memberships_complete = false;
+        assert!(
+            r.b.plan_checked_positional(
+                &input.nodes,
+                &input.bases,
+                &HashSet::new(),
+                &input.authored,
+                &stamp,
+                &mut 0
+            )
+            .is_none()
+        );
+        input.nodes.get_mut(&source).unwrap().memberships_complete = true;
+        let absent = input.nodes[&source].bases[0];
+        let saved = input.nodes.remove(&absent).unwrap();
+        assert!(
+            r.b.plan_checked_positional(
+                &input.nodes,
+                &input.bases,
+                &HashSet::new(),
+                &input.authored,
+                &stamp,
+                &mut 0
+            )
+            .is_none()
+        );
+        input.nodes.insert(absent, saved);
+        input.nodes.get_mut(&source).unwrap().bases.push(source);
+        input.bases.get_mut(&source).unwrap().push(source);
+        let plan =
+            r.b.plan_checked_positional(
+                &input.nodes,
+                &input.bases,
+                &HashSet::new(),
+                &input.authored,
+                &stamp,
+                &mut 0,
+            )
+            .unwrap();
+        assert!(plan.incomplete.contains(&source));
+    }
+
+    #[test]
+    fn semantic_positional_inputs_recheck_authored_edges_without_row_changes() {
+        let mut model = Model::new();
+        assert!(
+            model
+                .add_source(
+                    "authored.kerml",
+                    "function A {in p;} function B specializes A {in q redefines A::p;}"
+                )
+                .diagnostics
+                .is_empty()
+        );
+        let mut r = ResolvedModel::build(&model);
+        r.ensure_implied();
+        let root = r.resolve_qualified("B").unwrap().0;
+        let input = inputs(&mut r, root);
+        let stamp = Stamp::capture_builder(&mut r.b);
+        let index =
+            r.b.spec_targets
+                .iter()
+                .position(|(_, kind, _, _)| *kind == "Redefinition")
+                .unwrap();
+        let target = r.b.spec_resolved[index];
+        r.b.spec_resolved[index] = None;
+        assert!(stamp.current_builder(&r.b));
+        assert!(
+            r.b.plan_checked_positional(
+                &input.nodes,
+                &input.bases,
+                &HashSet::new(),
+                &input.authored,
+                &stamp,
+                &mut 0
+            )
+            .is_none()
+        );
+        r.b.spec_resolved[index] = target;
+        let plan =
+            r.b.plan_checked_positional(
+                &input.nodes,
+                &input.bases,
+                &HashSet::new(),
+                &input.authored,
+                &stamp,
+                &mut 0,
+            )
+            .unwrap();
+        assert!(!plan.incomplete.contains(&root));
+    }
+
+    #[test]
+    fn semantic_positional_inputs_survive_prepared_library_replay() {
+        use crate::prepared::PreparedLibrary;
+        use std::sync::Arc;
+        let mut library = Model::with_graph_format(GraphFormat::CanonicalV3);
+        library.add_library_source("positional-library.kerml", LIBRARY);
+        let prepared = library.prepare_library().unwrap();
+        let decoded =
+            Arc::new(PreparedLibrary::from_bytes(&prepared.to_bytes(85).unwrap(), 85).unwrap());
+        let mut identities = None;
+        for prepared in [prepared, decoded] {
+            let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
+            prepared.install(&mut model).unwrap();
+            model.add_source("source.kerml", "feature value; feature selected=value;");
+            let mut r = ResolvedModel::build(&model);
+            r.ensure_implied();
+            let source = r
+                .user_elements()
+                .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
+                .unwrap()
+                .0;
+            let result =
+                r.b.semantic_ownership
+                    .as_ref()
+                    .unwrap()
+                    .result(source)
+                    .unwrap()
+                    .feature;
+            let canonical = r
+                .resolve_qualified("Performances::Evaluation::result")
+                .unwrap()
+                .0;
+            let input = inputs(&mut r, source);
+            let stamp = Stamp::capture_builder(&mut r.b);
+            let plan =
+                r.b.plan_checked_positional(
+                    &input.nodes,
+                    &input.bases,
+                    &HashSet::new(),
+                    &input.authored,
+                    &stamp,
+                    &mut 0,
+                )
+                .unwrap();
+            assert!(!plan.incomplete.contains(&source));
+            assert_eq!(plan.targets.get(&result), Some(&vec![canonical]));
+            let current = (r.b.elements[result].id, r.b.elements[canonical].id);
+            if let Some(previous) = identities {
+                assert_eq!(current, previous);
+            }
+            identities = Some(current);
+        }
+    }
+}

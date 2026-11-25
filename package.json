@@ -1,6 +1,6 @@
 {
   "name": "sysml-viewer",
-  "version": "0.4.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,7 +17,8 @@
     "conformance:docs": "node tools/conformance.mjs --write-docs",
     "conformance:check": "node tools/conformance.mjs --check-docs",
     "benchmark": "node tools/benchmark-kernel.mjs",
-    "inspect": "node tools/rust.mjs run --locked --release -p sysml-cli --",
+    "cli": "node tools/rust.mjs run --locked --release -p sysml-cli --bin sysml --",
+    "inspect": "node tools/rust.mjs run --locked --release -p sysml-cli --bin sysml-inspect --",
     "desktop": "node tools/desktop.mjs dev",
     "desktop:build": "node tools/desktop.mjs build",
     "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
@@ -28,6 +29,7 @@
     "requirements:report": "node tools/requirements.mjs --conformance target/conformance/report.json"
   },
   "dependencies": {
+    "@d2lang/d2": "0.1.34",
     "@tauri-apps/api": "~2.11.0",
     "@tauri-apps/plugin-dialog": "~2.7.0",
     "@tauri-apps/plugin-fs": "~2.5.0"

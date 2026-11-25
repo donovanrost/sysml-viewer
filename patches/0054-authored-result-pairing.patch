@@ -1,0 +1,15 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/loader.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/loader.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/loader.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/loader.rs
+@@ -731,9 +731,11 @@
+         let argument = positions[membership["ownedRelatedElement"][0]["@id"]
+             .as_str()
+             .unwrap()];
++        let omitted = crate::lift::omitted_element_ids(&emitted);
+         let expected: ExplicitIds = elements
+             .iter()
+             .enumerate()
++            .filter(|(_, row)| !omitted.contains(row["@id"].as_str().unwrap()))
+             .map(|(i, row)| {
+                 (
+                     Uuid::parse_str(row["@id"].as_str().unwrap()).unwrap(),

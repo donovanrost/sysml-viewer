@@ -6,6 +6,11 @@ as WebAssembly in the desktop/browser viewer. Models stay on your device; analys
 has no runtime server, account, telemetry or network dependency and never writes
 model files.
 
+Development builds use **0.0.x** and are published as
+[GitHub prereleases](https://github.com/donovanrost/sysml-viewer/releases).
+Official releases require an explicit version tag outside 0.0.x.
+See [publishing releases](docs/releases.md) for the version and release process.
+
 The first kernel migration milestone is implemented. Open-MBEE's syntax and model
 libraries provide lexing, parsing, semantic construction, resolution and validation
 behind our own versioned facade. This is **not a claim of complete SysML conformance**.
@@ -61,48 +66,100 @@ in this workspace.
 - **Open models** selects `.sysml` and `.kerml` files together. Include the files
   needed by imports; the viewer does not crawl folders or fetch dependencies.
   The standard SysML/KerML libraries are bundled. Drag-and-drop also works.
-- Single-click a card to inspect it; double-click or choose **Explore** to view its
+- **System map** fills the workspace with package regions and grouped cross-package relationships.
+  View tabs float at the upper left; navigation and zoom controls sit in the lower corners.
+  Zoom progressively reveals written members in stable positions. Drag or scroll
+  to pan; pinch, Ctrl/⌘-scroll, or use the zoom buttons. Double-click an element or
+  choose **Explore structure** to enter its effective structure; **Focus selection**
+  approaches it without switching views. **Back** restores the previous location.
+- Hover or Tab to a relationship to reveal its label; click or press Enter to inspect
+  its underlying source records. The relationship menu at the upper right switches
+  between types and connections; **Show labels** keeps labels visible where they fit.
+  Selecting an element emphasizes its links while other links recede. TALA arranges linked ownership regions locally in a WebAssembly worker;
+  unrelated members use deterministic packing. Layout stays fixed while zooming.
+  TALA routes connect the regions it arranged; links into expanded regions use
+  the viewer's obstacle-aware router. An unavailable layout leaves a simplified
+  map with a **Retry** action.
+  Use the relationship inspector to
+  navigate to either endpoint. The map separates type relationships from binary
+  connections. **Unmapped relationships** appears in that menu when unresolved or
+  unsupported relationships exist; library
+  references and annotation bodies are omitted from the map. **Browse relationships**
+  opens a floating list of all groups at the current detail level, including those
+  beyond the drawing limit. Escape closes the list or relationship menu.
+- In **Diagram**, single-click a card to inspect it; double-click or choose **Explore** to view its
   effective members, including inherited members and redefinitions.
+- In **System map**, selecting a structured element in the tree or choosing
+  **Explore structure** opens its effective parts and connections. A usage such as
+  `researchVessel : SurveyVessel` includes the inherited structure supplied by the
+  kernel. Repeated uses have separate canvas positions and keep links to their
+  original declarations; **From …** badges identify inherited members.
+- Type names on cards are navigable labels. **Specializes …** or **Show type hierarchy**
+  opens a separate definition hierarchy, with general types above specific types
+  and hollow triangular arrows pointing to the general type. Usage typing does
+  not become a specialization arrow. **Back** restores the previous view and camera.
+- Leaf attribute definitions such as `Percentage` appear as clickable property
+  types, without separate system-map nodes or arrows to a shared type. Attributes
+  show their declared value at detail zoom (for example, `charge : Percentage = 100`).
+  The explorer and type links still open those definitions and their hierarchy.
+  Attribute definitions with structure, and leaf parts or ports, remain on the map.
 - The tree shows written ownership. Breadcrumbs and **Up a level** navigate scopes.
 - **Connections** draws resolved binary connections between visible owner cards.
   **Types & specialization** shows references; unresolved, ambiguous and
   out-of-view targets remain explicit.
 - **Source** shows the original document and highlights the declaration. Reference
   navigation can cross files and open the source of bundled library definitions.
-- **Diagnostics** reports syntax, resolution and semantic findings. An empty list
+- A header **diagnostics badge** appears when analysis reports findings and opens
+  their details. An empty list
   means the implemented checks found no problem, not that the model is certified.
 - `⌘O` / `Ctrl+O` opens files; `/` focuses search. `⌘R` / `Ctrl+R` reloads selected
   desktop files. In a browser, select the files again to read external changes.
 
 The built-in Coastal Explorer example contains four subsystems and five connections.
+`SurveyVessel` specializes `ResearchVessel`, and `researchVessel` uses `SurveyVessel`.
 Diagrams are a structural overview, not full standard SysML graphical notation.
 
-## Reuse the kernel without the viewer
+## Command-line parsing and validation
+
+The standalone CLI needs no browser, Node.js, Tauri, or runtime library downloads.
+Build it with the repository's pinned Rust toolchain:
 
 ```sh
-npm run inspect -- examples/CoastalExplorer.sysml
-node tools/rust.mjs build --locked --release -p sysml-cli
-./target/release/sysml-inspect --strict tests/fixtures/kernel/Definitions.sysml tests/fixtures/kernel/Mission.sysml
+cargo build --locked --release -p sysml-cli
+./target/release/sysml parse examples/CoastalExplorer.sysml
+./target/release/sysml validate examples/
+./target/release/sysml validate --format json examples/ > diagnostics.json
+./target/release/sysml inspect examples/ > model.json
 ```
 
-The executable writes a schema-versioned JSON snapshot. `--strict` exits 1 when
-there are error diagnostics; invalid input exits 2. Windows uses `sysml-inspect.exe`.
-For programmatic use, `sysml-inspect --request-json` accepts an `AnalysisRequest`
-on stdin. The Rust library accepts supplied source text and returns the same
-snapshot without depending on a UI or filesystem. Native callers must use the
-exported 16 MiB analysis-thread stack size.
+`parse` checks syntax and body structure without name resolution. `validate`
+analyzes all supplied files together with the bundled standard libraries. Both
+exit **1** on error diagnostics; `--warnings-as-errors` also fails on warnings.
+`inspect` exports the versioned semantic snapshot and accepts `--strict` to fail
+on error diagnostics. Input, usage, engine, or output failures exit **2**.
 
-| Component | Responsibility |
-| --- | --- |
-| `vendor/sysml-toolkit` | Pinned upstream syntax and semantic libraries |
-| `vendor/sysml-library` | Pinned SysML 2.0 / KerML 1.0 model libraries |
-| `crates/sysml-kernel` | Source identities/ranges, analysis policy, diagnostics and query snapshots |
-| `crates/sysml-cli` | Native headless consumer |
-| `crates/sysml-wasm` | Thin WebAssembly binding |
-| `src/kernel` | Generated TypeScript contract and disposable worker transport |
-| `src/viewer` | Display projection, diagram relationships and layout |
-| `src/platform`, `src-tauri` | File access and desktop packaging |
-| `src/main.ts`, `src/ui` | Interaction and rendering |
+Files and directories can be mixed; directories are searched recursively for
+`.sysml` and `.kerml` files. `-` reads source text from stdin, and `--request-json`
+reads the programmatic `AnalysisRequest`. Windows uses `sysml.exe`.
+The original `sysml-inspect` binary and `npm run inspect -- ...` remain compatible.
+`npm run cli -- validate examples/` is also available during development; invoke
+the binary directly when piping JSON so npm's banners do not enter the output.
+
+See the [CLI guide](docs/cli.md) for installation, CI use, JSON contracts, discovery
+rules, input limits, and release packaging. The Rust library remains independently
+reusable; native callers must use its exported 16 MiB analysis-thread stack size.
+
+| Component                   | Responsibility                                                             |
+| --------------------------- | -------------------------------------------------------------------------- |
+| `vendor/sysml-toolkit`      | Pinned upstream syntax and semantic libraries                              |
+| `vendor/sysml-library`      | Pinned SysML 2.0 / KerML 1.0 model libraries                               |
+| `crates/sysml-kernel`       | Source identities/ranges, analysis policy, diagnostics and query snapshots |
+| `crates/sysml-cli`          | Native headless consumer                                                   |
+| `crates/sysml-wasm`         | Thin WebAssembly binding                                                   |
+| `src/kernel`                | Generated TypeScript contract and disposable worker transport              |
+| `src/viewer`                | Display projection, diagram relationships and layout                       |
+| `src/platform`, `src-tauri` | File access and desktop packaging                                          |
+| `src/main.ts`, `src/ui`     | Interaction and rendering                                                  |
 
 Rust types are authoritative. Run `npm run contract:generate` after changing
 public types. Do not edit `src/kernel/generated` by hand. There is no second

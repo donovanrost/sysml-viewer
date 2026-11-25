@@ -1,0 +1,767 @@
+{
+  "reviewedAt": "2026-10-18T09:15:39.261666+00:00",
+  "status": "Owned invocation-result construction and cold-query repair pass vendor, native, public native/WASM and all 133 conformance cases with a current requirements execution report. Checked invocation result selection and all fifteen completion packages remain open.",
+  "scope": "Owned result construction for canonical textual InvocationExpression and its operator/trigger subclasses; dependencies for later checked result selection remain open.",
+  "inputs": {
+    "target/standards/kerml.xmi": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "target/trigger-validation/invocation-result-probe.rs": "c928e7bf04d0bb02421f60992d3a6d1c0cd7cf8799dfdea40c29a53af9aea50a",
+    "target/trigger-validation/invocation-result-before.log": "da2a2272eb9f40694016236ec9634ea1c131b04fca10c67381171489500041be"
+  },
+  "sourceAnchors": [
+    {
+      "owner": "InstantiationExpression",
+      "name": "validateInstantiationExpressionResult",
+      "id": "Kernel-Expressions-InstantiationExpression-validateInstantiationExpressionResult",
+      "expressions": [
+        "<p>An <code>InstantiationExpression</code> must own its <code>result</code> parameter.</p>",
+        "result.owningType = self"
+      ]
+    },
+    {
+      "owner": "InvocationExpression",
+      "name": "checkInvocationExpressionBehaviorResultSpecialization",
+      "id": "Kernel-Expressions-InvocationExpression-checkInvocationExpressionBehaviorResultSpecialization",
+      "expressions": [
+        "<p>If the <code>instantiatedType</code> of an <code>InvocationExpression</code> is neither a <code>Function</code> nor a <code>Feature</code> whose type is a <code>Function</code>, then the <code>result</code> of the <code>InvocationExpression</code> must specialize the <code>instantiatedType</code>.</p>",
+        "not instantiatedType.oclIsKindOf(Function) and not (instantiatedType.oclIsKindOf(Feature) and       instantiatedType.oclAsType(Feature).type->exists(oclIsKindOf(Function))) implies     result.specializes(instantiatedType)"
+      ]
+    },
+    {
+      "owner": "InvocationExpression",
+      "name": "checkInvocationExpressionSpecialization",
+      "id": "Kernel-Expressions-InvocationExpression-checkInvocationExpressionSpecialization",
+      "expressions": [
+        "<p>An <code>InvocationExpression</code> must specialize its <code>instantiatedType</code>.</p>",
+        "specializes(instantiatedType)"
+      ]
+    },
+    {
+      "owner": "InvocationExpression",
+      "name": "deriveInvocationExpressionArgument",
+      "id": "Kernel-Expressions-InvocationExpression-deriveInvocationExpressionArgument",
+      "expressions": [
+        "<p>The <code>arguments</code> of an <code>InvocationExpression</code> are the <code>value</code> <code>Expressions</code> of the <code>FeatureValues</code> of its <code>ownedFeatures</code>, in an order corresponding to the order of the <code>input</code> parameters of the <code>instantiatedType</code> that the <code>ownedFeatures</code> redefine.</p>",
+        "instantiatedType.input->collect(inp |      ownedFeatures->select(redefines(inp)).valuation->     select(v | v <> null).value )"
+      ]
+    },
+    {
+      "owner": "InvocationExpression",
+      "name": "checkInvocationExpressionBehaviorBindingConnector",
+      "id": "Kernel-Expressions-InvocationExpression-checkInvocationExpressionBehaviorBindingConnector",
+      "expressions": [
+        "<p>If the <code>instantiatedType</code> of an <code>InvocationExpression</code> is neither a <code>Function</code> nor a <code>Feature</code> whose type is a <code>Function</code>, then the <code>InvocationExpression</code> must own a <code>BindingConnector</code> between itself and its <code>result</code> parameter.</p>",
+        "not instantiatedType.oclIsKindOf(Function) and not (instantiatedType.oclIsKindOf(Feature) and       instantiatedType.oclAsType(Feature).type->exists(oclIsKindOf(Function))) implies     ownedFeature.selectByKind(BindingConnector)->exists(         relatedFeature->includes(self) and         relatedFeature->includes(result))"
+      ]
+    },
+    {
+      "owner": "InvocationExpression",
+      "name": "validateInvocationExpressionOwnedFeatures",
+      "id": "Kernel-Expressions-InvocationExpression-validateInvocationExpressionOwnedFeatures",
+      "expressions": [
+        "<p>Other than its <code>result</code>, all the <code>ownedFeatures</code> of an <code>InvocationExpression</code> must have <code>direction = in</code>.</p>",
+        "ownedFeature->forAll(f | f <> result implies f.direction = FeatureDirectionKind::_'in')"
+      ]
+    },
+    {
+      "owner": "InvocationExpression",
+      "name": "checkInvocationExpressionDefaultValueBindingConnector",
+      "id": "Kernel-Expressions-InvocationExpression-checkInvocationExpressionDefaultValueBindingConnector",
+      "expressions": [
+        "<p>An <code>InvocationExpression</code> must own a <code>BindingConnector</code> between the <code>featureWithValue</code> and <code>value</code> <code>Expression</code> of any <code>FeatureValue</code> that is the effective default value for a <code>feature</code> of the <code>instantiatedType</code> of the <code>InvocationExpression</code>.</p>",
+        "TBD"
+      ]
+    },
+    {
+      "owner": "Expression",
+      "name": "deriveExpressionResult",
+      "id": "Kernel-Functions-Expression-deriveExpressionResult",
+      "expressions": [
+        "<p>The <code>result</code> parameter of an <code>Expression</code> is its <code>parameter</code> owned (possibly in a supertype) via a <code>ReturnParameterMembership</code> (if any).</p>",
+        "result =     let resultParams : Sequence(Feature) =         featureMemberships->             selectByKind(ReturnParameterMembership).             ownedMemberParameter in     if resultParams->notEmpty() then resultParams->first()     else null     endif "
+      ]
+    },
+    {
+      "owner": "Feature",
+      "name": "checkFeatureResultRedefinition",
+      "id": "Core-Features-Feature-checkFeatureResultRedefinition",
+      "expressions": [
+        "<p>If a <code>Feature</code> is a <code>result</code> <code>parameter</code> of an <code>owningType</code> that is a <code>Function</code> or <code>Expression</code>, then, for each direct supertype of its <code>owningType</code> that is also a <code>Function</code> or <code>Expression</code>, it must redefine the <code>result</code> <code>parameter</code>.</p>",
+        "owningType <> null and (owningType.oclIsKindOf(Function) and     self = owningType.oclAsType(Function).result or  owningType.oclIsKindOf(Expression) and     self = owningType.oclAsType(Expression).result) implies     owningType.ownedSpecialization.general->         select(oclIsKindOf(Function) or oclIsKindOf(Expression))->         forAll(supertype |             redefines(                 if superType.oclIsKindOf(Function) then                     superType.oclAsType(Function).result                 else                     superType.oclAsType(Expression).result                 endif)"
+      ]
+    },
+    {
+      "owner": "ReturnParameterMembership",
+      "name": "validateReturnParameterMembershipOwningType",
+      "id": "Kernel-Functions-ReturnParameterMembership-validateReturnParameterMembershipOwningType",
+      "expressions": [
+        "<p>The <code>owningType</code> of a <code>ReturnParameterMembership</code> must be a <code>Function</code> or <code>Expression</code>.</p>",
+        "owningType.oclIsKindOf(Function) or owningType.oclIsKindOf(Expression)"
+      ]
+    },
+    {
+      "owner": "Expression",
+      "name": "validateExpressionResultParameterMembership",
+      "id": "Kernel-Functions-Expression-validateExpressionResultParameterMembership",
+      "expressions": [
+        "<p>An <code>Expression</code> must have exactly one <code>featureMembership</code> (owned or inherited) that is a <code>ResultParameterMembership</code>.</p>",
+        "featureMembership-> selectByKind(ReturnParameterMembership)-> size() = 1"
+      ]
+    }
+  ],
+  "beforeProbe": {
+    "libraryFiles": 94,
+    "calls": 10,
+    "ordinaryCalls": 3,
+    "operators": 2,
+    "triggers": 5,
+    "ownedReturnMembershipsPerCall": 0,
+    "checkedResult": "UnsupportedConfiguration on all ten calls",
+    "triggerArgumentVerdicts": "IncompleteResult(UnsupportedConfiguration) for all five triggers"
+  },
+  "implementationDecision": [
+    "Construct the required owned output during canonical lowering before static/dynamic specialization planning. Do not return the callee result identity as the invocation result.",
+    "Apply the same construction to every textual InvocationExpression subtype, including folded chains, index, select, collect and SysML trigger expressions.",
+    "Retain grammar-supplied cast/extent returns and existing constructor construction. Preserve legacy graph layout.",
+    "Use implied membership provenance and deterministic paths; introduce no lexical scope or copied callee feature.",
+    "Reuse the shared positional planner for return redefinitions and existing argument readers for input order."
+  ],
+  "acceptancePartitions": [
+    "Exact reciprocal ownership, output direction and single return with absent/unresolved callees and no loaded library.",
+    "Existing grammar returns, nested expressions, arrow desugaring and all operator subclasses.",
+    "Shared direct/inherited callee-return redefinition and argument exclusion/order.",
+    "Prepared-library, serialized-library cache and compact lift/print/reparse identity stability.",
+    "Malformed result ownership/direction, source edits, bounded work and retry without stale relationships.",
+    "Full library native and vendor regressions, including independence of unrelated incomplete calls."
+  ],
+  "remaining": [
+    "Checked invocation result selection and complete invocation/result Type feature domains.",
+    "Non-Function behavior result specialization and binding; effective defaults; broader argument configurations.",
+    "Operator subclasses need complete designated-function and applicable result-specialization review beyond basic ownership.",
+    "Whole InvocationExpression/AcceptActionUsage obligations, public facade coverage, native/WASM release gates, all fifteen completion packages.",
+    "Arbitrary source edits can invalidate a static positional result edge. The immutable prefix must then be rebuilt; retracting only the dynamic tail correctly remains incomplete. Restoring the exact source is tested as a retry, not a general editing API.",
+    "The installed app remains KERNEL-023. No release, version bump, install or complete-obligation claim is authorized by these diagnostic runs."
+  ],
+  "updatedAt": "2026-10-18T10:38:18.203972+00:00",
+  "diagnosticRuns": {
+    "initialFocused": {
+      "log": "target/trigger-validation/invocation-results-fixed-focused.log",
+      "passed": 29,
+      "boundary": "Before the inherited-callee and full-library cases were added.",
+      "logSha256": "09c15ee3eb3168c41a81d9c5b547d7e10fd1627dfcb0271292694203d73b9fb5"
+    },
+    "firstFullModel": {
+      "log": "target/trigger-validation/invocation-results-full-model.log",
+      "passed": 898,
+      "failed": 17,
+      "kernelInputSha256": "713d0050074152d6450a1b5faee9246a2cf2c3319d773c2bc0f7c30fb9dc4193",
+      "logSha256": "fad799709ec08ed003c590612251793ded94f17e35c08fc5a730130dc8dbb680"
+    },
+    "firstWorkspace": {
+      "log": "target/trigger-validation/invocation-results-workspace.log",
+      "status": "Stopped at accept_receiver_bindings failure: second trigger parameter was out instead of in.",
+      "logSha256": "949421ba24529703fe819ba90fcdd5718cf0f6c5c88461069827d3de143b6113"
+    },
+    "receiverOrder": {
+      "log": "target/trigger-validation/invocation-results-accept-order.log",
+      "passed": 7,
+      "boundary": "Direct run of compiled private accept-binding tests after source-anchor insertion fix; no complete qualification claim.",
+      "logSha256": "116384edad2940f36905b096b2cf79228ca900da2c761c82bc1dc6890fc6c938"
+    },
+    "ownershipOrder": {
+      "log": "target/trigger-validation/invocation-results-ownership-order.log",
+      "passed": 6,
+      "boundary": "Includes new anchor order, stale source, budget/clone and tail retraction regression.",
+      "logSha256": "baeac4c7a86fd9a2a6e98b78f363f9ca649eaf5246fb9507c2d126211135ea66"
+    },
+    "libraryDependency": {
+      "log": "target/trigger-validation/invocation-results-dynamic-trace.log",
+      "passed": 6,
+      "failed": 1,
+      "finding": "Final specialization audit reaches an unresolved dependency at library Feature 78560, reported as VectorFunctions::CartesianThreeVectorOf::result. The shared dynamic batch declines Incomplete, leaving otherwise valid trigger/operator argument mappings unavailable. Temporary instrumentation was removed after the trace.",
+      "logSha256": "a7e69e4a99b93649615a904a5f15a71f09b16c17de0c5345102ef1cdea039f69"
+    }
+  },
+  "firstFullModelFailures": [
+    "json::accept_bindings::tests::every_generated_identity_is_reserved_before_any_rows_can_publish",
+    "json::accept_bindings::tests::exhausted_planning_discards_earlier_plans_without_mutating_source",
+    "json::accept_bindings::tests::existing_receiver_is_reused_and_matching_bindings_accept_either_end_order",
+    "json::accept_bindings::tests::malformed_existing_bindings_are_not_treated_as_absent_even_without_a_receiver",
+    "json::accept_bindings::tests::malformed_local_evidence_refuses_the_accept_without_erasing_its_neighbor",
+    "json::accept_bindings::tests::publication_and_tail_replay_preserve_source_and_generated_identities",
+    "json::accept_bindings::tests::unrelated_binding_is_preserved_but_does_not_replace_the_required_connection",
+    "json::trigger_arguments::tests::trigger_argument_budget_is_cumulative_retryable_and_read_only",
+    "json::trigger_arguments::tests::trigger_arguments_refuse_stale_results_memberships_and_library_evidence",
+    "json::trigger_arguments::tests::trigger_library_resolution_preserves_global_ambiguity_and_missing_library_uncertainty",
+    "json::trigger_arguments::tests::trigger_predicates_replay_prepared_and_serialized_libraries",
+    "json::trigger_arguments::tests::when_wrapper_uses_the_first_nonparameter_membership_and_reciprocal_ownership",
+    "json::type_inputs::tests::cold_large_library_input_slice_stays_within_shared_budget",
+    "loader::pairing_tests::omitted_naming_edges_do_not_change_authored_pairing_or_root_order",
+    "migration::tests::conditional_alias_and_direction_contradictions_are_refused",
+    "migration::tests::constructor_migration_matches_direct_lowering_and_preserves_identity_domain",
+    "migration::tests::direct_lift_does_not_override_a_conflicting_member_alias"
+  ],
+  "receiverOrderingRepair": {
+    "source": "SysML AcceptActionUsage::checkAcceptActionUsageReceiverBindingConnector",
+    "requirement": "The receiver remains invocation.parameter->at(2); an out result cannot substitute for the missing input.",
+    "implementation": "The accept planner records the stored return anchor and registers a generated receiver before it in the one shared semantic ownership view. Source relationships and identities remain unchanged. Anchor validity is checked on reads, and retracting its generated tail removes the insertion."
+  },
+  "nextActions": [
+    "Complete current invocation-default regression qualification; the lookup/effective-default baseline is already qualified in its own source-bound evidence.",
+    "Reconcile the default endpoint and membership formulations recorded in invocation-obligation-decomposition-review.json, then implement checked invocation membership/result selection through the shared semantic providers.",
+    "Complete Feature-typed and non-Function Behavior invocation dependencies and all direct/inherited obligations; keep all fifteen completion packages open."
+  ],
+  "repairReview": {
+    "status": "Historical pre-budget-repair snapshot: 78 selected tests and Clippy passed; cold-query repair and later qualification are recorded under coldQueryRepair.",
+    "namingSourceAnchors": [
+      {
+        "id": "Core-Features-Feature-effectiveShortName_",
+        "name": "effectiveShortName",
+        "expressions": [
+          "if declaredShortName <> null or declaredName <> null then     declaredShortName else     let namingFeature : Feature = namingFeature() in     if namingFeature = null then         null     else         namingFeature.effectiveShortName()     endif endif",
+          "<p>If a <code>Feature</code> has no <code>declaredShortName</code> or <code>declaredName</code>, then its effective <code>shortName</code> is given by the effective <code>shortName</code> of the <code>Feature</code> returned by the <code>namingFeature()</code> operation, if any.</p>"
+        ]
+      },
+      {
+        "id": "Core-Features-Feature-effectiveName_",
+        "name": "effectiveName",
+        "expressions": [
+          "if declaredShortName <> null or declaredName <> null then     declaredName else     let namingFeature : Feature = namingFeature() in     if namingFeature = null then         null     else         namingFeature.effectiveName()     endif endif",
+          "<p>If a <code>Feature</code> has no <code>declaredName</code> or <code>declaredShortName</code> , then its effective <code>name</code> is given by the effective <code>name</code> of the <code>Feature</code> returned by the <code>namingFeature()</code> operation, if any.</p>"
+        ]
+      },
+      {
+        "id": "Core-Features-Feature-namingFeature_",
+        "name": "namingFeature",
+        "expressions": [
+          "if ownedRedefinition->isEmpty() then null else ownedRedefinition->at(1).redefinedFeature endif",
+          "<p>By default, the naming <code>Feature</code> of a <code>Feature</code> is given by its first <code>redefinedFeature</code> of its first <code>ownedRedefinition</code>, if any.</p>"
+        ]
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureParameterRedefinition",
+        "name": "checkFeatureParameterRedefinition",
+        "expressions": [
+          "<p>If a <code>Feature</code> is a <code>parameter</code> of an <code>owningType</code> that is a <code>Behavior</code> or <code>Step</code>, but <em>not</em> </p> <ul>     <li>A <code>result</code> <code>parameter</code></li>     <li>A <code>parameter</code> of an <code>InvocationExpression</code>, with at least one non-implied <code>ownedRedefinition</code></li> </ul> <p>then, for each direct supertype of its <code>owningType</code> that is also a <code>Behavior</code> or <code>Step</code>, it must redefine the <code>parameter</code> at the same position, if any.</p>",
+          "owningType <> null and not owningFeatureMembership.     oclIsKindOf(ReturnParameterMembership) and (owningType.oclIsKindOf(Behavior) or  owningType.oclIsKindOf(Step) and     (owningType.oclIsKindOf(InvocationExpression) implies       not ownedRedefinition->exists(not isImplied))  implies     let i : Integer =         owningType.ownedFeature->select(direction <> null)->             reject(owningFeatureMembership.                 oclIsKindOf(ReturnParameterMembership))->             indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |             let ownedParameters : Sequence(Feature) =                 supertype.ownedFeature->select(direction <> null)->                      reject(owningFeatureMembership.                          oclIsKindOf(ReturnParameterMembership)) in             ownedParameters->size() >= i implies                 redefines(ownedParameters->at(i))"
+        ]
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureResultRedefinition",
+        "name": "checkFeatureResultRedefinition",
+        "expressions": [
+          "<p>If a <code>Feature</code> is a <code>result</code> <code>parameter</code> of an <code>owningType</code> that is a <code>Function</code> or <code>Expression</code>, then, for each direct supertype of its <code>owningType</code> that is also a <code>Function</code> or <code>Expression</code>, it must redefine the <code>result</code> <code>parameter</code>.</p>",
+          "owningType <> null and (owningType.oclIsKindOf(Function) and     self = owningType.oclAsType(Function).result or  owningType.oclIsKindOf(Expression) and     self = owningType.oclAsType(Expression).result) implies     owningType.ownedSpecialization.general->         select(oclIsKindOf(Function) or oclIsKindOf(Expression))->         forAll(supertype |             redefines(                 if superType.oclIsKindOf(Function) then                     superType.oclAsType(Function).result                 else                     superType.oclAsType(Expression).result                 endif)"
+        ]
+      }
+    ],
+    "findings": [
+      "CartesianVectorOf::result::dimension was present in compatibility qualified-name output but absent from contextual lookup. Its actual unnamed owned return now takes its lookup name from positional redefinition targets; no literal result spelling is synthesized.",
+      "Inherited name hits use the existing membership reducer with the construction lookup positional adapter. Local unnamed input/result identities are retained; renamed inputs remove inherited old names. Redefinition headers retain access to their inherited target before ordinary member lookup suppresses it.",
+      "Legacy-to-canonical migration inserts owned invocation results after their source subtrees, preserves existing grammar returns, and rewrites identities simultaneously. Compact validation only admits recognized implied result pairs and omitted accept receiver slots; unrelated semantic generated rows remain refused.",
+      "The authored identity-pairing test excludes the same implied subtrees omitted by lifting; every authored row is still checked.",
+      "The full-library vector-result name and dynamic argument-mapping checks now pass. The header-context guard also restores the ten trigger argument tests, including prepared/serialized replay. The intermediate Structure 84400 refusal is retained as historical diagnostic evidence, not as an unresolved current blocker."
+    ],
+    "focusedRun": {
+      "log": "target/trigger-validation/invocation-migration-names-2.log",
+      "sha256": "652de60c51eff2a3fe7bf75f585121e131922a8e03fc52b47875cdf32de1cfde",
+      "migrationPassed": 17,
+      "pairingPassed": 1,
+      "positionalNamingPassed": 5,
+      "invocationResultsPassed": 6,
+      "invocationResultsFailed": 1,
+      "boundary": "Before adding the library-replay test and redefinition-header guard."
+    },
+    "fullRun": {
+      "log": "target/trigger-validation/invocation-results-second-full-model.log",
+      "kernelInputSha256": "e22f5f586b0cfbadc9ff6a47fcc598f7036f926d04ff64c369b5674b8d3a69a7",
+      "binarySha256": "558c3fbc683628882b74a231faa4ddf8d570a0969b34a098e8124f972d180d65",
+      "boundary": "Includes library-replay naming test; before the header-context guard and its regression.",
+      "summary": "test result: FAILED. 918 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 201.91s",
+      "logSha256": "61090058b64abcd7f41d3619ec2e27c8992e7e85870803adebb931c236e89f81",
+      "failures": [
+        "json::invocation_results::tests::full_library_invocations_keep_their_complete_argument_mappings",
+        "json::trigger_arguments::tests::trigger_argument_budget_is_cumulative_retryable_and_read_only",
+        "json::trigger_arguments::tests::trigger_arguments_refuse_stale_results_memberships_and_library_evidence",
+        "json::trigger_arguments::tests::trigger_library_resolution_preserves_global_ambiguity_and_missing_library_uncertainty",
+        "json::trigger_arguments::tests::trigger_predicates_replay_prepared_and_serialized_libraries",
+        "json::trigger_arguments::tests::when_wrapper_uses_the_first_nonparameter_membership_and_reciprocal_ownership",
+        "json::type_inputs::tests::cold_large_library_input_slice_stays_within_shared_budget"
+      ]
+    },
+    "clippy": {
+      "log": "target/trigger-validation/invocation-results-second-clippy.log",
+      "status": "passed",
+      "boundary": "Includes library-replay naming test; before the header-context guard and its regression.",
+      "kernelInputSha256": "e22f5f586b0cfbadc9ff6a47fcc598f7036f926d04ff64c369b5674b8d3a69a7"
+    },
+    "currentFocusedRun": {
+      "log": "target/trigger-validation/invocation-header-context.log",
+      "logSha256": "5e7e884978524ab5c7d8355563926f22ca331644685d0e4463bdf83f2d319c25",
+      "kernelInputSha256": "a5c35476ce5ca082c013edd7fd197a2bc85e29947ba012239208b34c5f9481f1",
+      "binarySha256": "70814754765ab791e2432a89e682546b2e8637d41958bf670ca79dd36de608d1",
+      "passed": 68,
+      "failed": 0,
+      "modules": {
+        "migration": 17,
+        "loaderPairing": 1,
+        "positionalNames": 7,
+        "invocationResults": 7,
+        "invocationBindings": 23,
+        "acceptBindings": 7,
+        "semanticOwnership": 6
+      }
+    },
+    "currentTriggerAndBudgetRun": {
+      "log": "target/trigger-validation/invocation-header-trigger-budget.log",
+      "logSha256": "5e8d67432b9a0ae8d80784236d4b77fa6e82e125897d827a2316fe5bb6b32eef",
+      "kernelInputSha256": "a5c35476ce5ca082c013edd7fd197a2bc85e29947ba012239208b34c5f9481f1",
+      "binarySha256": "70814754765ab791e2432a89e682546b2e8637d41958bf670ca79dd36de608d1",
+      "triggerArgumentTestsPassed": 10,
+      "coldInputTest": "failed",
+      "legacySteps": 9417770,
+      "canonicalStepsAtRefusal": 10000007,
+      "limit": 10000000,
+      "fixtureBoundary": "All 94 pinned library files plus 10,000 unrelated classes; cold first Type.input query. No implied publication and no prewarming added."
+    },
+    "currentClippy": {
+      "log": "target/trigger-validation/invocation-header-clippy.log",
+      "logSha256": "1a8a410471053bd70221899062e8218c5d153fdbeb794044d3aeb89dffc73bc7",
+      "kernelInputSha256": "a5c35476ce5ca082c013edd7fd197a2bc85e29947ba012239208b34c5f9481f1",
+      "status": "passed"
+    }
+  },
+  "coldQueryRepair": {
+    "status": "927 vendor model tests, 97 native workspace tests and all 55 Node tests pass. Clippy, formatting, contract, provenance and requirements inventory checks pass. Final conformance execution and requirements execution report remain pending.",
+    "kernelInputSha256": "3e720a770cd99453f8a75da277718363f813f14c1372a0b04d1c884d4d4a648b",
+    "sourceAnchors": [
+      {
+        "id": "Core-Types-Type-removeRedefinedFeatures_Membership",
+        "name": "removeRedefinedFeatures",
+        "expressions": [
+          "let reducedMemberships : Sequence(Membership) =     memberships->reject(mem1 |         memberships->excluding(mem1)->             exists(mem2 | allRedefinedFeaturesOf(mem2)->                 includes(mem1.memberElement))) in let redefinedFeatures : Set(Feature) =      ownedFeature.redefinition.redefinedFeature->asSet() in reducedMemberships->reject(mem | allRedefinedFeaturesOf(mem)->     exists(feature | redefinedFeatures->includes(feature)))",
+          "<p>Return a subset of <code>memberships</code>, removing those <code>Memberships</code> whose <code>memberElements</code> are <code>Features</code> and for which either of the following two conditions holds:</p>  <ol>  <li>The <code>memberElement</code> of the <code>Membership</code> is included in redefined <code>Features</code> of another <code>Membership</code> in <code>memberships</code>.</li>  <li>One of the redefined <code>Features</code> of the <code>Membership</code> is a directly <code>redefinedFeature</code> of an <code>ownedFeature</code> of this <code>Type</code>.</li> </ol>  <p>For this purpose, the redefined <code>Features</code> of a <code>Membership</code> whose <code>memberElement</code> is a <code>Feature</code> includes the <code>memberElement</code> and all <code>Features</code> directly or indirectly redefined by the <code>memberElement</code>.</p>"
+        ]
+      },
+      {
+        "id": "Core-Types-Type-allRedefinedFeaturesOf_Membership",
+        "name": "allRedefinedFeaturesOf",
+        "expressions": [
+          "if not membership.memberElement.oclIsType(Feature) then Set{}  else membership.memberElement.oclAsType(Feature).allRedefinedFeatures() endif",
+          "<p>If the <code>memberElement</code> of the given <code>membership</code> is a <code>Feature</code>, then return all <code>Features</code> directly or indirectly redefined by the <code>memberElement</code>.</p>"
+        ]
+      }
+    ],
+    "profile": {
+      "baselineKernelInputSha256": "a5c35476ce5ca082c013edd7fd197a2bc85e29947ba012239208b34c5f9481f1",
+      "boundary": "Instrumented disposable vendor copy only; diagnostic binary is not qualification evidence.",
+      "log": {
+        "path": "target/trigger-validation/invocation-cold-profile-reduction.log",
+        "sha256": "856ec6bc43789c2167a373d65833f9c0c7c34ff1ddfb05ace579094a9c5900b0"
+      },
+      "canonicalBeforePositionalSteps": 6232798,
+      "canonicalPositionalReductionStartSteps": 6581297,
+      "canonicalBudgetRefusalSteps": 10000007,
+      "finding": "The membership reduction repeatedly materializes reflexive redefinition closures, scans each twice, then separately filters memberships and projects surviving features."
+    },
+    "implementation": [
+      "Share one bounded traversal between collected-closure and streaming consumers. Membership reduction consumes reached identities directly without filling an intermediate closure vector.",
+      "Filter inherited memberships and collect their feature projection in the same ordered pass.",
+      "Keep fresh traversal marks for every call; no semantic answers or graph closures are cached. Cycles, duplicate memberships and graph changes retain the same suppression rules.",
+      "Retain the 10000000 shared work limit and cold-query fixture without prewarming, publication, removed results, or reduced library inputs."
+    ],
+    "differentialTest": {
+      "name": "streamed_reduction_matches_pairwise_rules_through_graph_changes_and_budget_retry",
+      "rounds": 96,
+      "markStrategies": [
+        "dense",
+        "sparse"
+      ],
+      "oracle": "Independent pairwise membership-rule implementation using its own reflexive graph walk.",
+      "partitions": [
+        "duplicate memberships of one feature",
+        "repeated membership identities across bases",
+        "non-feature memberships",
+        "cycles and self-edges",
+        "graph additions and removals",
+        "owned-feature redefinitions",
+        "declaration order",
+        "cumulative budget refusal and retry"
+      ]
+    },
+    "focused": {
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-focused.log",
+        "sha256": "e9daf2b679f4a99889eaf9b73d620c0d9e38d91a0fd9d98fd5b2256478ffd685"
+      },
+      "passed": 63,
+      "failed": 0,
+      "modules": {
+        "membershipProjection": 3,
+        "typeInputs": 44,
+        "positional": 16
+      },
+      "legacyColdSteps": 8971793,
+      "canonicalColdSteps": 9789848,
+      "limit": 10000000
+    },
+    "clippy": {
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-clippy.log",
+        "sha256": "6cdaf740f397c5cc27e834387b07937ac8c24f5d2caf5b4edf53aa770fa15e86"
+      },
+      "status": "passed"
+    },
+    "vendorProvenanceTests": {
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-provenance.log",
+        "sha256": "46287abfb2808aa2a07122e7bb6e5e59d551987502bd4b9de7bc7e4e2ccca81a"
+      },
+      "passed": 7,
+      "failed": 0
+    },
+    "generatedContract": {
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-contract.log",
+        "sha256": "f337e4fc9f1b77e0cbf8710c1f4943976e958ef93798854f3ac7159e4d57fb53"
+      },
+      "status": "passed"
+    },
+    "requirementsGate": {
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-requirements.log",
+        "sha256": "f343bf4c09342a885b7d1ac0714a95facdaf3ff743fd69d55794e3385b4e70ca"
+      },
+      "status": "failed: existing implementation evidence hashes are stale; review against current acceptance executions before refreshing."
+    },
+    "fullModel": {
+      "kernelInputSha256": "3e720a770cd99453f8a75da277718363f813f14c1372a0b04d1c884d4d4a648b",
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-full-model.log",
+        "sha256": "241b77be919c40e864a934e80fbf33565f79596d670e165bd83717d6ca5360bd"
+      },
+      "passed": 927,
+      "failed": 0,
+      "libraryFiles": 94,
+      "corpusFiles": 251,
+      "binarySha256": "eee2f5e30203354aab0fab47d5f726fa47cdcaf9d519129d0cda9d9dba4d6f63"
+    },
+    "firstNativeWorkspace": {
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-workspace.log",
+        "sha256": "a00b145e5d92cb06cb75a0add7085614f978128ad52f1dc74d9622cf64a44015"
+      },
+      "status": "failed at invocation_result_construction: the test queried a stored Redefinition endpoint with the derived-only API."
+    },
+    "nativeEndpointTestRepair": {
+      "kernelInputSha256": "f4a8d697e55cf9a84e497ac7f4ded8450ece83584be3f6c37bcbeecd61758893",
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-invocation-property.log",
+        "sha256": "71d8baa86d19846177d2403c1392f0ccc7b933c3a6451c4f0741c634eccd765f"
+      },
+      "passed": 1,
+      "failed": 0,
+      "sourceAnchor": "Core-Features-Redefinition-redefinedFeature",
+      "change": "Query both stored redefiningFeature and redefinedFeature through property(), preserving exact local/callee identities. No production source changed after the complete vendor run."
+    },
+    "supersededConformanceRun": {
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-conformance.log",
+        "sha256": "f72625b39aa819848f93b7767d77a7f2d3fe7826d242ba6b4c10bb792246cf28"
+      },
+      "status": "Stopped deliberately after the native test correction changed the complete input fingerprint. Partial results do not qualify the new fingerprint; a fresh final run is in progress."
+    },
+    "formatChecks": {
+      "rustfmt": {
+        "log": {
+          "path": "target/trigger-validation/streamed-reduction-rustfmt.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "status": "passed"
+      },
+      "prettier": {
+        "log": {
+          "path": "target/trigger-validation/streamed-reduction-format.log",
+          "sha256": "c8372da20a50ecdb2eb545bcaf2c7601d99158be26046b3118b377e5726f84b2"
+        },
+        "status": "passed"
+      }
+    },
+    "finalNativeWorkspace": {
+      "kernelInputSha256": "f4a8d697e55cf9a84e497ac7f4ded8450ece83584be3f6c37bcbeecd61758893",
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-workspace-final.log",
+        "sha256": "2e66ccda325e5140310e2d75da09180b330bfbee39e3c26e0d08af8e11773188"
+      },
+      "passed": 97,
+      "failed": 0
+    },
+    "finalClippy": {
+      "kernelInputSha256": "f4a8d697e55cf9a84e497ac7f4ded8450ece83584be3f6c37bcbeecd61758893",
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-clippy-final.log",
+        "sha256": "dd80ca79a99add949cb12cd5856809fed770c9b9132ee7c20dbd5259c48fc21e"
+      },
+      "status": "passed"
+    },
+    "finalWasmBuild": {
+      "kernelInputSha256": "f4a8d697e55cf9a84e497ac7f4ded8450ece83584be3f6c37bcbeecd61758893",
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-wasm-build-final.log",
+        "sha256": "85c8dbac64ed6a362d668bf3988686e26e947620bb15cfdbe2e999a0ff8261b2"
+      },
+      "status": "passed",
+      "boundary": "Compilation/bindings plus the separate 39-test publicRuntimeTests record establish bounded native/WASM runtime parity."
+    },
+    "coldAnalysisProfile": {
+      "probe": {
+        "path": "target/trigger-validation/native-cold-analysis-profile.json",
+        "sha256": "8a558fbad0e7e35f199fca9dde3c92553d330148f2865244333dcd58e2563c44"
+      },
+      "sample": {
+        "path": "target/trigger-validation/native-cold-analysis.sample.txt",
+        "sha256": "48c5004ea87243d3f5d8334e44cfb5a620fa6899017ce258440d61e2bb6b5d32"
+      },
+      "observation": "The largest active leaf during the sampled interval is Builder::recorded_redefinition_targets (965 samples). That helper scans all spec_targets for each feature; construction lookup now invokes it from membership reduction, beyond its previously rare multi-candidate use.",
+      "boundary": "Separate concurrent sampled run; not an isolated before/after benchmark or a proven slowdown ratio.",
+      "nextReview": "Investigate a walk-local index of recorded redefinition row identities while reading current outcomes and retaining every lookup dependency. Any optimization must preserve mid-resolution row growth, changed outcomes, header contexts and retry semantics; do not build the permanent specialization index during lowering."
+    },
+    "implementationEvidenceRefresh": {
+      "reviewedAt": "2026-10-18T10:27:52.830215+00:00",
+      "ledgerBeforeSha256": "5d030c094dccd6f70a00ccb7ae5843a3a2331fbf71f99f0b076511b8ee4fd9bb",
+      "ledgerAfterSha256": "9da28a3fe62db57a2b4094f829b45b01b643d6dcd0a2e3aee2c1a1e20d34d565",
+      "changes": [
+        {
+          "id": "graph",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "symbol": "pub fn effective_features(",
+          "beforeSha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4",
+          "afterSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5"
+        },
+        {
+          "id": "resolution",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "symbol": "pub fn resolve_in(",
+          "beforeSha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4",
+          "afterSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5"
+        },
+        {
+          "id": "connector-ends",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "symbol": "pub fn connector_end_targets(",
+          "beforeSha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4",
+          "afterSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5"
+        },
+        {
+          "id": "checked-featuring",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
+          "symbol": "pub(super) fn audited_featuring_domain(",
+          "beforeSha256": "581edf552f7a33497a0deea3268c912c3b91f255c7f6d3a3624aa5a02ce90925",
+          "afterSha256": "737200f4389418424721fde76b7b8862d0c5c04021bc914aef87d4b8c37c0478"
+        },
+        {
+          "id": "checked-invocation",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
+          "symbol": "pub fn invocation_binding_report(",
+          "beforeSha256": "8329c60723149b689537a7f5afcf251396c196c71742102703cf20ab492dd015",
+          "afterSha256": "0fad34f0b57d139f495b01ab0b2b836a90886b2ca301d1ce29fcf0c44994af62"
+        },
+        {
+          "id": "checked-dynamic-isolation",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
+          "symbol": "fn consistent_unresolved_source(",
+          "beforeSha256": "4e02c3ee3a88c75d1b398a91e91fe8bbbf0c71359161a3955171d998db815d96",
+          "afterSha256": "f355ee8231872966024ac2bc05823be0fca3d4f9c8b83f2eb4f276aff19c9106"
+        },
+        {
+          "id": "checked-prefix-reuse",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
+          "symbol": "pub(super) fn prepare_dynamic_graph(",
+          "beforeSha256": "01c9aa635ad9d9fb3a7fdaf5d34071b626494a37da1db52eebf020e425ff2478",
+          "afterSha256": "d838425918a9453f6783a2de658c679f55fb0d02a72dc3d264683dd7b11813b6"
+        },
+        {
+          "id": "atomic-dynamic-staging",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
+          "symbol": "pub(super) fn stage_dynamic_rows(",
+          "beforeSha256": "01c9aa635ad9d9fb3a7fdaf5d34071b626494a37da1db52eebf020e425ff2478",
+          "afterSha256": "d838425918a9453f6783a2de658c679f55fb0d02a72dc3d264683dd7b11813b6"
+        },
+        {
+          "id": "atomic-ownership-batch",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs",
+          "symbol": "pub(super) fn register_relationship_batch(",
+          "beforeSha256": "9f724257d0b466612447e7b057b9bb543e47c316e9a763468b51d13ee829fa0a",
+          "afterSha256": "e7263e28777f0386588ac9265e004096426fde510801e9d1cef59145e0afac1e"
+        },
+        {
+          "id": "checked-prefix-capture",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
+          "symbol": "pub(super) fn capture_and_prepare_with_workspace(",
+          "beforeSha256": "4e02c3ee3a88c75d1b398a91e91fe8bbbf0c71359161a3955171d998db815d96",
+          "afterSha256": "f355ee8231872966024ac2bc05823be0fca3d4f9c8b83f2eb4f276aff19c9106"
+        },
+        {
+          "id": "semantic-driver",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "pub fn validate_semantics_with(",
+          "beforeSha256": "0d6adf4c0ba1cf041edb3e46aa51b77b743f7c7b12768d6aec3e2f081098efd7",
+          "afterSha256": "b0302f04a707143e9f2c80af90ad2ce798973619952537aa595ae220e5d9c163"
+        },
+        {
+          "id": "transition-validation",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "symbol": "fn validate_parallel_states(",
+          "beforeSha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a",
+          "afterSha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
+        },
+        {
+          "id": "transition-target-validation",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "symbol": "fn target_feature(",
+          "beforeSha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a",
+          "afterSha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
+        },
+        {
+          "id": "state-body-query",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "symbol": "pub fn state_subactions(",
+          "beforeSha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4",
+          "afterSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5"
+        },
+        {
+          "id": "trigger-source-validation",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "symbol": "pub(super) fn validate(",
+          "beforeSha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a",
+          "afterSha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
+        },
+        {
+          "id": "transition-construction",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "symbol": "\"sourceparam\"",
+          "beforeSha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4",
+          "afterSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5"
+        },
+        {
+          "id": "transition-membership-validation",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "symbol": "\"validateTransitionUsageParameters\"",
+          "beforeSha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a",
+          "afterSha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
+        },
+        {
+          "id": "accept-construction",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "symbol": "let payload_element = self.emit_payload",
+          "beforeSha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4",
+          "afterSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5"
+        },
+        {
+          "id": "accept-validation",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "symbol": "\"validateAcceptActionUsageParameters\"",
+          "beforeSha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a",
+          "afterSha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
+        },
+        {
+          "id": "accept-bindings",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/accept_bindings.rs",
+          "symbol": "pub(super) fn plan",
+          "beforeSha256": "093342367127d0c41ee76ee0adb841ab0484b79f1748db8f8da2b03e3e46db19",
+          "afterSha256": "09b43994e93d277d4e5f1942dec05e89860169ee5c975ca6a10269be29a7697d"
+        }
+      ],
+      "review": "Reviewed affected source locations and their existing bounded assessment scopes. 59 affected partial assessments retain their exact source mappings, acceptance checks and limits; CONF-INTERCHANGE retains candidate implementation and unsupported API status. All 77 assessment records are unchanged.",
+      "evidenceBoundary": "927 vendor model tests, 97 native workspace tests and 39 public runtime/runner tests pass. This refresh identifies the current implementation candidates; it does not qualify new obligations or replace the still-running final 133-case conformance execution."
+    },
+    "publicRuntimeTests": {
+      "kernelInputSha256": "f4a8d697e55cf9a84e497ac7f4ded8450ece83584be3f6c37bcbeecd61758893",
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-public-tests.log",
+        "sha256": "0e834cea83a24bba39faf14e5085995c4851217c25e72ed7fdf0d9dc8e09d465"
+      },
+      "passed": 39,
+      "failed": 0,
+      "boundary": "All six public/runtime/runner test files, including native/WASM parity and both source orders. Separate provenance and evidence suites bring the Node inventory to 55 passing tests."
+    },
+    "evidenceTests": {
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-evidence-tests.log",
+        "sha256": "48edcf75fff13148892666545140645915b672f98525f3e9a50db9f23cc318e8"
+      },
+      "passed": 9,
+      "failed": 0
+    },
+    "finalRequirementsInventory": {
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-requirements-final.log",
+        "sha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76"
+      },
+      "status": "passed",
+      "assessments": 77,
+      "cases": 133,
+      "coveragePercent": null,
+      "boundary": "Inventory and current implementation fingerprints only; final conformance execution/report remains pending."
+    },
+    "finalConformance": {
+      "kernelInputSha256": "f4a8d697e55cf9a84e497ac7f4ded8450ece83584be3f6c37bcbeecd61758893",
+      "binarySha256": "9f305f645459484f9353cf41f840eb3f685af8709e9e4358b6c22e102e3d760f",
+      "report": {
+        "path": "docs/evidence/invocation-result-conformance-macos-arm64.json",
+        "sha256": "ee390c545b40a1859bf0e67ef3db3097cba6064bbf24581151ca21817abdef12"
+      },
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-conformance-final.log",
+        "sha256": "4c45014180edfb2c3bcbcece86da28382157a94ffdc0c5ed2f62e96037f569e5"
+      },
+      "counts": {
+        "pass": 133,
+        "known-gap": 0,
+        "planned": 0,
+        "fail": 0
+      },
+      "boundary": "All 133 existing bounded cases pass on macOS arm64. No new conformance assessment, family closure, platform claim or release is established."
+    },
+    "finalRequirementsExecution": {
+      "report": {
+        "path": "docs/evidence/invocation-result-requirements-macos-arm64.json",
+        "sha256": "bda4dbe7cd708f0107110504b644b9fe4d1b5ecf4c9d801db40667cfbb03b653"
+      },
+      "log": {
+        "path": "target/trigger-validation/streamed-reduction-requirements-execution.log",
+        "sha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76"
+      },
+      "status": "passed",
+      "kernelInputSha256": "f4a8d697e55cf9a84e497ac7f4ded8450ece83584be3f6c37bcbeecd61758893",
+      "assessments": 77,
+      "cases": 133,
+      "coveragePercent": null
+    }
+  },
+  "checkedInvocationResultPlan": {
+    "status": "Open dependency decomposition; no implementation or closure claim.",
+    "purpose": "Complete result selection and result feature-domain evidence for canonical invocations, so nested calls/operators can supply the existing trigger argument predicates.",
+    "existingFacts": [
+      "Canonical lowering provides one reciprocal owned output; actual callee-return redefinitions are now exercised by the corrected full-library native integration test.",
+      "expression_result_report and supported_root intentionally exclude invocation subclasses. type_inputs also rejects InvocationExpression members and invocation-owned directed Feature roots.",
+      "TypeRelations::feature_requirements admits parameter contexts through the shared owner-signature proof. Invocation owners and valuation-bearing input Features need their own complete certificate.",
+      "Argument binding success alone does not certify the invocation result, effective defaults, behavior-result bindings, or the complete membership domain."
+    ],
+    "implementationBoundaries": [
+      "Reuse the existing dynamic invocation transaction, ordered membership reducer and select_return_parameter. Require the exact current producer state, owned member identities, callee signature and retained specialization/redefinition dependencies.",
+      "Resolve the owner-signature/result-domain dependency without recursive publication or treating an in-progress plan as complete. Reject stale, malformed, cyclic and unavailable evidence explicitly.",
+      "Keep the invocation result identity distinct from its callee return. Do not substitute the callee result as an expedient query answer.",
+      "Review every invocation subclass and both Function/non-Function instantiated types. Non-Function result specialization and binding, effective defaults, cast/extent returns and constructor-owned argument contexts remain explicit acceptance work.",
+      "Only change family admission after its dependencies are established. A metaclass whitelist change or one owned ReturnParameterMembership does not prove all the requirements consumed by Type feature-domain queries."
+    ],
+    "acceptancePartitions": [
+      "Direct and inherited Function returns; explicit and positional redefinitions; nested ordinary calls, operators and three trigger forms, with exact owned output identities.",
+      "Result types and features from ScalarQuantityValue/DurationUnit, TimeInstantValue and Boolean; assert checked true/false outcomes, not merely absence of diagnostics.",
+      "Zero, duplicate, malformed or orphan returns; output direction and inverse ownership; missing/ambiguous callees and required library roles.",
+      "Current raw/semantic source mutations, failed transaction publication, stale recorded targets, cumulative work exhaustion and retry.",
+      "Both graph formats with explicit legacy limitations; prepared and serialized library replay; shared native/WASM facade behavior.",
+      "Public report/property availability kept separate from complete feature-domain and whole InvocationExpression validation claims."
+    ],
+    "directObligationReview": "docs/evidence/invocation-obligation-decomposition-review.json"
+  }
+}

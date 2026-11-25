@@ -26,6 +26,10 @@ pub(super) struct SemanticOwnership {
     /// Relationships added to an unchanged source row. Relationships physically
     /// owned by generated rows are NOT added here a second time.
     additions: HashMap<usize, Vec<usize>>,
+    /// Insert a source owner's generated relationships before a stored anchor.
+    /// The tuple records its source ordinal, identity index and the generated
+    /// relationship requiring insertion. Source order itself is never changed.
+    insertion_anchors: HashMap<usize, (usize, usize, usize)>,
     /// Positive owned-result projections only. Absence is unsupported/unknown,
     /// never proof that a normative result is absent or a family is complete.
     results: HashMap<usize, OwnedResult>,
@@ -42,13 +46,18 @@ pub(super) struct OwnedResult {
 pub(super) struct Relationships<'a> {
     stored: &'a [usize],
     additions: &'a [usize],
+    split: usize,
 }
 impl Relationships<'_> {
     pub(super) fn len(&self) -> usize {
         self.stored.len().saturating_add(self.additions.len())
     }
     pub(super) fn iter(&self) -> impl Iterator<Item = usize> + '_ {
-        self.stored.iter().chain(self.additions).copied()
+        self.stored[..self.split]
+            .iter()
+            .chain(self.additions)
+            .chain(&self.stored[self.split..])
+            .copied()
     }
 }
 
@@ -59,6 +68,7 @@ pub(super) fn owned_relationships(b: &Builder, owner: usize) -> Option<Relations
         (None, None) => Some(Relationships {
             stored: &b.elements.get(owner)?.owned_relationships,
             additions: &[],
+            split: b.elements.get(owner)?.owned_relationships.len(),
         }),
         (Some(view), Some(_)) if view.matches_suffix(b) => view.relationships(b, owner),
         _ => None,
@@ -114,6 +124,7 @@ impl SemanticOwnership {
             .nodes
             .len()
             .saturating_add(self.additions.capacity().saturating_mul(2))
+            .saturating_add(self.insertion_anchors.capacity().saturating_mul(4))
             .saturating_add(self.results.capacity());
         *steps = steps.saturating_add(work);
         if *steps > crate::eval::MAX_STEPS {
@@ -133,6 +144,7 @@ impl SemanticOwnership {
             from,
             nodes: Vec::new(),
             additions: HashMap::new(),
+            insertion_anchors: HashMap::new(),
             results: HashMap::new(),
         }
     }
@@ -181,6 +193,28 @@ impl SemanticOwnership {
     pub(super) fn register_generic(&mut self, index: usize, owner: usize) -> Option<()> {
         self.register(index, Some(owner), owner, true)?;
         self.nodes.last_mut()?.generic_relationship = true;
+        Some(())
+    }
+
+    /// Called on a detached view after registering the generated relationship.
+    /// A stale or conflicting source anchor cannot silently reorder a new graph.
+    pub(super) fn insert_before_source_relationship(
+        &mut self,
+        b: &Builder,
+        owner: usize,
+        ordinal: usize,
+        anchor: usize,
+        generated: usize,
+    ) -> Option<()> {
+        if self.generated_relationship_owner(generated) != Some(owner)
+            || b.elements.get(owner)?.owned_relationships.get(ordinal) != Some(&anchor)
+            || anchor >= self.from
+            || self.insertion_anchors.contains_key(&owner)
+        {
+            return None;
+        }
+        self.insertion_anchors
+            .insert(owner, (ordinal, anchor, generated));
         Some(())
     }
 
@@ -254,6 +288,8 @@ impl SemanticOwnership {
             !relationships.is_empty()
         });
         view.results.clear();
+        view.insertion_anchors
+            .retain(|_, &mut (_, _, generated)| generated < boundary);
         Some(view)
     }
 
@@ -266,9 +302,19 @@ impl SemanticOwnership {
         b: &'a Builder,
         owner: usize,
     ) -> Option<Relationships<'a>> {
+        let stored = &b.elements.get(owner)?.owned_relationships;
+        let split = if let Some(&(ordinal, anchor, _)) = self.insertion_anchors.get(&owner) {
+            if stored.get(ordinal) != Some(&anchor) {
+                return None;
+            }
+            ordinal
+        } else {
+            stored.len()
+        };
         Some(Relationships {
-            stored: &b.elements.get(owner)?.owned_relationships,
+            stored,
             additions: self.additions(owner),
+            split,
         })
     }
 
@@ -362,6 +408,85 @@ impl SemanticOwnership {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn generated_insertion_preserves_source_order_and_retracts_with_its_tail() {
+        use crate::{
+            json::ResolvedModel,
+            model::{GraphFormat, Model},
+        };
+        let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
+        assert!(
+            model
+                .add_source("order.kerml", "feature x = F(1);")
+                .diagnostics
+                .is_empty()
+        );
+        let mut r = ResolvedModel::build(&model);
+        let owner = r
+            .user_elements()
+            .find(|&e| r.element_type(e) == "InvocationExpression")
+            .unwrap()
+            .0;
+        let source = r.b.elements[owner].owned_relationships.to_vec();
+        let ordinal = source
+            .iter()
+            .position(|&rel| r.b.elements[rel].ty == "ReturnParameterMembership")
+            .unwrap();
+        let anchor = source[ordinal];
+        let start = r.b.elements.len();
+        let mut view = SemanticOwnership::new(start);
+        view.register_generic(start, owner).unwrap();
+        view.register(start + 1, Some(owner), owner, true).unwrap();
+        assert!(
+            view.insert_before_source_relationship(&r.b, owner, ordinal, source[0], start + 1)
+                .is_none()
+        );
+        view.insert_before_source_relationship(&r.b, owner, ordinal, anchor, start + 1)
+            .unwrap();
+        let expected: Vec<_> = source[..ordinal]
+            .iter()
+            .copied()
+            .chain([start, start + 1])
+            .chain(source[ordinal..].iter().copied())
+            .collect();
+        assert_eq!(
+            view.relationships(&r.b, owner)
+                .unwrap()
+                .iter()
+                .collect::<Vec<_>>(),
+            expected
+        );
+        assert_eq!(r.b.elements[owner].owned_relationships.to_vec(), source);
+        assert!(
+            view.insert_before_source_relationship(&r.b, owner, ordinal, anchor, start + 1)
+                .is_none()
+        );
+        let mut exhausted = crate::eval::MAX_STEPS;
+        assert!(view.clone_with_budget(&mut exhausted).is_none());
+        let copy = view.clone_with_budget(&mut 0).unwrap();
+        assert_eq!(
+            copy.relationships(&r.b, owner)
+                .unwrap()
+                .iter()
+                .collect::<Vec<_>>(),
+            expected
+        );
+        let mut changed = source.clone();
+        changed.swap(0, ordinal);
+        r.b.elements[owner].owned_relationships = changed.into();
+        assert!(view.relationships(&r.b, owner).is_none());
+        r.b.elements[owner].owned_relationships = source.clone().into();
+        let retracted = view.without_result_tail(start + 1).unwrap();
+        assert_eq!(
+            retracted
+                .relationships(&r.b, owner)
+                .unwrap()
+                .iter()
+                .collect::<Vec<_>>(),
+            source.iter().copied().chain([start]).collect::<Vec<_>>()
+        );
+    }
 
     #[test]
     fn relationship_batch_matches_individual_registration() {

@@ -38,17 +38,22 @@ package CoastalExplorer {
         doc /* The vessel shall complete a coastal survey without recharging. */
     }
 
-    part def SurveyVessel {
-        doc /* Four collaborating subsystems. Connections below are explicit
-           port references; definitions supply each subsystem's declared ports. */
+    part def ResearchVessel {
+        doc /* Shared vessel systems. Specialized vessels inherit these parts
+           and their connections. */
         part battery : Battery;
         part propulsion : Propulsion;
         part navigation : Navigation;
-        part sonar : Sonar;
         connect battery.supply to propulsion.power;
         connect battery.supply to navigation.power;
-        connect battery.supply to sonar.power;
         connect navigation.command to propulsion.command;
+    }
+
+    part def SurveyVessel :> ResearchVessel {
+        doc /* A research vessel specialized for seafloor surveys. Adds sonar
+           to the inherited battery, propulsion and navigation systems. */
+        part sonar : Sonar;
+        connect battery.supply to sonar.power;
         connect sonar.measurements to navigation.measurements;
     }
 

@@ -1,0 +1,219 @@
+use crate::{
+    json::{ClosurePolicy, ElementRef, ResolvedModel, TypeInputIssue},
+    model::{GraphFormat, Model},
+    prepared::PreparedLibrary,
+};
+use serde_json::json;
+use std::sync::{Arc, OnceLock};
+
+fn raw_library() -> Model {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../spec-refs/SysML-v2-Release/sysml.library");
+    let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
+    assert_eq!(model.load_library_dir(&root).unwrap(), 94);
+    model
+}
+
+fn library() -> Arc<PreparedLibrary> {
+    static LIBRARY: OnceLock<Arc<PreparedLibrary>> = OnceLock::new();
+    Arc::clone(LIBRARY.get_or_init(|| raw_library().prepare_library().unwrap()))
+}
+
+#[derive(Clone, Copy, Debug)]
+enum Damage {
+    MissingOwner,
+    Direction,
+    Composite,
+    Variable,
+    Metadata,
+    ForeignCarrier,
+}
+
+const DAMAGE: [Damage; 6] = [
+    Damage::MissingOwner,
+    Damage::Direction,
+    Damage::Composite,
+    Damage::Variable,
+    Damage::Metadata,
+    Damage::ForeignCarrier,
+];
+
+fn damage(r: &mut ResolvedModel, referent: ElementRef, source: ElementRef, change: Damage) {
+    match change {
+        Damage::MissingOwner => r.b.elements[referent.0].owning_relationship = None,
+        Damage::Direction => r.b.set(referent.0, "direction", json!("in")),
+        Damage::Composite => r.b.set(referent.0, "isComposite", json!(true)),
+        Damage::Variable => r.b.set(referent.0, "isVariable", json!(true)),
+        Damage::Metadata => r.b.metadata_associations_incomplete = true,
+        Damage::ForeignCarrier => {
+            let membership = r.b.elements[referent.0].owning_relationship.unwrap();
+            let wrong = r.element_id(source);
+            r.b.set(membership, "owningRelatedElement", json!({"@id": wrong}));
+        }
+    }
+}
+
+fn resolved(
+    mut model: Model,
+    declaration: &str,
+    dialect: &str,
+    change: Option<Damage>,
+) -> (ResolvedModel, ElementRef, ElementRef, ElementRef) {
+    assert!(
+        model
+            .add_source(format!("member.{dialect}"), declaration)
+            .diagnostics
+            .is_empty()
+    );
+    assert!(
+        model
+            .add_source("use.kerml", "feature queried=selectedMember;")
+            .diagnostics
+            .is_empty()
+    );
+    let mut r = ResolvedModel::build(&model);
+    let referent = r.resolve_qualified("selectedMember").unwrap();
+    let source = r
+        .user_elements()
+        .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
+        .unwrap();
+    if let Some(change) = change {
+        damage(&mut r, referent, source, change);
+    }
+    r.ensure_implied();
+    r.set_closure_policy(ClosurePolicy::Closure {
+        include_implied: true,
+    });
+    let result = ElementRef(
+        r.b.semantic_ownership
+            .as_ref()
+            .unwrap()
+            .result(source.0)
+            .unwrap()
+            .feature,
+    );
+    (r, referent, source, result)
+}
+
+fn fixture(
+    declaration: &str,
+    dialect: &str,
+    change: Option<Damage>,
+) -> (ResolvedModel, ElementRef, ElementRef, ElementRef) {
+    let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
+    library().install(&mut model).unwrap();
+    resolved(model, declaration, dialect, change)
+}
+
+fn identities(
+    r: &mut ResolvedModel,
+    referent: ElementRef,
+    source: ElementRef,
+    result: ElementRef,
+) -> Vec<uuid::Uuid> {
+    let rows = r.b.elements.len();
+    assert_eq!(r.expression_result_report(source).result, Ok(Some(result)));
+    assert_eq!(
+        r.property(source, "result").unwrap(),
+        json!({"@id": r.element_id(result)})
+    );
+    let projection = r.type_feature_report(source).projections.unwrap();
+    let membership = ElementRef(
+        r.b.semantic_ownership
+            .as_ref()
+            .unwrap()
+            .result(source.0)
+            .unwrap()
+            .membership,
+    );
+    // The full library contributes inherited features. The foreign member is
+    // retained as a member, but adds no owned feature or positional role.
+    assert_eq!(projection.owned_feature_memberships, [membership]);
+    assert!(projection.features.contains(&result));
+    assert!(!projection.features.contains(&referent));
+    assert!(projection.members.as_ref().unwrap().contains(&referent));
+    assert_eq!(r.b.elements.len(), rows);
+    [referent, source, result, membership]
+        .into_iter()
+        .chain(projection.features)
+        .chain(projection.members.unwrap())
+        .map(|e| r.element_id(e))
+        .collect()
+}
+
+#[test]
+fn namespace_owned_step_members_preserve_results_without_becoming_features() {
+    for (kind, declaration) in [
+        ("Step", "step selectedMember;"),
+        ("Expression", "expr selectedMember;"),
+        ("BooleanExpression", "bool selectedMember;"),
+        ("Feature", "feature selectedMember;"),
+    ] {
+        let (mut r, referent, source, result) = fixture(declaration, "kerml", None);
+        assert_eq!(r.element_type(referent), kind);
+        identities(&mut r, referent, source, result);
+        assert_eq!(
+            r.expression_result_report_with_budget(source, crate::eval::MAX_STEPS)
+                .result,
+            Err(TypeInputIssue::WorkLimit)
+        );
+        assert_eq!(r.expression_result_report(source).result, Ok(Some(result)));
+    }
+}
+
+#[test]
+fn foreign_member_scope_and_ownership_refusals_are_not_budget_exhaustion() {
+    let (mut r, _, source, _) = fixture("action selectedMember;", "sysml", None);
+    let report = r.expression_result_report(source);
+    assert!(report.result.is_err());
+    assert_ne!(report.result, Err(TypeInputIssue::WorkLimit));
+    for change in DAMAGE {
+        let (mut r, _, source, _) = fixture("bool selectedMember;", "kerml", Some(change));
+        let report = r.expression_result_report(source);
+        assert!(report.result.is_err(), "{change:?}");
+        assert_ne!(report.result, Err(TypeInputIssue::WorkLimit), "{change:?}");
+    }
+}
+
+#[test]
+fn foreign_member_edits_cannot_reuse_a_completed_projection() {
+    for change in DAMAGE {
+        let (mut r, referent, source, result) = fixture("bool selectedMember;", "kerml", None);
+        identities(&mut r, referent, source, result);
+        damage(&mut r, referent, source, change);
+        let rows = r.b.elements.len();
+        // A rebuilding limit is still possible after arbitrary graph edits.
+        // This test proves stale-success refusal; the separate fresh-graph test
+        // requires the actual ownership/flag check to run before exhaustion.
+        assert!(
+            r.expression_result_report(source).result.is_err(),
+            "{change:?}"
+        );
+        assert_eq!(r.b.elements.len(), rows);
+    }
+}
+
+#[test]
+fn foreign_member_identities_replay_from_raw_prepared_and_serialized_libraries() {
+    let prepared = library();
+    let decoded =
+        Arc::new(PreparedLibrary::from_bytes(&prepared.to_bytes(145).unwrap(), 145).unwrap());
+    let mut expected = None;
+    for replay in [None, Some(prepared), Some(decoded)] {
+        let model = if let Some(replay) = replay {
+            let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
+            replay.install(&mut model).unwrap();
+            model
+        } else {
+            raw_library()
+        };
+        let (mut r, referent, source, result) =
+            resolved(model, "bool selectedMember;", "kerml", None);
+        let actual = identities(&mut r, referent, source, result);
+        if let Some(expected) = &expected {
+            assert_eq!(&actual, expected);
+        } else {
+            expected = Some(actual);
+        }
+    }
+}

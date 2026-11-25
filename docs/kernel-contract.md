@@ -87,6 +87,338 @@ this is not a public interchange guarantee. Default receiver bindings, complete
 trigger semantics and execution are not qualified by these queries.
 See KERNEL-022 in [foundation qualification](foundation-qualification.md).
 
+The current worktree adds checked trigger bindings through the engine's
+`invocation_binding_report` and checked `argument` property. The CanonicalV3
+provider requires a valid trigger kind, a unique loaded public library Function,
+complete callee inputs and current argument-redefinition evidence. It omits a
+receiver with no FeatureValue without inventing a default value. Trigger-only
+models activate the same atomic planner as other invocation models. Aliases,
+broader signature/redefinition configurations and incomplete dependencies remain
+explicitly qualified. This engine-level report does not add snapshot fields or
+establish the three trigger argument validation rules; see the unreleased
+[binding evidence](evidence/trigger-binding-progress-macos-arm64.json) and
+[remaining result dependencies](evidence/trigger-result-dependency-review.json).
+
+The worktree also admits ordinary Predicate signatures and their authored input
+and return Features through the shared checked membership provider. Both
+`function_result_report` and the checked Function `result` property require
+canonical BooleanEvaluation heritage and complete positional dependencies.
+Missing library, ownership or metadata evidence remains explicit; the queries
+do not certify whole-Predicate validity or return uniqueness. At this checkpoint,
+the full-library Boolean literal test verifies a Predicate-owned return located
+through a compatibility expression query. The subsequent checked expression
+selection is described below; other expression construction remains open.
+See the unreleased [Predicate evidence](evidence/predicate-result-progress-macos-arm64.json).
+
+The worktree constructs contextual Step specializations determined by the
+owning Type's metaclass and the source's compositeness. It follows the recorded
+[plural-library interpretation](evidence/step-context-construction-review.json).
+The checked generated reference-result domain additionally admits noncomposite,
+undirected sources owned through plain FeatureMembership, only with the actual
+enclosure path when required. Missing ownership links and parameter/result
+membership contexts remain incomplete. Effective-type-dependent composite owner
+construction now admits complete owner predicates independent of all prospective
+specialization writers. Direct/inherited Structure typing constructs the required
+path; a Structure pruned from the effective type set does not. Coupled predicates
+remain incomplete; the
+[result-selection review](evidence/expression-result-dependency-review.json)
+keeps these obligations distinct from a selected result's feature-domain proof.
+The unreleased [Step-context evidence](evidence/step-context-progress-macos-arm64.json)
+records the native and dependency checks and the remaining effective-type cases.
+The subsequent [typed Step evidence](evidence/typed-step-progress-macos-arm64.json)
+records the complete-type predicate, atomic final-write audit, five private
+regressions and integration against all 94 library files. These internal engine
+capabilities do not expand the facade into a complete metamodel API.
+
+The worktree's `expression_result_report` now selects the first effective
+ReturnParameterMembership-owned parameter for ordinary noncomposite, undirected
+Expressions and the admitted Boolean/literal kinds. It shares the complete
+Type feature-membership reducer and exact return selector with Function results.
+Inherited ordering and redefinition determine the result; a complete empty
+sequence yields `Ok(None)`, while the required `result` property reports
+`MissingRequiredValue`. Exactly-one and output-direction validation are separate
+obligations. Missing/cyclic evidence remains an error, and checked properties
+require closure including implied relationships. Queries do not publish rows.
+Both graph formats pass actual-library literal selection, and the native trigger
+test now obtains its Boolean literal result through this report and property.
+General invocation/operator result selection, references with existing authored
+results, owned result-expression bindings and broader composite/directed/contextual
+configurations remain open.
+See the unreleased [expression-result evidence](evidence/expression-results-progress-macos-arm64.json).
+
+Checked Type queries now pass their admitted semantic membership nodes and exact
+authored redefinition closure into the same positional ordering and reduction
+used by construction. This preserves materialized memberships that the stored
+source selectors omit. The internal adapter requires a current proof stamp,
+matching base domains and import selectors, and rechecks recorded authored edges.
+It recomputes positional edges without publishing rows or retaining a query plan.
+Construction keeps its existing stored-input preparation and cache checks.
+See the unreleased [semantic positional evidence](evidence/semantic-positional-progress-macos-arm64.json).
+
+Registered generated-reference sources now use the same result report and checked
+property. Their admission requires current construction evidence, reciprocal
+source/result ownership, the complete required source bases and the exact generated
+binary binding endpoints. The binding's ordinary OwningMembership does not create
+an owning Type or a positional parameter/end/result role. Its current redefinition
+edges are still included in the shared membership proof. This does not certify all
+BindingConnector ancestry, featuring or validity obligations.
+
+Nonowning Feature members bring their declaring Types into the proof as dependencies,
+not additional supertypes. The common positional planner schedules supported foreign
+parameter/end/result dependencies before reducing memberships. Missing or cyclic
+foreign ancestry stays incomplete; legacy foreign positional prerequisites remain
+unsupported. No query adds graph rows. The full-library trigger examples now select
+all six argument results through the checked report and property in CanonicalV3.
+See the unreleased
+[reference-result evidence](evidence/reference-results-progress-macos-arm64.json).
+
+The shared foreign-member provider now also admits namespace-owned members from
+the existing Step/Expression family. The same reciprocal OwningMembership,
+namespace, flags, metadata and redefinition checks apply. Such a referent remains
+a member of the referring expression and does not become one of its features.
+The generated return and inherited library features retain their own identities
+and ordering. Raw, prepared and serialized prepared-library regression tests
+exercise this distinction. Checked report/property reads now select the results
+of all 51 defaults in the full-library call/trigger integration fixture. This
+does not establish complete Feature.type or default BindingConnector semantics;
+see the [repair evidence](evidence/foreign-step-membership-progress-macos-arm64.json)
+for qualification status and the [FeatureValue review](evidence/feature-value-obligation-review.json)
+for remaining typing, initial-value, overriding and binding obligations.
+
+The worktree's `trigger_argument_report` now exposes the active canonical rule,
+`Result<bool, TriggerArgumentIssue>` and cumulative query work. Canonical trigger
+construction must already be prepared. The report uses checked invocation arguments
+and expression results, then the shared global resolver and specialization proof.
+For `after`, an effective result feature must transitively redefine the standard
+measurement reference and specialize DurationUnit; an unrelated duration-typed
+feature cannot satisfy that condition. The shared membership certificate supplies
+its complete redefinition graph, with identity alone excluded from the transitive
+predicate. For `when`, the reference wrapper and its expression referent are checked
+separately before selecting the Boolean result.
+
+Semantic validation prepares trigger construction before creating explicit-only
+Facts, consumes this report without passing generated indices to those arrays,
+and emits a canonical diagnostic only for a proven false predicate. A clean
+list is not evidence that every trigger was checked: unavailable providers remain
+explicit errors in the report. Legacy trigger bindings, general result providers,
+defaults and complete family conformance remain open. See the unreleased
+[trigger-predicate evidence](evidence/trigger-predicates-progress-macos-arm64.json).
+
+Abstract-model regressions now distinguish complete empty arguments from malformed
+valuations, and verify first non-parameter membership selection across multiple
+when-wrapper members. A Boolean result alone does not replace the required
+reference wrapper. The shared Type feature and specialization providers admit
+authored parameters of supported Step/Expression families only after checking the
+complete owning signature and its positional obligations. Expression-owned returns
+can therefore supply definite negative type comparisons as well as positive paths;
+invalid ownership, metadata or required library evidence revokes the
+certificate. A separate invalid return direction does not erase an independently
+proved false trigger predicate. Required library roles also recheck the current
+declaration name against the loaded role identity. These internal abstract fixtures do not establish a public editing
+API or complete arbitrary-graph validation. See the
+[abstract trigger evidence](evidence/trigger-abstract-progress-macos-arm64.json).
+
+Canonical textual invocations now construct their own output Feature through an
+implied ReturnParameterMembership before specialization planning. This includes
+ordinary and arrow calls, operators and their chain/index/select/collect subclasses,
+and SysML triggers. Cast/extent grammar returns and constructor result-owned
+arguments retain their existing construction; legacy graphs retain their shape.
+The shared positional planner supplies result redefinitions without copying the
+callee's return or introducing a lexical scope. Owned result construction alone
+does not certify the checked Expression.result or result feature-domain queries.
+See the [construction review](evidence/invocation-result-construction-review.json).
+This increment is not qualified: the first full run exposed incomplete library
+result dependencies, compact-graph migration/pairing assumptions and a cold-query
+work-budget regression. The required receiver ordering is repaired through the
+shared semantic ownership view, which inserts the generated input before the
+stored return without rewriting source ownership. The remaining failures must be
+resolved and the complete gates rerun before release.
+
+The follow-up migration repair reconstructs canonical invocation returns in
+subtree order and retains grammar-provided returns. Compact validation admits
+only the recognized implied return pairs and omitted accept receiver slots;
+it does not accept arbitrary generated semantic graphs. Authored identity
+pairing follows the same omitted-subtree policy as textual lifting. Contextual
+lookup now derives unnamed slot names from their actual redefinition targets
+and applies the shared membership reducer to inherited hits. These repairs are
+still in qualification; the invocation-result review records the exact tested
+revisions. Full-library invocation and trigger checks now pass in the focused
+run. The cold-query repair streams redefinition reachability into the same
+membership suppression rules, avoiding intermediate closure collections and
+separate feature-projection scans. The unchanged full-library cold query now
+passes at 9,789,848 canonical steps under the 10,000,000 limit; all 63 focused
+reduction/input/positional tests, all 927 vendor model tests and 97 native
+workspace tests pass. The full-library native check verifies both stored
+Redefinition endpoints through the public property API. All 55 Node tests pass,
+including public native/WebAssembly parity, provenance and evidence checks.
+Reviewed implementation fingerprints retain all existing assessment limits;
+all 133 conformance cases and the matching requirements execution report pass
+on macOS arm64.
+
+The subsequent lookup index caches only recorded source-row identities, guarded
+by the source table's content revision. Resolution outcomes remain live reads;
+clones, append, same-length edits, replacement and truncation retain dependency
+tracking. Effective-default selection now follows KerML 8.4.4.11: a fully known
+set of distinct inherited default identities establishes absence, while one
+shared identity remains a default and incomplete paths remain unknown. Owned
+values override inherited defaults. The full-library regression preserves the
+eight inherited Occurrence defaults while checking the local difference. These
+changes pass all 930 vendor model tests and 98 native workspace tests, with clean
+Clippy and all 55 Node tests, including public native/WebAssembly runtime,
+provenance and evidence checks. All 133 conformance cases and the matching
+current-source requirements report pass on macOS arm64. See the
+[lookup/default review](evidence/lookup-default-progress-macos-arm64.json).
+
+The subsequent invocation-default increment exposes
+`invocation_default_report`: complete actual argument bindings plus effective
+defaults over all callee features. Selection neither executes default expressions
+nor certifies whole-invocation validity. The construction transaction now stages
+invocation-owned default bindings through the same identity and binary-endpoint
+recipe used by constructors, with one connector per effective valuation identity.
+It consumes accepted positional evidence, preserves source rows, and invalidates
+held query evidence on publication. Targeted cold cardinality and post-edit
+trigger regressions pass within the unchanged work allowance. Static positional
+reuse requires the exact prior, current authority; differential tests compare
+fresh planning, incomplete providers, source edits and rebuilt external plans.
+Eligibility proofs also share successful designated Function identities within
+the same checked snapshot. Each call still checks its supplied arguments, and
+each expression retains a fresh path-sensitive proof. Library-name changes
+invalidate the snapshot; cumulative work cannot be reset by a cache hit. Both
+full mixed-corpus cold cardinality variants return the expected exact value at
+about 6.14 million steps under the unchanged 10 million limit. The frozen-source
+qualification passes all 945 vendor model tests, 99 native workspace tests,
+55 public/provenance/evidence Node tests, Clippy, native/WebAssembly builds,
+contract checks, 133 conformance cases and the matching requirements execution
+report on macOS arm64. The initial no-build conformance report was rejected by
+the requirements evidence check; the official build-and-conformance rerun passes.
+See the [qualification record](evidence/eligibility-identity-progress-macos-arm64.json)
+and [construction review](evidence/invocation-default-construction-review.json).
+The [direct-obligation review](evidence/invocation-obligation-decomposition-review.json)
+also records unresolved endpoint and membership formulations in the metamodel,
+Table 11 and Feature Values Semantics. Current raw connector identities follow
+the metamodel prose; they do not yet establish every formulation's full semantics.
+
+The [valuation typing repair](evidence/valuation-typing-progress-macos-arm64.json)
+keeps a valued Feature's declared static type when its valid direction or explicit
+owned specialization makes the value-result specialization condition false.
+Reciprocal ownership, valuation flags and specialization endpoints remain checked.
+Mismatched or unresolved values do not replace independent declaration evidence;
+this does not certify value compatibility or binding validity. Undirected values
+with only implied specializations still require their own inference proof. The
+macOS arm64 qualification passes 958 vendor model tests, 100 native workspace
+tests, the 39 public and 16 provenance/evidence tests, Clippy, native/WASM builds,
+contract checks, 133 conformance cases and matching requirements execution evidence.
+
+The [semantic positional type repair](evidence/semantic-type-positional-progress-macos-arm64.json)
+uses the same complete membership certificate for generated-reference positional
+targets and type dependencies, including results without lexical scopes. Exact
+library types, unresolved dependencies, closed circular typing, edits, cumulative
+budgets and raw/prepared/serialized library identities are tested. Its macOS arm64
+qualification passes 965 vendor model tests, 101 native workspace tests, 39 public
+and 16 provenance/evidence tests, Clippy, native/WASM builds, contract checks and
+133 source-matched conformance cases. Owner, chaining, portion and complete
+default-binding obligations remain separate.
+
+The unreleased [ordinary Feature context repair](evidence/ordinary-feature-context-progress-macos-arm64.json)
+extends declared-type queries to plain noncomposite, undirected, non-end Features
+under Type owners. Exact FeatureMembership ownership and the existing conditional
+specialization checks remain required; FlowEnd payload obligations remain open.
+Owned FeatureInverting relationships receive reciprocal-carrier and endpoint
+checks in the shared type and specialization proof. Their targets do not become
+typing dependencies. Native acceptance checks all ten selected library-default
+feature types and six of their result types. Qualification passes 972 vendor
+model tests, 102 native workspace tests, 39 public and 16 provenance/evidence tests,
+Clippy, native/WASM builds, contract checks and 133 source-matched conformance
+cases with matching requirements evidence. Chaining, portions, inverse value
+semantics and complete default bindings remain open.
+
+The unreleased [shared chain typing change](evidence/feature-chaining-type-progress-macos-arm64.json)
+uses the common one-hop chain reader to validate every link and supply the final
+Feature to both type dependencies and required paths. Exact repeated, nested,
+inherited and redefined chains, malformed carriers/endpoints, edits, finite
+circular typing closures and library replay have acceptance tests. Canonical
+construction supplies the tested implicit bases; legacy graphs still require
+explicit paths where their construction omits those bases. Qualification passes
+978 vendor model tests, 103 native workspace tests, 39 public and 16 provenance
+tests, Clippy, native/WASM builds, contract checks and 133 source-matched conformance
+cases with matching requirements evidence. Portion families and
+the three named chain-validation obligations remain open; a static type is not a
+whole-model validity verdict.
+
+An edit that makes a callee membership unresolved can invalidate the static
+positional return proof. Retracting the dynamic tail does not authorize reuse of
+that immutable static prefix. Such queries remain incomplete until the required
+construction is valid again; a general abstract-model edit/rebuild API is still
+open.
+
+The [portion context candidate](evidence/portion-context-progress-macos-arm64.json)
+is admitted to the working source after 13 targeted tests, 143 broader regressions,
+one public integration test and 16 provenance checks. It shares complete effective
+owner types across portion construction and negative specialization, distinguishes
+owned from inverse typing, and preserves actual result types for the ten selected
+library defaults. Malformed standalone typing is rejected before semantic-plan
+refresh; recursion, edits, future writers and budgets retain explicit uncertainty.
+Final-source qualification passes 992 vendor model tests, 104 native workspace
+tests, 39 public and 16 provenance tests, Clippy, native/WASM builds, contract
+checks and 133 conformance cases with matching requirements execution evidence
+on macOS arm64. Mutually dependent construction predicates, SysML portionKind
+and complete portion validation remain open.
+
+The [namespace Feature member repair](evidence/namespace-feature-members-progress-macos-arm64.json)
+preserves the distinction between a Type's namespace members and its owned
+features. Ordinary `member` declarations retain checked declared/chained types
+and expression results, with no invented owningType or parameter role. Local
+owned-feature redefinitions and inherited membership suppression keep their
+separate rules. Possible owned cross features remain incomplete until their
+crossing obligations are supported. A valid membership-role edit now preserves
+its exact declared type on the first query within the unchanged work limit.
+Current-row specialization indexing and SCC-aware graph searches preserve
+ordered relationships; positional reuse requires fresh physical-recipe and
+authority checks. All 1,008 isolated model tests and the public integration pass.
+Final-source qualification passes 105 native tests, Clippy, native/WebAssembly
+builds, 39 public regressions, all 133 conformance cases and matching requirements
+evidence.
+These engine queries do not expand the declaration facade into a full metamodel
+API or close contextual default-binding semantics.
+
+The [binding namespace-member increment](evidence/binding-namespace-members-progress-macos-arm64.json)
+adds authored BindingConnector members to the same enclosing membership and
+redefinition proof without inventing outer feature or parameter roles. Necessary
+local ownership and neutral-role checks run before rebuilding positional evidence
+after an edit, so malformed membership is rejected within the existing work limit.
+Generated bindings still require their exact construction certificate. All 1,013
+isolated model tests and public integration pass. Final-source qualification passes
+106 native tests, Clippy, native/WebAssembly builds and 39 public regressions.
+The initial conformance run has 132 passes and one 30-second process timeout.
+An isolated retry also timed out; a subsequent identical-source run passes all
+19 assertions in 8.533 seconds. The cause of the variability remains unproven.
+The full retry passes 128 cases; five later cases time out across recorded Mac
+sleep periods. ACCEPT-003 passes in 4.954 seconds. Matching requirements evidence
+records those failures after two stale audit hashes were refreshed. The complete
+unchanged-source rerun with scoped idle-sleep prevention passes all 133 cases and
+matching requirements evidence; ACCEPT-003 completes in 4.272 seconds. No timeout
+was relaxed, and the earlier failed attempts remain preserved.
+Canonical typing uses ordinary source. Legacy positive typing requires
+complete authored signature paths; its incomplete literal-result cases remain
+explicit. Connector ancestry, effective ends, featuring and contextual default
+binding semantics remain separate open obligations.
+
+The [Association end-domain increment](evidence/association-end-domains-progress-macos-arm64.json)
+is admitted after 1,027 isolated model tests and a public API integration test.
+Exact Association and AssociationStructure end queries use the shared membership
+and positional redefinition proof. Required Link/BinaryLink and object-association
+paths are checked for every ancestor against its effective ends. Missing required
+paths remain incomplete. Foreign aliases retain membership identity without adding
+features or inheritance; their positional owners are shared construction/query
+prerequisites in both graph formats. The raw library-name index reuses only an
+exact immutable name-table revision, with external overrides rebuilt and stale-map
+retirement charged conservatively. Semantic roles and current-row proof remain
+independent. Final-source qualification passes 107 native workspace tests,
+39 public regressions, 13 provenance checks, Clippy, native/WASM builds, contract
+verification and all 133 conformance cases with matching requirements evidence.
+End typing, related/source/target derivation, complete validation, crossing semantics
+and conditional binary-base construction remain open.
+
 Ranges are half-open. Byte/UTF-16 offsets are zero-based; line and UTF-16 column
 numbers are one-based. Original encoding after UTF-8 decoding and line endings
 are preserved. Indexed query construction verifies coordinate agreement.

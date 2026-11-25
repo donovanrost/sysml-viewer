@@ -226,10 +226,19 @@ fn nested_composite_owner_proof_refuses_mutations_cycles_and_budget_then_retries
         r.b.elements[owner.0].ty = "OccurrenceUsage";
         r.b.elements[owner.0].props = original_properties;
         let properties = r.b.elements[owner.0].props.clone();
+        // A namespace-owned portion has no owning Type, so the conditional
+        // portion specialization does not apply. Other Usage obligations stay.
+        r.b.elements[owner.0].props.insert("isPortion", json!(true));
+        assert_eq!(
+            r.feature_type_report(child).types,
+            Ok(vec![ty]),
+            "{format:?}"
+        );
+        r.b.elements[owner.0].props = properties.clone();
         for (name, value) in [
             ("isComposite", json!("invalid")),
             ("isVariation", json!(true)),
-            ("isPortion", json!(true)),
+            ("isPortion", json!("invalid")),
             ("portionKind", json!("timeslice")),
         ] {
             r.b.elements[owner.0].props.insert(name, value);

@@ -1,0 +1,662 @@
+{
+  "recordedAt": "2026-10-18T16:58:12.752615+00:00",
+  "status": "Admitted and qualified within the recorded namespace-member and query-performance boundaries. Full default-binding semantics and all C01-C15 remain open.",
+  "baselineKernelInputSha256": "73b44bcd0d7606066d5fc8f3187ed5b6fe131d348d572c4bebb190b10cbc6819",
+  "sources": {
+    "xmi": {
+      "path": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+      "anchors": [
+        {
+          "id": "Core-Features-Feature-owningType",
+          "comments": [
+            "<p>The <code>Type</code> that is the <code>owningType</code> of the <code>owningFeatureMembership</code> of this <code>Feature</code>.</p>"
+          ],
+          "bodies": []
+        },
+        {
+          "id": "Core-Features-Feature-owningFeatureMembership",
+          "comments": [
+            "<p>The <code>FeatureMembership</code> that owns this <code>Feature</code> as an <code>ownedMemberFeature</code>, determining its <code>owningType</code>.</p>"
+          ],
+          "bodies": []
+        },
+        {
+          "id": "Root-Namespaces-OwningMembership-ownedMemberElement",
+          "comments": [
+            "<p>The <code>Element</code> that becomes an <code>ownedMember</code> of the <code>membershipOwningNamespace</code> due to this <code>OwningMembership</code>.</p> "
+          ],
+          "bodies": []
+        },
+        {
+          "id": "Core-Features-Feature-deriveFeatureType",
+          "comments": [
+            "<p>The <code>types</code> of a <code>Feature</code> are the union of the <code>types</code> of its <code>typings</code> and the <code>types</code> of the <code>Features</code> it subsets, with all redundant supertypes removed. If the <code>Feature</code> has <code>chainingFeatures</code>, then the union also includes the types of the last <code>chainingFeature</code>.</p>"
+          ],
+          "bodies": [
+            "type =      let types : OrderedSet(Types) = OrderedSet{self}->         -- Note: The closure operation automatically handles circular relationships.         closure(typingFeatures()).typing.type->asOrderedSet() in     types->reject(t1 | types->exist(t2 | t2 <> t1 and t2.specializes(t1)))"
+          ]
+        },
+        {
+          "id": "Core-Features-Feature-ownedCrossFeature_",
+          "comments": [
+            "<p>If this <code>Feature</code> is an end <code>Feature</code> of its <code>owningType</code>, then return the first <code>ownedMember</code> of the <code>Feature</code> that is a <code>Feature</code>, but not a <code>Multiplicity</code> or a <code>MetadataFeature</code>, and whose <code>owningMembership</code> is <em>not</em> a <code>FeatureMembership</code>. If this exists, it is the <code>crossFeature</code> of the end <code>Feature</code>.</p>"
+          ],
+          "bodies": [
+            "if not isEnd or owningType = null then null else     let ownedMemberFeatures: Sequence(Feature) =         ownedMember->selectByKind(Feature)->             reject(oclIsKindOf(Multiplicity) or                     oclIsKindOf(MetadataFeature) or                    oclIsKindOf(FeatureValue))->             reject(owningMembership.oclIsKindOf(FeatureMembership)) in     if ownedMemberFeatures.isEmpty() then null     else ownedMemberFeatures->first()     endif"
+          ]
+        },
+        {
+          "id": "Core-Features-Feature-isOwnedCrossFeature_",
+          "comments": [
+            "<p>Return whether this <code>Feature</code> is an owned cross <code>Feature</code> of an end <code>Feature</code>.</p>"
+          ],
+          "bodies": [
+            "owningNamespace <> null and owningNamespace.oclIsKindOf(Feature) and owningNamespace.oclAsType(Feature).ownedCrossFeature() = self"
+          ]
+        },
+        {
+          "id": "Core-Features-Feature-checkFeatureOwnedCrossFeatureSpecialization",
+          "comments": [
+            "<p>If this <code>Feature</code> is the <code>ownedCrossFeature</code> of an end <code>Feature</code>, then it must directly or indirectly specialize the <code>types</code> of its owning end <code>Feature</code>.</p>"
+          ],
+          "bodies": [
+            "isOwnedCrossFeature() implies owner.oclAsType(Feature).type->forAll(t | self.specializes(t))"
+          ]
+        },
+        {
+          "id": "Core-Features-Feature-checkFeatureParameterRedefinition",
+          "comments": [
+            "<p>If a <code>Feature</code> is a <code>parameter</code> of an <code>owningType</code> that is a <code>Behavior</code> or <code>Step</code>, but <em>not</em> </p> <ul>     <li>A <code>result</code> <code>parameter</code></li>     <li>A <code>parameter</code> of an <code>InvocationExpression</code>, with at least one non-implied <code>ownedRedefinition</code></li> </ul> <p>then, for each direct supertype of its <code>owningType</code> that is also a <code>Behavior</code> or <code>Step</code>, it must redefine the <code>parameter</code> at the same position, if any.</p>"
+          ],
+          "bodies": [
+            "owningType <> null and not owningFeatureMembership.     oclIsKindOf(ReturnParameterMembership) and (owningType.oclIsKindOf(Behavior) or  owningType.oclIsKindOf(Step) and     (owningType.oclIsKindOf(InvocationExpression) implies       not ownedRedefinition->exists(not isImplied))  implies     let i : Integer =         owningType.ownedFeature->select(direction <> null)->             reject(owningFeatureMembership.                 oclIsKindOf(ReturnParameterMembership))->             indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |             let ownedParameters : Sequence(Feature) =                 supertype.ownedFeature->select(direction <> null)->                      reject(owningFeatureMembership.                          oclIsKindOf(ReturnParameterMembership)) in             ownedParameters->size() >= i implies                 redefines(ownedParameters->at(i))"
+          ]
+        },
+        {
+          "id": "Core-Features-Feature-checkFeatureResultRedefinition",
+          "comments": [
+            "<p>If a <code>Feature</code> is a <code>result</code> <code>parameter</code> of an <code>owningType</code> that is a <code>Function</code> or <code>Expression</code>, then, for each direct supertype of its <code>owningType</code> that is also a <code>Function</code> or <code>Expression</code>, it must redefine the <code>result</code> <code>parameter</code>.</p>"
+          ],
+          "bodies": [
+            "owningType <> null and (owningType.oclIsKindOf(Function) and     self = owningType.oclAsType(Function).result or  owningType.oclIsKindOf(Expression) and     self = owningType.oclAsType(Expression).result) implies     owningType.ownedSpecialization.general->         select(oclIsKindOf(Function) or oclIsKindOf(Expression))->         forAll(supertype |             redefines(                 if superType.oclIsKindOf(Function) then                     superType.oclAsType(Function).result                 else                     superType.oclAsType(Expression).result                 endif)"
+          ]
+        },
+        {
+          "id": "Core-Features-Feature-checkFeaturePortionSpecialization",
+          "comments": [
+            "<p>If a <code>Feature</code> has <code>isPortion = true</code>, an <code>ownedTyping </code> relationship to a <code>Class</code>, and an <code>owningType</code> that is a <code>Class</code> or another <code>Feature</code> typed by a <code>Class</code>, then it must directly or indirectly specialize <em><code>Occurrences::Occurrence::portions</code></em> from the Kernel Semantic Library.</p>"
+          ],
+          "bodies": [
+            "isPortion and ownedTyping.type->includes(oclIsKindOf(Class)) and owningType <> null and (owningType.oclIsKindOf(Class) or  owningType.oclIsKindOf(Feature) and     owningType.oclAsType(Feature).type->         exists(oclIsKindOf(Class))) implies     specializesFromLibrary('Occurrence::Occurrence::portions')"
+          ]
+        },
+        {
+          "id": "Kernel-Behaviors-Step-checkStepSubperformanceSpecialization",
+          "comments": [
+            "<p>A<code>Step</code> whose <code>owningType</code> is a <code>Behavior</code> or another <code>Step</code>, and which is composite, must directly or indirectly specialize the <code>Step</code> <code><em>Performances::Performance::subperformance</em></code>.</p>"
+          ],
+          "bodies": [
+            "owningType <> null and     (owningType.oclIsKindOf(Behavior) or      owningType.oclIsKindOf(Step)) and     self.isComposite implies     specializesFromLibrary('Performances::Performance::subperformance')"
+          ]
+        },
+        {
+          "id": "Core-Types-Type-inheritedMemberships_Namespace_Type_Boolean",
+          "comments": [
+            "<p>Return the <code>Memberships</code> inheritable from supertypes of this <code>Type</code> with redefined <code>Features</code> removed. When computing inheritable <code>Memberships</code>, exclude <code>Imports</code> of <code>excludedNamespaces</code>, <code>Specializations</code> of <code>excludedTypes</code>, and, if <code>excludeImplied = true</code>, all implied <code>Specializations</code>.</p> "
+          ],
+          "bodies": [
+            "removeRedefinedFeatures( inheritableMemberships(excludedNamespaces, excludedTypes, excludeImplied))"
+          ]
+        },
+        {
+          "id": "Core-Types-Type-removeRedefinedFeatures_Membership",
+          "comments": [
+            "<p>Return a subset of <code>memberships</code>, removing those <code>Memberships</code> whose <code>memberElements</code> are <code>Features</code> and for which either of the following two conditions holds:</p>  <ol>  <li>The <code>memberElement</code> of the <code>Membership</code> is included in redefined <code>Features</code> of another <code>Membership</code> in <code>memberships</code>.</li>  <li>One of the redefined <code>Features</code> of the <code>Membership</code> is a directly <code>redefinedFeature</code> of an <code>ownedFeature</code> of this <code>Type</code>.</li> </ol>  <p>For this purpose, the redefined <code>Features</code> of a <code>Membership</code> whose <code>memberElement</code> is a <code>Feature</code> includes the <code>memberElement</code> and all <code>Features</code> directly or indirectly redefined by the <code>memberElement</code>.</p>"
+          ],
+          "bodies": [
+            "let reducedMemberships : Sequence(Membership) =     memberships->reject(mem1 |         memberships->excluding(mem1)->             exists(mem2 | allRedefinedFeaturesOf(mem2)->                 includes(mem1.memberElement))) in let redefinedFeatures : Set(Feature) =      ownedFeature.redefinition.redefinedFeature->asSet() in reducedMemberships->reject(mem | allRedefinedFeaturesOf(mem)->     exists(feature | redefinedFeatures->includes(feature)))"
+          ]
+        }
+      ]
+    },
+    "grammar": {
+      "path": "target/standards/kerml.txt",
+      "pdfSha256": "3bcc96f989bfa9d05cd28e026df3351b795fe8d494187b87bff3db7d96373697",
+      "section": "8.2.4.1.6 Feature Membership",
+      "production": "TypeFeatureMember : OwningMembership = MemberPrefix 'member' ownedRelatedElement += FeatureElement"
+    }
+  },
+  "interpretation": [
+    "A Type is also a Namespace. An explicit member FeatureElement is owned through OwningMembership, without owningFeatureMembership or owningType. Its lexical containing Type must not add feature, parameter, return, portion or contextual Step roles.",
+    "Static Feature.type still uses its own typing, subsetting and last chaining feature through the common checked reducer. Expression.result still comes from the Expression membership proof.",
+    "Ordinary owned namespace members and foreign aliases use the same reciprocal ownership certificate and redefinition reduction; neither becomes a feature merely because its containing namespace is a Type.",
+    "An ordinary member of an end Feature can be its owned cross feature. The prototype requires complete evidence that the enclosing Feature is not an end; true or malformed flags remain incomplete until the crossing obligations are separately supported.",
+    "Type.removeRedefinedFeatures compares local ownedFeature redefinition targets, not all locally owned namespace members. A TypeFeatureMember redefinition does not immediately suppress the inherited original. At the next inheritance level both memberships are incoming, so their shared redefinition closure suppresses the original. A locally owned FeatureMembership also suppresses it directly. The common reducer already implements this distinction; the initial new test expectation was incorrect."
+  ],
+  "baseline": {
+    "inputs": "target/trigger-validation/default-contextual-chain-probe-inputs.json",
+    "sourceSha256": "769e33ec824961dc0e1eae4af8aef44251afb4addb73ba5551ddb40d487549bd",
+    "binarySha256": "9848652ef1c3deac0bb67635d8b0a964c2c8c4ae88130fd5178603054b372659",
+    "log": "target/trigger-validation/default-contextual-chain-probe.log",
+    "logSha256": "1a7a9f2bd76bacca501d40a6cc6fb4304902a5f71d18614817741c7bc5b61b2d",
+    "observed": [
+      "CONTEXT_TYPE\tF::e\tErr(MissingRequiredFamilies)\t1321042\tOk(Null)",
+      "CONTEXT_RESULT\tF::e\tExpressionResultReport { result: Err(IncompleteProvider), steps: 653174 }",
+      "CONTEXT_TYPE\tF::typedSlot\tErr(MissingRequiredFamilies)\t602580\tOk(Null)",
+      "CONTEXT_TYPE\tF::ordinarySlot\tOk([Some(\"ScalarValues::Integer\")])\t602625\tOk(Object {\"@id\": String(\"97205ed6-27b7-54ab-9e9e-4a1a483424a8\")})",
+      "CONTEXT_TYPE\tF::valuePath\tErr(MissingRequiredFamilies)\t576352\tOk(Null)",
+      "CONTEXT_TYPE\tF::ordinaryPath\tOk([Some(\"ScalarValues::Integer\")])\t765477\tOk(Object {\"@id\": String(\"97205ed6-27b7-54ab-9e9e-4a1a483424a8\")})",
+      "CONTEXT_DEFAULTS\tErr(Arguments(IncompleteInputs(IncompleteProvider)))"
+    ]
+  },
+  "candidate": {
+    "directory": "target/trigger-validation/context-member-stage",
+    "runner": "target/trigger-validation/test-context-members.mjs",
+    "files": [
+      {
+        "path": "target/trigger-validation/context-member-stage/json/membership_evidence.rs",
+        "sha256": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d"
+      },
+      {
+        "path": "target/trigger-validation/context-member-stage/json/type_inputs.rs",
+        "sha256": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa"
+      },
+      {
+        "path": "target/trigger-validation/context-member-stage/json/type_relations/namespace_member_tests.rs",
+        "sha256": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc"
+      },
+      {
+        "path": "target/trigger-validation/context-member-stage/json/type_relations/ordinary_features_tests.rs",
+        "sha256": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9"
+      },
+      {
+        "path": "target/trigger-validation/context-member-stage/json/type_relations.rs",
+        "sha256": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683"
+      }
+    ]
+  },
+  "acceptancePartitions": [
+    "exact authored expression, declared feature and chained-result types",
+    "ordinary members retained separately from features/inputs/outputs",
+    "default only on the omitted actual callee feature; namespace-member default excluded",
+    "nested Feature/Step owners and foreign aliases",
+    "15 malformed/unsupported ownership and context partitions, fresh and after a complete query",
+    "complete negative specialization versus malformed unknown",
+    "raw/prepared/serialized identities, no query publication and work-limit retry"
+  ],
+  "open": [
+    "Complete final-source native/WASM, public, conformance and matching requirements qualification.",
+    "Complete default-binding contextual endpoints, connector ancestry/featuring and the recorded normative discrepancy.",
+    "Possible owned cross-feature contexts and complete namespace/typing families remain unqualified.",
+    "Mutually stable conditional construction, adjacent named validations and all C01-C15 remain open."
+  ],
+  "updatedAt": "2026-10-18T18:50:26.120739+00:00",
+  "regressions": [
+    {
+      "log": "target/trigger-validation/context-members-compile-first.log",
+      "reason": "Test mutation needed Row.make_mut().clear(), not Vec.clear(). Production unchanged."
+    },
+    {
+      "log": "target/trigger-validation/context-members-first-acceptance.log",
+      "reason": "Four of five tests passed. Default expectation omitted nine inherited library defaults; replaced with all ten exact identities, preserving namespace-member default exclusion."
+    },
+    {
+      "log": "target/trigger-validation/context-members-expanded.log",
+      "reason": "Initial local namespace-member redefinition test incorrectly expected suppression by ownedMember. Reviewed removeRedefinedFeatures requires ownedFeature for that branch. Corrected expectation and added next-level/inherited and local-FeatureMembership positive suppression partitions; no reducer change."
+    }
+  ],
+  "acceptance": {
+    "corrected": {
+      "status": "pass",
+      "tests": 8,
+      "log": "target/trigger-validation/context-members-corrected.log",
+      "logSha256": "442fd390aa577ba4dfbd0edd44c859ecbeeada3d0a9396df306975de161e35f4",
+      "archivedInputs": {
+        "target/trigger-validation/context-member-corrected-acceptance-stage/json/membership_evidence.rs": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d",
+        "target/trigger-validation/context-member-corrected-acceptance-stage/json/type_inputs.rs": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa",
+        "target/trigger-validation/context-member-corrected-acceptance-stage/json/type_relations/namespace_member_tests.rs": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc",
+        "target/trigger-validation/context-member-corrected-acceptance-stage/json/type_relations/ordinary_features_tests.rs": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9",
+        "target/trigger-validation/context-member-corrected-acceptance-stage/json/type_relations.rs": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683"
+      }
+    },
+    "expandedInitial": {
+      "status": "failed",
+      "log": "target/trigger-validation/context-members-expanded.log",
+      "logSha256": "0068a61793c7121759defc133fbd561816a271b25f9bf72b98d2f58530d66b3e",
+      "counts": [
+        {
+          "suite": "TypeRelations",
+          "passed": 71,
+          "failed": 2
+        },
+        {
+          "suite": "TypeInputs",
+          "passed": 44,
+          "failed": 0
+        },
+        {
+          "suite": "TypeFeatures",
+          "passed": 17,
+          "failed": 0
+        },
+        {
+          "suite": "ReferenceMembers",
+          "passed": 11,
+          "failed": 0
+        }
+      ],
+      "disposition": "Namespace-member inheritance expectation corrected from exact pinned operation and passes in corrected acceptance. New valid-looking role-edit expectation still fails at 10000003 steps and is under isolated diagnosis. Original broader cases pass."
+    },
+    "public": {
+      "status": "pass",
+      "source": "target/trigger-validation/context-members-public.rs",
+      "sourceSha256": "685d795421311bd98675f0788411bf4319d8d20da45553d2148aa8e80702e286",
+      "runner": "target/trigger-validation/test-context-members-public.mjs",
+      "tests": 1,
+      "exitCode": 0,
+      "log": "target/trigger-validation/context-members-public.log",
+      "logSha256": "ac84298ee9bd1ec9b1c467f76785cd472326d7f2bf81d96036624633402664f4"
+    },
+    "roleEditDiagnostic": {
+      "status": "reproduced",
+      "log": "target/trigger-validation/context-member-role-diagnostic-initial.log",
+      "logSha256": "5bb1725323e3d8717b86c456a4467feb2346e166ea328c9e58a034eb1292649d",
+      "observations": [
+        "Cold role edit before construction: exact Integer in 1974810 steps; retry 602599.",
+        "Post-publication role edit: first query 10000003 steps, second 10000004, both WorkLimit.",
+        "Physical static prefix recertification subsequently returns true, so do not classify this as a malformed-role negative or remove the expected positive."
+      ],
+      "costTrace": "target/trigger-validation/context-member-role-diagnostic-costs.log",
+      "costObservations": [
+        "First post-edit retained typing preparation exhausts the limit during static-prefix recertification.",
+        "Second attempt completes recertification at 6412144 steps and reader initialization at 6497856; subsequent complete type comparison exhausts the remaining budget.",
+        "Fine-grained first post-edit trace: recomputing required specializations costs 5822335 steps (623860 to 6446195). The remaining static-prefix construction then exhausts 10000003 before capture.",
+        "Second attempt reuses the completed required plan, but recomputes positional redefinitions from 746606 to 4102210 steps. Prefix creation finishes at 5020095, exact recipe capture/recertification at 6412144.",
+        "After reader initialization at 6497856, the reverse DataValue-to-Integer comparison exhausts the budget. The ordinary Integer-to-DataValue positive comparison in a fresh graph takes 12823 steps.",
+        "Current canonical library planning deliberately does not reuse LegacyV2 prepared-library plans. Do not enable that shortcut without a separate dependency/noninterference proof.",
+        "Potential follow-up: the newly computed static positional table in a captured StaticPrefix is not installed into Builder.positional_redefinitions during recertification. Any reuse must remain bound to complete recipe validation and source/configuration identity; first-query required-plan rebuild cost remains a separate issue."
+      ],
+      "nextTrace": {
+        "status": "completed",
+        "exitCode": 0,
+        "log": "target/trigger-validation/context-member-role-prefix-costs.log",
+        "logSha256": "ea518a2e4ecf4c750abe296f3ff1013bd97137c9566c67da3e9a581bf3867cde",
+        "archivedInputs": {
+          "target/trigger-validation/context-member-role-prefix-trace-stage/json/dynamic_invocations.rs": "83a4584f963f5e01b07c7b5c28e8bc1d0c14b06de04e23d218b618d12a80d96c",
+          "target/trigger-validation/context-member-role-prefix-trace-stage/json/feature_type_projection/adapter.rs": "caf1ebc49d7cc0dc28eb8f95da518e232bb261491133bb5133e8fc989f1db1c1",
+          "target/trigger-validation/context-member-role-prefix-trace-stage/json/feature_type_projection/report.rs": "30bca5bed89366913524c43fb4b9be744d0a62616adee3af6b5bb3577bd8e7bc",
+          "target/trigger-validation/context-member-role-prefix-trace-stage/json/implied.rs": "28e46a4571163951ccd57f4e34bd0e7f32354c310bc4209a2ea7f68b58e4d60d",
+          "target/trigger-validation/context-member-role-prefix-trace-stage/json/membership_evidence.rs": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d",
+          "target/trigger-validation/context-member-role-prefix-trace-stage/json/type_inputs.rs": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa",
+          "target/trigger-validation/context-member-role-prefix-trace-stage/json/type_relations/namespace_member_tests.rs": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc",
+          "target/trigger-validation/context-member-role-prefix-trace-stage/json/type_relations/ordinary_features_tests.rs": "a786c6017261ad82a1e520a81ffadec4a3ea8a0d2c52d1f6b79e9a9e023ed715",
+          "target/trigger-validation/context-member-role-prefix-trace-stage/json/type_relations.rs": "b9d66947ab1cd9ac38811c9403320f58d89f529a2533ab6ad7d481d5c1ccfddf"
+        }
+      }
+    }
+  },
+  "performanceInvestigation": {
+    "status": "SCC expanded regression completed: 256 pass, one known work-limit failure. The new direct graph/DFS/legacy recipe candidate is under isolated execution. Production remains unchanged.",
+    "requiredPlanMeasuredCosts": {
+      "scan": 565162,
+      "kindRequirements": 1770155,
+      "chainBases": 342410,
+      "minimization": 3058898
+    },
+    "candidateChanges": [
+      "Share the already-acquired current StoredStructure with RepositoryTyping TypeRelations.",
+      "Retain a newly computed positional table only after physical prefix validation under the same static authority.",
+      "Use first-seen hash deduplication in the general graph reducer, preserving output order.",
+      "Test a per-source resumable alternate-path traversal; paths exclude that source and are discarded on source change."
+    ],
+    "latestMeasuredBehavior": {
+      "coldTypeSteps": 1398540,
+      "coldRetrySteps": 26329,
+      "postEditFirst": "WorkLimit at 10000062",
+      "postEditRetry": "Exact Integer at 6614474",
+      "interpretation": "Fresh positional reuse repairs repeated post-edit comparison cost, but first required/positional planning still exceeds the limit."
+    },
+    "logs": {
+      "target/trigger-validation/context-member-role-required-costs.log": "006e341efbdc331bcc74c2a722d01a52a2367153fa52274c5c715f4429ae39f3",
+      "target/trigger-validation/context-member-reuse-first.log": "708c12e8c4557aa064c1d485bbdf7735539af804c59eea19bfdda88b649620cc",
+      "target/trigger-validation/context-member-reuse-minimizer.log": "576adebb4638aeb51077dcd5ccc58f01568dcde5a6fa0d86c226c69c654d9a16",
+      "target/trigger-validation/context-member-reuse-diagnostic.log": "4dc83c51af5229244155781f1d3ab49deda21658ff41097f2585aa92afbcf5c3",
+      "target/trigger-validation/context-member-reuse-reverse.log": "1c10f3438b84d3376b49753c056397ce5a5ade9c6b87dbe3773758240fe6c497",
+      "target/trigger-validation/context-member-reverse-diagnostic.log": "f87b322f717c052c31c38d0fc4210cf4043978abcf406f0372904d334b34ef8f",
+      "target/trigger-validation/context-member-shared-first.log": "732b977fd5a45319a3b500e2f0b582799c351946dc22b7d8c34c61f950e9f44f",
+      "target/trigger-validation/context-member-shared-diagnostic.log": "aee6edb5aa5128315023cea3c52e6942b33c1c052cfbcad13999c15ed3795596"
+    },
+    "diagnosticInputs": {
+      "target/trigger-validation/context-member-reuse-diagnostic-stage/json/feature_type_projection/adapter.rs": "5d722f89b35df20f36a23a4608218e448255ca5376e6a4a004d07934e9fce9c3",
+      "target/trigger-validation/context-member-reuse-diagnostic-stage/json/implied.rs": "ae25db19ddce0fdebeef14e681e26bca99556b872e49f65de13f793c483aeb6f",
+      "target/trigger-validation/context-member-reuse-diagnostic-stage/json/membership_evidence.rs": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d",
+      "target/trigger-validation/context-member-reuse-diagnostic-stage/json/type_inputs.rs": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa",
+      "target/trigger-validation/context-member-reuse-diagnostic-stage/json/type_relations/namespace_member_tests.rs": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc",
+      "target/trigger-validation/context-member-reuse-diagnostic-stage/json/type_relations/ordinary_features_tests.rs": "a786c6017261ad82a1e520a81ffadec4a3ea8a0d2c52d1f6b79e9a9e023ed715",
+      "target/trigger-validation/context-member-reuse-diagnostic-stage/json/type_relations.rs": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683"
+    },
+    "remaining": [
+      "Complete frozen final-source qualification.",
+      "Preserve bounded claims; larger graphs and wider ownership/typing families require separate complete obligation review."
+    ],
+    "rejectedPrototypes": [
+      {
+        "stage": "target/trigger-validation/context-member-reuse-stage",
+        "log": "target/trigger-validation/context-member-reuse-reverse.log",
+        "differentialTests": 2,
+        "graphCases": 2560,
+        "roleEdit": "WorkLimit at 10000201",
+        "disposition": "Per-source closure reuse costs more in the full-library workload; superseded, not admitted."
+      },
+      {
+        "stage": "target/trigger-validation/context-member-shared-diagnostic-stage",
+        "log": "target/trigger-validation/context-member-shared-diagnostic.log",
+        "membershipTests": 5,
+        "exhaustiveMembershipCases": 16384,
+        "roleEdit": "First WorkLimit at 10000030; retry exact Integer at 6636247",
+        "disposition": "Shared two-origin membership traversal improves the deliberate overlap benchmark but slightly increases the actual static positional planning cost (2950829 versus 2929056). Not retained in current candidate."
+      }
+    ],
+    "currentCandidate": {
+      "stage": "target/trigger-validation/context-member-index-stage",
+      "status": "Full vendor and public isolated acceptance passed; admitted for final-source qualification.",
+      "log": "target/trigger-validation/context-member-index-forward.log",
+      "inputHashes": {
+        "target/trigger-validation/context-member-index-accepted-stage/json/feature_type_projection/adapter.rs": "1fb062ef5d9f688c41d283976be1f2807f95e27f25ff6935e9afbad83476bc06",
+        "target/trigger-validation/context-member-index-accepted-stage/json/implied/current_graph_tests.rs": "246c781f35a40e9ecf594d851658c921047b68543529cedb7a2e26b6baed23d3",
+        "target/trigger-validation/context-member-index-accepted-stage/json/implied/minimizer_differential_tests.rs": "93a2d575fdb418fd0083e1e18a56f3b53f2f8a3cf873faf1603afb3a32bb4dd2",
+        "target/trigger-validation/context-member-index-accepted-stage/json/implied.rs": "91df261d12964e7b84d35ae76a42879f7759ce18fa1ace49b39e5843ee5bc7b8",
+        "target/trigger-validation/context-member-index-accepted-stage/json/membership_evidence.rs": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d",
+        "target/trigger-validation/context-member-index-accepted-stage/json/structural_index.rs": "0157eda9274226507c2a461234daf3b80e90d480a1c57912374642c1404b2ccb",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_inputs.rs": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_relations/namespace_member_tests.rs": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_relations/ordinary_features_tests.rs": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_relations.rs": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683"
+      },
+      "changes": [
+        "Retain complete specialization row indexing and current physical graph reconstruction.",
+        "Restore faster forward-neighbour cross-component closure caching.",
+        "Mark SCC nodes at discovery so converging reverse edges do not enqueue duplicate frames; component membership and candidate order are preserved.",
+        "Retain measured-boundary exhaustion test and corrected separate-dialect variant fixture."
+      ],
+      "admitted": true,
+      "archive": "target/trigger-validation/context-member-index-accepted-stage",
+      "logSha256": "d2cbf784426412a2fc348233e01033f96741678dde043db6ec11f8197d23420c",
+      "targetedPassed": 116,
+      "fullModel": {
+        "status": "pass",
+        "tests": 1008,
+        "log": "target/trigger-validation/context-member-index-full-model.log",
+        "logSha256": "457625dc4d5c789f3b6fb191d4c482bd96cc15d7d0e3ac37644b95c5aefe73a7",
+        "runtimeSeconds": 518.73
+      }
+    },
+    "recertificationFollowup": {
+      "observedDuplication": [
+        "The fresh static-prefix factory constructs its specialization graph after required and positional planning.",
+        "capture_static_prefix then validates exact physical recipes and calls recertify_physical_static_authority, which gathers all owners and rebuilds specialization reachability from every current row.",
+        "The second graph includes semantic tail rows beyond the static prefix; substituting the prefix graph alone would lose them."
+      ],
+      "sourceAnchors": {
+        "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+        "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+        "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_batch.rs": "fb286a5ba37b55de65d7be9f49e2a5b56fdbca3a2239a4669850e06ca5231c99",
+        "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/library_plans.rs": "ff2f56111f75969995e7a67a2099eba3fd0788dcc0add7128235196abe39f247",
+        "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs": "8b3ac033aaef74baaece8f7be2eac7a78a53a69d3425510f18a76c6e7fd12058"
+      },
+      "requirementsBeforeReuse": [
+        "Reuse only data freshly computed for the same current authority after complete physical-recipe validation; generic supplied auxiliary graphs are not certificates.",
+        "Preserve every semantic tail specialization and virtual chain edge; compare exact per-source first-seen target order with the existing whole-row reconstruction.",
+        "Same-length endpoint/owner edits, missing/duplicate identities, library-name changes and UUID remaps must revoke or re-establish the corresponding evidence.",
+        "Budget failure cannot publish partial current authority; retries must reproduce fresh results and preserve all physical identities."
+      ],
+      "canonicalLibraryAlternative": "Do not enable canonical LibraryPlans by deleting the format guard. Its RowFacts and decision stamp need review against canonical positional imports, annotation completeness, metadata associations, foreign owner dependencies and all names/row revisions. Existing legacy noninterference evidence does not prove that additional scope."
+    },
+    "componentAwareCandidate": {
+      "stage": "target/trigger-validation/context-member-scc-stage",
+      "archive": "target/trigger-validation/context-member-scc-first-stage",
+      "inputHashes": {
+        "target/trigger-validation/context-member-scc-first-stage/json/feature_type_projection/adapter.rs": "1fb062ef5d9f688c41d283976be1f2807f95e27f25ff6935e9afbad83476bc06",
+        "target/trigger-validation/context-member-scc-first-stage/json/implied/minimizer_differential_tests.rs": "93a2d575fdb418fd0083e1e18a56f3b53f2f8a3cf873faf1603afb3a32bb4dd2",
+        "target/trigger-validation/context-member-scc-first-stage/json/implied.rs": "ac21eb6f395da95216f12ce1bba965adbf454e2dceec23bf2174dc4885ebf4e2",
+        "target/trigger-validation/context-member-scc-first-stage/json/membership_evidence.rs": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d",
+        "target/trigger-validation/context-member-scc-first-stage/json/type_inputs.rs": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa",
+        "target/trigger-validation/context-member-scc-first-stage/json/type_relations/namespace_member_tests.rs": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc",
+        "target/trigger-validation/context-member-scc-first-stage/json/type_relations/ordinary_features_tests.rs": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9",
+        "target/trigger-validation/context-member-scc-first-stage/json/type_relations.rs": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683"
+      },
+      "proof": [
+        "The sequential minimizer removes a candidate only when another path exists, so every finalized removal preserves full-graph reachability and strongly connected components.",
+        "For a live source-to-neighbour edge crossing components, the neighbour cannot reach the source even in the original graph. Its original full closure therefore cannot rely on the temporarily disabled candidate edge and remains a valid alternate-path witness after previous redundant removals.",
+        "Within one component, use the current retained graph excluding the tested source. Reuse these neighbour closures only while processing that same source, when only its outgoing candidates change.",
+        "A resumable traversal finishes each expanded row before suspension. First-seen target order and the existing stable candidate order are preserved. ReferenceSubsetting candidates and fixed-prefix candidates remain retained.",
+        "All caches are local to one immutable-input minimization call; interrupted reductions return no candidate graph. No budget increase or canonical LibraryPlans enablement."
+      ],
+      "requiredTests": [
+        "Exact retained bits and ordered targets against independent Floyd-Warshall oracle on 2560 graph/candidate configurations.",
+        "Full-library first post-edit type report and owningType null.",
+        "Factory-only freshly validated positional reuse, changed-parameter refusal, generic-prefix auxiliary-metadata isolation and budget retry.",
+        "Existing minimizer, positional, static-prefix, type projection, membership and namespace-member regressions."
+      ],
+      "targetedOutcome": {
+        "testsPassed": 7,
+        "firstEditedQuery": "WorkLimit at 10000001",
+        "log": "target/trigger-validation/context-member-scc-first.log",
+        "logSha256": "b6f88b3cf101d5fce91e575eece1ed1721869ee7e65782bd705679cbed7c3b4c"
+      },
+      "costTrace": {
+        "log": "target/trigger-validation/context-member-scc-diagnostic.log",
+        "logSha256": "9561d7781d59945fae3de391cd6484179b5a735ac8c788ab3153bb837784de28",
+        "requiredPlanFinishedAt": 5768143,
+        "previousSimpleDedupRequiredPlanFinishedAt": 6433218,
+        "requiredPlanReduction": 665075,
+        "staticPositionalFinishedAt": 9418524,
+        "retry": {
+          "prefixFinishedAt": 5020095,
+          "captureFinishedAt": 6489975,
+          "readerFinishedAt": 6588182,
+          "exactTypeFinishedAt": 6614474
+        },
+        "interpretation": "Required-plan work decreases by 665075 versus the simple-dedup candidate, but complete recertification and the first query still do not fit."
+      },
+      "expandedRun": {
+        "status": "completed with known first-query failure",
+        "log": "target/trigger-validation/context-member-scc-expanded.log",
+        "logSha256": "72b3eae4e34554ce6d81b2a7a1cfa0f16a047efe0f1b6563746dc570f6b8943c",
+        "passed": 256,
+        "failed": 1,
+        "suites": [
+          {
+            "name": "implied",
+            "passed": 77,
+            "failed": 0
+          },
+          {
+            "name": "type_relations",
+            "passed": 72,
+            "failed": 1
+          },
+          {
+            "name": "feature_type_projection",
+            "passed": 35,
+            "failed": 0
+          },
+          {
+            "name": "type_inputs",
+            "passed": 44,
+            "failed": 0
+          },
+          {
+            "name": "type_features",
+            "passed": 17,
+            "failed": 0
+          },
+          {
+            "name": "reference_memberships",
+            "passed": 11,
+            "failed": 0
+          }
+        ]
+      }
+    },
+    "directGraphCandidate": {
+      "stage": "target/trigger-validation/context-member-graph-stage",
+      "archive": "target/trigger-validation/context-member-graph-corrected-stage",
+      "inputHashes": {
+        "target/trigger-validation/context-member-graph-corrected-stage/json/feature_type_projection/adapter.rs": "1fb062ef5d9f688c41d283976be1f2807f95e27f25ff6935e9afbad83476bc06",
+        "target/trigger-validation/context-member-graph-corrected-stage/json/implied/current_graph_tests.rs": "278a2e4f19ca0b8ac14b4b9d2eb25d173edd5cce613678c1df7af61026c17ee0",
+        "target/trigger-validation/context-member-graph-corrected-stage/json/implied/minimizer_differential_tests.rs": "93a2d575fdb418fd0083e1e18a56f3b53f2f8a3cf873faf1603afb3a32bb4dd2",
+        "target/trigger-validation/context-member-graph-corrected-stage/json/implied.rs": "6cc5134f15b8c5de0c1c35ad5b680a410c3a0ec45950516907dc89408f8e84e1",
+        "target/trigger-validation/context-member-graph-corrected-stage/json/membership_evidence.rs": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d",
+        "target/trigger-validation/context-member-graph-corrected-stage/json/type_inputs.rs": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa",
+        "target/trigger-validation/context-member-graph-corrected-stage/json/type_relations/namespace_member_tests.rs": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc",
+        "target/trigger-validation/context-member-graph-corrected-stage/json/type_relations/ordinary_features_tests.rs": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9",
+        "target/trigger-validation/context-member-graph-corrected-stage/json/type_relations.rs": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683"
+      },
+      "status": "Terminal: 78 implied tests pass; required first post-edit query still exceeds the unchanged work limit.",
+      "changes": [
+        "Current physical reachability is built directly in stored-row order, with virtual chain edges last and exact first-seen deduplication. The candidate minimizer is no longer used when there are no candidates to reduce.",
+        "Source aliases use the same precedence and preserve absent-versus-malformed distinction. The full stored-plus-semantic owner map is built only if a source alias is absent.",
+        "DFS postorder now expands one frame per newly visited node and scans neighbours in the same reverse order, avoiding queued duplicate frames.",
+        "Legacy recipe identity calculation obtains the full raw owner map only when a retained user VariantMembership actually consumes it.",
+        "Static-prefix graph construction appends only positional rows; retained requirement rows are already present in required.graph."
+      ],
+      "acceptance": [
+        "Keep original two independent minimizer differential tests and five positional cache tests.",
+        "New current-graph differential test compares the direct builder against full no-candidate reduction under both graph formats, authored/generated missing sources, malformed alias precedence, duplicate edges, semantic tails, virtual chains, ID remaps and budget retries.",
+        "Run all implied tests and require the first post-edit exact Integer report and owningType null before any admission."
+      ],
+      "costTrace": {
+        "log": "target/trigger-validation/context-member-graph-diagnostic.log",
+        "logSha256": "adfd78e119fe04fc36b58c9b6178b3ddec56e8d8305843d096436669f3d8e04b",
+        "requiredPlanFinishedAt": 5633773,
+        "staticPositionalFinishedAt": 9284154,
+        "prefixFinishedAt": 9547708,
+        "firstCurrentGraphStartedAt": 9693181,
+        "retryExactTypeFinishedAt": 5218820,
+        "estimatedFirstCompleteCost": 10400764,
+        "estimateMethod": "Retry completed cost plus difference in required-plan work; estimate only, the first query remains a measured failure."
+      }
+    },
+    "ancestorCandidate": {
+      "stage": "target/trigger-validation/context-member-ancestor-stage",
+      "status": "Terminal: 78 existing implied tests pass; new variant test has an invalid mixed-dialect library fixture; first role edit fails at 10030183 steps.",
+      "log": "target/trigger-validation/context-member-ancestor-first.log",
+      "logSha256": "19b90d07a8e340db8301e338eb93b1107f677767e818b1d93c5d1d7599721977",
+      "change": "Cache original reverse ancestor closures by candidate target for cross-component alternate paths. Retain the current source-excluding local search within one component.",
+      "admitted": false
+    },
+    "ancestorIndexedCandidate": {
+      "stage": "target/trigger-validation/context-member-index-stage",
+      "status": "Terminal: variant recipe, 2 minimizer differential and 36 structural tests pass. Positive role edit still fails; graph test used an obsolete fixed 20-step exhaustion assumption.",
+      "log": "target/trigger-validation/context-member-index-first.log",
+      "inputHashes": {
+        "target/trigger-validation/context-member-index-stage/json/feature_type_projection/adapter.rs": "1fb062ef5d9f688c41d283976be1f2807f95e27f25ff6935e9afbad83476bc06",
+        "target/trigger-validation/context-member-index-stage/json/implied/current_graph_tests.rs": "a353e89178b6a5c16a1770d827dd43a37334ce0cdb6ae717b192273a2c4260da",
+        "target/trigger-validation/context-member-index-stage/json/implied/minimizer_differential_tests.rs": "93a2d575fdb418fd0083e1e18a56f3b53f2f8a3cf873faf1603afb3a32bb4dd2",
+        "target/trigger-validation/context-member-index-stage/json/implied.rs": "e76015668d644e76fd6e030d6538509c4235e8147775ca53692f210695775bd7",
+        "target/trigger-validation/context-member-index-stage/json/membership_evidence.rs": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d",
+        "target/trigger-validation/context-member-index-stage/json/structural_index.rs": "0157eda9274226507c2a461234daf3b80e90d480a1c57912374642c1404b2ccb",
+        "target/trigger-validation/context-member-index-stage/json/type_inputs.rs": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa",
+        "target/trigger-validation/context-member-index-stage/json/type_relations/namespace_member_tests.rs": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc",
+        "target/trigger-validation/context-member-index-stage/json/type_relations/ordinary_features_tests.rs": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9",
+        "target/trigger-validation/context-member-index-stage/json/type_relations.rs": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683"
+      },
+      "changes": [
+        "Add a specialization-row index during the existing complete structural scan; preserve row order, standalone/generated/tail rows and exact revision/authored-boundary guards.",
+        "Use a current index for required and physical graph gathering; fall back to scanning all requested rows when absent or stale. Endpoint/alias/owner checks remain unchanged.",
+        "Compare indexed/fallback graphs under both graph formats, source/target mutations, metaclass changes, generated tails, UUID changes, explicit prefixes and budget retry. Frozen-prefix structural comparisons now also check the new index.",
+        "Correct the new variant fixture by placing KerML declarations in a .kerml library and SysML declarations in a .sysml library."
+      ],
+      "admitted": false,
+      "archive": "target/trigger-validation/context-member-index-first-stage",
+      "logSha256": "70a8127a9e1647bef29b0dcf7c817a054b1499b0a7f64c44c850d15371ba3d24"
+    },
+    "ancestorIndexedTrace": {
+      "log": "target/trigger-validation/context-member-index-diagnostic.log",
+      "logSha256": "aebe3b9935d358d635b61c23c343c02b861b65bebbf5b51618f1b0cbc7a8b0bd",
+      "currentGraphTestsPassed": 2,
+      "requiredPlanFinishedAt": 5885816,
+      "prefixFinishedAt": 9799751,
+      "retryCurrentGraphCost": 209136,
+      "retryExactTypeSteps": 4959560,
+      "firstResult": "WorkLimit at 10000001",
+      "estimatedFullFirstSteps": 10393547,
+      "finding": "Reverse ancestor caching worsens required minimization versus forward SCC caching. The current structural index saves 259260 units in physical graph gathering. The graph exhaustion test now uses zero, half and one-less-than measured complete work, so improvements in work no longer cause false failures."
+    }
+  },
+  "admission": {
+    "recordedAt": "2026-10-18T18:21:57.432366+00:00",
+    "previousQualifiedKernelInputSha256": "73b44bcd0d7606066d5fc8f3187ed5b6fe131d348d572c4bebb190b10cbc6819",
+    "kernelInputSha256": "52813ee85839cef183e993ed155113272e72bc60f22c815a2563df6a4b85d2bf",
+    "anchorReview": "target/trigger-validation/namespace-feature-members-anchor-review.json",
+    "files": {
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs": "1fb062ef5d9f688c41d283976be1f2807f95e27f25ff6935e9afbad83476bc06",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/current_graph_tests.rs": "246c781f35a40e9ecf594d851658c921047b68543529cedb7a2e26b6baed23d3",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/minimizer_differential_tests.rs": "93a2d575fdb418fd0083e1e18a56f3b53f2f8a3cf873faf1603afb3a32bb4dd2",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "91df261d12964e7b84d35ae76a42879f7759ce18fa1ace49b39e5843ee5bc7b8",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_evidence.rs": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs": "0157eda9274226507c2a461234daf3b80e90d480a1c57912374642c1404b2ccb",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/namespace_member_tests.rs": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/ordinary_features_tests.rs": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683",
+      "crates/sysml-kernel/tests/namespace_feature_members.rs": "685d795421311bd98675f0788411bf4319d8d20da45553d2148aa8e80702e286"
+    },
+    "diffReview": "target/trigger-validation/namespace-feature-members-diff-review.json",
+    "diffReviewSha256": "647993f1f7989e8b690b64f5b2d9d7521805cb825d952527c6960b5cf6fe1a1f"
+  },
+  "finalCandidateAcceptance": {
+    "private": {
+      "status": "pass",
+      "tests": 1008,
+      "log": "target/trigger-validation/context-member-index-full-model.log",
+      "logSha256": "457625dc4d5c789f3b6fb191d4c482bd96cc15d7d0e3ac37644b95c5aefe73a7",
+      "archivedInputs": {
+        "target/trigger-validation/context-member-index-accepted-stage/json/feature_type_projection/adapter.rs": "1fb062ef5d9f688c41d283976be1f2807f95e27f25ff6935e9afbad83476bc06",
+        "target/trigger-validation/context-member-index-accepted-stage/json/implied/current_graph_tests.rs": "246c781f35a40e9ecf594d851658c921047b68543529cedb7a2e26b6baed23d3",
+        "target/trigger-validation/context-member-index-accepted-stage/json/implied/minimizer_differential_tests.rs": "93a2d575fdb418fd0083e1e18a56f3b53f2f8a3cf873faf1603afb3a32bb4dd2",
+        "target/trigger-validation/context-member-index-accepted-stage/json/implied.rs": "91df261d12964e7b84d35ae76a42879f7759ce18fa1ace49b39e5843ee5bc7b8",
+        "target/trigger-validation/context-member-index-accepted-stage/json/membership_evidence.rs": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d",
+        "target/trigger-validation/context-member-index-accepted-stage/json/structural_index.rs": "0157eda9274226507c2a461234daf3b80e90d480a1c57912374642c1404b2ccb",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_inputs.rs": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_relations/namespace_member_tests.rs": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_relations/ordinary_features_tests.rs": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_relations.rs": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683"
+      }
+    },
+    "public": {
+      "status": "pass",
+      "tests": 1,
+      "source": "crates/sysml-kernel/tests/namespace_feature_members.rs",
+      "sourceSha256": "685d795421311bd98675f0788411bf4319d8d20da45553d2148aa8e80702e286",
+      "log": "target/trigger-validation/context-member-index-public.log",
+      "logSha256": "23e82e284113702b36cbf95bf809977dd7bc56d1fa9ce3c99ecc1b6a6d3f18aa"
+    }
+  },
+  "finalSourceQualification": {
+    "status": "pass",
+    "kernelInputSha256": "52813ee85839cef183e993ed155113272e72bc60f22c815a2563df6a4b85d2bf",
+    "evidence": "docs/evidence/namespace-feature-members-progress-macos-arm64.json",
+    "counts": {
+      "native": 105,
+      "public": 39,
+      "conformance": 133,
+      "provenance": 16,
+      "privateModel": 1008
+    },
+    "reports": {
+      "conformance": {
+        "path": "docs/evidence/namespace-feature-members-conformance-macos-arm64.json",
+        "sha256": "31a7d545883f2eb3dfb51af679b08616e059dda531b0b777b85e6afe0f37be8a",
+        "status": "pass"
+      },
+      "requirements": {
+        "path": "docs/evidence/namespace-feature-members-requirements-macos-arm64.json",
+        "sha256": "373db2a86a33f1cc6fea06ee2d0d834cc06578b73a631cc4f832c64eee14caa8",
+        "status": "pass"
+      }
+    }
+  }
+}

@@ -137,6 +137,43 @@ pub(super) fn member(
     Some(member)
 }
 
+/// Reciprocal namespace ownership for an ordinary Feature member, including
+/// TypeFeatureMember. This proves no FeatureMembership/positional role. A member
+/// of an end Feature may be its owned cross feature and needs a separate proof.
+pub(super) fn ordinary_namespace_feature_owner(
+    b: &Builder,
+    raw: &StoredStructure,
+    feature: usize,
+    steps: &mut usize,
+) -> Option<usize> {
+    charge(steps, 1)?;
+    let element = b.elements.get(feature)?;
+    if !conforms(element.ty, "Feature") {
+        return None;
+    }
+    let membership = element.owning_relationship?;
+    if b.elements.get(membership)?.ty != "OwningMembership" {
+        return None;
+    }
+    let owner =
+        super::semantic_ownership::checked_relationship_carrier(b, raw, membership, steps)??;
+    let namespace = b.elements.get(owner)?;
+    if !conforms(namespace.ty, "Namespace")
+        || !raw.membership_domains(b, steps)?.owner_complete(owner)
+        || member(b, raw, owner, membership, steps) != Some(feature)
+        || raw.metadata_annotation_targets.contains(&owner)
+        || b.metadata_of.get(&owner).is_some_and(|m| !m.is_empty())
+        || (conforms(namespace.ty, "Feature")
+            && namespace
+                .props
+                .get("isEnd")
+                .is_some_and(|v| v.as_bool() != Some(false)))
+    {
+        return None;
+    }
+    Some(owner)
+}
+
 /// Complete local FeatureValue selection, including inverse ownership claims.
 /// The outer None means malformed/incomplete evidence; Some(None) proves absence.
 /// Value flags are structurally checked but their semantic applicability belongs

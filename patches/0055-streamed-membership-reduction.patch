@@ -1,0 +1,256 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_projection.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_projection.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_projection.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_projection.rs
+@@ -125,37 +125,35 @@
+                 }
+                 continue;
+             }
+-            let closure = traversal.reachable_budget(feature, redefinitions, steps)?;
+-            charge(steps, closure.len().saturating_mul(2))?;
+             // Reflexive closure suppresses another Membership of this
+             // same Feature, but never suppresses its own Membership.
+-            self.shadow.extend(
+-                closure
+-                    .iter()
+-                    .copied()
+-                    .filter(|&target| target != feature || count > 1),
+-            );
+-            if closure.iter().any(|t| self.owned_direct.contains(t)) {
++            // Consume each reached identity while walking: materializing a
++            // closure and scanning it twice repeats work for every inherited
++            // Feature of every Type. The graph remains fixed during this walk;
++            // fresh marks still observe additions between reductions.
++            let mut owned_match = false;
++            traversal.for_each_reachable_budget(feature, redefinitions, steps, |target| {
++                if target != feature || count > 1 {
++                    self.shadow.insert(target);
++                }
++                owned_match |= self.owned_direct.contains(&target);
++            })?;
++            if owned_match {
+                 self.shadow.insert(feature);
+             }
+         }
+-        charge(
+-            steps,
+-            inherited
+-                .len()
+-                .saturating_mul(2)
+-                .saturating_add(node.owned.len()),
+-        )?;
+-        inherited
+-            .retain(|m| !self.counts.contains_key(&m.member) || !self.shadow.contains(&m.member));
+-        let surviving = inherited;
++        charge(steps, inherited.len().saturating_add(node.owned.len()))?;
+         let mut features = node.owned.clone();
+-        features.extend(surviving.iter().filter_map(|membership| {
+-            facts
+-                .is_feature_membership(membership.relationship)
+-                .then_some(membership.member)
+-        }));
+-        Some((features, surviving))
++        // Retain membership order and collect its Feature projection together.
++        inherited.retain(|membership| {
++            let survives = !self.counts.contains_key(&membership.member)
++                || !self.shadow.contains(&membership.member);
++            if survives && facts.is_feature_membership(membership.relationship) {
++                features.push(membership.member);
++            }
++            survives
++        });
++        Some((features, inherited))
+     }
+     pub(super) fn export(
+         &mut self,
+@@ -320,21 +318,38 @@
+         graph: &dyn super::positional::DirectBases,
+         steps: &mut Option<&mut usize>,
+     ) -> Option<&[usize]> {
++        let mut reached = std::mem::take(&mut self.reached);
++        reached.clear();
++        let result = self.for_each_reachable_budget(source, graph, steps, |e| reached.push(e));
++        self.reached = reached;
++        result?;
++        Some(&self.reached)
++    }
++
++    /// Visit a reflexive closure once, without an intermediate collection.
++    /// Each bounded visit includes its constant-time consumer. No graph answer
++    /// survives this call; only traversal scratch storage is retained.
++    fn for_each_reachable_budget(
++        &mut self,
++        source: usize,
++        graph: &dyn super::positional::DirectBases,
++        steps: &mut Option<&mut usize>,
++        mut visit: impl FnMut(usize),
++    ) -> Option<()> {
+         charge(steps, 1)?;
+         self.begin(steps)?;
+         self.todo.clear();
+-        self.reached.clear();
+         self.todo.push(source);
+         while let Some(e) = self.todo.pop() {
+             charge(steps, 1)?;
+             if self.visit(e) {
+-                self.reached.push(e);
++                visit(e);
+                 charge(steps, graph.get(&e).map_or(0, Vec::len))?;
+                 self.todo
+                     .extend(graph.get(&e).into_iter().flatten().copied());
+             }
+         }
+-        Some(&self.reached)
++        Some(())
+     }
+ }
+ 
+@@ -351,6 +366,149 @@
+ #[cfg(test)]
+ mod tests {
+     use super::*;
++
++    struct Facts;
++    impl MembershipFacts for Facts {
++        fn is_feature(&self, member: usize) -> bool {
++            member < 12
++        }
++        fn is_feature_membership(&self, relationship: usize) -> bool {
++            relationship % 3 != 0
++        }
++        fn is_protected(&self, relationship: usize) -> bool {
++            relationship % 2 == 0
++        }
++    }
++
++    /// Deliberately pairwise oracle: apply the membership suppression rule to
++    /// each identity independently, without the production shadow-set algebra.
++    fn reference_reduction(
++        node: &Node,
++        exported: &HashMap<usize, Vec<Membership>>,
++        graph: &HashMap<usize, Vec<usize>>,
++    ) -> (Vec<usize>, Vec<Membership>) {
++        let closure = |source| {
++            let mut reached = HashSet::new();
++            let mut todo = vec![source];
++            while let Some(at) = todo.pop() {
++                if reached.insert(at) {
++                    todo.extend(graph.get(&at).into_iter().flatten().copied());
++                }
++            }
++            reached
++        };
++        let mut inherited = Vec::new();
++        for base in &node.bases {
++            for &membership in &exported[base] {
++                if !inherited
++                    .iter()
++                    .any(|m: &Membership| m.relationship == membership.relationship)
++                {
++                    inherited.push(membership);
++                }
++            }
++        }
++        let surviving: Vec<_> = inherited
++            .iter()
++            .copied()
++            .filter(|m| {
++                if !Facts.is_feature(m.member) {
++                    return true;
++                }
++                let own_closure = closure(m.member);
++                !inherited.iter().any(|other| {
++                    other.relationship != m.relationship
++                        && Facts.is_feature(other.member)
++                        && closure(other.member).contains(&m.member)
++                }) && !node.owned.iter().any(|owned| {
++                    graph
++                        .get(owned)
++                        .into_iter()
++                        .flatten()
++                        .any(|target| own_closure.contains(target))
++                })
++            })
++            .collect();
++        let mut features = node.owned.clone();
++        features.extend(surviving.iter().filter_map(|m| {
++            Facts
++                .is_feature_membership(m.relationship)
++                .then_some(m.member)
++        }));
++        (features, surviving)
++    }
++
++    #[test]
++    fn streamed_reduction_matches_pairwise_rules_through_graph_changes_and_budget_retry() {
++        let mut graph: HashMap<usize, Vec<usize>> = HashMap::new();
++        let mut reduction = Reduction::default();
++        let mut dense = Reachability::new(16);
++        let mut sparse = Reachability::sparse();
++        for round in 0..96 {
++            // Repeated edges, cycles, self-edges and removals must never reuse
++            // an earlier closure. Distinct memberships of one Feature remain
++            // distinct until the reflexive suppression rule removes them.
++            let edges = graph.entry(round % 12).or_default();
++            if round % 5 == 0 {
++                edges.clear();
++            }
++            edges.push((round * 7 + round / 12) % 12);
++            let mut exported = HashMap::new();
++            for base in 0..3 {
++                exported.insert(
++                    base,
++                    (0..24)
++                        .filter(|i| (i + base + round) % 4 != 0)
++                        .map(|i| Membership {
++                            relationship: 100 + i,
++                            member: (i + round) % 16,
++                        })
++                        .collect(),
++                );
++            }
++            let node = Node {
++                owned: if round % 3 == 0 {
++                    vec![]
++                } else {
++                    vec![round % 12, (round * 5 + 3) % 12]
++                },
++                owned_memberships: vec![],
++                bases: vec![round % 3, (round + 1) % 3, (round + 2) % 3],
++                public_imports: vec![],
++                protected_imports: vec![],
++                memberships_complete: true,
++            };
++            let expected = reference_reduction(&node, &exported, &graph);
++            for traversal in [&mut dense, &mut sparse] {
++                let mut exhausted = crate::eval::MAX_STEPS - 100;
++                assert!(
++                    reduction
++                        .reduce(
++                            &node,
++                            &exported,
++                            &graph,
++                            traversal,
++                            &Facts,
++                            &mut Some(&mut exhausted),
++                        )
++                        .is_none()
++                );
++                let (features, memberships) = reduction
++                    .reduce(
++                        &node,
++                        &exported,
++                        &graph,
++                        traversal,
++                        &Facts,
++                        &mut Some(&mut 0),
++                    )
++                    .unwrap();
++                assert_eq!(features, expected.0, "round {round}");
++                assert!(memberships == expected.1, "round {round}");
++            }
++        }
++    }
++
+     #[test]
+     fn sparse_wide_to_small_traversal_work_does_not_retain_wide_clear_cost() {
+         let graph = HashMap::from([(0, (1..10_000).collect()), (10_000, vec![10_001])]);

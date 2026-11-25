@@ -51,11 +51,352 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs
          binding_ids[0],
          None,
          vec![binding],
-@@ -525,6 +536,7 @@
+@@ -416,17 +427,82 @@
+     (binding, first, second)
+ }
+ 
+-pub(super) struct ConstructorDefaultPlan {
++pub(super) struct DefaultBindingPlan {
+     expression: usize,
+-    result: usize,
++    owner: usize,
+     feature: usize,
+     value: usize,
+     ids: [Uuid; 8],
+ }
+-impl ConstructorDefaultPlan {
++impl DefaultBindingPlan {
+     pub(super) fn ids(&self) -> impl Iterator<Item = Uuid> + '_ {
+         self.ids.iter().copied()
+     }
++}
++/// One connector per effective FeatureValue identity, even when multiple
++/// surviving features inherit that same valuation. Stage the whole owner's
++/// family only after every generated identity has passed collision checks.
++pub(super) fn plan_default_bindings(
++    b: &mut Builder,
++    expression: usize,
++    owner: usize,
++    defaults: &[super::EffectiveDefaultBinding],
++    reserved: &HashSet<Uuid>,
++    steps: &mut usize,
++) -> Option<Vec<DefaultBindingPlan>> {
++    let mut plans = Vec::new();
++    let mut valuations = HashSet::new();
++    let mut ids_seen = HashSet::new();
++    for default in defaults {
++        charge(steps, 1)?;
++        if !valuations.insert(default.valuation) {
++            continue;
++        }
++        charge(steps, 8)?;
++        let binding = default_binding_id(b, owner, default);
++        let id = |suffix: &str| {
++            Uuid::new_v5(
++                &Uuid::NAMESPACE_OID,
++                format!("{binding}/{suffix}").as_bytes(),
++            )
++        };
++        let ids = [
++            id("membership"),
++            binding,
++            id("endMembership/0"),
++            id("end/0"),
++            id("reference/0"),
++            id("endMembership/1"),
++            id("end/1"),
++            id("reference/1"),
++        ];
++        for generated in ids {
++            if b.element_index_of_uuid(generated).is_some()
++                || reserved.contains(&generated)
++                || !ids_seen.insert(generated)
++            {
++                return None;
++            }
++        }
++        plans.push(DefaultBindingPlan {
++            expression,
++            owner,
++            feature: default.feature_with_value.0,
++            value: default.value.0,
++            ids,
++        });
++    }
++    Some(plans)
++}
++fn default_binding_id(b: &Builder, owner: usize, default: &super::EffectiveDefaultBinding) -> Uuid {
++    Uuid::new_v5(
++        &Uuid::NAMESPACE_OID,
++        format!(
++            "{}/implied/defaultBinding/{}",
++            b.elements[owner].id, b.elements[default.valuation.0].id
++        )
++        .as_bytes(),
++    )
+ }
+ /// Omitted defaults share constructor argument selection and the checked
+ /// redefinition provider. Incomplete constructors contribute no partial family.
+@@ -434,7 +510,7 @@
+     b: &mut Builder,
+     reserved: &HashSet<Uuid>,
+     steps: &mut usize,
+-) -> Option<Vec<ConstructorDefaultPlan>> {
++) -> Option<Vec<DefaultBindingPlan>> {
+     if b.graph_format != crate::model::GraphFormat::CanonicalV3 {
+         return Some(Vec::new());
+     }
+@@ -461,60 +537,25 @@
+             charge(steps, 0)?;
+             continue;
+         };
+-        let mut candidate = Vec::new();
+-        let mut candidate_ids = HashSet::new();
+-        let mut valid = true;
+-        for default in defaults {
+-            charge(steps, 8)?;
+-            let owner_id = b.elements[arguments.result.0].id;
+-            let valuation_id = b.elements[default.valuation.0].id;
+-            let binding = Uuid::new_v5(
+-                &Uuid::NAMESPACE_OID,
+-                format!("{owner_id}/implied/defaultBinding/{valuation_id}").as_bytes(),
+-            );
+-            let id = |suffix: &str| {
+-                Uuid::new_v5(
+-                    &Uuid::NAMESPACE_OID,
+-                    format!("{binding}/{suffix}").as_bytes(),
+-                )
+-            };
+-            let ids = [
+-                id("membership"),
+-                binding,
+-                id("endMembership/0"),
+-                id("end/0"),
+-                id("reference/0"),
+-                id("endMembership/1"),
+-                id("end/1"),
+-                id("reference/1"),
+-            ];
+-            for generated in ids {
+-                if b.element_index_of_uuid(generated).is_some()
+-                    || assigned.contains(&generated)
+-                    || !candidate_ids.insert(generated)
+-                {
+-                    valid = false;
+-                }
+-            }
+-            candidate.push(ConstructorDefaultPlan {
+-                expression,
+-                result: arguments.result.0,
+-                feature: default.feature_with_value.0,
+-                value: default.value.0,
+-                ids,
+-            });
+-        }
+-        if valid {
+-            assigned.extend(candidate_ids);
++        if let Some(candidate) = plan_default_bindings(
++            b,
++            expression,
++            arguments.result.0,
++            &defaults,
++            &assigned,
++            steps,
++        ) {
++            assigned.extend(candidate.iter().flat_map(|plan| plan.ids()));
+             plans.extend(candidate);
+         }
++        charge(steps, 0)?;
+     }
+     Some(plans)
+ }
+-pub(super) fn stage_constructor_default(
++pub(super) fn stage_default_binding(
+     b: &Builder,
+     ownership: &mut SemanticOwnership,
+-    plan: ConstructorDefaultPlan,
++    plan: DefaultBindingPlan,
+     start: usize,
+     output: &mut Vec<Elem>,
+ ) -> ([(Uuid, Uuid); 2], [super::local_featuring::Role; 2]) {
+@@ -523,8 +564,9 @@
+     let (binding, first, second) = stage_binding(
+         b,
          ownership,
-         plan.result,
+-        plan.result,
++        plan.owner,
          plan.expression,
 +        BindingMembership::Member,
          plan.feature,
          value_id,
          &plan.ids,
+@@ -550,20 +592,15 @@
+ 
+ /// Verify the published subtree by reciprocal membership and typed endpoint
+ /// evidence. Source isImplied flags cannot stand in for a generated owner.
+-pub(super) fn constructor_default_present(
++pub(super) fn default_binding_present(
+     b: &mut Builder,
+     owner: usize,
+-    default: &super::constructor_bindings::ConstructorDefaultBinding,
++    default: &super::EffectiveDefaultBinding,
+     steps: &mut usize,
+ ) -> bool {
+     let checked = (|| {
+         let raw = StoredStructure::for_query(b, steps)?;
+-        let owner_id = b.elements[owner].id;
+-        let valuation_id = b.elements[default.valuation.0].id;
+-        let binding_id = Uuid::new_v5(
+-            &Uuid::NAMESPACE_OID,
+-            format!("{owner_id}/implied/defaultBinding/{valuation_id}").as_bytes(),
+-        );
++        let binding_id = default_binding_id(b, owner, default);
+         let binding = raw.element_for_uuid(b, binding_id)?;
+         if b.elements[binding].ty != "BindingConnector" || binding < b.explicit_len() {
+             return None;
+@@ -576,74 +613,80 @@
+         {
+             return None;
+         }
+-        let members = super::semantic_ownership::owned_relationships(b, binding)?;
+-        charge(steps, members.len())?;
+-        let members: Vec<_> = members
+-            .iter()
+-            .filter(|&rel| b.elements[rel].ty == "EndFeatureMembership")
+-            .collect();
+-        if members.len() != 2 {
+-            return None;
+-        }
+-        for (membership, expected) in members
+-            .into_iter()
+-            .zip([default.feature_with_value.0, default.value.0])
+-        {
+-            let end = super::membership_evidence::member(b, &raw, binding, membership, steps)?;
+-            if b.elements[end].ty != "Feature"
+-                || b.elements[end].props.get("isEnd").and_then(|v| v.as_bool()) != Some(true)
+-                || !raw.membership_domains(b, steps)?.owner_complete(binding)
+-            {
+-                return None;
+-            }
+-            let relationships = super::semantic_ownership::owned_relationships(b, end)?;
+-            charge(steps, relationships.len())?;
+-            let references: Vec<_> = relationships
+-                .iter()
+-                .filter(|&rel| b.elements[rel].ty == "ReferenceSubsetting")
+-                .collect();
+-            if references.len() != 1
+-                || super::semantic_ownership::checked_relationship_carrier(
+-                    b,
+-                    &raw,
+-                    references[0],
+-                    steps,
+-                ) != Some(Some(end))
+-            {
+-                return None;
+-            }
+-            let typing = raw.typing(b, steps)?;
+-            if typing.sources_incomplete {
+-                return None;
+-            }
+-            let incoming = typing
+-                .relationships
+-                .get(&end)
+-                .map_or(&[][..], Vec::as_slice);
+-            charge(steps, incoming.len())?;
+-            if incoming.iter().any(|&relationship| {
+-                b.elements[relationship].ty == "ReferenceSubsetting"
+-                    && relationship != references[0]
+-            }) {
+-                return None;
+-            }
+-            let target = super::type_relations::endpoint_with_carrier(
+-                b,
+-                end,
+-                Some(end),
+-                references[0],
+-                &["specific", "subsettingFeature", "referencingFeature"],
+-                &["general", "subsettedFeature", "referencedFeature"],
+-                "Feature",
+-                steps,
+-            )?;
+-            if target != expected {
+-                return None;
+-            }
+-        }
++        (binary_binding_targets(b, &raw, binding, steps)?
++            == [default.feature_with_value.0, default.value.0])
++        .then_some(())?;
+         Some(())
+     })();
+     checked.is_some()
++}
++
++/// Exact endpoint identities for a generated binary binding. This reader is
++/// shared by constructor-default and reference-result membership certificates;
++/// the caller proves the binding's construction provenance and owning context.
++pub(super) fn binary_binding_targets(
++    b: &mut Builder,
++    raw: &StoredStructure,
++    binding: usize,
++    steps: &mut usize,
++) -> Option<[usize; 2]> {
++    let members = super::semantic_ownership::owned_relationships(b, binding)?;
++    charge(steps, members.len())?;
++    let members: Vec<_> = members
++        .iter()
++        .filter(|&rel| b.elements[rel].ty == "EndFeatureMembership")
++        .collect();
++    if members.len() != 2 {
++        return None;
++    }
++    let mut targets = Vec::with_capacity(2);
++    for membership in members {
++        let end = super::membership_evidence::member(b, raw, binding, membership, steps)?;
++        if b.elements[end].ty != "Feature"
++            || b.elements[end].props.get("isEnd").and_then(|v| v.as_bool()) != Some(true)
++            || !raw.membership_domains(b, steps)?.owner_complete(binding)
++        {
++            return None;
++        }
++        let relationships = super::semantic_ownership::owned_relationships(b, end)?;
++        charge(steps, relationships.len())?;
++        let references: Vec<_> = relationships
++            .iter()
++            .filter(|&rel| b.elements[rel].ty == "ReferenceSubsetting")
++            .collect();
++        if references.len() != 1
++            || super::semantic_ownership::checked_relationship_carrier(b, raw, references[0], steps)
++                != Some(Some(end))
++        {
++            return None;
++        }
++        let typing = raw.typing(b, steps)?;
++        if typing.sources_incomplete {
++            return None;
++        }
++        let incoming = typing
++            .relationships
++            .get(&end)
++            .map_or(&[][..], Vec::as_slice);
++        charge(steps, incoming.len())?;
++        if incoming.iter().any(|&relationship| {
++            b.elements[relationship].ty == "ReferenceSubsetting" && relationship != references[0]
++        }) {
++            return None;
++        }
++        let target = super::type_relations::endpoint_with_carrier(
++            b,
++            end,
++            Some(end),
++            references[0],
++            &["specific", "subsettingFeature", "referencingFeature"],
++            &["general", "subsettedFeature", "referencedFeature"],
++            "Feature",
++            steps,
++        )?;
++        targets.push(target);
++    }
++    targets.try_into().ok()
+ }
+ 
+ #[cfg(test)]

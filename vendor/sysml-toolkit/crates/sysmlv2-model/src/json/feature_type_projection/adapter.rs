@@ -1,12 +1,12 @@
-//! Repository adapter with a bounded structural-context readiness
-//! certificate. Invocation and owned-result families remain explicitly outside it.
+//! Repository typing through checked family applicability and current semantic
+//! membership/positional evidence. Unsupported domains remain explicit.
 use super::{Comparison, Evidence, Incomplete, Inputs, Projection};
 use crate::json::{
-    Builder,
-    provider_completeness::ProviderCompleteness,
-    semantic_ownership,
+    Builder, semantic_ownership,
     structural_index::{StoredStructure, StoredTyping},
-    type_relations::{CompositionOwner, RelationFact, TypeRelations, endpoint_with_carrier},
+    type_relations::{
+        CompositionOwner, FeatureRequirements, RelationFact, TypeRelations, endpoint_with_carrier,
+    },
 };
 use crate::metaclass::conforms;
 use std::{
@@ -15,8 +15,9 @@ use std::{
 };
 
 pub(super) struct RepositoryTyping<'a> {
+    changing_specializations: Option<Arc<HashSet<usize>>>,
     builder: &'a mut Builder,
-    contextual_active: HashSet<usize>,
+    context: super::ProjectionContext,
     contextual_owners: HashMap<usize, CompositionOwner>,
     structure: Arc<StoredStructure>,
     typing: Arc<StoredTyping>,
@@ -24,7 +25,6 @@ pub(super) struct RepositoryTyping<'a> {
     metadata_generation: Option<Arc<()>>,
     publication: crate::json::publication::Revision,
     relations: TypeRelations,
-    providers: ProviderCompleteness,
     retained: Arc<crate::json::implied::RetainedTypings>,
     retained_plan: Option<Arc<crate::json::implied::SupportedImpliedSpecializations>>,
 }
@@ -69,8 +69,12 @@ impl<'a> RepositoryTyping<'a> {
         let ownership = builder.semantic_ownership.clone();
         let metadata_generation = builder.metadata_association_generation.clone();
         let publication = builder.publication.revision();
+        let context = super::ProjectionContext::default();
+        let relations = TypeRelations::with_structure(Arc::clone(&structure))
+            .with_projection_context(context.clone());
         Ok(Self {
-            contextual_active: HashSet::new(),
+            changing_specializations: None,
+            context: context.clone(),
             contextual_owners: HashMap::new(),
             publication,
             builder,
@@ -80,30 +84,98 @@ impl<'a> RepositoryTyping<'a> {
             typing,
             retained,
             retained_plan,
-            relations: TypeRelations::default(),
-            providers: ProviderCompleteness::default(),
+            relations,
         })
     }
-    pub(super) fn project(&mut self, feature: usize, steps: &mut usize) -> Projection {
-        if self.contextual_active.len() > crate::json::MAX_RESOLUTION_DEPTH
-            || !self.contextual_active.insert(feature)
-        {
-            return Projection {
-                candidates: Vec::new(),
-                graph_issue: Some(Incomplete::UnsupportedProjection),
-                required_issue: None,
-                steps: *steps,
-            };
+    /// Complete projections independent of every prospective specialization
+    /// writer. The publisher must audit its final writes against this same set.
+    pub(super) fn for_planning(
+        builder: &'a mut Builder,
+        changing: Arc<HashSet<usize>>,
+        steps: &mut usize,
+    ) -> Result<Self, Incomplete> {
+        Self::with_context(
+            builder,
+            Some(changing),
+            super::ProjectionContext::default(),
+            steps,
+        )
+    }
+    pub(super) fn with_context(
+        builder: &'a mut Builder,
+        changing: Option<Arc<HashSet<usize>>>,
+        context: super::ProjectionContext,
+        steps: &mut usize,
+    ) -> Result<Self, Incomplete> {
+        let mut reader = Self::new(builder, steps)?;
+        reader.relations = match &changing {
+            Some(changing) => TypeRelations::with_stable_specializations(
+                Arc::clone(&reader.structure),
+                Arc::clone(changing),
+            ),
+            None => TypeRelations::with_structure(Arc::clone(&reader.structure)),
         }
-        let result = super::project(
+        .with_projection_context(context.clone());
+        reader.changing_specializations = changing;
+        reader.context = context;
+        Ok(reader)
+    }
+    pub(super) fn has_kind(&self, element: usize, kind: &str) -> bool {
+        self.builder
+            .elements
+            .get(element)
+            .is_some_and(|e| conforms(e.ty, kind))
+    }
+    pub(super) fn project(&mut self, feature: usize, steps: &mut usize) -> Projection {
+        let entry = charge(steps, 1).and_then(|()| self.context.enter(feature));
+        let _entry = match entry {
+            Ok(entry) => entry,
+            Err(issue) => {
+                return Projection {
+                    candidates: Vec::new(),
+                    graph_issue: Some(issue),
+                    required_issue: None,
+                    steps: *steps,
+                };
+            }
+        };
+        super::project(
             self,
             feature,
             steps,
             crate::eval::MAX_STEPS,
             crate::json::MAX_RESOLUTION_DEPTH,
-        );
-        self.contextual_active.remove(&feature);
-        result
+        )
+    }
+    pub(super) fn owner_types(
+        &mut self,
+        owner: usize,
+        steps: &mut usize,
+    ) -> Result<CompositionOwner, Incomplete> {
+        charge(steps, 1)?;
+        if !self.current() {
+            return Err(Incomplete::UnsupportedProjection);
+        }
+        if let Some(certificate) = self.contextual_owners.get(&owner) {
+            return Ok(*certificate);
+        }
+        let projection = self.project(owner, steps);
+        if let Some(issue) = projection.graph_issue.or(projection.required_issue) {
+            return Err(issue);
+        }
+        charge(steps, projection.candidates.len())?;
+        let certificate = CompositionOwner {
+            object: projection
+                .candidates
+                .iter()
+                .any(|&ty| self.has_kind(ty, "Structure")),
+            occurrence: projection
+                .candidates
+                .iter()
+                .any(|&ty| self.has_kind(ty, "Class")),
+        };
+        self.contextual_owners.insert(owner, certificate);
+        Ok(certificate)
     }
     fn current(&self) -> bool {
         let ownership_current = match (&self.ownership, &self.builder.semantic_ownership) {
@@ -211,47 +283,14 @@ impl<'a> RepositoryTyping<'a> {
         typings: &[usize],
         original: Option<usize>,
         steps: &mut usize,
-    ) -> Result<(Vec<usize>, Vec<usize>), Incomplete> {
-        let mut owner_types = None;
-        let element = &self.builder.elements[feature];
-        if conforms(element.ty, "OccurrenceUsage")
-            && element.props.get("isComposite").and_then(|v| v.as_bool()) == Some(true)
-        {
-            let owner = self
-                .relations
-                .owning_type(self.builder, feature, steps)
-                .ok_or(Incomplete::InvalidRelationship)?;
-            if let Some(owner) =
-                owner.filter(|&owner| conforms(self.builder.elements[owner].ty, "Feature"))
-            {
-                charge(steps, 1)?;
-                let certificate = if let Some(certificate) = self.contextual_owners.get(&owner) {
-                    *certificate
-                } else {
-                    // The complete owner projection uses the same stored graph,
-                    // canonical obligations and budget. Recursion through owner
-                    // typing dependencies is bounded and never cached partially.
-                    let projection = self.project(owner, steps);
-                    if let Some(issue) = projection.graph_issue.or(projection.required_issue) {
-                        return Err(issue);
-                    }
-                    charge(steps, projection.candidates.len())?;
-                    let certificate = CompositionOwner {
-                        object: projection
-                            .candidates
-                            .iter()
-                            .any(|&ty| conforms(self.builder.elements[ty].ty, "Structure")),
-                        occurrence: projection
-                            .candidates
-                            .iter()
-                            .any(|&ty| conforms(self.builder.elements[ty].ty, "Class")),
-                    };
-                    self.contextual_owners.insert(owner, certificate);
-                    certificate
-                };
-                owner_types = Some(certificate);
-            }
-        }
+    ) -> Result<FeatureRequirements, Incomplete> {
+        let owner = self
+            .relations
+            .feature_context_owner(self.builder, feature, &self.structure, steps)
+            .ok_or(Incomplete::InvalidRelationship)?;
+        let owner_types = owner
+            .map(|owner| self.owner_types(owner, steps))
+            .transpose()?;
         self.relations
             .feature_requirements(
                 self.builder,
@@ -275,6 +314,13 @@ impl<'a> RepositoryTyping<'a> {
 impl Evidence for RepositoryTyping<'_> {
     fn inputs(&mut self, feature: usize, steps: &mut usize) -> Result<Inputs, Incomplete> {
         charge(steps, 1)?;
+        if self
+            .changing_specializations
+            .as_ref()
+            .is_some_and(|rows| rows.contains(&feature))
+        {
+            return Err(Incomplete::UnsupportedProjection);
+        }
         if !self.current()
             || (!self.builder.dynamic_evidence_current(feature)
                 || !self.builder.result_redefinition_evidence_current(feature))
@@ -326,31 +372,6 @@ impl Evidence for RepositoryTyping<'_> {
             if conforms(self.builder.elements[original].ty, "Feature") {
                 features.push(original);
             }
-        } else {
-            let mut last = None;
-            for &relationship in &owned {
-                if !conforms(self.builder.elements[relationship].ty, "FeatureChaining") {
-                    continue;
-                }
-                let carrier = self.carrier(relationship, steps)?;
-                // Every link is validated, not just the last surviving target.
-                last = Some(
-                    endpoint_with_carrier(
-                        self.builder,
-                        feature,
-                        carrier,
-                        relationship,
-                        &["featureChained"],
-                        &["chainingFeature"],
-                        "Feature",
-                        steps,
-                    )
-                    .ok_or(Incomplete::InvalidRelationship)?,
-                );
-            }
-            if let Some(last) = last {
-                features.push(last);
-            }
         }
         let retained = self.retained.get(&feature).map_or(&[][..], Vec::as_slice);
         charge(steps, retained.len())?;
@@ -380,59 +401,22 @@ impl Evidence for RepositoryTyping<'_> {
                 features.push(target);
             }
         }
-        if original.is_none()
-            && (self.builder.is_parameter(feature)
-                || self.builder.elements[feature]
-                    .props
-                    .get("isEnd")
-                    .and_then(|value| value.as_bool())
-                    == Some(true))
-        {
-            // Reuse stabilized positional evidence. This path never starts an
-            // unbudgeted planning pass or turns an absent table into empty.
-            let ready = self
-                .builder
-                .elem_scope
-                .get(&feature)
-                .copied()
-                .is_some_and(|scope| self.providers.scope(self.builder, scope, steps));
-            let owner = self
-                .relations
-                .owning_type(self.builder, feature, steps)
-                .ok_or(Incomplete::InvalidRelationship)?;
-            if !ready
-                || self
-                    .builder
-                    .effective_positional_redefinitions()
-                    .is_none_or(|plan| owner.is_some_and(|owner| plan.incomplete.contains(&owner)))
-            {
-                graph_issue.get_or_insert(Incomplete::UnsupportedProjection);
-            } else {
-                let targets = self
-                    .builder
-                    .effective_positional_redefinitions()
-                    .unwrap()
-                    .targets
-                    .get(&feature)
-                    .map_or(&[][..], Vec::as_slice);
-                charge(steps, targets.len())?;
-                for &target in targets {
-                    if !self
-                        .builder
-                        .elements
-                        .get(target)
-                        .is_some_and(|e| conforms(e.ty, "Feature"))
-                    {
-                        graph_issue.get_or_insert(Incomplete::InvalidElement);
-                    } else {
-                        features.push(target);
-                    }
-                }
-            }
-        }
         let requirements = self.requirements(feature, &owned, &typings, original, steps);
         let (required_features, required_typings, required_issue) = match requirements {
-            Ok((features, typings)) => (features, typings, None),
+            Ok(requirements) => {
+                // The same complete membership proof used for applicability
+                // supplies semantic positional targets, including generated
+                // results without lexical scopes. No second stored-only plan.
+                charge(steps, requirements.positional_redefinitions.len())?;
+                features.extend(requirements.positional_redefinitions);
+                // Reuse the chain certificate required by the same family proof;
+                // its common reader validates every link and its ownership.
+                if let Some(last) = requirements.chaining_feature {
+                    charge(steps, 1)?;
+                    features.push(last);
+                }
+                (requirements.features, requirements.typings, None)
+            }
             Err(Incomplete::Budget) => return Err(Incomplete::Budget),
             Err(issue) => (Vec::new(), Vec::new(), Some(issue)),
         };

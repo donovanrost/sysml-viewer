@@ -1,0 +1,14 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_batch.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_batch.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_batch.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_batch.rs
+@@ -41,6 +41,10 @@
+ /// before this value may publish; they are deliberately not constructed here.
+ #[derive(Clone)]
+ pub(super) struct Plan {
++    /// Exact loaded-library operator/trigger identities established by checked
++    /// global resolution during admission. Available only under Snapshot.current;
++    /// row, library-name or metadata changes revoke this evidence with the plan.
++    pub designated_callees: HashMap<usize, usize>,
+     pub static_prefix: Arc<StaticPrefix>,
+     pub direct_bases: HashMap<usize, Vec<usize>>,
+     pub added_bases: HashMap<usize, Vec<usize>>,

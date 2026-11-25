@@ -1,0 +1,282 @@
+{
+  "reviewedAt": "2026-10-18T07:29:07.810722+00:00",
+  "status": "source dependency review and successful six-case probe; no reference-result closure claim",
+  "scope": "Complete membership and positional evidence needed to select FeatureReferenceExpression results through the shared reducer.",
+  "kernelInputSha256": "417ed2b5397cdc38645a5c0b10f94a067a57cd53872c52354cd11028136defaa",
+  "inputs": {
+    "target/standards/kerml.xmi": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "target/trigger-validation/reference-result-source-probe.rs": "6250d758f77c91fc34ce67a250701702bf858dfbd8bedfb024d4c0a460800c47",
+    "target/trigger-validation/reference-result-source-probe": "3a740635c198338329104b1bb11f9cd0b406140594aed0335adc9606fea2a89d",
+    "target/release/deps/libsysmlv2_model-efca4c1af2efa1a8.rlib": "3720cfdad3cc3d8ce81eb0e3c9d2e4e4a40c8125a0c2961e2b16a1a1e7a826e3",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "5f43963326287150bcbb3cd248c0741932f1a50999255f0a76ac0efa674330d8",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_features.rs": "5e5d76a416a6e81e45a036e9ba440c40975043d7ae32e18647cdc3ed897c52c4",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "c878770368e5110f79f5d3ba8a26ab783ea9723c2c6e168800b3df5680247814",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional.rs": "845f8d8cc9f26b42933b31a5dd18b2dc109898ae1c3e78df83f78d3a68d5331f",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs": "6fa0fb8af33417e56b0450e8240df57862373fa1e1050be84cd130adfde90ab6",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs": "9f724257d0b466612447e7b057b9bb543e47c316e9a763468b51d13ee829fa0a",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs": "38a5065c480e39ac15e47a5ca7b7b070f1a3963de2083e18f3d3d256598879ad"
+  },
+  "sourceAnchors": [
+    {
+      "owner": "FeatureReferenceExpression",
+      "name": "checkFeatureReferenceExpressionBindingConnector",
+      "expressions": [
+        "<p>A <code>FeatureReferenceExpression</code> must have an <code>ownedMember</code> that is a <code>BindingConnector</code> between the <code>referent</code> and <code>result</code> of the <code>FeatureReferenceExpression</code>.</p>",
+        "ownedMember->selectByKind(BindingConnector)->exists(b |     b.relatedFeatures->includes(targetFeature) and     b.relatedFeatures->includes(result))"
+      ]
+    },
+    {
+      "owner": "FeatureReferenceExpression",
+      "name": "checkFeatureReferenceExpressionResultSpecialization",
+      "expressions": [
+        "<p>The <code>result</code> parameter of a <code>FeatureReferenceExpression</code> must specialize the <code>referent</code> of the <code>FeatureReferenceExpression</code>.</p>",
+        "result.owningType() = self and result.specializes(referent)"
+      ]
+    },
+    {
+      "owner": "FeatureReferenceExpression",
+      "name": "deriveFeatureReferenceExpressionReferent",
+      "expressions": [
+        "<p>The <code>referent</code> of a <code>FeatureReferenceExpression</code> is the <code>memberElement</code> of its first <code>ownedMembership</code> that is not a <code>ParameterMembership</code>.</p>",
+        "referent =     let nonParameterMemberships : Sequence(Membership) = ownedMembership->         reject(oclIsKindOf(ParameterMembership)) in     if nonParameterMemberships->isEmpty() or        not nonParameterMemberships->first().memberElement.oclIsKindOf(Feature)     then null     else nonParameterMemberships->first().memberElement.oclAsType(Feature)     endif"
+      ]
+    },
+    {
+      "owner": "Expression",
+      "name": "deriveExpressionResult",
+      "expressions": [
+        "<p>The <code>result</code> parameter of an <code>Expression</code> is its <code>parameter</code> owned (possibly in a supertype) via a <code>ReturnParameterMembership</code> (if any).</p>",
+        "result =     let resultParams : Sequence(Feature) =         featureMemberships->             selectByKind(ReturnParameterMembership).             ownedMemberParameter in     if resultParams->notEmpty() then resultParams->first()     else null     endif "
+      ]
+    },
+    {
+      "owner": "Expression",
+      "name": "checkExpressionResultBindingConnector",
+      "expressions": [
+        "<p>If an <code>Expression</code> has an <code>Expression</code> owned via a <code>ResultExpressionMembership</code>, then the owning <code>Expression</code> must also own a <code>BindingConnector</code> between its <code>result</code> <code>parameter</code> and the <code>result</code> <code>parameter</code> of the result <code>Expression</code>.</p>",
+        "ownedMembership.selectByKind(ResultExpressionMembership)->     forAll(mem | ownedFeature.selectByKind(BindingConnector)->         exists(binding |             binding.relatedFeature->includes(result) and             binding.relatedFeature->includes(mem.ownedResultExpression.result)))"
+      ]
+    },
+    {
+      "owner": "Type",
+      "name": "inheritedMemberships",
+      "expressions": [
+        "removeRedefinedFeatures( inheritableMemberships(excludedNamespaces, excludedTypes, excludeImplied))",
+        "<p>Return the <code>Memberships</code> inheritable from supertypes of this <code>Type</code> with redefined <code>Features</code> removed. When computing inheritable <code>Memberships</code>, exclude <code>Imports</code> of <code>excludedNamespaces</code>, <code>Specializations</code> of <code>excludedTypes</code>, and, if <code>excludeImplied = true</code>, all implied <code>Specializations</code>.</p> "
+      ]
+    },
+    {
+      "owner": "Type",
+      "name": "removeRedefinedFeatures",
+      "expressions": [
+        "let reducedMemberships : Sequence(Membership) =     memberships->reject(mem1 |         memberships->excluding(mem1)->             exists(mem2 | allRedefinedFeaturesOf(mem2)->                 includes(mem1.memberElement))) in let redefinedFeatures : Set(Feature) =      ownedFeature.redefinition.redefinedFeature->asSet() in reducedMemberships->reject(mem | allRedefinedFeaturesOf(mem)->     exists(feature | redefinedFeatures->includes(feature)))",
+        "<p>Return a subset of <code>memberships</code>, removing those <code>Memberships</code> whose <code>memberElements</code> are <code>Features</code> and for which either of the following two conditions holds:</p>  <ol>  <li>The <code>memberElement</code> of the <code>Membership</code> is included in redefined <code>Features</code> of another <code>Membership</code> in <code>memberships</code>.</li>  <li>One of the redefined <code>Features</code> of the <code>Membership</code> is a directly <code>redefinedFeature</code> of an <code>ownedFeature</code> of this <code>Type</code>.</li> </ol>  <p>For this purpose, the redefined <code>Features</code> of a <code>Membership</code> whose <code>memberElement</code> is a <code>Feature</code> includes the <code>memberElement</code> and all <code>Features</code> directly or indirectly redefined by the <code>memberElement</code>.</p>"
+      ]
+    },
+    {
+      "owner": "Type",
+      "name": "deriveTypeInheritedMembership",
+      "expressions": [
+        "<p>The <code>inheritedMemberships<code> of a <code>Type</code> are determined by the <code>inheritedMemberships()</code> operation.</p>",
+        "inheritedMembership = inheritedMemberships(Set{}, Set{}, false)"
+      ]
+    },
+    {
+      "owner": "Type",
+      "name": "deriveTypeOwnedFeatureMembership",
+      "expressions": [
+        "<p>The <code>ownedFeatureMemberships</code> of a <code>Type</code> are its <code>ownedMemberships</code> that are <code>FeatureMemberships</code>.</p>",
+        "ownedFeatureMembership = ownedRelationship->selectByKind(FeatureMembership)"
+      ]
+    },
+    {
+      "owner": "Type",
+      "name": "deriveTypeFeatureMembership",
+      "expressions": [
+        "<p>The <code>featureMemberships</code> of a <code>Type</code> is the union of the <code>ownedFeatureMemberships</code> and those <code>inheritedMemberships</code> that are <code>FeatureMemberships</code>.</p>",
+        "featureMembership = ownedFeatureMembership->union( inheritedMembership->selectByKind(FeatureMembership))"
+      ]
+    },
+    {
+      "owner": "Feature",
+      "name": "checkFeatureParameterRedefinition",
+      "expressions": [
+        "<p>If a <code>Feature</code> is a <code>parameter</code> of an <code>owningType</code> that is a <code>Behavior</code> or <code>Step</code>, but <em>not</em> </p> <ul>     <li>A <code>result</code> <code>parameter</code></li>     <li>A <code>parameter</code> of an <code>InvocationExpression</code>, with at least one non-implied <code>ownedRedefinition</code></li> </ul> <p>then, for each direct supertype of its <code>owningType</code> that is also a <code>Behavior</code> or <code>Step</code>, it must redefine the <code>parameter</code> at the same position, if any.</p>",
+        "owningType <> null and not owningFeatureMembership.     oclIsKindOf(ReturnParameterMembership) and (owningType.oclIsKindOf(Behavior) or  owningType.oclIsKindOf(Step) and     (owningType.oclIsKindOf(InvocationExpression) implies       not ownedRedefinition->exists(not isImplied))  implies     let i : Integer =         owningType.ownedFeature->select(direction <> null)->             reject(owningFeatureMembership.                 oclIsKindOf(ReturnParameterMembership))->             indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |             let ownedParameters : Sequence(Feature) =                 supertype.ownedFeature->select(direction <> null)->                      reject(owningFeatureMembership.                          oclIsKindOf(ReturnParameterMembership)) in             ownedParameters->size() >= i implies                 redefines(ownedParameters->at(i))"
+      ]
+    },
+    {
+      "owner": "Feature",
+      "name": "checkFeatureEndRedefinition",
+      "expressions": [
+        "<p>If a <code>Feature</code> has <code>isEnd = true</code> and an <code>owningType</code> that is not empty, then, for each direct supertype of its <code>owningType</code>, it must redefine the <code>endFeature</code> at the same position, if any.</p>",
+        "isEnd and owningType <> null implies     let i : Integer =          owningType.ownedEndFeature->indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |              supertype.endFeature->size() >= i implies                 redefines(supertype.endFeature->at(i))"
+      ]
+    },
+    {
+      "owner": "Feature",
+      "name": "checkFeatureResultRedefinition",
+      "expressions": [
+        "<p>If a <code>Feature</code> is a <code>result</code> <code>parameter</code> of an <code>owningType</code> that is a <code>Function</code> or <code>Expression</code>, then, for each direct supertype of its <code>owningType</code> that is also a <code>Function</code> or <code>Expression</code>, it must redefine the <code>result</code> <code>parameter</code>.</p>",
+        "owningType <> null and (owningType.oclIsKindOf(Function) and     self = owningType.oclAsType(Function).result or  owningType.oclIsKindOf(Expression) and     self = owningType.oclAsType(Expression).result) implies     owningType.ownedSpecialization.general->         select(oclIsKindOf(Function) or oclIsKindOf(Expression))->         forAll(supertype |             redefines(                 if superType.oclIsKindOf(Function) then                     superType.oclAsType(Function).result                 else                     superType.oclAsType(Expression).result                 endif)"
+      ]
+    }
+  ],
+  "probe": {
+    "command": [
+      "target/trigger-validation/reference-result-source-probe"
+    ],
+    "exitCode": 0,
+    "output": "target/trigger-validation/reference-result-source-probe.json",
+    "outputSha256": "17eb7961b9f2a83282ada8437065bfda5957f2ee263564ccb439013db2e22e36",
+    "library": "All 94 bundled model files loaded through Model.load_library_dir",
+    "observations": [
+      {
+        "argumentId": "107c78f5-629f-5208-95ce-568e42b48d5e",
+        "argumentKind": "FeatureReferenceExpression",
+        "candidateFeatureDomainComplete": true,
+        "candidateFeatureDomainIssue": null,
+        "case": "independent",
+        "checkedResult": "Err(UnsupportedConfiguration)",
+        "checkedResultSteps": 0,
+        "compatibilityCandidateId": "3a3ab23b-6116-53da-9ab8-a84e44932d91",
+        "compatibilityResult": "Value(Element(ElementRef(158162)))",
+        "resultSourceId": "107c78f5-629f-5208-95ce-568e42b48d5e",
+        "resultSourceKind": "FeatureReferenceExpression",
+        "storedRelationshipKinds": [
+          "Membership"
+        ],
+        "projectedMembershipKinds": [
+          "Membership",
+          "ReturnParameterMembership",
+          "OwningMembership"
+        ]
+      },
+      {
+        "argumentId": "ce7f49ff-bbca-54b6-869d-bab961ca8bc3",
+        "argumentKind": "FeatureReferenceExpression",
+        "candidateFeatureDomainComplete": true,
+        "candidateFeatureDomainIssue": null,
+        "case": "inherited",
+        "checkedResult": "Err(UnsupportedConfiguration)",
+        "checkedResultSteps": 0,
+        "compatibilityCandidateId": "b4eb62cf-54e5-5faf-b1d6-b88b8e5484d7",
+        "compatibilityResult": "Value(Element(ElementRef(158173)))",
+        "resultSourceId": "ce7f49ff-bbca-54b6-869d-bab961ca8bc3",
+        "resultSourceKind": "FeatureReferenceExpression",
+        "storedRelationshipKinds": [
+          "Membership"
+        ],
+        "projectedMembershipKinds": [
+          "Membership",
+          "ReturnParameterMembership",
+          "OwningMembership"
+        ]
+      },
+      {
+        "argumentId": "a5369abd-e4dd-55f3-8ef5-5cbfc7a7f705",
+        "argumentKind": "FeatureReferenceExpression",
+        "candidateFeatureDomainComplete": true,
+        "candidateFeatureDomainIssue": null,
+        "case": "ordinary",
+        "checkedResult": "Err(UnsupportedConfiguration)",
+        "checkedResultSteps": 0,
+        "compatibilityCandidateId": "4fe73d68-b260-5f7c-b0ac-3f6515c7429c",
+        "compatibilityResult": "Value(Element(ElementRef(158184)))",
+        "resultSourceId": "a5369abd-e4dd-55f3-8ef5-5cbfc7a7f705",
+        "resultSourceKind": "FeatureReferenceExpression",
+        "storedRelationshipKinds": [
+          "Membership"
+        ],
+        "projectedMembershipKinds": [
+          "Membership",
+          "ReturnParameterMembership",
+          "OwningMembership"
+        ]
+      },
+      {
+        "argumentId": "2b36e65d-abc9-5ee8-8c58-8a23be950dfb",
+        "argumentKind": "FeatureReferenceExpression",
+        "candidateFeatureDomainComplete": true,
+        "candidateFeatureDomainIssue": null,
+        "case": "absolute",
+        "checkedResult": "Err(UnsupportedConfiguration)",
+        "checkedResultSteps": 0,
+        "compatibilityCandidateId": "f39aef67-83ff-55f4-94c6-81be9ddb6312",
+        "compatibilityResult": "Value(Element(ElementRef(158195)))",
+        "resultSourceId": "2b36e65d-abc9-5ee8-8c58-8a23be950dfb",
+        "resultSourceKind": "FeatureReferenceExpression",
+        "storedRelationshipKinds": [
+          "Membership"
+        ],
+        "projectedMembershipKinds": [
+          "Membership",
+          "ReturnParameterMembership",
+          "OwningMembership"
+        ]
+      },
+      {
+        "argumentId": "71411347-5a04-5e92-ab06-d7583ac1f460",
+        "argumentKind": "FeatureReferenceExpression",
+        "candidateFeatureDomainComplete": true,
+        "candidateFeatureDomainIssue": null,
+        "case": "conditional",
+        "checkedResult": "Err(UnsupportedConfiguration)",
+        "checkedResultSteps": 0,
+        "compatibilityCandidateId": "c9f6097d-f550-53c6-a544-8d640de476c8",
+        "compatibilityResult": "Value(Element(ElementRef(158206)))",
+        "resultSourceId": "196f117c-8576-5693-8070-fef0f2fa54ca",
+        "resultSourceKind": "FeatureReferenceExpression",
+        "storedRelationshipKinds": [
+          "Membership"
+        ],
+        "projectedMembershipKinds": [
+          "Membership",
+          "ReturnParameterMembership",
+          "OwningMembership"
+        ]
+      },
+      {
+        "argumentId": "2380be1d-ad59-55f7-a395-6eb2c1a4e0a1",
+        "argumentKind": "FeatureReferenceExpression",
+        "candidateFeatureDomainComplete": true,
+        "candidateFeatureDomainIssue": null,
+        "case": "literal",
+        "checkedResult": "Ok(Some(ElementRef(81950)))",
+        "checkedResultSteps": 88432,
+        "compatibilityCandidateId": "ae7e74a7-cb3e-56fe-9800-88cd86826503",
+        "compatibilityResult": "Value(Element(ElementRef(81950)))",
+        "resultSourceId": "5f010ab1-40cf-59d2-96f3-735e99b6ea79",
+        "resultSourceKind": "LiteralBoolean",
+        "storedRelationshipKinds": [],
+        "projectedMembershipKinds": []
+      }
+    ],
+    "boundary": "Compatibility queries locate candidate results and inspect membership shape only. The checked result and feature-domain reports establish their distinct reported capabilities; a compatibility candidate is not accepted as a complete result selector."
+  },
+  "findings": [
+    "Direct, inherited and ordinary duration arguments, an absolute-time argument, and the inner reference of the conditional when argument each have a checked generated-result feature domain. Their source ExpressionResultReport remains UnsupportedConfiguration. The literal when case selects its result successfully through the new checked report.",
+    "Every probed reference source has a nonowning referent Membership, a generated ReturnParameterMembership, and an OwningMembership for the generated BindingConnector in its materialized membership view. The stored-source relationship list has no generated return membership.",
+    "The checked Type provider gathers all Feature-valued members for redefinition reduction, including a foreign referent and the owned binding. Its existing foreign-feature exception and proof-only owner scheduling cover imports, not general nonowning memberships. BindingConnector under OwningMembership has no owningType and also needs a reviewed redefinition domain.",
+    "plan_checked_positional compares the checked node against owned_member_elems and positional_owned_memberships, both of which read stored source relationships. The common planner repeats those selectors. Simply admitting the reference metaclass would therefore not establish agreement with the materialized membership sequence.",
+    "The positional planner gathers authored redefinitions from spec_targets and spec_resolved. Generated result redefinitions have a separate publication certificate. A shared consumer input contract must account for those current edges without treating absent authored entries as a complete generated closure.",
+    "owned_feature_projection_complete is used to qualify negative has-owned-feature evidence during feature conformance; it is not the sole membership-provider gate. Relaxing this Boolean would neither solve the provider/planner mismatch nor certify required generated construction."
+  ],
+  "implementationRequirements": [
+    "Keep one inheritance/redefinition reducer and one positional algorithm. Define how checked semantic nodes and their current redefinition evidence reach that algorithm; keep construction-time planning over its admitted candidate graph explicit.",
+    "Audit every membership-producing obligation of the admitted reference source, including generated result and binding provenance, existing results, additional explicit bases and ResultExpressionMembership. A generated result identity alone is not sufficient.",
+    "Generalize foreign member proof dependencies without turning their declaring owners into inheritance contributions. Schedule foreign parameter/end/result dependencies before their redefinitions influence a consuming node.",
+    "Prove the generated binding member redefinition domain and preserve ownership distinctions. Do not change its OwningMembership to FeatureMembership merely to satisfy the current provider.",
+    "Keep incomplete dependencies, stale publication, contradictory aliases, collisions, cycles and budget exhaustion explicitly unknown. Source/projected graph agreement must be verified before publishing a complete result."
+  ],
+  "acceptancePartitions": [
+    "Package and nested referents; direct, inherited and redefined feature types; borrowed members owned by unrelated classifiers/functions; exact identities and order.",
+    "Authored and generated return memberships, additional inherited returns and result redefinitions; no result, multiple results and missing library evidence remain distinct.",
+    "Generated binding ownership and both endpoint identities; removal or mutation of generated carrier, result, binding, redefinition and metadata evidence after a warm query.",
+    "Foreign positional dependencies, role-free relays, strict ancestor targets, cross-owner cycles and unresolved targets; proof dependencies do not appear as inherited features.",
+    "Cold and warm queries, prepared-library replay, both graph formats, work-limit retry, no row publication by readers, and unchanged existing construction behavior.",
+    "Checked report/property agreement and all six full-library trigger examples, followed by the complete trigger-rule positive/negative partitions."
+  ],
+  "nextAction": "Establish a shared semantic membership/positional input contract and foreign-member dependency proof before widening the reference-expression result provider.",
+  "remaining": "Full reference/invocation result coverage, trigger validators, native/WASM release qualification and all fifteen completion packages remain open."
+}

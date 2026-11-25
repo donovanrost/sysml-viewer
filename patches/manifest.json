@@ -12,49 +12,49 @@
       "reason": "Defer unresolved alias target comparisons from syntax to the facade semantic namespace validator. IMP-022 must pass; IMP-015 and IMP-023 must still diagnose collisions. KERNEL-021: The syntax walker accepts the new transition parameter-origin field; body-context validation is unchanged."
     },
     {
-      "id": "KERNEL-001",
+      "id": "KERNEL-001 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
       "patch": "patches/0002-package-attribute-featuring.patch",
-      "sha256": "9e7896680259939831570769aa5f2a0c2f59a71ee1a9332fb5b9a35aaceff805",
+      "sha256": "28a39139b6fb5ce2ffc4413f25b69d460586a84edf7fa7afcdc98e6e7c185b8e",
       "baseSha256": "0d5d41bc6500e2e0f5732ed3803342967b43abdb8d4372dcdf1a724d4bb925a0",
-      "resultSha256": "581edf552f7a33497a0deea3268c912c3b91f255c7f6d3a3624aa5a02ce90925",
-      "reason": "Audit featuring evidence for static package-owned AttributeUsage providers, retaining checked ownership, explicit/inverse featuring, variable/variant exclusion, stale-evidence and work-budget guards. MULT-010 is the original full-library regression. Canonical graph publication for arithmetic is a facade responsibility."
+      "resultSha256": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662",
+      "reason": "Audit featuring evidence for static package-owned AttributeUsage providers, retaining checked ownership, explicit/inverse featuring, variable/variant exclusion, stale-evidence and work-budget guards. MULT-010 is the original full-library regression. Canonical graph publication for arithmetic is a facade responsibility. KERNEL-024: Qualify authored Kernel behavior/function parameter and result feature heritage only through the shared complete owner signature and its positional redefinition obligations. KERNEL-024: Qualify authored Behavior/Function/Predicate parameter and result heritage through the shared complete signature and positional proof. Admit generated noncomposite nested reference result domains only with reciprocal plain membership and every contextual Step specialization path. KERNEL-024: Qualify authored Behavior/Function/Predicate parameter and result heritage through the shared complete signature and positional proof. Admit generated noncomposite nested reference result domains only with reciprocal plain membership and every contextual Step specialization path. Replace unconditional owned-valuation refusal with the shared static-typing applicability proof while preserving other required-family checks. KERNEL-024: Qualify authored Behavior/Function/Predicate parameter and result heritage through the shared complete signature and positional proof. Admit generated noncomposite nested reference result domains only with reciprocal plain membership and every contextual Step specialization path. Replace unconditional owned-valuation refusal with the shared static-typing applicability proof while preserving other required-family checks. Return exact semantic positional targets from the existing complete membership proof for reuse by type projection. KERNEL-024: Qualify authored Behavior/Function/Predicate parameter and result heritage through the shared complete signature and positional proof. Admit generated noncomposite nested reference result domains only with reciprocal plain membership and every contextual Step specialization path. Replace unconditional owned-valuation refusal with the shared static-typing applicability proof while preserving other required-family checks. Return exact semantic positional targets from the existing complete membership proof for reuse by type projection. Admit ordinary noncomposite Features under Type owners except FlowEnd through the reviewed conditional specialization obligations. Check owned inverse source/target aliases and reciprocal carriers without adding inverse targets to typing dependencies. KERNEL-024: Share the checked one-hop chaining target with FeatureRequirements; validate every link and reciprocal carrier before admitting final-target typing and required paths. KERNEL-024: Use complete effective owner-type certificates for conditional portion/composition requirements, sharing bounded projection context and prospective-writer exclusions. Distinguish owned typing family predicates from inverse typing. Verify standalone FeatureTyping before excluding it from owned supertype closure, rejecting malformed source/carrier evidence before semantic-plan refresh. Admit ordinary Feature intersections only with every exact existing Subsetting witness. KERNEL-024: Admit ordinary undirected noncomposite TypeFeatureMember roots through the shared namespace ownership proof without inventing owningType or positional/contextual specialization requirements. Preserve existing typing, chaining, valuation and negative-path checks. KERNEL-024: Share checked Association membership with required-base proof using query-local recursion bounds; never cache candidate ancestry as complete or negative evidence. Validate standalone FeatureTyping and Subclassification endpoints/carriers before excluding them from owned ancestry."
     },
     {
-      "id": "KERNEL-003/007/008/009/015",
+      "id": "KERNEL-003/007/008/009/015 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
       "patch": "patches/0003-checked-conditional-bindings.patch",
-      "sha256": "0b3850db39dce7fccb26e955f0dc0589fa6b016d47b010279cada2d5eeea8af3",
+      "sha256": "19bd1dc7e265ba7e87c3c8283936c957206b5f3f21f55c83205118946460210a",
       "baseSha256": "a42417413b22fa9aaa2cf67dc7127cbf2d69c55a1657e302d0b9a3314cd7dbb0",
-      "resultSha256": "8329c60723149b689537a7f5afcf251396c196c71742102703cf20ab492dd015",
-      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-007 admits designated DataFunctions ordered predicates over finite exact integers and rationals through the existing canonical binding certificate. Boolean endpoints, nonnumeric/approximate operands, unavailable values, stale publication and exhausted work remain unknown. MULT-024/025 cover truth tables, precision and negative boundaries. KERNEL-008 admits exact scalar equality and Boolean predicates through designated BaseFunctions, DataFunctions and ControlFunctions bindings. Deferred logical operands retain complete ownership/eligibility proof, while execution follows strict Boolean short-circuit rules. MULT-026/027/028 cover exact values, truth tables, eager/deferred operands and explicit unknown boundaries. Stamped namespace-name projections amortize operator selection across a mixed workspace without changing the cumulative work limit or visibility/identity guards. KERNEL-009 certifies explicit NullExpression values and lazy null-coalescing with exact scalar providers. Complete argument eligibility, reciprocal deferred wrappers, loaded function identity and cumulative work limits remain required; unavailable evaluation is not emptiness. MULT-029/030 cover empty/present selection, composition and guarded unknowns. Approximate arithmetic results, including power overflow and underflow, cannot establish exact endpoints. Dynamic publication materializes library names only when it must construct a static prefix; a same-transaction prefix retains all physical-authority and recipe checks without rebuilding unused names. KERNEL-015 shares immutable checked Type projections within the existing stamped constructor/invocation batch, replacing complete projection copies with shared references. Reports copy only their retained vectors; all traversals, returned input copies, stale-generation guards and the cumulative 10000000 work limit remain. This preserves arithmetic in the full mixed connector workspace. A private test covers bounded reuse, exhausted-query retry, mutation invalidation and immutable prior results."
+      "resultSha256": "0fad34f0b57d139f495b01ab0b2b836a90886b2ca301d1ce29fcf0c44994af62",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-007 admits designated DataFunctions ordered predicates over finite exact integers and rationals through the existing canonical binding certificate. Boolean endpoints, nonnumeric/approximate operands, unavailable values, stale publication and exhausted work remain unknown. MULT-024/025 cover truth tables, precision and negative boundaries. KERNEL-008 admits exact scalar equality and Boolean predicates through designated BaseFunctions, DataFunctions and ControlFunctions bindings. Deferred logical operands retain complete ownership/eligibility proof, while execution follows strict Boolean short-circuit rules. MULT-026/027/028 cover exact values, truth tables, eager/deferred operands and explicit unknown boundaries. Stamped namespace-name projections amortize operator selection across a mixed workspace without changing the cumulative work limit or visibility/identity guards. KERNEL-009 certifies explicit NullExpression values and lazy null-coalescing with exact scalar providers. Complete argument eligibility, reciprocal deferred wrappers, loaded function identity and cumulative work limits remain required; unavailable evaluation is not emptiness. MULT-029/030 cover empty/present selection, composition and guarded unknowns. Approximate arithmetic results, including power overflow and underflow, cannot establish exact endpoints. Dynamic publication materializes library names only when it must construct a static prefix; a same-transaction prefix retains all physical-authority and recipe checks without rebuilding unused names. KERNEL-015 shares immutable checked Type projections within the existing stamped constructor/invocation batch, replacing complete projection copies with shared references. Reports copy only their retained vectors; all traversals, returned input copies, stale-generation guards and the cumulative 10000000 work limit remain. This preserves arithmetic in the full mixed connector workspace. A private test covers bounded reuse, exhausted-query retry, mutation invalidation and immutable prior results. KERNEL-024: Select trigger functions by valid kind and checked loaded-library membership, then certify supplied trigger values through the shared invocation input and redefinition proof. Unvalued receiver slots remain absent arguments, not invented defaults."
     },
     {
-      "id": "KERNEL-003/008/015",
+      "id": "KERNEL-003/008/015 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs",
       "patch": "patches/0004-designated-operator-cache.patch",
-      "sha256": "024456d9d2519c75fcb4d358ee76a9a28d862fefd6cb19c64316ebbf6a11990f",
+      "sha256": "7e04d707137b479636f1be4b35a634413d18bca07acb2b599b30a29fde663b54",
       "baseSha256": "0a900848b5d128403be09b8d97d8543124f37609925dab0982c3dac0f9f0aa49",
-      "resultSha256": "c85c9f315ecc5214fa624e720e493d15622f822a6410e47c33726d7cb5fc9d50",
-      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-008 admits exact scalar equality and Boolean predicates through designated BaseFunctions, DataFunctions and ControlFunctions bindings. Deferred logical operands retain complete ownership/eligibility proof, while execution follows strict Boolean short-circuit rules. MULT-026/027/028 cover exact values, truth tables, eager/deferred operands and explicit unknown boundaries. Stamped namespace-name projections amortize operator selection across a mixed workspace without changing the cumulative work limit or visibility/identity guards. KERNEL-015 shares immutable checked Type projections within the existing stamped constructor/invocation batch, replacing complete projection copies with shared references. Reports copy only their retained vectors; all traversals, returned input copies, stale-generation guards and the cumulative 10000000 work limit remain. This preserves arithmetic in the full mixed connector workspace. A private test covers bounded reuse, exhausted-query retry, mutation invalidation and immutable prior results."
+      "resultSha256": "7b2a9243fe54633a5bace1c2fabe7e486bd98d27ac663ccc530c0131d7166297",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-008 admits exact scalar equality and Boolean predicates through designated BaseFunctions, DataFunctions and ControlFunctions bindings. Deferred logical operands retain complete ownership/eligibility proof, while execution follows strict Boolean short-circuit rules. MULT-026/027/028 cover exact values, truth tables, eager/deferred operands and explicit unknown boundaries. Stamped namespace-name projections amortize operator selection across a mixed workspace without changing the cumulative work limit or visibility/identity guards. KERNEL-015 shares immutable checked Type projections within the existing stamped constructor/invocation batch, replacing complete projection copies with shared references. Reports copy only their retained vectors; all traversals, returned input copies, stale-generation guards and the cumulative 10000000 work limit remain. This preserves arithmetic in the full mixed connector workspace. A private test covers bounded reuse, exhausted-query retry, mutation invalidation and immutable prior results. KERNEL-024: Share checked designated trigger identities within the existing stamp-bound argument batch and invalidate them with all other semantic evidence. KERNEL-024: Share checked designated trigger identities within the existing stamp-bound argument batch and invalidate them with all other semantic evidence. Select effective defaults by unique FeatureValue identity; distinct fully known inherited defaults establish absence under KerML 8.4.4.11 while incomplete or cyclic paths remain unknown."
     },
     {
-      "id": "KERNEL-003/005/006",
+      "id": "KERNEL-003/005/006 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
       "patch": "patches/0005-designated-callee-evidence.patch",
-      "sha256": "a680fdee92c6f23f9ebe723417646b9002ced5313afee027b2d555c974f26add",
+      "sha256": "debf8c692cd9991892baed43aff68786aea9e73546b2c76bedb9a60d45d6c5b1",
       "baseSha256": "c54b284a1773583b0b67926869c03fcc4efa1df3ef44421907af67354b6e4412",
-      "resultSha256": "08f521867657bed8204154c271036b5fdf12db1ea4f71f31e6e256a3dd77f3f3",
-      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates. KERNEL-006 reuses checked callee signatures within the eligibility batch through the existing constructor/invocation evidence provider; every supplied binding is independently checked and the unchanged cumulative allowance still bounds cold and warm queries."
+      "resultSha256": "ae2f7350291639170ca2f70e1f537571fc1f8e90b37a4248b8910e1467775caa",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates. KERNEL-006 reuses checked callee signatures within the eligibility batch through the existing constructor/invocation evidence provider; every supplied binding is independently checked and the unchanged cumulative allowance still bounds cold and warm queries. KERNEL-024: Share successful designated Function identities within the same checked eligibility snapshot; retain fresh supplied-argument and path-sensitive proofs, name invalidation and cumulative work limits."
     },
     {
-      "id": "KERNEL-003/005/007/008/009/010/011",
+      "id": "KERNEL-003/005/007/008/009/010/011 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
       "patch": "patches/0006-checked-conditional-cardinality.patch",
-      "sha256": "fea7a28b3a962670ae496c64faf18b7dfbdbc88936db91a31c2217d7f47e39b7",
+      "sha256": "79a96c3421d5a0b6ea9740f55ef512f706b773ba9855c8fa0bd80b5cd3673dbd",
       "baseSha256": "bbfb520a8321275808a0ba832e00ab4470218ae2ebc9e80a874fa8dfad6f29c4",
-      "resultSha256": "55904e99c8f1a10492d76ae6098135aa883759a5df47feee6e8858dfc1910e8a",
-      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates. KERNEL-007 admits designated DataFunctions ordered predicates over finite exact integers and rationals through the existing canonical binding certificate. Boolean endpoints, nonnumeric/approximate operands, unavailable values, stale publication and exhausted work remain unknown. MULT-024/025 cover truth tables, precision and negative boundaries. KERNEL-008 admits exact scalar equality and Boolean predicates through designated BaseFunctions, DataFunctions and ControlFunctions bindings. Deferred logical operands retain complete ownership/eligibility proof, while execution follows strict Boolean short-circuit rules. MULT-026/027/028 cover exact values, truth tables, eager/deferred operands and explicit unknown boundaries. Stamped namespace-name projections amortize operator selection across a mixed workspace without changing the cumulative work limit or visibility/identity guards. KERNEL-009 certifies explicit NullExpression values and lazy null-coalescing with exact scalar providers. Complete argument eligibility, reciprocal deferred wrappers, loaded function identity and cumulative work limits remain required; unavailable evaluation is not emptiness. MULT-029/030 cover empty/present selection, composition and guarded unknowns. Approximate arithmetic results, including power overflow and underflow, cannot establish exact endpoints. Dynamic publication materializes library names only when it must construct a static prefix; a same-transaction prefix retains all physical-authority and recipe checks without rebuilding unused names. KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits. KERNEL-011 certifies decoded LiteralString values, equality and sameness, concatenation and presence in conditional/coalescing providers. UTF-8 bytes are charged before copies, concatenation allocation and comparisons; all work shares the unchanged query budget. Publication consumes a freshly audited static prefix under one exclusive borrow and uses the complete raw ID index for warm-prefix collisions, avoiding duplicate scans while separate entry paths retain full validation. Mixed domains, string ordering, general string-library functions and numeric coercion remain unqualified. MULT-033/034 and private tests cover Unicode, standard escapes, stale and malformed graph evidence, and cumulative work refusal."
+      "resultSha256": "f05f8577d58d5be76882c041733aa81395fe34d166ff4b0a69fa17c54f435ef6",
+      "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates. KERNEL-007 admits designated DataFunctions ordered predicates over finite exact integers and rationals through the existing canonical binding certificate. Boolean endpoints, nonnumeric/approximate operands, unavailable values, stale publication and exhausted work remain unknown. MULT-024/025 cover truth tables, precision and negative boundaries. KERNEL-008 admits exact scalar equality and Boolean predicates through designated BaseFunctions, DataFunctions and ControlFunctions bindings. Deferred logical operands retain complete ownership/eligibility proof, while execution follows strict Boolean short-circuit rules. MULT-026/027/028 cover exact values, truth tables, eager/deferred operands and explicit unknown boundaries. Stamped namespace-name projections amortize operator selection across a mixed workspace without changing the cumulative work limit or visibility/identity guards. KERNEL-009 certifies explicit NullExpression values and lazy null-coalescing with exact scalar providers. Complete argument eligibility, reciprocal deferred wrappers, loaded function identity and cumulative work limits remain required; unavailable evaluation is not emptiness. MULT-029/030 cover empty/present selection, composition and guarded unknowns. Approximate arithmetic results, including power overflow and underflow, cannot establish exact endpoints. Dynamic publication materializes library names only when it must construct a static prefix; a same-transaction prefix retains all physical-authority and recipe checks without rebuilding unused names. KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits. KERNEL-011 certifies decoded LiteralString values, equality and sameness, concatenation and presence in conditional/coalescing providers. UTF-8 bytes are charged before copies, concatenation allocation and comparisons; all work shares the unchanged query budget. Publication consumes a freshly audited static prefix under one exclusive borrow and uses the complete raw ID index for warm-prefix collisions, avoiding duplicate scans while separate entry paths retain full validation. Mixed domains, string ordering, general string-library functions and numeric coercion remain unqualified. MULT-033/034 and private tests cover Unicode, standard escapes, stale and malformed graph evidence, and cumulative work refusal. KERNEL-024: Use the current accepted positional fixed point when preparing cardinality evidence; retain static planning when no effective plan is available."
     },
     {
       "id": "KERNEL-003/007/008/009/010/011",
@@ -66,13 +66,13 @@
       "reason": "Certify ControlFunctions::if through canonical bindings and exact Boolean branch selection; preserve eligibility, reciprocal wrappers, designated identity, stale-evidence and work-limit guards. MULT-016 and MULT-017 retain standards-based expected results. KERNEL-007 admits designated DataFunctions ordered predicates over finite exact integers and rationals through the existing canonical binding certificate. Boolean endpoints, nonnumeric/approximate operands, unavailable values, stale publication and exhausted work remain unknown. MULT-024/025 cover truth tables, precision and negative boundaries. KERNEL-008 admits exact scalar equality and Boolean predicates through designated BaseFunctions, DataFunctions and ControlFunctions bindings. Deferred logical operands retain complete ownership/eligibility proof, while execution follows strict Boolean short-circuit rules. MULT-026/027/028 cover exact values, truth tables, eager/deferred operands and explicit unknown boundaries. Stamped namespace-name projections amortize operator selection across a mixed workspace without changing the cumulative work limit or visibility/identity guards. KERNEL-009 certifies explicit NullExpression values and lazy null-coalescing with exact scalar providers. Complete argument eligibility, reciprocal deferred wrappers, loaded function identity and cumulative work limits remain required; unavailable evaluation is not emptiness. MULT-029/030 cover empty/present selection, composition and guarded unknowns. Approximate arithmetic results, including power overflow and underflow, cannot establish exact endpoints. Dynamic publication materializes library names only when it must construct a static prefix; a same-transaction prefix retains all physical-authority and recipe checks without rebuilding unused names. KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits. KERNEL-011 certifies decoded LiteralString values, equality and sameness, concatenation and presence in conditional/coalescing providers. UTF-8 bytes are charged before copies, concatenation allocation and comparisons; all work shares the unchanged query budget. Publication consumes a freshly audited static prefix under one exclusive borrow and uses the complete raw ID index for warm-prefix collisions, avoiding duplicate scans while separate entry paths retain full validation. Mixed domains, string ordering, general string-library functions and numeric coercion remain unqualified. MULT-033/034 and private tests cover Unicode, standard escapes, stale and malformed graph evidence, and cumulative work refusal."
     },
     {
-      "id": "KERNEL-004/011",
+      "id": "KERNEL-004/011 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
       "patch": "patches/0008-isolate-unresolved-specializations.patch",
-      "sha256": "615990aa7ed9fe5f55965747c95f4506c300c6ca3268b143bdd14e750f43abba",
+      "sha256": "8c384b35dae0012cfeab1920a13883d478bf4715fba8b4b8bb9e164736a5189c",
       "baseSha256": "39a7c5dcd2b4993c883a9c7e3bf949e6e8601601ecc656bbd2c414ef4d35ff7e",
-      "resultSha256": "4e02c3ee3a88c75d1b398a91e91fe8bbbf0c71359161a3955171d998db815d96",
-      "reason": "Isolate canonical unresolved Specialization/Subclassification rows only after certifying all source aliases and the shared semantic carrier. Preserve the final dependency audit, incomplete affected signatures, legacy refusal, malformed/stale evidence and work limits. MULT-020/021 retain independent arithmetic and conditional bounds alongside missing bases. KERNEL-011 certifies decoded LiteralString values, equality and sameness, concatenation and presence in conditional/coalescing providers. UTF-8 bytes are charged before copies, concatenation allocation and comparisons; all work shares the unchanged query budget. Publication consumes a freshly audited static prefix under one exclusive borrow and uses the complete raw ID index for warm-prefix collisions, avoiding duplicate scans while separate entry paths retain full validation. Mixed domains, string ordering, general string-library functions and numeric coercion remain unqualified. MULT-033/034 and private tests cover Unicode, standard escapes, stale and malformed graph evidence, and cumulative work refusal."
+      "resultSha256": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+      "reason": "Isolate canonical unresolved Specialization/Subclassification rows only after certifying all source aliases and the shared semantic carrier. Preserve the final dependency audit, incomplete affected signatures, legacy refusal, malformed/stale evidence and work limits. MULT-020/021 retain independent arithmetic and conditional bounds alongside missing bases. KERNEL-011 certifies decoded LiteralString values, equality and sameness, concatenation and presence in conditional/coalescing providers. UTF-8 bytes are charged before copies, concatenation allocation and comparisons; all work shares the unchanged query budget. Publication consumes a freshly audited static prefix under one exclusive borrow and uses the complete raw ID index for warm-prefix collisions, avoiding duplicate scans while separate entry paths retain full validation. Mixed domains, string ordering, general string-library functions and numeric coercion remain unqualified. MULT-033/034 and private tests cover Unicode, standard escapes, stale and malformed graph evidence, and cumulative work refusal. KERNEL-024: Admit canonical trigger invocations and their supplied argument positional mappings into the existing bounded fixed point and atomic relationship publisher. KERNEL-024: Include effective Feature-owner portion requirements in the existing stable-predicate and atomic specialization plan without introducing an independent graph."
     },
     {
       "id": "KERNEL-005",
@@ -84,31 +84,31 @@
       "reason": "KERNEL-005 reuses complete topology and checked type evidence only within one stamped cardinality query. Semantic eligibility, path-local cycle guards, endpoint execution and cumulative work limits remain checked; stale generations and partial graph construction cannot supply certificates."
     },
     {
-      "id": "KERNEL-009/010/011",
+      "id": "KERNEL-009/010/011 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
       "patch": "patches/0010-reuse-static-prefix.patch",
-      "sha256": "677bc0942b80697dc9ec9582058ea291ce9348196bbe0a3520dfbceff7ace26a",
+      "sha256": "beb583b56d49705510c37b5df1015dc692c307ff02020c2c18c65d0f2d71fdbc",
       "baseSha256": "1b9b71dffa2d78160c51d15cb95eeba95797e5dcd3ef3331a4d65b596de784e5",
-      "resultSha256": "01c9aa635ad9d9fb3a7fdaf5d34071b626494a37da1db52eebf020e425ff2478",
-      "reason": "KERNEL-009 certifies explicit NullExpression values and lazy null-coalescing with exact scalar providers. Complete argument eligibility, reciprocal deferred wrappers, loaded function identity and cumulative work limits remain required; unavailable evaluation is not emptiness. MULT-029/030 cover empty/present selection, composition and guarded unknowns. Approximate arithmetic results, including power overflow and underflow, cannot establish exact endpoints. Dynamic publication materializes library names only when it must construct a static prefix; a same-transaction prefix retains all physical-authority and recipe checks without rebuilding unused names. KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits. KERNEL-011 certifies decoded LiteralString values, equality and sameness, concatenation and presence in conditional/coalescing providers. UTF-8 bytes are charged before copies, concatenation allocation and comparisons; all work shares the unchanged query budget. Publication consumes a freshly audited static prefix under one exclusive borrow and uses the complete raw ID index for warm-prefix collisions, avoiding duplicate scans while separate entry paths retain full validation. Mixed domains, string ordering, general string-library functions and numeric coercion remain unqualified. MULT-033/034 and private tests cover Unicode, standard escapes, stale and malformed graph evidence, and cumulative work refusal."
+      "resultSha256": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e",
+      "reason": "KERNEL-009 certifies explicit NullExpression values and lazy null-coalescing with exact scalar providers. Complete argument eligibility, reciprocal deferred wrappers, loaded function identity and cumulative work limits remain required; unavailable evaluation is not emptiness. MULT-029/030 cover empty/present selection, composition and guarded unknowns. Approximate arithmetic results, including power overflow and underflow, cannot establish exact endpoints. Dynamic publication materializes library names only when it must construct a static prefix; a same-transaction prefix retains all physical-authority and recipe checks without rebuilding unused names. KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits. KERNEL-011 certifies decoded LiteralString values, equality and sameness, concatenation and presence in conditional/coalescing providers. UTF-8 bytes are charged before copies, concatenation allocation and comparisons; all work shares the unchanged query budget. Publication consumes a freshly audited static prefix under one exclusive borrow and uses the complete raw ID index for warm-prefix collisions, avoiding duplicate scans while separate entry paths retain full validation. Mixed domains, string ordering, general string-library functions and numeric coercion remain unqualified. MULT-033/034 and private tests cover Unicode, standard escapes, stale and malformed graph evidence, and cumulative work refusal. KERNEL-024: Use the same candidate-kind predicate for dynamic-family activation and traversal so a trigger-only model receives the same checked planning as a model containing other invocations. KERNEL-024: Activate dynamic semantic planning for portion candidates and include them in the audited prospective specialization writer set. KERNEL-024: Use the common raw name index only when no same-transaction static prefix exists. Preserve atomic staging, physical authority, current semantic recipe checks and unchanged work limits."
     },
     {
-      "id": "KERNEL-010 / KERNEL-023",
+      "id": "KERNEL-010 / KERNEL-023 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs",
       "patch": "patches/0011-atomic-dynamic-staging.patch",
-      "sha256": "3c4a6f2f669ed739df563149f17ce1ea198a8910e4478c7dbc9f0665f2757459",
+      "sha256": "ac7abd362ee370286c33a9ca83b420f63f4d7da7ebf53d554ea34aea2f94ef65",
       "baseSha256": "5d9cc31f0716d4b8852d98019ab3fbe8e014df1a7f294cb856e143632af0f716",
-      "resultSha256": "8ad9da07aca2c4df6c04101aff6f0a79b8038fb8ae165953bdc0441c2fa65651",
-      "reason": "KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits. KERNEL-023: Plan and stage accept trigger receivers, owned bindings and local featuring within the shared atomic semantic tail; reserve identities before dynamic staging and retain independent work-limited refusal."
+      "resultSha256": "a210635087b0a6713339e4ea77c18285890125ab1f8df84ea4b7c4f387615862",
+      "reason": "KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits. KERNEL-023: Plan and stage accept trigger receivers, owned bindings and local featuring within the shared atomic semantic tail; reserve identities before dynamic staging and retain independent work-limited refusal. KERNEL-024: Add checked loaded contextual Step library roles and owner-metaclass requirements to the shared static specialization planner and minimizer. Effective owner Feature.type requirements remain a separate dependency; positive metaclass facts are not a complete Step certificate. KERNEL-024: Construct applicable Class-owned portion paths through the shared checked predicate and exact loaded portions role; preserve existing static planning and minimization. KERNEL-024: Reuse freshly recertified positional evidence only after exact physical recipe and authority checks. Reconstruct complete ordered physical specialization reachability directly, preserve malformed alias precedence and semantic tails, use current structural row indexes, and reduce implied candidate graphs through SCC-aware source-excluding/independent path reuse with independent closure-oracle tests. Preserve stable candidate order, fixed and ReferenceSubsetting edges, variant recipe identities and unchanged work limits. KERNEL-024: Share immutable raw spelling-to-identity materialization across planning entry points under exact name-table revisions. External overrides always rebuild. Account for UTF-8 work and conservative stale-map retirement; publish only complete maps. All current-row and semantic recipe checks remain independent."
     },
     {
-      "id": "KERNEL-010",
+      "id": "KERNEL-010 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs",
       "patch": "patches/0012-atomic-ownership-batch.patch",
-      "sha256": "02e04fea6a4240b01efd12af5a9e076d2b7f8fbe7f29bb82a6d6b0862bb400a1",
+      "sha256": "5b050453a124533b72422d7a1463048095fbb70345455f306ec681176c08d3de",
       "baseSha256": "ea4f152587c8abb0e602264bfeddd244719791ec0cf2045270136b9b2e0053ee",
-      "resultSha256": "9f724257d0b466612447e7b057b9bb543e47c316e9a763468b51d13ee829fa0a",
-      "reason": "KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits."
+      "resultSha256": "e7263e28777f0386588ac9265e004096426fde510801e9d1cef59145e0afac1e",
+      "reason": "KERNEL-010 certifies equality and sameness between explicit empty values and admitted Boolean or exact numeric scalars. Both operands require successful checked execution; missing references and failures are never treated as null. Nonempty sequences, strings, quantities, approximate values and occurrence identity remain unqualified. Dynamic relationship rows and ownership are staged atomically, allowing reuse of the private result-family ownership view without cloning the complete prefix. Failure leaves that view intact. MULT-031/032 and private mutation tests preserve operand identity, ownership, annotations, stale-publication refusal and cumulative work limits. KERNEL-024: Preserve source ownership order while inserting generated receiver memberships before existing returns; validate source anchors and retract ordering with its semantic tail."
     },
     {
       "id": "KERNEL-012",
@@ -147,13 +147,13 @@
       "reason": "StateUsage and ExhibitStateUsage allow the Behavior range of StateUsage::stateDefinition; ConcernUsage narrows RequirementUsage to ConcernDefinition. Private and public regressions retain invalid/missing type separation, nonredundant type limits, and RequirementUsage acceptance of ConcernDefinition. Normative anchors are the pinned SysML XMI property redefinitions. TYPE-005/006 preserve the pre-fix failures."
     },
     {
-      "id": "KERNEL-017/018 / KERNEL-021 / KERNEL-022",
+      "id": "KERNEL-017/018 / KERNEL-021 / KERNEL-022 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
       "patch": "patches/0017-state-subaction-rule-identifiers.patch",
-      "sha256": "5f9b7437d76e5c73c7eecd24dec5221dacd078f2892fa78366b1ba1659d334fb",
+      "sha256": "f5fe774f3da82ab47d4099891d8e3fc82801361f3494b38c770a6dcb0900c1e2",
       "baseSha256": "89e5002bbc63b860c1e1881986268860c24ef01a358133a40f7ae0eade724e77",
-      "resultSha256": "0d6adf4c0ba1cf041edb3e46aa51b77b743f7c7b12768d6aec3e2f081098efd7",
-      "reason": "Retain canonical state-subaction rule codes and dispatch view-rendering validation through the shared inherited-membership projection. KERNEL-021 registers the five reviewed transition parameter and state/transition membership constraint identifiers. KERNEL-021: The five parameter and state/transition membership constraint codes are registered. KERNEL-022: Register validateAcceptActionUsageParameters with its pinned metamodel identifier."
+      "resultSha256": "b0302f04a707143e9f2c80af90ad2ce798973619952537aa595ae220e5d9c163",
+      "reason": "Retain canonical state-subaction rule codes and dispatch view-rendering validation through the shared inherited-membership projection. KERNEL-021 registers the five reviewed transition parameter and state/transition membership constraint identifiers. KERNEL-021: The five parameter and state/transition membership constraint codes are registered. KERNEL-022: Register validateAcceptActionUsageParameters with its pinned metamodel identifier. KERNEL-024: Prepare shared trigger construction before the explicit-only Facts snapshot and register canonical trigger validation identifiers."
     },
     {
       "id": "KERNEL-018/019",
@@ -165,22 +165,22 @@
       "reason": "KERNEL-018: count ViewRenderingMembership across owned and inherited featureMembership after actual redefinition, visibility and import selection. Missing/ambiguous references, recovery, cycles and incomplete dependencies cannot certify a candidate-count violation; two owned memberships remain a definite error. Reuse the shared projection and bound the query-local dependency preflight. KERNEL-019 moves parallel-state validation from lexical transition/succession ownership to checked action endpoint incidence in the action validator."
     },
     {
-      "id": "KERNEL-018 / KERNEL-021 / KERNEL-022 / KERNEL-023",
+      "id": "KERNEL-018 / KERNEL-021 / KERNEL-022 / KERNEL-023 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "patch": "patches/0019-preserve-distinct-view-renderings.patch",
-      "sha256": "5d1b15c4dac0df39e5d25601ea0ca96a0d06cea892d9a84bdb114ad31ec29e33",
+      "sha256": "a5e7568ccf75b7ef7d0be3f39f6b640477668b2a2c7127b22ac90ab8ac3b07f0",
       "baseSha256": "4bcbae4ec8a3fe2847ac48a00b3661fb4c53d8ee0e1dbac8120e089821caa565",
-      "resultSha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4",
-      "reason": "KERNEL-018: same-name compatibility shadowing must not remove a ViewRenderingMembership. checkRenderingUsageRedefinition targets the library viewRendering feature, not every inherited same-name user rendering. Preserve actual explicit/transitive redefinition and shared membership identity/visibility reduction. KERNEL-021 constructs the anonymous first input parameter of textual transitions before the optional trigger payload, preserving source and payload positions across explicit and shorthand forms. KERNEL-021: Transition parameter construction retains grammar-versus-semantic provenance, with contextual guarded targets distinguished by state ownership. KERNEL-022: Construct accept payload and receiver inputs in order, marking omitted receiver membership implied. Trigger values belong to the payload FeatureValue; at/after use argument Feature/FeatureValue wrappers, while when retains OwnedExpressionReference. Share the existing deferred-expression wrapper without changing operator operand layouts. KERNEL-023: Register the independent accept receiver-binding semantic planner."
+      "resultSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d",
+      "reason": "KERNEL-018: same-name compatibility shadowing must not remove a ViewRenderingMembership. checkRenderingUsageRedefinition targets the library viewRendering feature, not every inherited same-name user rendering. Preserve actual explicit/transitive redefinition and shared membership identity/visibility reduction. KERNEL-021 constructs the anonymous first input parameter of textual transitions before the optional trigger payload, preserving source and payload positions across explicit and shorthand forms. KERNEL-021: Transition parameter construction retains grammar-versus-semantic provenance, with contextual guarded targets distinguished by state ownership. KERNEL-022: Construct accept payload and receiver inputs in order, marking omitted receiver membership implied. Trigger values belong to the payload FeatureValue; at/after use argument Feature/FeatureValue wrappers, while when retains OwnedExpressionReference. Share the existing deferred-expression wrapper without changing operator operand layouts. KERNEL-023: Register the independent accept receiver-binding semantic planner. KERNEL-024: Dispatch scope-less generated result inheritance through a checked semantic identity adapter without adding textual scopes. KERNEL-024: Add a nonserialized raw library-name index bound to the exact loaded-name revision. Existing construction and public query methods are byte-identical; the index carries no semantic authority."
     },
     {
-      "id": "KERNEL-019 / KERNEL-020 / KERNEL-021 / KERNEL-022",
+      "id": "KERNEL-019 / KERNEL-020 / KERNEL-021 / KERNEL-022 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "patch": "patches/0020-parallel-state-transitions.patch",
       "baseSha256": "88c4211d4f3331b13519139e02da09855bc49030aa5f8904c8751b80e7371f67",
-      "reason": "Check parallel-state restrictions through independent, resolved TransitionUsage endpoint incidence on direct owned actions. Preserve action identity, reject incomplete chains and retain known opposite endpoints. Transition target-kind validation uses Feature.featureTarget rather than following a final ReferenceSubsetting. STATE-003 through STATE-007 cover ownership, alias/inheritance boundaries, unresolved and ambiguous names, action kinds and cross-file incidence. This does not qualify all transition or connector derivations. KERNEL-020 constrains triggered transitions through the first checked source ActionUsage and shared triggerAction derivation, preserving PerformActionUsage identity and ignoring unrelated alias members. Missing and ambiguous sources cannot establish an invalid source kind. The private ambiguity regression now contains directly owned candidate actions. KERNEL-021 validates owned input parameter counts through shared input derivation, state/transition membership owner kinds and trigger/effect member kinds. Private regressions retain in/out/inout, inherited-input exclusion, state subtypes and malformed member types. KERNEL-021: Owned input and state/transition membership validation retains the registered private negative regressions. KERNEL-022: ValidateAcceptActionUsageParameters uses shared derived inputs filtered to actual ownership; transition input validation shares the same helper. Private regressions cover omitted/present receivers, inherited input exclusion and in/out/inout directions.",
-      "sha256": "812130b505df08e87d64aa9e427df16422eda147bf87ae36e4c76ae550e00004",
-      "resultSha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
+      "reason": "Check parallel-state restrictions through independent, resolved TransitionUsage endpoint incidence on direct owned actions. Preserve action identity, reject incomplete chains and retain known opposite endpoints. Transition target-kind validation uses Feature.featureTarget rather than following a final ReferenceSubsetting. STATE-003 through STATE-007 cover ownership, alias/inheritance boundaries, unresolved and ambiguous names, action kinds and cross-file incidence. This does not qualify all transition or connector derivations. KERNEL-020 constrains triggered transitions through the first checked source ActionUsage and shared triggerAction derivation, preserving PerformActionUsage identity and ignoring unrelated alias members. Missing and ambiguous sources cannot establish an invalid source kind. The private ambiguity regression now contains directly owned candidate actions. KERNEL-021 validates owned input parameter counts through shared input derivation, state/transition membership owner kinds and trigger/effect member kinds. Private regressions retain in/out/inout, inherited-input exclusion, state subtypes and malformed member types. KERNEL-021: Owned input and state/transition membership validation retains the registered private negative regressions. KERNEL-022: ValidateAcceptActionUsageParameters uses shared derived inputs filtered to actual ownership; transition input validation shares the same helper. Private regressions cover omitted/present receivers, inherited input exclusion and in/out/inout directions. KERNEL-024: Replace source-expression trigger type guesses with checked model predicates and canonical diagnostic identifiers.",
+      "sha256": "a7880b5dae87d00f14cada3b2e08a49099baa41d14fffd47e9439f39c75ab666",
+      "resultSha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
     },
     {
       "id": "KERNEL-021",
@@ -219,22 +219,436 @@
       "resultSha256": "caa925533e0e836ddcdb4464e3f9edb926f7c326e835875b6829dbfcf975156e"
     },
     {
-      "id": "KERNEL-023",
+      "id": "KERNEL-023 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs",
       "patch": "patches/0025-binding-membership-roles.patch",
       "baseSha256": "d2b55b221bbbfeab6447cad0a28ab0b49a54b86d221bc7b31eb6767acca38efe",
-      "reason": "KERNEL-023: Share the existing binary binding factory with an explicit membership role. Preserve owned-result/default OwningMembership layouts; accept receivers require FeatureMembership.",
-      "sha256": "d8a705ac31f9b32b95fdc0590bb8b3db6063e7afd5822223053c8ee742fba978",
-      "resultSha256": "38a5065c480e39ac15e47a5ca7b7b070f1a3963de2083e18f3d3d256598879ad"
+      "reason": "KERNEL-023: Share the existing binary binding factory with an explicit membership role. Preserve owned-result/default OwningMembership layouts; accept receivers require FeatureMembership. KERNEL-024: Share the exact reciprocal binary binding endpoint reader between constructor defaults and reference-result source certificates. KERNEL-024: Share default binding identity, collision admission, construction and endpoint verification between constructors and invocations; deduplicate shared effective valuation identities.",
+      "sha256": "c883f06ed56c1dbe1595bc02c2ed9410df6c63ea1561f7cbdc323ba1798dd90a",
+      "resultSha256": "9494a14f87e2730319d3ec5e10069c113460510cab69d658e2d4327fa05ae256"
     },
     {
-      "id": "KERNEL-023",
+      "id": "KERNEL-023 / KERNEL-024",
       "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/accept_bindings.rs",
       "patch": "patches/0026-accept-receiver-bindings.patch",
       "baseSha256": null,
-      "reason": "KERNEL-023: Construct missing trigger receiver parameters and accept-owned binding connectors from checked reciprocal local ownership. Preserve existing receivers and matching bindings, reject contradictory graphs and identity collisions, and publish no partial family when work is exhausted. Includes private adversarial and replay regressions.",
-      "sha256": "765190cc8cf3f01646fd670164c106af41bb27ee78bdb8c20cbdcf5fd2001840",
-      "resultSha256": "093342367127d0c41ee76ee0adb841ab0484b79f1748db8f8da2b03e3e46db19"
+      "reason": "KERNEL-023: Construct missing trigger receiver parameters and accept-owned binding connectors from checked reciprocal local ownership. Preserve existing receivers and matching bindings, reject contradictory graphs and identity collisions, and publish no partial family when work is exhausted. Includes private adversarial and replay regressions. KERNEL-024: Construct a missing trigger receiver before an existing return parameter so the receiver retains the normative second parameter position.",
+      "sha256": "755478fa1fb11ff58057a705cc0f77682504c455a24f30c6a315051d491313df",
+      "resultSha256": "09b43994e93d277d4e5f1942dec05e89860169ee5c975ca6a10269be29a7697d"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs",
+      "patch": "patches/0027-generated-result-inheritance.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Project generated FeatureReferenceExpression result features through checked current source/membership/subsetting identities and the shared contextual inheritance walk; retain incompleteness and work-budget refusal. KERNEL-024: Project generated FeatureReferenceExpression result features through current construction identities. Complete membership queries require every applicable canonical result base, mandatory source specializations and an unowned-type source context; partial compatibility inheritance remains separate.",
+      "sha256": "b55675b3e6600f2df5adf33eff705fe93cdbab378a5c1f6f3960fa898a078be3",
+      "resultSha256": "6fa0fb8af33417e56b0450e8240df57862373fa1e1050be84cd130adfde90ab6"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_context.rs",
+      "patch": "patches/0028-partial-result-heritage.patch",
+      "baseSha256": "a30f1afe26d49593ae3060d1db53bdcaf78d2da4ebf00f4f9c332fba006bee2b",
+      "reason": "KERNEL-024: Retain checked generated result bases as incomplete compatibility candidates when required positional/library ancestry is unavailable; never promote that projection to a complete domain.",
+      "sha256": "bd0adec56613f6d52960f0623bc8d02a795b6b172f03b86894ff4e51d6fe1d43",
+      "resultSha256": "82997c8b71aca9a0e5e51fcd1e60b0ed48798b0e02d493b9b7499b698ed31043"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs",
+      "patch": "patches/0029-assertion-member-evidence.patch",
+      "baseSha256": "6e5e5e1d4d50a65d9a814aa4c6d5ca9243e559db912f91e2b6d188506132043a",
+      "reason": "KERNEL-024: Admit ordinary AssertConstraintUsage members in structural Type membership certificates, preserving exact ownership, no positional roles, and the shared complete redefinition proof. KERNEL-024: Admit ordinary AssertConstraintUsage members in structural Type membership certificates and directed authored Feature roots only in certified behavior/function parameter contexts; preserve package/structural-root refusal, exact ownership and the shared complete redefinition proof. KERNEL-024: Admit ordinary AssertConstraintUsage members in structural Type membership certificates and directed authored Feature roots only in certified behavior/function parameter contexts; preserve package/structural-root refusal, exact ownership and the shared complete redefinition proof. Admit namespace-owned foreign members from the shared Step family through that same reciprocal namespace certificate without assigning owned-feature or positional roles. KERNEL-024: Use the same ordinary namespace-member ownership certificate for locally owned and foreign Feature members under Types. Preserve membership identity, redefinition, visibility and feature/parameter-role separation through the common reducer. KERNEL-024: Preserve authored BindingConnector namespace membership without adding outer feature/parameter roles. Share necessary local ownership and neutral-role checks before rebuilding stale positional evidence; retain generated binding recipe guards, complete subsequent semantic proof and unchanged work allowance. Acceptance covers both formats, malformed cold/warm edits, redefinition/alias order, raw/prepared/serialized replay, retry and uncertified generated tails. KERNEL-024: Collect unclaimed Association ancestry, reduce complete unfiltered memberships through the shared positional/redefinition algebra, then audit every Association ancestor against effective-end-dependent Link/BinaryLink and object-association base obligations before publishing results.",
+      "sha256": "1f838d03874c01b80992c88e49ea36ea9077e4edb4dc5c4520ba1b62f36a10d9",
+      "resultSha256": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_features.rs",
+      "patch": "patches/0030-attribute-feature-domains.patch",
+      "baseSha256": "25e8b6cf1b7ce551a68170ffd02623e15c80295b94dea1ac6b2d1c94dc733246",
+      "reason": "KERNEL-024: Admit AttributeUsage roots through the existing complete feature requirements and inheritance certificate. Add assertion-member and attribute-root positive/negative regressions. KERNEL-024: Admit exact Association and AssociationStructure membership domains through the common checked provider, preserving incomplete required-base refusals.",
+      "sha256": "8dd59c81d03f8928440dbc8514b6ac5e7362d89e82da28a0b77488f36b4cbfd3",
+      "resultSha256": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_redefinition.rs",
+      "patch": "patches/0031-generated-result-domain-witnesses.patch",
+      "baseSha256": "f696d09c9e790c57d256d8a1dde8018718ea0faab6fa65dc1482c2a5b2c5eb23",
+      "reason": "KERNEL-024: Retain proven canonical return base identities with the current publication evidence so complete generated-result readers can account for every applicable direct base.",
+      "sha256": "080b3ce6a9710cd454f80da0e592c0302e2dc12eca7107516157403aecfb6fcc",
+      "resultSha256": "9b5d2d03574cbb4d961cbcab23af1c8fe6f5a3106238b0f35d9791819c7274ec"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/certified_types.rs",
+      "patch": "patches/0032-predicate-result-properties.patch",
+      "baseSha256": "5126f86d4a70d8ce29edd70970fb27844b5ed9f50382be9659139876d0642d3e",
+      "reason": "KERNEL-024: Use the same checked Function.result property provider for admitted Predicates, preserving required BooleanEvaluation ancestry and the shared ordered membership proof. KERNEL-024: Project Association.associationEnd from the same checked effective end-feature identities and retain incomplete errors for uncertified family ancestry.",
+      "sha256": "c06f6b34bac5ea19e5d8d8a5a2d9c923ab7799f8707fc04a80b24b41bd2783c5",
+      "resultSha256": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/step_context.rs",
+      "patch": "patches/0034-contextual-step-ownership.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Derive positive enclosed, subperformance and structural-owned Step requirements from checked reciprocal owning-Type evidence and actual compositeness. Preserve independent enclosure on malformed flags and document the plural-library interpretation.",
+      "sha256": "f73702c0fe8ddd22ae1bf78b59851487934f2979338b663cdc3390a4def319cf",
+      "resultSha256": "1ef072f1ca0fa39880883e52c60e957621f15041bba91bae9d91e26a4afd9121"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs",
+      "patch": "patches/0035-stable-step-type-projection.patch",
+      "baseSha256": "46ada2d4023e868e6cbf421c87b2220e5889fbcab57c44b285d535ca5588512c",
+      "reason": "KERNEL-024: Use the shared complete Feature.type reducer for structural-owner applicability; absent results remain unknown and no construction rows are published by a predicate query. KERNEL-024: Share complete contextual owner type-kind certificates and query-local recursion bounds with negative specialization; reuse the complete reducer for Class as well as Structure construction predicates.",
+      "sha256": "a029cbba577eafbe5329fe6a581c069bf35e9dae7cce5b07bd9e19950e67a53f",
+      "resultSha256": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs",
+      "patch": "patches/0036-stable-step-type-adapter.patch",
+      "baseSha256": "ac412907c391508980f2f94a86cae968169afe1ddfdec98688b8cc2c12c1382f",
+      "reason": "KERNEL-024: Exclude prospective specialization writers from construction predicate typing closures and comparisons. Accepted predicates are audited against the final atomic transaction write set. KERNEL-024: Exclude prospective specialization writers from construction predicate typing closures and comparisons. Accepted predicates are audited against the final atomic transaction write set. Consume positional targets from the current shared FeatureRequirements certificate instead of requiring a lexical scope and a second stored-only positional table. KERNEL-024: Consume the final chaining target from the common FeatureRequirements certificate instead of maintaining a second endpoint loop; retain all other family and conjugation qualifications. KERNEL-024: Consume the common contextual owner applicability and complete type certificates for portions and compositions; propagate query-local recursion context and prospective-writer exclusions into nested readers. KERNEL-024: Share the already acquired current StoredStructure with TypeRelations under the same projection context; preserve all row, identity, metadata and publication guards.",
+      "sha256": "29b243f914f3e65832cb32233f27adef8e4a43e5348ba86870dc0ef39a9e784b",
+      "resultSha256": "1fb062ef5d9f688c41d283976be1f2807f95e27f25ff6935e9afbad83476bc06"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/expression_results.rs",
+      "patch": "patches/0037-checked-expression-results.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Select Expression and Function results from the shared complete ordered return-membership projection; preserve unknown separately from complete absence.",
+      "sha256": "06effce9a2e6d6d703ae03cb512a38aa7160b931977193b77a5c071411aa4f6a",
+      "resultSha256": "ba765ac8b392caac93c1056fa4960752e5a86b68d2fcec77dd0ab9582eb330df"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic.rs",
+      "patch": "patches/0038-expression-result-errors.patch",
+      "baseSha256": "eb1349600fbf45b348bdfec084445511df8d1642de891089e0463608a5997617",
+      "reason": "KERNEL-024: Expose explicit incomplete Expression result errors without treating missing evidence as a null or successful result.",
+      "sha256": "ca596b21c8320d8d4afd9af455c2515dcb35095c9e6dff7a14b00adf4bb8dbac",
+      "resultSha256": "bc592e894134ab4354aa0972c179d634adfb6183d42638640c8df73f49c0a0c5"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/readiness_tests.rs",
+      "patch": "patches/0039-expression-owned-type-proof.patch",
+      "baseSha256": "17033fd7e9dc6400762d227bbe89cbf2cdfcb74d0fe84566a8f7d5ca5eaa0a4a",
+      "reason": "KERNEL-024: Check the exact function identity of an ordinary owned Expression through the shared type provider while retaining metadata and valuation refusals. KERNEL-024: Check the exact function identity of an ordinary owned Expression through the shared type provider while retaining metadata and inferred-valuation refusals. Replace the previously blanket valuation refusal with an exact explicit-type independence regression; incompatible value semantics do not rewrite the declared function type.",
+      "sha256": "38719103a512e1f7dfce2deb4a7a388c57c5efe306fa1afc0d9178fb3c0fef22",
+      "resultSha256": "d71ce0c25f1d4569f08b4ace686a70afc1a56de22b9da1cef1af649bb0f767c3"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional.rs",
+      "patch": "patches/0040-shared-positional-reduction.patch",
+      "baseSha256": "845f8d8cc9f26b42933b31a5dd18b2dc109898ae1c3e78df83f78d3a68d5331f",
+      "reason": "KERNEL-024: Separate positional input gathering from one shared ordering/reduction algorithm, preserving construction caching and allowing checked semantic memberships without discarding generated members. KERNEL-024: Share nonowning local-feature alias dependencies with checked queries in both formats. Foreign positional owners are prerequisites, never bases or features. Use metamodel subtype roles with reciprocal ownership, parameter direction, strict ancestry and cycle checks.",
+      "sha256": "ccf1ade51eb1d4b3a3c1116552aa31b019b9cb7b288eb363ab7ac052af3639b4",
+      "resultSha256": "de466a581af29acd03724804fa4f9b3716610a274e77ccece39fed66a9e1127d"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/checked.rs",
+      "patch": "patches/0041-checked-semantic-positional-inputs.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Consume complete stamp-bound semantic membership and authored-redefinition inputs through the shared positional reducer; retain exact import selectors, work budgets and no publication. KERNEL-024: Consume the same borrowed-feature dependency selector as construction, with the same standalone specialization validation and both graph formats.",
+      "sha256": "4f44e004dc0fb8a2de9c96e70df1b110529d04e1aabcd1d6385aaea10be373a9",
+      "resultSha256": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/reference_memberships.rs",
+      "patch": "patches/0042-reference-membership-domain.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Certify current generated reference-result source memberships and binding endpoints before using the shared complete membership reducer. KERNEL-024: Replace the obsolete legacy-format foreign-return refusal with exact identity/role positives in both formats, plus ownership damage, work-budget retry and supported model-rebuild identity checks.",
+      "sha256": "063ffbd3ea89dd26b7ad02da7652bdcaffdeadc49562468a3e8326b95e4c3b5a",
+      "resultSha256": "3685226f5c3b5c4ec7596095cc28beaa502eeccdc111aa363696522039d8ee83"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+      "patch": "patches/0043-checked-trigger-arguments.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Evaluate canonical trigger argument rules through checked ordered arguments, expression results, global library memberships and complete redefinition/specialization evidence.",
+      "sha256": "5a5b500e935f17dc78123ae1551169823f78ec855d7f9bd14ef6c7c49c8f4620",
+      "resultSha256": "fe6c3454577bfed1579ac03db4a82c0f6082937d0bf015d0f80a442e75e4f31b"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/resolution.rs",
+      "patch": "patches/0044-shared-global-resolution.patch",
+      "baseSha256": "4ebf0dcc1381d2972086f0efd3e8f8b1dd74c699e3cd66aeeefcaf3e5a4bc54c",
+      "reason": "KERNEL-024: Share the same checked qualified global name resolution with composite semantic predicates under one cumulative work allowance.",
+      "sha256": "589130ad17896021712b7e554e0a7e561effd1c7bd0cde3d657b004efb1e90af",
+      "resultSha256": "7bf1ae6e0ec7c7a709076ece987208af3e4e85f942fd12d830c356bc3418a7e0"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces.rs",
+      "patch": "patches/0045-global-resolution-access.patch",
+      "baseSha256": "9eb1f8bedba2cfe84f2edfa8291673918d260098096e8e67bf824757e6b95742",
+      "reason": "KERNEL-024: Expose the checked global resolver internally for composite semantic predicates without using compatibility lookup.",
+      "sha256": "cce1851e3c1f3fb5c005f827649626175a0775149117de92a918cb97751ebad2",
+      "resultSha256": "fa1ce92b5551c28af23bed503d52e0ceb6e237e5f8a70d36916f16ce8853846c"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/dimensions.rs",
+      "patch": "patches/0048-remove-trigger-dimension-guess.patch",
+      "baseSha256": "1d7a97fdf4d73f20d0e1d0585c26d50643bceecc43a9fd8333345a28687be9b9",
+      "reason": "KERNEL-024: Remove the now-unused source-expression dimension helper after trigger validation moves to resolved quantity/measurement-reference predicates; retain other dimensional checks.",
+      "sha256": "11ad6c6962143401f825b13b1e047917dfd19973b0915f5f1b66b822e8bb66d0",
+      "resultSha256": "60dbdb17097d1fd98338fefa74696ddc07bca1717f6ef1d4700239cbd44b566c"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_results.rs",
+      "patch": "patches/0049-owned-invocation-results.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Construct canonical owned invocation results before shared specialization planning, preserving grammar-supplied returns, legacy shapes and implied provenance.",
+      "sha256": "1712699db9c143cf668662c5d297052806f7834ea02055c8ab41e85b93516540",
+      "resultSha256": "9fd709dcb981b7e224656916b31934612828620c168166a0d751a2b4cd3c60d2"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional_names.rs",
+      "patch": "patches/0052-owned-positional-names.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Resolve owned unnamed parameter, result and end features through their actual positional redefinition targets, preserving identity, visibility and missing-name evidence. KERNEL-024: Resolve owned unnamed parameter, result and end features through their actual positional redefinition targets, preserving identity, visibility and missing-name evidence. Cache only recorded source-row identities against their content revision; preserve live outcomes and all miss dependencies through edits, clones, replacement and truncation.",
+      "sha256": "5f4d6a15fc951bcee8063fba65467bfa77279dc0e074fd4a33e03bcadd41857b",
+      "resultSha256": "f25789690e57b923d7b503956762bcc92e54ef9780261010aff41309b0846c25"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/migration.rs",
+      "patch": "patches/0053-invocation-result-migration.patch",
+      "baseSha256": "8c3893bd18ffac599733977367d9772eb0e77093274625b2b06ba6eb6d714a48",
+      "reason": "KERNEL-024: Migrate canonical owned invocation results with nested ownership order and simultaneous identities; admit only reconstructible implied return pairs in compact format validation.",
+      "sha256": "959884d71c8b03ce8a939bfac998d190e0a78544019b3f69c9728281b301482f",
+      "resultSha256": "31d2091c1b5b97b7993eebecfcdfd422853a358205d901959f77598b26abd030"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/loader.rs",
+      "patch": "patches/0054-authored-result-pairing.patch",
+      "baseSha256": "4c04dfb8511f8e334c2884bfac74620ecd60149af733111a63d86f533eb61ce2",
+      "reason": "KERNEL-024: Keep authored identity pairing expectations separate from regenerated implied invocation-result ownership subtrees.",
+      "sha256": "2afe7b63b1d8cdf98a151548ceada8bcf0619ab7fdfb46c4e37a61076eeb7e30",
+      "resultSha256": "b2103e157386af31fc349c2881739027b261dc6cb7c5b576f1d5211628741feb"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_projection.rs",
+      "patch": "patches/0055-streamed-membership-reduction.patch",
+      "baseSha256": "266786624e02acf6a2e2fa99cc597d3f20bee4042cc497563cc85919270ef274",
+      "reason": "KERNEL-024: Stream redefinition reachability directly into membership suppression and collect surviving feature identities in the same ordered pass; retain fresh traversal marks, cumulative work bounds and pairwise-rule differential tests.",
+      "sha256": "0193a6cfbd25314669a0657da6cd89344ea284322b7ee3519021abddd75052cf",
+      "resultSha256": "01bc5c4f025a904cabcae2f2181e599748e552ab0b28340509d3156b8f381f14"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/effective_defaults.rs",
+      "patch": "patches/0056-shared-effective-defaults.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Share complete effective FeatureValue selection across call families, preserving identity-based inheritance, explicit override, incomplete dependency and cumulative work semantics.",
+      "sha256": "1df73f9cf892bc4800df0dac45e152641b51b6dfc42f74bed5ff104fa5fa06df",
+      "resultSha256": "4ae1548ba4021e28a83c5242dfd891fdeabdc2e1f2384d581aa430ae5a7a1bb4"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_defaults.rs",
+      "patch": "patches/0057-invocation-default-selection.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Select invocation defaults through actual checked argument mappings and complete callee features, then atomically construct their owned binary bindings with the shared effective-default resolver and connector recipe.",
+      "sha256": "d885fe7778b3f856f7ea069f55ee58f7b2df5eeca9622b619c642787ed687d2c",
+      "resultSha256": "4c116f415d30f8d4c91ecc41fa79063d18b03985e0b0c9cb747790075aac3e16"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/local_featuring.rs",
+      "patch": "patches/0058-invocation-default-featuring.patch",
+      "baseSha256": "a00b11b2db553e10f74459ffa51acc5eb95c6fee7d528457cc681b5bd9d43d18",
+      "reason": "KERNEL-024: Validate local endpoint featuring for invocation-owned default BindingConnectors through the same reciprocal staged path proof as constructor defaults.",
+      "sha256": "05fdb9eb14ba9144053415c84c8407a52e2f405421c3159298b361a3e867dc0a",
+      "resultSha256": "f61ea53767433f012aaa4f9dec998df9b8ff52b6dc25250c496eb2bce917d493"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_batch.rs",
+      "patch": "patches/0059-retain-designated-callee-evidence.patch",
+      "baseSha256": "ff8a9b7df21ffac89df8dcf1cc8536055a553250e6c2276ed4b10d3bd71f8d41",
+      "reason": "KERNEL-024: Retain exact checked global operator and trigger callee identities in the accepted publication plan, revoking them with its source, name, metadata and epoch evidence.",
+      "sha256": "ebbbbf02d449a02f58d88b818914db068f8e5bff1a7427bf3b4e4e39a059e9b0",
+      "resultSha256": "fb286a5ba37b55de65d7be9f49e2a5b56fdbca3a2239a4669850e06ca5231c99"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/reference_memberships/foreign_members_tests.rs",
+      "patch": "patches/0060-foreign-step-membership-tests.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Verify namespace-owned foreign Step and Expression members retain exact result and membership identities without becoming features; cover ownership and scope refusals, edits, cumulative work limits and raw/prepared/serialized library replay.",
+      "sha256": "fcc7f03a890e815a4ecd719847e916c616f72cbafd0478332c7e0faf4d164542",
+      "resultSha256": "0289359cb7f9a65792d8a8e175c7633849381226ecd36dc711b5383f2f54fe79"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/valuation.rs",
+      "patch": "patches/0061-valuation-typing-applicability.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Retain declared static types for well-formed valued features when valid direction or explicit owned specialization makes valuation-result specialization inapplicable; reuse reciprocal membership, effective direction and stored specialization proofs without evaluating values.",
+      "sha256": "6f9ae4634b830c0716deaa9cc1ff8932c6e19684b0d2a41b6945dd303f3b7116",
+      "resultSha256": "d014bf9399bc45d534ce1522aefa8d6cea68a31f011c49cfe5a1eef09e7c8aa9"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/valuation/tests.rs",
+      "patch": "patches/0062-valuation-typing-tests.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Check directed and explicitly specialized valued types, malformed ownership/flags/specializations, independent declared types, edits, raw/prepared/serialized replay, cumulative work limits and parameter membership defaults.",
+      "sha256": "24cb882b4fb9707cac96af3e1c5a257645e1ec2baf3d9140104ab32cce917fc8",
+      "resultSha256": "05365d24f4c8463dd22bdaed92c3091aca442a5a354f6cb22192be89c1d90636"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/semantic_positional_tests.rs",
+      "patch": "patches/0063-semantic-positional-types-tests.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Check exact generated-reference result types through the shared semantic positional proof, more specific library defaults, malformed sources and post-edit refusal, cumulative budgets, raw/prepared/serialized replay, unresolved dependencies and closed circular typing closures. KERNEL-024: Assert exact actual result types for all ten selected library defaults after portion dependencies close, retaining more-specific clock results and the Occurrence result of portionOfLife without coercion to Life.",
+      "sha256": "ab75a39bd3964158a110920077e5de54d6a7c6f53b8b850beecb877aefb90c33",
+      "resultSha256": "1c0004d3df2ff04980d3ef927470eadd2b0aa99dc42ef5d04c8c7e24b8404791"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/ordinary_features_tests.rs",
+      "patch": "patches/0064-ordinary-feature-context-tests.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Check ordinary Feature owner contexts, inverse endpoint and reciprocal carrier integrity, independent static types, inherited narrowing, parameter-role exclusion, fresh and edited invalid graphs, cumulative budgets and raw/prepared/serialized replay. KERNEL-024: Replace obsolete plain OwningMembership refusal with malformed nonowning carrier rejection, and verify that a valid role edit removes owningType while preserving exact independently declared typing.",
+      "sha256": "8d32a89e5c465d747dfbcb609a475ab8179ea2658dcd58659b01257fef26067d",
+      "resultSha256": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/recursive_features.rs",
+      "patch": "patches/0065-recursive-ordinary-feature-tests.patch",
+      "baseSha256": "adca4fcc827e7a1ce570d4d130101d1f1fc9cf378f6ef63efa815c1d384f4084",
+      "reason": "KERNEL-024: Require exact recursive membership identities for newly admitted ordinary nested Features in both graph formats; retain incomplete inference-only valuation and portion-family cases. KERNEL-024: Admit exact recursive membership enumeration for portions without owned Class typing; retain a negative whose Class-typed owner requires a genuinely missing portions library role.",
+      "sha256": "004219c2757862969c8b82836e4f20c34a9f7ec1b5fc4b17a2fc61c6a9f9d33a",
+      "resultSha256": "b0bcbb1aa4cfa4e44609561aaf87b756bd986a1b96b98cf9a1922b5ae6ae51ba"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/chaining_types_tests.rs",
+      "patch": "patches/0066-feature-chaining-type-tests.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Check exact chain-derived types and negative specialization through the common final-target proof; cover all-link ownership/endpoint damage, edits, repeated links, inheritance, closed cycles, raw/prepared/serialized identities and cumulative work limits.",
+      "sha256": "ee9d588540e52694144e2d15ef18f1c97bb4eb8641dfcb6d1dc21602d8ab3e2a",
+      "resultSha256": "ed2e58c08de989291bdb145febb535ef4bf76b799c85c567feed9692642a8494"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/portion_context.rs",
+      "patch": "patches/0067-checked-portion-context.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Share checked portion applicability from owned Class typing and reciprocal owning-Type evidence across static construction, effective-owner planning and checked reads. Preserve complete owner predicates and future-writer exclusions.",
+      "sha256": "af19dde6854ac24a6dc502115d4d1cd36e94dc12af8b2b07f9061da9fa7394c0",
+      "resultSha256": "3bcc0c9ae46a358ad42276c079e56a18d4cb06197529a6dcad637019d4f41836"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/portion_context/acceptance.rs",
+      "patch": "patches/0068-portion-context-tests.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Check exact portion types and conditional paths, owner narrowing and cycles, ten actual default-result types, owned versus inverse typing, malformed/edit/budget/replay cases, graph-format boundaries and complete negative specialization.",
+      "sha256": "b65bdb8ac277bd2d1bfe01d724c34b65d03606ea646649213f1aa0c7ed56242a",
+      "resultSha256": "405cae08a650f5a306e9b4249e889b1396f490bfcaadd83df6d8b25b76f0e62a"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/repository_tests.rs",
+      "patch": "patches/0069-portion-owner-projection-tests.patch",
+      "baseSha256": "3353c4d825d6e6a7d8d2b62ae0c0f64907054d2bd7569a1c000cc31e21507ab0",
+      "reason": "KERNEL-024: Replace blanket namespace-owned portion refusal with exact inapplicable-owner positive evidence; retain malformed flags, variation, non-null portionKind, metadata and cycle negatives.",
+      "sha256": "30f49bf31accc1546fb49785b9690e214f87064c8f11df29a7714a13e5628655",
+      "resultSha256": "2466e1c8eb5a567b2eb4757baa9db2622da23bc67778ada3c1b29d4227ec3f85"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs",
+      "patch": "patches/0070-standalone-typing-source-index.patch",
+      "baseSha256": "3a5edc38a13a690e01e7de33fea48e78122c1e2aba043be0ade7e758554577c2",
+      "reason": "KERNEL-024: Retain all candidate sources of nonowned FeatureTyping rows in the existing structural scan, including contradictory typed and generic aliases. Preserve current-row identity, prefix/whole scan equivalence and logical work accounting. KERNEL-024: Collect all stored Specialization rows in physical order during the existing complete structural scan. Reuse only an exact current row/provenance revision and verify frozen-prefix versus whole-scan equality; endpoint and semantic proof remain separate. KERNEL-024: Retain all potentially contradictory Subclassification source aliases, as for FeatureTyping, so exact source validation cannot certify absence by selecting one alias.",
+      "sha256": "9d98eed900ce13ff938cbac5d7172102b2e5f65deb56217b1ff706117edb1feb",
+      "resultSha256": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_evidence.rs",
+      "patch": "patches/0071-namespace-feature-ownership.patch",
+      "baseSha256": "877c113db727185db1a57775c3d78affb5baae5d0a5eab1e51ec3dac74ce454d",
+      "reason": "KERNEL-024: Share checked reciprocal namespace ownership for ordinary Feature members under Type namespaces. Retain inverse-domain, endpoint, metadata and potential owned-cross-feature refusals.",
+      "sha256": "31d1cd4d4df5b77c19a5015f2451fd3d3bacae0ea75d0e97b0ae219515c3e64c",
+      "resultSha256": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/namespace_member_tests.rs",
+      "patch": "patches/0072-namespace-feature-members-tests.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Check ordinary Type namespace members through exact feature/result types, retained membership identities, absent feature/parameter roles, all ten inherited default identities, nested and foreign contexts, source/owner damage, edits, budget retry, raw/prepared/serialized replay and distinct inherited versus owned-feature redefinition rules. KERNEL-024: Preserve authored BindingConnector namespace membership without adding outer feature/parameter roles. Share necessary local ownership and neutral-role checks before rebuilding stale positional evidence; retain generated binding recipe guards, complete subsequent semantic proof and unchanged work allowance. Acceptance covers both formats, malformed cold/warm edits, redefinition/alias order, raw/prepared/serialized replay, retry and uncertified generated tails.",
+      "sha256": "110eeb2cf4c97e25820ed6ea0d086d98764b24722f19ea936162471184711826",
+      "resultSha256": "9047cd5301ac9cd62761084669586f1f4983977e6482c2b57ed74bbddaf311bb"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/minimizer_differential_tests.rs",
+      "patch": "patches/0073-specialization-minimizer-oracle.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Compare exact retained candidates and ordered targets with independently recomputed Floyd-Warshall closure and recursive DFS candidate order across 2560 cyclic, duplicate, fixed, reference and virtual-chain graph configurations; verify budget refusal and retry.",
+      "sha256": "808dff667f5f337bc942bcc42bc96c9b6d2952331fd173b5f6cefa1b15772c8c",
+      "resultSha256": "93a2d575fdb418fd0083e1e18a56f3b53f2f8a3cf873faf1603afb3a32bb4dd2"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/current_graph_tests.rs",
+      "patch": "patches/0074-physical-specialization-graph-tests.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Compare direct physical graph reconstruction with whole reduction for both graph formats, source/target alias damage, absent sources, generated tails, duplicate edges, virtual chains, UUID remaps, metaclass edits, indexed/fallback prefixes, measured-boundary budget retries and unchanged identities. Preserve deferred variant-owner recipe IDs and graph order.",
+      "sha256": "30ea1c97eb501b95ee65c0616a6a30f8289a5a98c16267abd4ed5fe0d17a6fc0",
+      "resultSha256": "246c781f35a40e9ecf594d851658c921047b68543529cedb7a2e26b6baed23d3"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/planning_names_tests.rs",
+      "patch": "patches/0077-planning-name-index-tests.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Verify exact Unicode names and UUIDs, immutable reader snapshots, same-length edits, external override replacement/removal, failed-publication retry and reader-independent conservative retirement budgets.",
+      "sha256": "724cceed116c80c74c1fd19cbf015fa7df4ab2a6ff7109b950fa8e4da8fe9fd7",
+      "resultSha256": "97269e0dd9c978d52697e5f2343c9e7e389b2a4ab22c6087bfe68292e5dd8d4a"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/borrowed_role_subtypes.rs",
+      "patch": "patches/0076-borrowed-positional-subtypes-tests.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Qualify foreign positional dependency roles for Step parameters, Expression ends and ReferenceUsage results across both graph formats, preserving alias membership without inventing a feature contribution.",
+      "sha256": "fe9c89fa0b1b0b6ca326ce551376e18cde234501915f7523d5a63b4c9a3b1a65",
+      "resultSha256": "3f93ffd7d2c94519e95f6adb3716e810f27cb415303dfb451d7822e58a918431"
+    },
+    {
+      "id": "KERNEL-024",
+      "file": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/association_domains_tests.rs",
+      "patch": "patches/0075-association-end-domains-tests.patch",
+      "baseSha256": null,
+      "reason": "KERNEL-024: Test effective inherited/redefined Association ends, required conditional bases for every ancestor, foreign alias identities and role exclusion, malformed source aliases and ownership, edits, bounded work and raw/prepared/serialized standard-library replay.",
+      "sha256": "a12036d37033d307663bfc7b879aee90574f8286ba04b3c07dd4452936ba69fd",
+      "resultSha256": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d"
     }
   ]
 }

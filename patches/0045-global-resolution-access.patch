@@ -1,0 +1,12 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces.rs
+@@ -12,7 +12,7 @@
+ };
+ use std::collections::HashSet;
+ pub(in crate::json) mod imports;
+-mod resolution;
++pub(in crate::json) mod resolution;
+ use sysmlv2_syntax::{
+     ast::Dialect,
+     lexer::{tokenize, unescape},

@@ -5,7 +5,7 @@ default-members = ["crates/sysml-kernel", "crates/sysml-cli"]
 exclude = ["src-tauri", "tools/kernel-evaluation", "vendor/sysml-toolkit"]
 
 [workspace.package]
-version = "0.4.0"
+version = "0.0.1"
 edition = "2021"
 rust-version = "1.97"
 

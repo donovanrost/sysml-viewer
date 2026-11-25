@@ -18,6 +18,19 @@ pub struct SyntaxReport {
 /// Hosts must use `ANALYSIS_STACK_BYTES`, just as for semantic analysis.
 pub fn check_syntax(document: SourceDocument) -> Result<SyntaxReport, AnalysisError> {
     validate_documents(std::slice::from_ref(&document))?;
+    Ok(parse_document(document))
+}
+
+/// Check independent sources under the same workspace input policy as semantic
+/// analysis. This does not resolve references between the documents.
+pub fn check_syntax_batch(
+    documents: Vec<SourceDocument>,
+) -> Result<Vec<SyntaxReport>, AnalysisError> {
+    validate_documents(&documents)?;
+    Ok(documents.into_iter().map(parse_document).collect())
+}
+
+fn parse_document(document: SourceDocument) -> SyntaxReport {
     let parsed = if document.name.to_ascii_lowercase().ends_with(".kerml") {
         parser::parse_kerml_source(&document.text)
     } else {
@@ -48,8 +61,8 @@ pub fn check_syntax(document: SourceDocument) -> Result<SyntaxReport, AnalysisEr
                 )
             }),
     );
-    Ok(SyntaxReport {
+    SyntaxReport {
         document,
         diagnostics,
-    })
+    }
 }

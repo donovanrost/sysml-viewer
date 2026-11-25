@@ -1,0 +1,735 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs
+new file mode 100644
+--- /dev/null
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs
+@@ -0,0 +1,730 @@
++//! Identity-based inheritance for materialized expression results without body scopes.
++//! Compatibility inheritance and complete recipe admission share current identities.
++//! Complete Type.feature queries still use the central checked membership reducer;
++//! this adapter only proves the generated owner's domain and required result bases.
++use super::{
++    Builder, MembershipContext, MembershipProjection, implied, membership_evidence,
++    semantic_ownership, structural_index::StoredStructure, type_relations,
++};
++
++impl Builder {
++    /// Shape admission only. Complete queries separately certify the current recipe.
++    pub(super) fn is_generated_reference_result(&self, element: usize) -> bool {
++        self.semantic_ownership.as_ref().is_some_and(|view| {
++            let anchor = view.source_anchor(element);
++            view.matches_suffix(self)
++                && view.contains(element)
++                && view
++                    .result(anchor)
++                    .is_some_and(|result| result.feature == element)
++                && self
++                    .elements
++                    .get(anchor)
++                    .is_some_and(|row| row.ty == "FeatureReferenceExpression")
++        })
++    }
++
++    /// Certify the complete generated result recipe without fabricating a body
++    /// scope or treating a positive canonical return witness as proof of absence.
++    pub(super) fn complete_generated_reference_result(
++        &mut self,
++        element: usize,
++        steps: &mut usize,
++    ) -> Option<usize> {
++        *steps = steps.saturating_add(1);
++        if *steps > crate::eval::MAX_STEPS || !self.is_generated_reference_result(element) {
++            return None;
++        }
++        let snapshot = self.dynamic_graph.as_ref()?;
++        if !snapshot.result_redefinition_current(self) || !snapshot.local_current(self) {
++            return None;
++        }
++        let evidence = snapshot.result_redefinition.as_ref()?.clone();
++        if !evidence.sources.contains(&element) {
++            return None;
++        }
++        let canonical_result = evidence.canonical_result?;
++        let bases = self.checked_generated_result_bases(element, steps)?;
++        if !bases.contains(&canonical_result) {
++            return None;
++        }
++        let anchor = self.semantic_ownership.as_ref()?.source_anchor(element);
++        let raw = StoredStructure::for_query(self, steps)?;
++        if !raw.membership_domains(self, steps)?.owner_complete(anchor)
++            || raw.annotations_incomplete
++            || self.metadata_associations_incomplete
++            || [element, anchor].iter().any(|owner| {
++                raw.metadata_annotation_targets.contains(owner)
++                    || self.metadata_of.get(owner).is_some_and(|m| !m.is_empty())
++            })
++        {
++            return None;
++        }
++        // Conditional Feature families are absent from this immutable construction
++        // recipe. Do not generalize the certificate to arbitrary implied Features.
++        for key in [
++            "isEnd",
++            "isPortion",
++            "isComposite",
++            "isVariable",
++            "isConjugated",
++        ] {
++            if self.elements[element]
++                .props
++                .get(key)
++                .is_some_and(|v| v.as_bool() != Some(false))
++            {
++                return None;
++            }
++        }
++        for key in [
++            "isEnd",
++            "isPortion",
++            "isComposite",
++            "isVariable",
++            "isConjugated",
++        ] {
++            if self.elements[anchor]
++                .props
++                .get(key)
++                .is_some_and(|v| v.as_bool() != Some(false))
++            {
++                return None;
++            }
++        }
++        let relationships = semantic_ownership::owned_relationships(self, anchor)?;
++        *steps = steps.saturating_add(relationships.len());
++        if *steps > crate::eval::MAX_STEPS {
++            return None;
++        }
++        let relationships: Vec<_> = relationships.iter().collect();
++        let mut seen = std::collections::HashSet::new();
++        let mut found_canonical = false;
++        for relationship in relationships {
++            if !seen.insert(relationship) {
++                return None;
++            }
++            let kind = self.elements.get(relationship)?.ty;
++            if semantic_ownership::checked_relationship_carrier(self, &raw, relationship, steps)?
++                != Some(anchor)
++            {
++                return None;
++            }
++            if crate::metaclass::conforms(kind, "Conjugation")
++                || crate::metaclass::conforms(kind, "FeatureChaining")
++            {
++                return None;
++            }
++            if !crate::metaclass::conforms(kind, "Specialization") {
++                continue;
++            }
++            let target = type_relations::endpoint_with_carrier(
++                self,
++                anchor,
++                Some(anchor),
++                relationship,
++                &[
++                    "specific",
++                    "typedFeature",
++                    "subsettingFeature",
++                    "redefiningFeature",
++                ],
++                &["general", "type", "subsettedFeature", "redefinedFeature"],
++                "Type",
++                steps,
++            )?;
++            if crate::metaclass::conforms(self.elements[target].ty, "Function")
++                || crate::metaclass::conforms(self.elements[target].ty, "Expression")
++            {
++                if !evidence.canonical_bases.contains(&target) {
++                    return None;
++                }
++                found_canonical = true;
++            }
++        }
++        found_canonical.then_some(anchor)
++    }
++    pub(super) fn scope_less_inherited_memberships(
++        &mut self,
++        element: usize,
++        include_implied: bool,
++    ) -> MembershipProjection {
++        if self
++            .elements
++            .get(element)
++            .is_some_and(|e| implied::literal_implied_base(e.ty).is_some())
++        {
++            return self.literal_inherited_memberships(element, include_implied);
++        }
++        let Some(view) = &self.semantic_ownership else {
++            return MembershipProjection::default();
++        };
++        let anchor = view.source_anchor(element);
++        if view
++            .result(anchor)
++            .is_none_or(|result| result.feature != element)
++        {
++            return MembershipProjection::default();
++        }
++        let mut context = MembershipContext::default();
++        self.generated_result_inheritance(element, include_implied, &mut context)
++    }
++
++    fn generated_result_inheritance(
++        &mut self,
++        element: usize,
++        include_implied: bool,
++        context: &mut MembershipContext,
++    ) -> MembershipProjection {
++        let checked = self.checked_generated_result_bases(element, &mut context.steps);
++        if checked.is_none() {
++            return MembershipProjection {
++                incomplete: true,
++                truncated: context.steps > crate::eval::MAX_STEPS,
++                ..Default::default()
++            };
++        }
++        let family = context.new_type_family();
++        let inherited = self.contextual_inherited_bindings(
++            element,
++            include_implied,
++            &[],
++            &[],
++            family,
++            context,
++            0,
++        );
++        // A warm positional cache can expose known bases even when no loaded
++        // Evaluation.result witness was available at publication. That does not
++        // make the missing required return redefinition complete on a later read.
++        let required_result_ready = !include_implied
++            || self.dynamic_graph.as_ref().is_some_and(|snapshot| {
++                snapshot.result_redefinition_current(self)
++                    && snapshot
++                        .result_redefinition
++                        .as_ref()
++                        .is_some_and(|evidence| evidence.sources.contains(&element))
++            });
++        MembershipProjection {
++            membership_order: inherited.membership_order.clone(),
++            truncated: inherited.truncated || context.steps > crate::eval::MAX_STEPS,
++            incomplete: inherited.incomplete
++                || self.recorded_lookup_incomplete
++                || !required_result_ready,
++            implicit_redefinitions: inherited.implicit_redefinitions.clone(),
++        }
++    }
++
++    /// Validate the specific generated-result recipe, not an arbitrary Feature
++    /// merely labeled implied. Publication provenance alone cannot override later
++    /// mutations of membership aliases, carriers, or the reference expression.
++    pub(super) fn checked_generated_result_bases(
++        &mut self,
++        element: usize,
++        steps: &mut usize,
++    ) -> Option<Vec<usize>> {
++        *steps = steps.saturating_add(1);
++        if *steps > crate::eval::MAX_STEPS {
++            return None;
++        }
++        let view = self.semantic_ownership.as_ref()?;
++        if !view.matches_suffix(self) || !view.contains(element) {
++            return None;
++        }
++        let anchor = view.source_anchor(element);
++        let result = view.result(anchor)?;
++        if result.feature != element
++            || self.elements.get(anchor)?.ty != "FeatureReferenceExpression"
++            || self.elements.get(element)?.ty != "Feature"
++            || self.elements[element].props.get("direction")?.as_str()? != "out"
++            || self.elements.get(result.membership)?.ty != "ReturnParameterMembership"
++        {
++            return None;
++        }
++        let raw = StoredStructure::for_query(self, steps)?;
++        if membership_evidence::member(self, &raw, anchor, result.membership, steps)? != element {
++            return None;
++        }
++        let referent = membership_evidence::first_unowned_member(
++            self,
++            &raw,
++            anchor,
++            "ParameterMembership",
++            "Feature",
++            None,
++            steps,
++        )?;
++        let relationships = semantic_ownership::owned_relationships(self, element)?;
++        *steps = steps.saturating_add(relationships.len());
++        if *steps > crate::eval::MAX_STEPS {
++            return None;
++        }
++        let relationships: Vec<_> = relationships.iter().collect();
++        let mut specialization = None;
++        let mut bases = Vec::new();
++        let mut seen = std::collections::HashSet::new();
++        for relationship in relationships {
++            if !seen.insert(relationship) {
++                return None;
++            }
++            let relation = self.elements.get(relationship)?;
++            if relation.ty == "TypeFeaturing" {
++                continue;
++            }
++            if !matches!(relation.ty, "Subsetting" | "Redefinition")
++                || !relation.props.get("isImplied")?.as_bool()?
++                || semantic_ownership::checked_relationship_carrier(
++                    self,
++                    &raw,
++                    relationship,
++                    steps,
++                )? != Some(element)
++            {
++                return None;
++            }
++            let redefinition = relation.ty == "Redefinition";
++            if redefinition && !self.result_redefinition_row_current(relationship) {
++                return None;
++            }
++            let target = type_relations::endpoint_with_carrier(
++                self,
++                element,
++                Some(element),
++                relationship,
++                &["specific", "subsettingFeature", "redefiningFeature"],
++                &["general", "subsettedFeature", "redefinedFeature"],
++                "Feature",
++                steps,
++            )?;
++            if !redefinition
++                && (specialization.replace(relationship).is_some() || target != referent)
++            {
++                return None;
++            }
++            bases.push(target);
++        }
++        specialization.map(|_| bases)
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use crate::{
++        json::{ElementRef, ResolvedModel},
++        model::Model,
++    };
++    use serde_json::json;
++
++    fn graph() -> (ResolvedModel, usize, usize, usize) {
++        let mut model = Model::new();
++        model.add_source(
++            "result.kerml",
++            "classifier T { feature m; } feature n : T; feature x = n; feature other;",
++        );
++        assert!(!model.has_errors());
++        let mut r = ResolvedModel::build(&model);
++        let expression = r
++            .user_elements()
++            .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
++            .unwrap()
++            .0;
++        let member = r.resolve_qualified("T::m").unwrap().0;
++        r.ensure_implied();
++        let result =
++            r.b.semantic_ownership
++                .as_ref()
++                .unwrap()
++                .result(expression)
++                .unwrap()
++                .feature;
++        (r, expression, result, member)
++    }
++
++    #[test]
++    fn result_inherits_through_its_referent_without_a_synthetic_scope() {
++        let (mut r, _, result, member) = graph();
++        assert!(!r.b.elem_scope.contains_key(&result));
++        let count = r.b.elements.len();
++        for _ in 0..2 {
++            assert!(
++                r.inherited_features(ElementRef(result), true)
++                    .contains(&ElementRef(member))
++            );
++            assert!(r.inheritance_incomplete(ElementRef(result), true));
++            assert!(r.inherited_features(ElementRef(result), false).is_empty());
++            assert_eq!(r.b.elements.len(), count);
++        }
++    }
++
++    #[test]
++    fn result_heritage_preserves_visibility_and_identity_based_redefinition() {
++        let mut model = Model::new();
++        model.add_source(
++            "heritage.kerml",
++            "classifier B { feature m; private feature hidden; } \
++             classifier D specializes B { feature replacement redefines B::m; } \
++             feature n : D; feature x = n;",
++        );
++        assert!(!model.has_errors());
++        let mut r = ResolvedModel::build(&model);
++        let expression = r
++            .user_elements()
++            .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
++            .unwrap()
++            .0;
++        let original = r.resolve_qualified("B::m").unwrap();
++        let hidden = r.resolve_qualified("B::hidden").unwrap();
++        let replacement = r.resolve_qualified("D::replacement").unwrap();
++        r.ensure_implied();
++        let result =
++            r.b.semantic_ownership
++                .as_ref()
++                .unwrap()
++                .result(expression)
++                .unwrap()
++                .feature;
++        let features = r.inherited_features(ElementRef(result), true);
++        assert!(features.contains(&replacement));
++        assert!(!features.contains(&original));
++        assert!(!features.contains(&hidden));
++        assert!(r.inheritance_incomplete(ElementRef(result), true));
++    }
++
++    #[test]
++    fn changed_carriers_aliases_and_referents_do_not_reuse_generated_evidence() {
++        for change in 0..8 {
++            let (mut r, expression, result, _) = graph();
++            let reference = r.b.elements[expression].owned_relationships[0];
++            let membership = r.b.elements[result].owning_relationship.unwrap();
++            let subsetting = r.b.elements[result].owned_relationships[0];
++            let other = r.resolve_qualified("other").unwrap().0;
++            let other_id = r.b.elements[other].id;
++            assert!(r.b.checked_generated_result_bases(result, &mut 0).is_some());
++            match change {
++                0 => {
++                    r.b.elements[membership]
++                        .props
++                        .insert("memberElement", json!({"@id":other_id.to_string()}));
++                }
++                1 => {
++                    r.b.elements[result].owning_relationship = None;
++                }
++                2 => {
++                    r.b.elements[subsetting]
++                        .props
++                        .insert("general", json!({"@id":other_id.to_string()}));
++                }
++                3 => {
++                    r.b.elements[subsetting]
++                        .props
++                        .insert("target", json!([{"@id":other_id.to_string()}]));
++                }
++                4 => {
++                    r.b.elements[reference]
++                        .props
++                        .insert("memberElement", json!({"@id":other_id.to_string()}));
++                }
++                5 => {
++                    r.b.elements[result].id = other_id;
++                }
++                6 => {
++                    r.b.elements[result].owned_relationships.push(subsetting);
++                }
++                7 => {
++                    r.b.elements[subsetting]
++                        .props
++                        .insert("owningRelatedElement", json!({"@id":other_id.to_string()}));
++                }
++                _ => unreachable!(),
++            }
++            let projected = r.b.scope_less_inherited_memberships(result, true);
++            assert!(projected.incomplete, "change {change}");
++            assert!(projected.membership_order.is_empty(), "change {change}");
++        }
++    }
++
++    #[test]
++    fn exhausted_result_query_is_incomplete_and_a_fresh_query_can_retry() {
++        let (mut r, _, result, member) = graph();
++        let mut context = MembershipContext::default();
++        context.steps = crate::eval::MAX_STEPS;
++        let projected = r.b.generated_result_inheritance(result, true, &mut context);
++        assert!(projected.incomplete && projected.truncated);
++        assert!(projected.membership_order.is_empty());
++        assert!(
++            r.inherited_features(ElementRef(result), true)
++                .contains(&ElementRef(member))
++        );
++    }
++    const LIB: &str = "standard library package Base {classifier Anything;feature things:Anything;} standard library package Occurrences {class Occurrence specializes Base::Anything;feature occurrences:Occurrence subsets Base::things;} standard library package Performances {behavior Performance specializes Occurrences::Occurrence;function Evaluation specializes Performance {return result;}step performances:Performance subsets Occurrences::occurrences;expr evaluations:Evaluation subsets performances;}";
++    fn checked_fixture(
++        format: crate::model::GraphFormat,
++        source: &str,
++    ) -> (ResolvedModel, ElementRef, ElementRef) {
++        let mut model = Model::with_graph_format(format);
++        model.add_library_source("reference-library.kerml", LIB);
++        model.add_source("reference-user.kerml", source);
++        assert!(!model.has_errors());
++        let mut r = ResolvedModel::build(&model);
++        let expression = r
++            .user_elements()
++            .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
++            .unwrap();
++        r.implied_relationships(expression);
++        let result = ElementRef(
++            r.b.semantic_ownership
++                .as_ref()
++                .unwrap()
++                .result(expression.0)
++                .unwrap()
++                .feature,
++        );
++        (r, expression, result)
++    }
++    #[test]
++    fn checked_result_features_use_the_shared_redefinition_and_visibility_reducer() {
++        use crate::{
++            json::{ClosurePolicy, TypeInputIssue},
++            model::GraphFormat,
++        };
++        for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
++            let (mut r, _, result) = checked_fixture(
++                format,
++                "classifier A {feature original;private feature hidden;} classifier B specializes A {feature replacement redefines A::original;} feature n:B;feature x=n;",
++            );
++            let replacement = r.resolve_qualified("B::replacement").unwrap();
++            let count = r.b.elements.len();
++            for _ in 0..2 {
++                let report = r.type_feature_report(result);
++                assert_eq!(report.projections.unwrap().features, [replacement]);
++                assert!(!r.b.elem_scope.contains_key(&result.0));
++                assert_eq!(r.b.elements.len(), count);
++            }
++            assert_eq!(
++                r.type_feature_report_with_budget(result, crate::eval::MAX_STEPS)
++                    .projections,
++                Err(TypeInputIssue::WorkLimit)
++            );
++            assert_eq!(
++                r.type_feature_report(result).projections.unwrap().features,
++                [replacement]
++            );
++            r.set_closure_policy(ClosurePolicy::Closure {
++                include_implied: true,
++            });
++            assert_eq!(
++                r.property(result, "feature"),
++                Ok(json!([{"@id":r.element_id(replacement)}]))
++            );
++        }
++    }
++    #[test]
++    fn complete_result_domains_are_revoked_by_mutation_or_missing_dependencies() {
++        use crate::model::GraphFormat;
++        for source in [
++            "feature n:Missing;feature x=n;",
++            "classifier A specializes B;classifier B specializes A;feature n:A;feature x=n;",
++        ] {
++            let (mut r, _, result) = checked_fixture(GraphFormat::CanonicalV3, source);
++            assert!(
++                r.type_feature_report(result).projections.is_err(),
++                "{source}"
++            );
++        }
++        let (mut r, _, result, _) = graph();
++        assert!(
++            r.type_feature_report(ElementRef(result))
++                .projections
++                .is_err()
++        );
++        for change in 0..8 {
++            let (mut r, expression, result) = checked_fixture(
++                GraphFormat::CanonicalV3,
++                "classifier T {feature m;} feature n:T;feature other;feature x=n;",
++            );
++            assert!(r.type_feature_report(result).projections.is_ok());
++            let other = r.resolve_qualified("other").unwrap();
++            let member = r.b.elements[result.0].owning_relationship.unwrap();
++            match change {
++                0 => r.b.set(result.0, "isEnd", json!(true)),
++                1 => r.b.set(result.0, "direction", json!("in")),
++                2 => r.b.elements[result.0].owning_relationship = None,
++                3 => r.b.set(
++                    member,
++                    "ownedMemberFeature",
++                    json!({"@id":r.element_id(other)}),
++                ),
++                4 => r.b.elements[result.0]
++                    .owned_relationships
++                    .make_mut()
++                    .clear(),
++                5 => r.b.metadata_association_generation = Some(std::sync::Arc::new(())),
++                6 => {
++                    let rel = r.b.elements[expression.0].owned_relationships[0];
++                    r.b.set(rel, "memberElement", json!({"@id":r.element_id(other)}));
++                }
++                7 => r.b.semantic_ownership = None,
++                _ => unreachable!(),
++            }
++            assert!(
++                r.type_feature_report(result).projections.is_err(),
++                "change {change}"
++            );
++        }
++    }
++    #[test]
++    fn a_positive_canonical_witness_does_not_cover_an_additional_function_base() {
++        use crate::model::GraphFormat;
++        let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++        m.add_library_source("reference-library.kerml", LIB);
++        m.add_source(
++            "reference-user.kerml",
++            "function Other {return result;}feature n;feature x=n;",
++        );
++        let mut r = ResolvedModel::build(&m);
++        let expression = r
++            .user_elements()
++            .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
++            .unwrap();
++        let other = r.resolve_qualified("Other").unwrap();
++        let relationship =
++            r.b.new_relationship("FeatureTyping", expression.0, "extra-base");
++        r.b.set(
++            relationship,
++            "typedFeature",
++            json!({"@id":r.element_id(expression)}),
++        );
++        r.b.set(relationship, "type", json!({"@id":r.element_id(other)}));
++        r.implied_relationships(expression);
++        let result = ElementRef(
++            r.b.semantic_ownership
++                .as_ref()
++                .unwrap()
++                .result(expression.0)
++                .unwrap()
++                .feature,
++        );
++        let snapshot = r.b.dynamic_graph.as_ref().unwrap();
++        assert!(snapshot.result_redefinition_current(&r.b));
++        assert!(
++            snapshot
++                .result_redefinition
++                .as_ref()
++                .unwrap()
++                .sources
++                .contains(&result.0)
++        );
++        assert!(r.type_feature_report(result).projections.is_err());
++    }
++    #[test]
++    fn source_conjugation_subclasses_cannot_certify_generated_result_domains() {
++        use crate::model::GraphFormat;
++        for kind in ["Conjugation", "PortConjugation"] {
++            let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
++            model.add_library_source("reference-library.kerml", LIB);
++            model.add_source("reference-user.kerml", "feature n;feature x=n;");
++            let mut r = ResolvedModel::build(&model);
++            let expression = r
++                .user_elements()
++                .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
++                .unwrap();
++            let target = r.resolve_qualified("Performances::evaluations").unwrap();
++            let relationship = r.b.new_relationship(kind, expression.0, "conjugation");
++            r.b.set(
++                relationship,
++                "conjugatedType",
++                json!({"@id":r.element_id(expression)}),
++            );
++            r.b.set(
++                relationship,
++                "originalType",
++                json!({"@id":r.element_id(target)}),
++            );
++            r.implied_relationships(expression);
++            let result =
++                r.b.semantic_ownership
++                    .as_ref()
++                    .unwrap()
++                    .result(expression.0)
++                    .unwrap()
++                    .feature;
++            assert!(
++                r.b.complete_generated_reference_result(result, &mut 0)
++                    .is_none(),
++                "{kind}"
++            );
++            assert!(
++                r.type_feature_report(ElementRef(result))
++                    .projections
++                    .is_err(),
++                "{kind}"
++            );
++        }
++    }
++    #[test]
++    fn missing_expression_specialization_does_not_certify_an_empty_result_domain() {
++        use crate::model::GraphFormat;
++        for missing_role in [false, true] {
++            let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++            m.add_library_source(
++                "reference-library.kerml",
++                &if missing_role {
++                    LIB.replace("expr evaluations:Evaluation subsets performances;", "")
++                } else {
++                    LIB.to_owned()
++                },
++            );
++            m.add_source("reference-user.kerml", "feature n;feature x=n;");
++            let mut r = ResolvedModel::build(&m);
++            let expression = r
++                .user_elements()
++                .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
++                .unwrap();
++            let evaluation = r.resolve_qualified("Performances::Evaluation").unwrap();
++            let typing =
++                r.b.new_relationship("FeatureTyping", expression.0, "canonical-base");
++            r.b.set(
++                typing,
++                "typedFeature",
++                json!({"@id":r.element_id(expression)}),
++            );
++            r.b.set(typing, "type", json!({"@id":r.element_id(evaluation)}));
++            r.implied_relationships(expression);
++            let result = ElementRef(
++                r.b.semantic_ownership
++                    .as_ref()
++                    .unwrap()
++                    .result(expression.0)
++                    .unwrap()
++                    .feature,
++            );
++            assert!(
++                r.b.dynamic_graph
++                    .as_ref()
++                    .unwrap()
++                    .result_redefinition
++                    .as_ref()
++                    .unwrap()
++                    .sources
++                    .contains(&result.0)
++            );
++            assert_eq!(
++                r.type_feature_report(result).projections.is_err(),
++                missing_role
++            );
++        }
++    }
++    #[test]
++    fn complete_empty_generated_domain_is_not_a_missing_dependency_fallback() {
++        use crate::model::GraphFormat;
++        for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
++            let (mut r, _, result) = checked_fixture(format, "feature n;feature x=n;");
++            let report = r.type_feature_report(result).projections.unwrap();
++            assert!(report.features.is_empty());
++            assert!(report.members.unwrap().is_empty());
++            let (mut r, _, result) = checked_fixture(format, "feature n:Missing;feature x=n;");
++            assert!(r.type_feature_report(result).projections.is_err());
++        }
++    }
++}

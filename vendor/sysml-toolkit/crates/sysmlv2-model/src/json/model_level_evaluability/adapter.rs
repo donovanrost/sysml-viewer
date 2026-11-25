@@ -67,6 +67,8 @@ impl ResolvedModel {
 /// Reuse checked structural and type evidence within one enclosing query.
 /// Checked TypeRelations and the library self identity share that generation.
 /// Callee signatures are shared, while each call's supplied bindings are rechecked.
+/// Successful designated Function identities share the same snapshot. This is
+/// only the Function conjunct, not an expression or argument classification.
 /// Each expression gets a fresh semantic proof and path-local cycle guards.
 /// No eligibility classification survives between reports.
 #[derive(Default)]
@@ -75,6 +77,7 @@ pub(in crate::json) struct EligibilityBatch {
     relations: TypeRelations,
     bindings: super::super::constructor_bindings::ConstructorBatchEvidence,
     self_target: Option<Option<usize>>,
+    evaluable_functions: HashSet<usize>,
     stamp: Option<super::super::semantic::certified_types::Stamp>,
     used: usize,
     stale: bool,
@@ -109,6 +112,7 @@ impl EligibilityBatch {
             proof.provider.relations = std::mem::take(&mut self.relations);
             proof.provider.bindings = std::mem::take(&mut self.bindings);
             proof.provider.self_target = self.self_target;
+            proof.provider.evaluable_functions = std::mem::take(&mut self.evaluable_functions);
             let result = proof.walk(expression.0, 0);
             if self
                 .stamp
@@ -129,6 +133,7 @@ impl EligibilityBatch {
                 self.relations = std::mem::take(&mut proof.provider.relations);
                 self.bindings = std::mem::take(&mut proof.provider.bindings);
                 self.self_target = proof.provider.self_target;
+                self.evaluable_functions = std::mem::take(&mut proof.provider.evaluable_functions);
                 if self.stamp.is_none() {
                     self.stamp = Some(super::super::semantic::certified_types::Stamp::capture(
                         proof.provider.model,
@@ -340,6 +345,7 @@ struct RepositoryEvidence<'a> {
     relations: TypeRelations,
     bindings: super::super::constructor_bindings::ConstructorBatchEvidence,
     self_target: Option<Option<usize>>,
+    evaluable_functions: HashSet<usize>,
 }
 impl<'a> RepositoryEvidence<'a> {
     fn new(model: &'a mut ResolvedModel) -> Self {
@@ -349,6 +355,7 @@ impl<'a> RepositoryEvidence<'a> {
             relations: TypeRelations::default(),
             bindings: super::super::constructor_bindings::ConstructorBatchEvidence::default(),
             self_target: None,
+            evaluable_functions: HashSet::new(),
         }
     }
     fn prepare(&mut self, budget: &mut Budget) -> Evidence<()> {
@@ -603,14 +610,23 @@ impl EvidenceProvider for RepositoryEvidence<'_> {
         let function = if constructor {
             Yes
         } else if let Some(callee) = designated_callee {
-            budget.charge(self.model.b.elements.len())?;
-            if self
-                .model
-                .function_is_model_level_evaluable(&super::super::Reference::Element(callee))
-            {
+            budget.charge(1)?;
+            if self.evaluable_functions.contains(&callee.0) {
                 Yes
             } else {
-                Unknown(IncompleteCallee)
+                budget.charge(self.model.b.elements.len())?;
+                if self
+                    .model
+                    .function_is_model_level_evaluable(&super::super::Reference::Element(callee))
+                {
+                    // The complete call mapping and current graph were checked
+                    // above. Retain only the successful Function identity; the
+                    // recursive proof still checks every supplied argument.
+                    self.evaluable_functions.insert(callee.0);
+                    Yes
+                } else {
+                    Unknown(IncompleteCallee)
+                }
             }
         } else {
             Unknown(IncompleteCallee)
@@ -781,7 +797,8 @@ mod tests {
             concat!(
                 "feature sumOne=1+2; feature sumTwo=3+4; ",
                 "class C {feature a;} feature construct=new C(a=5); ",
-                "feature another=new C(a=6); feature invalid=new C(missing=7);"
+                "feature another=new C(a=6); feature invalid=new C(missing=7); ",
+                "feature invalidSum=5 + new C(missing=7);"
             ),
         );
         assert!(!model.has_errors());
@@ -848,6 +865,77 @@ mod tests {
                 expected
             );
         }
+    }
+
+    #[test]
+    fn shared_function_identity_does_not_certify_another_calls_arguments() {
+        let mut r = binding_fixture();
+        let (_, _, first) = value(&mut r, "sumOne");
+        let (_, _, second) = value(&mut r, "sumTwo");
+        let (_, _, invalid) = value(&mut r, "invalidSum");
+        let callee = r
+            .invocation_binding_report(ElementRef(first))
+            .arguments
+            .unwrap()
+            .callee;
+        assert_eq!(
+            r.invocation_binding_report(ElementRef(invalid))
+                .arguments
+                .unwrap()
+                .callee,
+            callee
+        );
+        let expected = r
+            .model_level_evaluability(ElementRef(invalid))
+            .classification;
+        assert!(matches!(expected, Unknown(_)));
+
+        let mut batch = EligibilityBatch::default();
+        assert_eq!(
+            batch.report(&mut r, ElementRef(first), 0).classification,
+            Yes
+        );
+        assert_eq!(batch.evaluable_functions, HashSet::from([callee.0]));
+        assert_eq!(
+            batch.report(&mut r, ElementRef(second), 0).classification,
+            Yes
+        );
+        assert_eq!(
+            batch.report(&mut r, ElementRef(invalid), 0).classification,
+            expected
+        );
+        // An unknown argument must neither become eligible through the shared
+        // function nor poison the other invocation's independent proof.
+        assert_eq!(
+            batch.report(&mut r, ElementRef(second), 0).classification,
+            Yes
+        );
+    }
+
+    #[test]
+    fn shared_function_identity_is_revoked_after_library_name_configuration_changes() {
+        let mut r = binding_fixture();
+        let (_, _, expression) = value(&mut r, "sumOne");
+        let expression = ElementRef(expression);
+        let mut batch = EligibilityBatch::default();
+        assert_eq!(batch.report(&mut r, expression, 0).classification, Yes);
+        assert_eq!(batch.evaluable_functions.len(), 1);
+        r.set_library_names(&HashMap::from([(
+            Uuid::from_u128(42).to_string(),
+            vec!["DataFunctions".to_owned(), "+".to_owned()],
+        )]));
+        assert_eq!(
+            batch.report(&mut r, expression, 0).classification,
+            Unknown(MissingOrMalformedMembership)
+        );
+        assert!(batch.stale);
+        let fresh = r.model_level_evaluability(expression).classification;
+        assert_eq!(
+            EligibilityBatch::default()
+                .report(&mut r, expression, 0)
+                .classification,
+            fresh
+        );
     }
 
     #[test]

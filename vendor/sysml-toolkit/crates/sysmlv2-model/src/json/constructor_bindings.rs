@@ -170,13 +170,24 @@ impl ResolvedModel {
 /// and copy only the vectors their public reports actually retain.
 #[derive(Default)]
 pub(super) struct ConstructorBatchEvidence {
+    defaults: super::effective_defaults::EffectiveDefaultBatch,
     stamp: Option<Stamp>,
     features: HashMap<usize, Arc<super::TypeFeatures>>,
     operator_targets: HashMap<&'static str, usize>,
+    trigger_targets: HashMap<&'static str, usize>,
     operator_names: super::invocation_bindings::DesignatedOperatorNames,
     relations: super::type_relations::TypeRelations,
 }
 impl ConstructorBatchEvidence {
+    pub(super) fn defaults(
+        &mut self,
+        b: &mut super::Builder,
+        features: &[ElementRef],
+        supplied: &HashSet<usize>,
+        steps: &mut usize,
+    ) -> Result<Vec<super::EffectiveDefaultBinding>, super::EffectiveDefaultIssue> {
+        b.checked_effective_defaults(features, supplied, steps, &mut self.defaults)
+    }
     fn align(
         &mut self,
         b: &mut super::Builder,
@@ -193,12 +204,14 @@ impl ConstructorBatchEvidence {
             steps,
             self.features
                 .capacity()
-                .saturating_add(self.operator_targets.capacity()),
+                .saturating_add(self.operator_targets.capacity())
+                .saturating_add(self.trigger_targets.capacity()),
         )?;
         self.relations.reset_with_budget(steps).ok_or(WorkLimit)?;
         self.operator_names.clear(steps).map_err(|_| WorkLimit)?;
         self.features = HashMap::new();
         self.operator_targets = HashMap::new();
+        self.trigger_targets = HashMap::new();
         self.stamp = Some(Stamp::capture_builder(b));
         Ok(())
     }
@@ -210,6 +223,13 @@ impl ConstructorBatchEvidence {
     ) -> Option<usize> {
         let operator = super::invocation_bindings::designated_operator_name(b, receiver)?;
         self.align(b, steps).ok()?;
+        charge(steps, 1).ok()?;
+        if let Some(&target) = b
+            .effective_dynamic_plan()
+            .and_then(|plan| plan.designated_callees.get(&receiver))
+        {
+            return Some(target);
+        }
         if let Some(&target) = self.operator_targets.get(operator) {
             charge(steps, 1).ok()?;
             return Some(target);
@@ -222,6 +242,35 @@ impl ConstructorBatchEvidence {
         )?;
         self.align(b, steps).ok()?;
         self.operator_targets.insert(operator, target);
+        Some(target)
+    }
+    pub(super) fn trigger_target(
+        &mut self,
+        b: &mut super::Builder,
+        receiver: usize,
+        steps: &mut usize,
+    ) -> Option<usize> {
+        let name = super::invocation_bindings::designated_trigger_name(b, receiver)?;
+        self.align(b, steps).ok()?;
+        charge(steps, 1).ok()?;
+        if let Some(&target) = b
+            .effective_dynamic_plan()
+            .and_then(|plan| plan.designated_callees.get(&receiver))
+        {
+            return Some(target);
+        }
+        if let Some(&target) = self.trigger_targets.get(name) {
+            charge(steps, 1).ok()?;
+            return Some(target);
+        }
+        let target = super::invocation_bindings::designated_trigger_target(
+            b,
+            receiver,
+            steps,
+            &mut self.operator_names,
+        )?;
+        self.align(b, steps).ok()?;
+        self.trigger_targets.insert(name, target);
         Some(target)
     }
     pub(super) fn features(
@@ -572,15 +621,8 @@ pub(super) fn owned_result(
     result
 }
 
-/// An effective omitted default, selected by checked redefinition identity.
-#[derive(Clone, Debug, PartialEq, Eq)]
-#[non_exhaustive]
-pub struct ConstructorDefaultBinding {
-    pub feature: ElementRef,
-    pub feature_with_value: ElementRef,
-    pub valuation: ElementRef,
-    pub value: ElementRef,
-}
+/// Backwards-compatible constructor name for the shared default selection.
+pub use super::effective_defaults::EffectiveDefaultBinding as ConstructorDefaultBinding;
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[non_exhaustive]
 pub struct ConstructorDefaultReport {
@@ -589,7 +631,8 @@ pub struct ConstructorDefaultReport {
 }
 impl ResolvedModel {
     /// Prove omitted effective defaults separately from supplied arguments.
-    /// Conflicting defaults, cycles and unsupported contributions are qualified.
+    /// Distinct inherited defaults prove absence. Cycles and incomplete
+    /// contributions remain unknown rather than choosing a first value.
     pub fn constructor_default_report(&mut self, receiver: ElementRef) -> ConstructorDefaultReport {
         let mut steps = 0;
         let defaults = (|| {
@@ -626,183 +669,26 @@ impl super::Builder {
         steps: &mut usize,
         batch: &mut ConstructorBatchEvidence,
     ) -> Result<Vec<ConstructorDefaultBinding>, ConstructorBindingIssue> {
-        let projection = batch.features(self, arguments.instantiated_type.0, steps)?;
-        let features = &projection.features;
-        let retained = self
-            .retained_typing_edges(steps)
-            .ok_or(IncompleteProvider)?;
-        let raw = StoredStructure::for_query(self, steps).ok_or(IncompleteProvider)?;
-        let inverse = raw.typing(self, steps).ok_or(IncompleteProvider)?;
-        if !raw.ids_unique
-            || raw.annotations_incomplete
-            || inverse.sources_incomplete
-            || self.metadata_associations_incomplete
-        {
-            return Err(IncompleteProvider);
-        }
         let stamp = Stamp::capture_builder(self);
+        let projection = batch.features(self, arguments.instantiated_type.0, steps)?;
         charge(steps, arguments.bindings.len())?;
         let supplied: HashSet<_> = arguments.bindings.iter().map(|b| b.feature.0).collect();
-        let mut defaults = Vec::new();
-        let mut memo = HashMap::new();
-        for &feature in features {
-            charge(steps, 1)?;
-            if supplied.contains(&feature.0) {
-                continue;
-            }
-            if let Some((owner, valuation, value)) = self.constructor_effective_default(
-                feature.0,
-                &raw,
-                &retained,
-                &mut memo,
-                &mut HashSet::new(),
-                steps,
-            )? {
-                defaults.push(ConstructorDefaultBinding {
-                    feature,
-                    feature_with_value: ElementRef(owner),
-                    valuation: ElementRef(valuation),
-                    value: ElementRef(value),
-                });
-            }
-        }
+        let defaults = batch.defaults(self, &projection.features, &supplied, steps)?;
         if !stamp.current_builder(self) {
             return Err(StaleEvidence);
         }
         Ok(defaults)
     }
-    #[allow(clippy::too_many_arguments)]
-    fn constructor_effective_default(
-        &mut self,
-        feature: usize,
-        raw: &StoredStructure,
-        retained: &super::implied::RetainedTypings,
-        memo: &mut HashMap<usize, Option<(usize, usize, usize)>>,
-        active: &mut HashSet<usize>,
-        steps: &mut usize,
-    ) -> Result<Option<(usize, usize, usize)>, ConstructorBindingIssue> {
-        charge(steps, 1)?;
-        if let Some(value) = memo.get(&feature) {
-            return Ok(*value);
+}
+impl From<super::EffectiveDefaultIssue> for ConstructorBindingIssue {
+    fn from(issue: super::EffectiveDefaultIssue) -> Self {
+        match issue {
+            super::EffectiveDefaultIssue::InvalidRelationship => InvalidRelationship,
+            super::EffectiveDefaultIssue::IncompleteProvider => IncompleteProvider,
+            super::EffectiveDefaultIssue::UnsupportedConfiguration => UnsupportedConfiguration,
+            super::EffectiveDefaultIssue::StaleEvidence => StaleEvidence,
+            super::EffectiveDefaultIssue::WorkLimit => WorkLimit,
         }
-        if active.len() >= super::MAX_RESOLUTION_DEPTH || !active.insert(feature) {
-            return Err(IncompleteProvider);
-        }
-        if raw.metadata_annotation_targets.contains(&feature)
-            || self
-                .metadata_of
-                .get(&feature)
-                .is_some_and(|m| !m.is_empty())
-            || !raw
-                .membership_domains(self, steps)
-                .ok_or(IncompleteProvider)?
-                .owner_complete(feature)
-        {
-            return Err(IncompleteProvider);
-        }
-        let valuation =
-            membership_evidence::valuation(self, raw, feature, steps).ok_or(InvalidRelationship)?;
-        let inverse = raw.typing(self, steps).ok_or(IncompleteProvider)?;
-        let owned =
-            semantic_ownership::owned_relationships(self, feature).ok_or(IncompleteProvider)?;
-        charge(steps, owned.len())?;
-        let owned: Vec<_> = owned.iter().collect();
-        let mut targets = Vec::new();
-        let mut seen = HashSet::new();
-        for relationship in owned.iter().copied().chain(
-            inverse
-                .relationships
-                .get(&feature)
-                .into_iter()
-                .flatten()
-                .copied(),
-        ) {
-            charge(steps, 1)?;
-            if !seen.insert(relationship) {
-                continue;
-            }
-            let kind = self.elements[relationship].ty;
-            if conforms(kind, "Conjugation") {
-                return Err(UnsupportedConfiguration);
-            }
-            if !conforms(kind, "Redefinition") {
-                continue;
-            }
-            if !owned.contains(&relationship)
-                || semantic_ownership::checked_relationship_carrier(self, raw, relationship, steps)
-                    != Some(Some(feature))
-                || !self.static_chain_row_current(relationship)
-                || !self.result_redefinition_row_current(relationship)
-            {
-                return Err(InvalidRelationship);
-            }
-            let target = type_relations::endpoint_with_carrier(
-                self,
-                feature,
-                Some(feature),
-                relationship,
-                &["specific", "subsettingFeature", "redefiningFeature"],
-                &["general", "subsettedFeature", "redefinedFeature"],
-                "Feature",
-                steps,
-            )
-            .ok_or(InvalidRelationship)?;
-            targets.push(target);
-        }
-        if let Some(implied) = retained.get(&feature) {
-            charge(steps, implied.len())?;
-            for &(kind, id) in implied {
-                if conforms(kind, "Redefinition") {
-                    targets.push(raw.element_for_uuid(self, id).ok_or(IncompleteProvider)?);
-                }
-            }
-        }
-        // A complete shared positional plan can imply redefinitions before
-        // physical materialization. These identities belong to the same
-        // provider used by Type.feature, never an independent lexical search.
-        if let Some(plan) = self.effective_dynamic_plan() {
-            if plan.positional.incomplete.contains(&feature) {
-                return Err(IncompleteProvider);
-            }
-            if let Some(implied) = plan.positional.targets.get(&feature) {
-                charge(steps, implied.len())?;
-                targets.extend(implied);
-            }
-        } else if let Some(plan) = &self.positional_redefinitions {
-            if plan.incomplete.contains(&feature) {
-                return Err(IncompleteProvider);
-            }
-            if let Some(implied) = plan.targets.get(&feature) {
-                charge(steps, implied.len())?;
-                targets.extend(implied);
-            }
-        } else {
-            return Err(IncompleteProvider);
-        }
-        let mut inherited = HashSet::new();
-        for target in targets {
-            if let Some(candidate) =
-                self.constructor_effective_default(target, raw, retained, memo, active, steps)?
-            {
-                inherited.insert(candidate);
-            }
-        }
-        let selected = if let Some((membership, value)) = valuation {
-            self.elements[membership]
-                .props
-                .get("isDefault")
-                .and_then(|v| v.as_bool())
-                .unwrap_or(false)
-                .then_some((feature, membership, value))
-        } else {
-            if inherited.len() > 1 {
-                return Err(UnsupportedConfiguration);
-            }
-            inherited.into_iter().next()
-        };
-        active.remove(&feature);
-        memo.insert(feature, selected);
-        Ok(selected)
     }
 }
 
@@ -844,7 +730,7 @@ impl ResolvedModel {
                 return Err(IncompleteProvider);
             }
             for default in &defaults {
-                if !super::owned_results::constructor_default_present(
+                if !super::owned_results::default_binding_present(
                     &mut self.b,
                     arguments.result.0,
                     default,
@@ -1182,10 +1068,88 @@ mod tests {
         }
     }
     #[test]
-    fn conflicting_and_cyclic_default_paths_are_not_first_found_guesses() {
+    fn effective_defaults_use_unique_valuation_identity_and_owned_override() {
+        for (declarations, expected) in [
+            (
+                "class A {feature a default = 1;} class B {feature b default = 2;} class C specializes A,B {feature c redefines A::a,B::b;}",
+                None,
+            ),
+            (
+                "class A {feature a default = 1;} class B {feature b default = 1;} class C specializes A,B {feature c redefines A::a,B::b;}",
+                None,
+            ),
+            (
+                "class A {feature a default = 1;} class B {feature b default = 2;} class C specializes A,B {feature c redefines A::a,B::b default = 3;}",
+                Some("C::c"),
+            ),
+            (
+                "class A {feature a default = 1;} class B {feature b default = 2;} class C specializes A,B {feature c redefines A::a,B::b = 3;}",
+                None,
+            ),
+            (
+                "class A {feature a default = 1;} class L specializes A {feature l redefines a;} class R specializes A {feature r redefines a;} class C specializes L,R {feature c redefines L::l,R::r;}",
+                Some("A::a"),
+            ),
+        ] {
+            let (mut r, expression) = fixture(
+                &format!("{declarations} feature x=new C();"),
+                GraphFormat::CanonicalV3,
+            );
+            let defaults = r.constructor_default_report(expression).defaults.unwrap();
+            if let Some(expected) = expected {
+                let expected = r.resolve_qualified(expected).unwrap();
+                assert_eq!(defaults.len(), 1, "{declarations}");
+                assert_eq!(defaults[0].feature_with_value, expected);
+                assert_eq!(defaults[0].feature, r.resolve_qualified("C::c").unwrap());
+            } else {
+                assert!(defaults.is_empty(), "{declarations}: {defaults:?}");
+            }
+            let _ = r.implied_relationships(expression);
+            let result = r.constructor_result_report(expression).result.unwrap();
+            assert_eq!(result.defaults, defaults);
+            let members: Vec<_> = r
+                .implied_relationships(result.arguments.result)
+                .into_iter()
+                .filter_map(|relationship| r.membership_member(relationship))
+                .collect();
+            let bindings: Vec<_> = members
+                .into_iter()
+                .filter(|&member| r.element_type(member) == "BindingConnector")
+                .collect();
+            assert_eq!(
+                bindings.len(),
+                defaults.len(),
+                "no binding from a discarded default: {declarations}"
+            );
+        }
+    }
+    #[test]
+    fn owned_default_features_remain_even_when_an_owned_peer_redefines_them() {
+        let (mut r, expression) = fixture(
+            "class C {feature a default = 1; feature b default = 2; feature c redefines a,b;} feature x=new C();",
+            GraphFormat::CanonicalV3,
+        );
+        let a = r.resolve_qualified("C::a").unwrap();
+        let b = r.resolve_qualified("C::b").unwrap();
+        let defaults = r.constructor_default_report(expression).defaults.unwrap();
+        assert_eq!(
+            defaults.iter().map(|d| d.feature).collect::<Vec<_>>(),
+            [a, b]
+        );
+        let _ = r.implied_relationships(expression);
+        assert_eq!(
+            r.constructor_result_report(expression)
+                .result
+                .unwrap()
+                .defaults,
+            defaults
+        );
+    }
+    #[test]
+    fn cyclic_or_unresolved_default_paths_remain_incomplete() {
         for declarations in [
-            "class C {feature a default = 1; feature b default = 2; feature c redefines a, b;}",
             "class C {feature a redefines b; feature b redefines a;}",
+            "class C {feature a default = 1; feature c redefines a, Missing;}",
         ] {
             let (mut r, expression) = fixture(
                 &format!("{declarations} feature x=new C();"),

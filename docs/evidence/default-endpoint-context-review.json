@@ -1,0 +1,108 @@
+{
+  "recordedAt": "2026-10-18T18:27:57.167624+00:00",
+  "status": "Open. Current-source diagnostic proves available result identities and the remaining raw expression endpoint mismatch. It is not normative acceptance or a completion claim.",
+  "kernelInputSha256": "52813ee85839cef183e993ed155113272e72bc60f22c815a2563df6a4b85d2bf",
+  "sources": [
+    {
+      "path": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+      "anchor": "Kernel-Expressions-InvocationExpression-checkInvocationExpressionDefaultValueBindingConnector",
+      "limitation": "The constraint body is TBD. Its prose and the PDF formulations remain recorded in invocation-obligation-decomposition-review.json."
+    },
+    {
+      "path": "target/standards/kerml.pdf",
+      "sha256": "3bcc96f989bfa9d05cd28e026df3351b795fe8d494187b87bff3db7d96373697",
+      "anchors": [
+        "8.4.4.1 Table 11 and Notes 1, 4",
+        "8.4.4.11 Feature Values Semantics, printed pages 274-275"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "files": {
+      "target/trigger-validation/default-endpoint-current.rs": "46c842b211847a76fdcbce9208ad427b94888fbd1135ca9b2814974f815a5c1c",
+      "target/trigger-validation/test-default-endpoint-current.mjs": "aeb46100e227a557cd8832fdd274019cafdea4f7d5abb24f63b166782503aaa7",
+      "target/trigger-validation/default-endpoint-current.log": "74dc792b128586bae09e8b7da48656f6f7c0d189fab8d5d5ef943d05f75049c8",
+      "target/vendor-tests/build/release/deps/default_endpoint_current-5dbe4134b6de7fb3": "b34300af0d077fc337b7ecf06729c2a3a7991af16388f59633dfd13c9b174d23"
+    },
+    "source": "function F {in x : ScalarValues::Integer default=1; return result : ScalarValues::Integer;} feature call=F();",
+    "successfulDefaultResults": 10,
+    "featureWithValue": {
+      "id": "e03aa86a-ebbb-5f79-b0f3-ad6845875d99",
+      "type": "ScalarValues::Integer"
+    },
+    "valueExpression": {
+      "id": "f34b05b8-d9b6-53e3-8783-99fa06f33650",
+      "metaclass": "LiteralInteger",
+      "type": "Performances::LiteralIntegerEvaluation"
+    },
+    "selectedResult": {
+      "id": "3caafe7c-76f1-5067-94c3-e2b0eb59f8ce",
+      "type": "ScalarValues::Integer"
+    },
+    "binding": {
+      "id": "8f0ac446-e236-5601-b49a-c894f27a0574",
+      "endpoints": [
+        "e03aa86a-ebbb-5f79-b0f3-ad6845875d99",
+        "f34b05b8-d9b6-53e3-8783-99fa06f33650"
+      ]
+    },
+    "interpretation": "The existing connector references the Expression identity, distinct from its result Feature. The current code intentionally follows the direct metamodel prose; this diagnostic does not resolve its equivalence to Table 11 or the contextual chain example."
+  },
+  "implementationAnchors": [
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs:plan_default_bindings",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs:stage_default_binding",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs:default_binding_present",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_defaults.rs:prepare_append"
+  ],
+  "nextAcceptance": [
+    "Construct an independent explicit abstract/textual counterpart to the contextual default binding, preserving both the invocation context and ordered Expression/result chain.",
+    "Distinguish effective callee feature, featureWithValue, local redefining feature and actual endpoint identities under inherited defaults and supplied overrides.",
+    "Review whether one shared valuation on multiple surviving features requires multiple contextual bindings; existing per-valuation deduplication is not assumed correct for the broader interpretation.",
+    "Require connector ancestry, featuring, exact reciprocal ownership and endpoint types before publishing the revised family.",
+    "Keep initial defaults separate until startShot featuring and variability obligations are established.",
+    "Revisit the append noninterference proof if new local features, chaining relationships or redefinitions can change earlier feature/input/positional proofs.",
+    "Exercise collisions, stale edits, malformed dependencies, atomic refusal and work-limit retry; do not replace a missing proof with an empty/default result."
+  ],
+  "qualificationBoundary": "Namespace-feature production source 52813ee85839cef183e993ed155113272e72bc60f22c815a2563df6a4b85d2bf is fully qualified on macOS arm64. Authored binding-member admission remains isolated: 85 expanded checks and one public integration pass; full model suite is running in session 13878.",
+  "officialIssueCheck": {
+    "checkedAt": "2026-10-18T18:36:37.290869+00:00",
+    "issues": [
+      {
+        "key": "SYSML21-384",
+        "url": "https://issues.omg.org/issues/SYSML21-384",
+        "status": "open",
+        "scope": "Invocation default-binding OCL missing."
+      },
+      {
+        "key": "SYSML21-383",
+        "url": "https://issues.omg.org/issues/SYSML21-383",
+        "status": "open",
+        "scope": "Constructor result default-binding OCL missing."
+      }
+    ],
+    "interpretation": "These reports confirm the missing OCL is recorded upstream; they provide no endpoint correction or approved interpretation. Keep the pinned source conflict open."
+  },
+  "explicitReferenceModel": {
+    "source": "target/trigger-validation/default-binding-reference.rs",
+    "sourceSha256": "8ca8229e224d4314c01fed4cbb15858569e876f7cecfb010a9df9d26f0b11b84",
+    "log": "target/trigger-validation/default-binding-reference-raw.log",
+    "logSha256": "efdf7e8bd94e9937f3618d76c707ec333b433f46b5fe76e42384eef41bb3785d",
+    "initialFailure": {
+      "source": "target/trigger-validation/default-binding-reference-first.rs",
+      "log": "target/trigger-validation/default-binding-reference-first.log",
+      "reason": "The diagnostic assumed public relatedFeature was certified; it correctly returns Approximate. The revised diagnostic reads the stored ReferenceSubsetting recipe separately, without treating that as complete connector semantics."
+    },
+    "observed": [
+      "Named namespace chain contains the exact value Expression and selected result identities in order, and has exact Integer type.",
+      "An inline chain contains the same two identities but its anonymous Feature type is incomplete.",
+      "Both authored bindings use the local redefining Feature as the first endpoint.",
+      "The enclosing local parameter type is incomplete with these authored namespace bindings.",
+      "Public binding relatedFeature/defaultFeaturingType remain Approximate, and connector/endpoint type proofs remain incomplete."
+    ],
+    "next": "Test authored BindingConnector namespace membership independently of connector endpoint semantics. Preserve the exact generated-binding recipe certificate; do not admit generated rows through an authored path."
+  },
+  "updatedAt": "2026-10-18T19:02:13.465819+00:00",
+  "connectorDependencyReview": "docs/evidence/connector-endpoint-obligation-review.json",
+  "bindingMembershipReview": "docs/evidence/binding-namespace-member-review.json"
+}

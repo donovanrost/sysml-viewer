@@ -1,0 +1,367 @@
+{
+  "recordedAt": "2026-10-18T14:19:06.006275+00:00",
+  "status": "All 965 vendor model tests, 101 native workspace tests, 39 public Node tests and 16 provenance/evidence tests pass. Clippy, native/WASM builds, contract, 133 conformance cases and matching requirements execution evidence pass on macOS arm64. No package or complete semantic obligation closes.",
+  "kernelInputSha256": "85a9e3467da1025df18e4a1368f03d1350ac666429c4ca582c27f898704d3a15",
+  "previousQualifiedKernelInputSha256": "4b7f6d7435e1e283f295bc6a3e8186034f7c588359ad27fcd91bd4bedb1009b4",
+  "problem": "The Feature.type adapter required lexical scope and a stored positional table even for current generated reference results, whose exact positional targets were already certified by the shared semantic membership reducer.",
+  "repair": "FeatureRequirements now carries those exact certified positional targets alongside required features and types. The adapter consumes that same proof, removing a second stored-only positional projection and its lexical-scope condition. Existing applicability, reciprocal ownership, complete source/provider evidence and required-path checks remain.",
+  "review": "semantic-type-positional-review.json",
+  "anchorReview": {
+    "reviewedAt": "2026-10-18T14:17:45.125939+00:00",
+    "evidenceId": "checked-featuring",
+    "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
+    "previousSha256": "9927723307dd96d1c726cb0adb1e14443b9f96164d8547b48b4437e3864ab1dc",
+    "currentSha256": "2a09fe499e8a9bc4b33e2a89d46139c32e8ba6b1cf63afdc40ec11191c34859c",
+    "auditedFeaturingDomainBodySha256": "33a61e2cd22c31c6ead570165c639c358dbf918383bd7bec780cedec340c2c73",
+    "finding": "audited_featuring_domain is byte-identical. Feature requirements retains every applicability and ownership guard and every required target; it now also returns the exact positional targets already certified by checked_type_memberships. The typing adapter consumes that certificate instead of separately demanding elem_scope and reading a stored-only positional table. No featuring-domain assessment wording or claim expands.",
+    "acceptance": "84 staged focused tests plus all seven final acceptance tests pass; production/native/WASM and complete final-source qualification remain required."
+  },
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "2a09fe499e8a9bc4b33e2a89d46139c32e8ba6b1cf63afdc40ec11191c34859c",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs": "42216b2a830a5b2f35af7dbdc74e645578b22503cc8be8184e6e30aea60acbdc",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs": "65700d3ee4278a389798f956e8f908f26d6b860d594dffed06938b33bf58de67",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/semantic_positional_tests.rs": "d0332ec0946cbffe34c4420c3b81fde7c136a430396cb738ff50f64ad22027d0",
+    "crates/sysml-kernel/tests/reference_result_types.rs": "e9eb2f2ad37a61327cf85c0509d05df578513724849f5aee579736632691a591",
+    "patches/manifest.json": "72b9bf44772cc6fa1295997102d60757dc810c82225ab74dade5eaeecb83171e"
+  },
+  "stagedQualification": {
+    "focusedTests": 84,
+    "finalAcceptanceTests": 7,
+    "distinctTestsAcrossThoseRuns": 85,
+    "newTests": 7,
+    "logs": {
+      "target/trigger-validation/semantic-type-positional-stage.log": "e53126bb1dc223b9d48c907d06b062a047de6e4dac2d93e0b3301d777a5f1a2f",
+      "target/trigger-validation/semantic-type-positional-acceptance.log": "78387a4d918d773af631faf3081ac4f7005bef945a5fc2c35b8b67b33017cc61"
+    }
+  },
+  "fullQualification": {
+    "status": "pass",
+    "vendorLog": "target/trigger-validation/semantic-type-positional-full-model.log",
+    "nativeFocusedLog": "target/trigger-validation/semantic-type-positional-native.log",
+    "record": "target/trigger-validation/semantic-type-positional-qualification.json",
+    "vendor": {
+      "status": "pass",
+      "tests": 965,
+      "libraryModels": 94,
+      "corpusFiles": 251,
+      "log": "target/trigger-validation/semantic-type-positional-full-model.log",
+      "logSha256": "51b7299a206610e6310d0a20b48552eca32abe06dbc960ff71fe17e8246ef73b",
+      "kernelInputSha256": "85a9e3467da1025df18e4a1368f03d1350ac666429c4ca582c27f898704d3a15"
+    },
+    "workspace": {
+      "status": "pass",
+      "log": "target/trigger-validation/semantic-type-positional-qualification-workspace.log",
+      "logSha256": "2276a9419a946d36e38b87620418f69c6a9c8b10ffb0ec9040f78e8397262ccd",
+      "tests": 101
+    },
+    "clippy": {
+      "status": "pass",
+      "log": "target/trigger-validation/semantic-type-positional-qualification-clippy.log",
+      "logSha256": "93c375df160a149ba54a45b92528fe9a375e906ebc07cbe8b946a1f9d8fb3f8a"
+    },
+    "contract": {
+      "status": "pass",
+      "log": "target/trigger-validation/semantic-type-positional-contract.log",
+      "logSha256": "96f1be7106d69baaa72b578c59de89a935b691472a24b2e9e99bd31d5eec743a"
+    },
+    "wasm": {
+      "status": "pass",
+      "log": "target/trigger-validation/semantic-type-positional-qualification-wasm.log",
+      "logSha256": "f7c1c3cf5f92dda3c30655e6fea5dfd1bce07b0cedd9e7d37fb3bce3bed0e316"
+    },
+    "pipeline": {
+      "kernelInputSha256": "85a9e3467da1025df18e4a1368f03d1350ac666429c4ca582c27f898704d3a15",
+      "startedAt": "2026-10-18T14:19:16.093Z",
+      "status": "passed",
+      "phases": [
+        {
+          "name": "workspace",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--workspace"
+          ],
+          "startedAt": "2026-10-18T14:19:16.094Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T14:28:16.212Z"
+        },
+        {
+          "name": "clippy",
+          "args": [
+            "tools/rust.mjs",
+            "clippy",
+            "--locked",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "startedAt": "2026-10-18T14:28:16.213Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T14:28:22.291Z"
+        },
+        {
+          "name": "wasm",
+          "args": [
+            "tools/build-kernel.mjs"
+          ],
+          "startedAt": "2026-10-18T14:28:22.292Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T14:29:02.162Z"
+        },
+        {
+          "name": "cli",
+          "args": [
+            "tools/rust.mjs",
+            "build",
+            "--locked",
+            "--release",
+            "-p",
+            "sysml-cli"
+          ],
+          "startedAt": "2026-10-18T14:29:02.163Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T14:30:12.859Z"
+        },
+        {
+          "name": "public",
+          "args": [
+            "--experimental-strip-types",
+            "--test",
+            "--test-concurrency=1",
+            "tests/accept-actions.test.ts",
+            "tests/families.test.ts",
+            "tests/kernel.test.ts",
+            "tests/state-subactions.test.ts",
+            "tests/kernel-client.test.ts",
+            "tests/conformance-runner.test.mjs"
+          ],
+          "startedAt": "2026-10-18T14:30:12.859Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T14:33:11.477Z"
+        },
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-18T14:33:11.478Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T14:43:32.262Z"
+        },
+        {
+          "name": "requirements",
+          "args": [
+            "tools/requirements.mjs",
+            "--conformance",
+            "target/conformance/report.json"
+          ],
+          "startedAt": "2026-10-18T14:43:32.262Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T14:43:33.297Z"
+        }
+      ],
+      "finishedAt": "2026-10-18T14:43:34.118Z"
+    },
+    "cli": {
+      "status": "pass",
+      "log": "target/trigger-validation/semantic-type-positional-qualification-cli.log",
+      "logSha256": "6f1f2b4a57ed15f3612025c9fd61a37b18a1e5aa09c20f647c26c54b12274391"
+    },
+    "public": {
+      "status": "pass",
+      "log": "target/trigger-validation/semantic-type-positional-qualification-public.log",
+      "logSha256": "535cde5598d39be324376400c251c2421edc87a4a2975c28047dd9e123a82c65",
+      "tests": 39
+    },
+    "conformance": {
+      "status": "pass",
+      "log": "target/trigger-validation/semantic-type-positional-qualification-conformance.log",
+      "logSha256": "794bb68ab502c98c4ce85b25c54a7f80c78fdadedbae97908b1ab9063c3a1cff",
+      "report": "docs/evidence/semantic-type-positional-conformance-macos-arm64.json",
+      "reportSha256": "fa6b3b868adb4dfb36ab27cbf99a35b1f866edfe56947b13abf8e3dede9a585f",
+      "kernelInputSha256": "85a9e3467da1025df18e4a1368f03d1350ac666429c4ca582c27f898704d3a15",
+      "binarySha256": "3959d65ac879c91c519cd05e79c4655a761a9945a0144b518ea06fbb628861ed"
+    },
+    "requirements": {
+      "status": "pass",
+      "log": "target/trigger-validation/semantic-type-positional-qualification-requirements.log",
+      "logSha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76",
+      "report": "docs/evidence/semantic-type-positional-requirements-macos-arm64.json",
+      "reportSha256": "c982866eb015bdbd5664d5b3c25d997c513cde9eacee43b257a35363c7ff1890",
+      "kernelInputSha256": "85a9e3467da1025df18e4a1368f03d1350ac666429c4ca582c27f898704d3a15",
+      "binarySha256": "3959d65ac879c91c519cd05e79c4655a761a9945a0144b518ea06fbb628861ed"
+    }
+  },
+  "limitations": [
+    "Five of ten default-result types in the representative call are now complete; the remaining five depend on separate library Feature-family support.",
+    "The concrete clock result type is UniversalClockLife, more specific than the valued feature Clock type.",
+    "Type derivation over a closed cycle is not a whole-model validity verdict.",
+    "Arbitrary post-query edits are tested for stale-success refusal; rebuilding can still exhaust the work limit.",
+    "No full default-binding semantics, broad Feature-family closure, schema change or release is claimed."
+  ],
+  "coverageCountsChanged": false,
+  "next": "Complete ordinary Feature owner/inverse acceptance and remaining chaining, portion and contextual default-binding dependencies.",
+  "focusedQualification": {
+    "native": {
+      "status": "pass",
+      "tests": 1,
+      "reportAndPropertyPairs": 6,
+      "log": "target/trigger-validation/semantic-type-positional-native.log",
+      "logSha256": "1e24343f388ee94ebbb197ac9c2e9f1f03cbf1045142942bc2c532702d36047c"
+    },
+    "provenance": {
+      "status": "pass",
+      "tests": 16,
+      "log": "target/trigger-validation/semantic-type-positional-provenance.log",
+      "logSha256": "50e6d7b189058c261296f3d9530e69754c224d0f1cc30d0eee4c8628f9afb194"
+    }
+  },
+  "publicDependencyProbe": {
+    "recordedAt": "2026-10-18T14:24:15.456894+00:00",
+    "defaultResultSelections": 10,
+    "valuedFeatureTypesComplete": 6,
+    "selectedResultTypesComplete": 5,
+    "totalDefaults": 10,
+    "queries": [
+      {
+        "feature": "Some(\"F::x\")",
+        "role": "feature",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 635952
+      },
+      {
+        "feature": "Some(\"F::x\")",
+        "role": "result",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 744510
+      },
+      {
+        "feature": "Some(\"Performances::Performance::isDispatch\")",
+        "role": "feature",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 572512
+      },
+      {
+        "feature": "Some(\"Performances::Performance::isDispatch\")",
+        "role": "result",
+        "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+        "steps": 792815
+      },
+      {
+        "feature": "Some(\"Performances::Performance::dispatchScope\")",
+        "role": "feature",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569495
+      },
+      {
+        "feature": "Some(\"Performances::Performance::dispatchScope\")",
+        "role": "result",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 695616
+      },
+      {
+        "feature": "Some(\"Performances::Performance::thisPerformance\")",
+        "role": "feature",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 571503
+      },
+      {
+        "feature": "Some(\"Performances::Performance::thisPerformance\")",
+        "role": "result",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 696289
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::portionOfLife\")",
+        "role": "feature",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 571529
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::portionOfLife\")",
+        "role": "result",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 694181
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::this\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+        "steps": 569513
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::this\")",
+        "role": "result",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 694181
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::localClock\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Clocks::Clock\")])",
+        "steps": 573691
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::localClock\")",
+        "role": "result",
+        "result": "Ok([Some(\"Clocks::UniversalClockLife\")])",
+        "steps": 699936
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::isRunToCompletion\")",
+        "role": "feature",
+        "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+        "steps": 572521
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::isRunToCompletion\")",
+        "role": "result",
+        "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+        "steps": 792815
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::runToCompletionScope\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+        "steps": 569504
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::runToCompletionScope\")",
+        "role": "result",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 694181
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::incomingTransferSort\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Occurrences::IncomingTransferSort\")])",
+        "steps": 577873
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::incomingTransferSort\")",
+        "role": "result",
+        "result": "Ok([Some(\"Occurrences::IncomingTransferSort\")])",
+        "steps": 702290
+      }
+    ],
+    "inputs": {
+      "target/trigger-validation/default-type-dependencies-public-probe.rs": "0efca01c670481b11bcdb4746f67316767b775a82cf8a0fe3a7ec493ab1b55e5",
+      "target/trigger-validation/default-type-dependencies-semantic-positional-probe": "a3aff09e0bc3b950daea7eedb8a90f3887fbacdc1c4d951de0a9d228d482dbaf",
+      "target/trigger-validation/default-type-dependencies-after-semantic-positions.log": "752bd954574b84e7d0f813c015850ac05f689889ac32cc557989fec0d64908b3",
+      "target/trigger-validation/libsysmlv2_model_for_semantic_type_probe.rlib": "2952c6aa80da872c0a360e3c280009ae91bdf446c26662444d7a83fde82ac752"
+    },
+    "build": "Linked against the exact sysmlv2_model dependency fingerprint of the passing native reference_result_types test, preserved before concurrent builds. The standalone compiler uses the same thin-LTO release setting; initial non-LTO links failed before any probe execution."
+  },
+  "qualifiedAt": "2026-10-18T14:43:34.118Z"
+}

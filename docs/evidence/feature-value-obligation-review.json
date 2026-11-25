@@ -1,0 +1,149 @@
+{
+  "reviewedAt": "2026-10-18T13:26:43.269263+00:00",
+  "status": "Open direct-obligation decomposition and implementation-source review. No named assessment or completion package closes.",
+  "scope": "KerML FeatureValue direct properties, three directly owned constraints and the typing/binding dependencies relevant to invocation defaults. Inherited OwningMembership/Relationship/Element obligations require their own linked review.",
+  "sources": {
+    "target/standards/kerml.xmi": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "target/standards/kerml.pdf": "3bcc96f989bfa9d05cd28e026df3351b795fe8d494187b87bff3db7d96373697"
+  },
+  "sourceSections": [
+    "KerML 8.3.4.10 Feature Values",
+    "KerML 8.4.4.11 Feature Values Semantics (printed pages 274\u2013275)"
+  ],
+  "properties": [
+    {
+      "sourceId": "Kernel-FeatureValues-FeatureValue-featureWithValue",
+      "name": "featureWithValue",
+      "default": null,
+      "typeReferences": [
+        {
+          "{http://www.omg.org/spec/XMI/20161101}idref": "Core-Features-Feature"
+        }
+      ]
+    },
+    {
+      "sourceId": "Kernel-FeatureValues-FeatureValue-value",
+      "name": "value",
+      "default": null,
+      "typeReferences": [
+        {
+          "{http://www.omg.org/spec/XMI/20161101}idref": "Kernel-Functions-Expression"
+        }
+      ]
+    },
+    {
+      "sourceId": "Kernel-FeatureValues-FeatureValue-isInitial",
+      "name": "isInitial",
+      "default": "false",
+      "typeReferences": [
+        {
+          "href": "https://www.omg.org/spec/UML/20161101/PrimitiveTypes.xmi#Boolean"
+        }
+      ]
+    },
+    {
+      "sourceId": "Kernel-FeatureValues-FeatureValue-isDefault",
+      "name": "isDefault",
+      "default": "false",
+      "typeReferences": [
+        {
+          "href": "https://www.omg.org/spec/UML/20161101/PrimitiveTypes.xmi#Boolean"
+        }
+      ]
+    }
+  ],
+  "ownershipRequirements": [
+    "One Feature may own at most one FeatureValue (FeatureValue class prose).",
+    "featureWithValue is the owning Feature; value is the owned Expression. FeatureValue ownership does not make the owning Feature the value Expression featuring type.",
+    "Boolean property defaults and reciprocal ownership need validation on abstract graphs as well as text-built models."
+  ],
+  "constraints": [
+    {
+      "sourceId": "Kernel-FeatureValues-FeatureValue-validateFeatureValueIsInitial",
+      "name": "validateFeatureValueIsInitial",
+      "status": "open",
+      "requirement": "An initial FeatureValue requires its featureWithValue to be variable.",
+      "sourceExpressions": [
+        "isInitial implies featureWithValue.isVariable"
+      ],
+      "acceptancePartitions": [
+        "Both isInitial values crossed with complete true/false/unknown effective isVariable; distinguish the FeatureValue property from its owning Feature property.",
+        "Kernel explicit variability and SysML derived variability, inherited/redefined features and occurrence contexts.",
+        "Missing or contradictory featureWithValue/value ownership, malformed Boolean fields and abstract graphs without source-value tables.",
+        "Canonical diagnostic identity and source location where text exists; abstract API verdict independent of textual syntax."
+      ],
+      "dependencies": [
+        "Feature.isVariable derivation",
+        "FeatureValue inverse ownership",
+        "Usage variability and occurrence context"
+      ]
+    },
+    {
+      "sourceId": "Kernel-FeatureValues-FeatureValue-validateFeatureValueOverriding",
+      "name": "validateFeatureValueOverriding",
+      "status": "open",
+      "requirement": "Every feature in the complete transitive redefinition closure must have only default FeatureValues before a new valuation may override it.",
+      "sourceExpressions": [
+        "featureWithValue.redefinition.redefinedFeature-> closure(redefinition.redefinedFeature).valuation-> forAll(isDefault)"
+      ],
+      "acceptancePartitions": [
+        "Direct and transitive redefinitions; default versus nondefault inherited valuation; no inherited valuation.",
+        "Diamond sharing, multiple redefined targets, cycles and unresolved endpoints; one known violation can refute, but an incomplete search cannot prove validity.",
+        "Owned default and owned concrete values both activate the rule. Selection of an effective default is a separate operation.",
+        "Explicit and positional/implied redefinition, aliases resolved by identity, prepared-library targets and abstract FeatureValues absent from syntax bookkeeping.",
+        "Canonical diagnostic identity and target source location, plus malformed ownership/Boolean fields and post-edit invalidation."
+      ],
+      "dependencies": [
+        "Complete redefinition closure",
+        "FeatureValue default flag and membership identity",
+        "Source mapping distinct from abstract validation"
+      ]
+    },
+    {
+      "sourceId": "Kernel-FeatureValues-FeatureValue-checkFeatureValueBindingConnector",
+      "name": "checkFeatureValueBindingConnector",
+      "status": "open",
+      "requirement": "A nondefault valuation requires an owned BindingConnector joining the featureWithValue to the ordered value/result feature chain, with the appropriate featuring context.",
+      "sourceExpressions": [
+        "not isDefault implies     featureWithValue.ownedMember->         selectByKind(BindingConnector)->exists(b |             b.relatedFeature->includes(featureWithValue) and             b.relatedFeature->exists(f |                  f.chainingFeature = Sequence{value, value.result}) and             if not isInitial then                  b.featuringType = featureWithValue.featuringType             else                  b.featuringType->exists(t |                     t.oclIsKindOf(Feature) and                     t.oclAsType(Feature).chainingFeature =                         Sequence{                             resolveGlobal('Base::things::that').                                 memberElement,                             resolveGlobal('Occurrences::Occurrence::startShot').                                 memberElement                         }                 )             endif)"
+      ],
+      "acceptancePartitions": [
+        "Default versus nondefault; bound versus initial; exact feature, expression and selected-result identities.",
+        "The chain must contain value then value.result; the raw value Expression endpoint alone is insufficient for this explicit OCL.",
+        "Noninitial featuring types equal the featureWithValue featuring types; initial context includes the chain Base::things::that then Occurrences::Occurrence::startShot.",
+        "Reciprocal owning membership, both connector ends and ReferenceSubsetting endpoints; required binary-link ancestry, end redefinitions and general connector obligations.",
+        "Missing/ambiguous library identities, inherited results, unavailable type/featuring projections, cycles, metadata, edits and atomic construction collision/retry.",
+        "Invocation default bindings remain a distinct obligation with the recorded prose/Table 11 formulation discrepancy; this rule does not itself apply when isDefault=true."
+      ],
+      "dependencies": [
+        "Expression.result and Feature.chainingFeature",
+        "Expression featuring",
+        "Connector/BinaryLink semantics",
+        "Feature.featuringType and initial occurrence context"
+      ]
+    }
+  ],
+  "typingDependency": {
+    "sourceId": "Core-Features-Feature-checkFeatureValuationSpecialization",
+    "requirement": "Only undirected features with no non-implied owned specialization require additional specialization to the value result. Directed or explicitly specialized declarations retain their independent static typing; value compatibility and binding validity remain separate.",
+    "evidence": "invocation-obligation-decomposition-review.json#valuationApplicabilityBaseline",
+    "status": "open",
+    "prototype": "invocation-obligation-decomposition-review.json#valuationApplicabilityPrototype",
+    "productionProgress": "valuation-typing-progress-macos-arm64.json"
+  },
+  "implementationCandidates": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/values.rs": "f44ffc9e68a8d3411aa2895da5348d8cfa14b540f723b90ce37ba5458320af5a",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs": "4d1636387ebb334f513748330fef19d9a3e54221afb10ded1d9ba30ca13fa4ba",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_evidence.rs": "877c113db727185db1a57775c3d78affb5baae5d0a5eab1e51ec3dac74ce454d",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/effective_defaults.rs": "4ae1548ba4021e28a83c5242dfd891fdeabdc2e1f2384d581aa430ae5a7a1bb4",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "b766b71536f916ecab37fc70d6253b0a192965e085262a7bc1eaddb46f8c2762"
+  },
+  "sourceFindings": [
+    "check/structural.rs has an initial-value diagnostic using a shared variability helper and explicit FeatureValue rows; complete abstract ownership, derived variability and mutation acceptance partitions remain unqualified.",
+    "check/values.rs has an overriding diagnostic using the textual values/default_values maps and Facts redefinition lookup. This is an implementation candidate, not evidence for all abstract FeatureValue and implied-redefinition cases.",
+    "membership_evidence::valuation validates unique reciprocal FeatureValue membership, Expression member and Boolean property shapes. effective_defaults shares identity-based inherited selection; neither helper is the complete named validation rule.",
+    "At the recorded baseline, type_relations::feature_requirements refused all owned FeatureValues. The linked production progress now qualifies the false-antecedent static-typing cases; true-antecedent inference remains open.",
+    "The current invocation default connector recipe retains provisional raw expression endpoints. This review does not qualify full value/result-chain or featuring semantics."
+  ],
+  "closure": "Exact source/API behavior and positive, negative, abstract-model, dependency, mutation and replay evidence must be executed against matching source. A second review must challenge partitions before any complete rule claim."
+}

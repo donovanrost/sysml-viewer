@@ -1,0 +1,149 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs
+@@ -28,6 +28,10 @@
+     pub(super) type_featurings: HashMap<usize, Vec<usize>>,
+     pub(super) bad_chains: HashSet<usize>,
+     pub(super) bad_bases: HashSet<usize>,
++    /// Authored base rows whose carrier differs from their explicit source.
++    /// Consumers may distinguish validated standalone rows from contradictions;
++    /// this index alone supplies no semantic permission to ignore them.
++    pub(super) nonowned_bases: HashMap<usize, Vec<usize>>,
+     source_incomplete: bool,
+     /// Lazy inverse projection of these same rows; ordinary consumers do not
+     /// allocate or scan it. A failed bounded scan is never published.
+@@ -35,6 +39,9 @@
+     // Candidate identities collected during the existing complete row scan.
+     // Includes standalone and generated rows, independent of source validity.
+     typing_rows: Vec<usize>,
++    /// All stored Specialization rows in physical order, including generated
++    /// and standalone rows. This is topology, not endpoint or semantic proof.
++    pub(super) specialization_rows: Vec<usize>,
+     memberships: OnceLock<Arc<MembershipDomains>>,
+     membership_rows: Vec<usize>,
+     imports: OnceLock<Arc<ImportDomains>>,
+@@ -298,6 +305,7 @@
+     type_featurings: HashMap<usize, Vec<usize>>,
+     bad_chains: HashSet<usize>,
+     bad_bases: HashSet<usize>,
++    nonowned_bases: HashMap<usize, Vec<usize>>,
+     metadata_annotation_targets: HashSet<usize>,
+     metadata_annotation_sources: HashMap<usize, Vec<usize>>,
+     annotation_pairs: HashSet<(usize, usize)>,
+@@ -308,6 +316,7 @@
+     /// in row order: the candidates the domain projections read.
+     membership_rows: Vec<usize>,
+     typing_rows: Vec<usize>,
++    specialization_rows: Vec<usize>,
+     /// The ids the rows' references named that no row scanned carried: a
+     /// later row carrying one would be read as their target by a whole
+     /// scan, so a scan of later rows reports such a row (see [`scan`]).
+@@ -809,6 +818,9 @@
+         }
+         if conforms(element.ty, "FeatureTyping") || conforms(element.ty, "Subsetting") {
+             scanned.typing_rows.push(owner);
++        }
++        if conforms(element.ty, "Specialization") {
++            scanned.specialization_rows.push(owner);
+         }
+         if conforms(element.ty, "Import") {
+             scanned.import_rows.push(owner);
+@@ -914,6 +926,70 @@
+                     scanned.bad_chains.insert(source);
+                 } else {
+                     scanned.bad_bases.insert(source);
++                    scanned.nonowned_bases.entry(source).or_default().push(rel);
++                }
++            }
++        }
++        if conforms(ty, "FeatureTyping") || ty == "Subclassification" {
++            // A contradictory alias can name a different source Type from the
++            // primary source above. Retain every possible source, so that no
++            // reader certifies absence by selecting only the first alias.
++            let mut aliases = Vec::new();
++            let mut extra_work = 2usize;
++            let source_key = if ty == "Subclassification" {
++                "subclassifier"
++            } else {
++                "typedFeature"
++            };
++            for key in ["specific", source_key] {
++                if let Some(value) = element.props.get(key) {
++                    if let Some(id) = value.as_reference() {
++                        aliases.push(id);
++                    } else {
++                        scanned.source_incomplete = true;
++                    }
++                }
++            }
++            for key in ["source", "relatedElement"] {
++                extra_work = extra_work.saturating_add(1);
++                if let Some(value) = element.props.get(key) {
++                    if let Some(values) = value.as_array() {
++                        let count = if key == "source" {
++                            values.len()
++                        } else {
++                            usize::from(!values.is_empty())
++                        };
++                        extra_work = extra_work.saturating_add(count);
++                        charge(steps, count)?;
++                        for value in values.iter().take(count) {
++                            if let Some(id) = value.as_reference() {
++                                aliases.push(id);
++                            } else {
++                                scanned.source_incomplete = true;
++                            }
++                        }
++                        if values.is_empty() || (key == "source" && values.len() != 1) {
++                            scanned.source_incomplete = true;
++                        }
++                    } else {
++                        scanned.source_incomplete = true;
++                    }
++                }
++            }
++            charge(steps, 4)?;
++            scanned.logical_work = scanned.logical_work.saturating_add(extra_work);
++            for id in aliases {
++                if let Some(&source) = scanned.ids.get(&id) {
++                    if owner != Some(source) {
++                        scanned.bad_bases.insert(source);
++                        let rows = scanned.nonowned_bases.entry(source).or_default();
++                        if rows.last() != Some(&rel) {
++                            rows.push(rel);
++                        }
++                    }
++                } else {
++                    scanned.unsatisfied.insert(id);
++                    scanned.source_incomplete = true;
+                 }
+             }
+         }
+@@ -1352,9 +1428,11 @@
+             type_featurings: scanned.type_featurings,
+             bad_chains: scanned.bad_chains,
+             bad_bases: scanned.bad_bases,
++            nonowned_bases: scanned.nonowned_bases,
+             source_incomplete: scanned.source_incomplete,
+             typing: OnceLock::new(),
+             typing_rows: scanned.typing_rows,
++            specialization_rows: scanned.specialization_rows,
+             memberships: OnceLock::new(),
+             membership_rows: scanned.membership_rows,
+             imports: OnceLock::new(),
+@@ -2341,6 +2419,7 @@
+         assert_eq!(layered.type_featurings, whole.type_featurings);
+         assert_eq!(layered.bad_chains, whole.bad_chains);
+         assert_eq!(layered.bad_bases, whole.bad_bases);
++        assert_eq!(layered.nonowned_bases, whole.nonowned_bases);
+         assert_eq!(layered.source_incomplete, whole.source_incomplete);
+         assert_eq!(layered.ids_unique, whole.ids_unique);
+         assert_eq!(layered.has_authored_import, whole.has_authored_import);
+@@ -2361,6 +2440,7 @@
+         );
+         assert_eq!(layered.membership_rows, whole.membership_rows);
+         assert_eq!(layered.typing_rows, whole.typing_rows);
++        assert_eq!(layered.specialization_rows, whole.specialization_rows);
+     }
+ 
+     /// A user row claiming a library relationship row — which no production

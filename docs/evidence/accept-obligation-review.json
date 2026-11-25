@@ -19,7 +19,14 @@
         "when/at/after select designated Triggers::TriggerWhen/TriggerAt/TriggerAfter respectively",
         "Global library authority, user shadowing, absent library and invalid raw kind",
         "Derived instantiated type and invocation parameter construction must agree"
-      ]
+      ],
+      "argumentBindingDependency": {
+        "executionEvidence": "trigger-binding-progress-macos-arm64.json",
+        "status": "bounded worktree dependency verified; this obligation remains open",
+        "finding": "Canonical trigger calls select a unique loaded declared Function and use the shared complete input projection and positional publisher. The argument report includes supplied values in input order; complete valuation absence excludes the generated receiver. A shared activation predicate repairs trigger-only models.",
+        "runtimeBoundary": "94 Rust workspace and 385 selected vendor tests pass, with clean Clippy. Full-library tests cover six trigger examples, and private tests cover missing/invalid/shadowed targets, public-import precedence, alias qualification, invalid kinds, six source changes and budget retry.",
+        "remaining": "This does not qualify all instantiatedType operation contexts, all input/redefinition configurations, defaults, generated receiver redefinition or result/argument validation. The installed release remains KERNEL-023."
+      }
     },
     {
       "sourceUnit": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAfterArgument",
@@ -46,8 +53,57 @@
           "sha256": "48e3c05d1784c2ef23e5d034be0aa922a6d1b09691de35dff1d520d7b770c4d1",
           "finding": "wrong_type requires upward conformance to the named ISQ::DurationValue classifier. The pinned OCL instead requires ScalarQuantityValue plus a feature with redefinition closure to TensorQuantityValue::mRef and specialization to ISQBase::DurationUnit. An additional dimension comparison does not by itself establish equivalence of these predicates.",
           "nextCounterexample": "An independent ScalarQuantityValue subtype that redefines mRef with DurationUnit typing, without specializing ISQ::DurationValue. Verify the normative result-feature and redefinition facts before treating any emitted diagnostic as a false positive.",
-          "status": "source-level mismatch candidate; no custom-quantity runtime claim"
+          "status": "custom-duration false rejection reproduced against the qualified .24 binary; validator repair remains open",
+          "executionEvidence": "trigger-duration-before-macos-arm64.json",
+          "resultFeatureDependency": {
+            "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs",
+            "status": "focused native/private checks passed in the worktree; full release qualification and validator repair remain open",
+            "finding": "Generated reference results have no textual body scope. The previous scope-less dispatcher returned empty features. The new adapter rechecks result ownership and source referent before using the contextual inheritance walk; missing-library bases remain explicitly incomplete.",
+            "regression": "crates/sysml-kernel/tests/trigger_result_features.rs",
+            "remaining": "Canonical supplied-argument bindings are now checked within the separately recorded scope. Other result families, nested owning-Type contexts and the three trigger validation predicates remain open; see trigger-result-dependency-review.json.",
+            "executionEvidence": "result-inheritance-progress-macos-arm64.json",
+            "checkedFeatureDependencies": {
+              "executionEvidence": "feature-domain-progress-macos-arm64.json",
+              "status": "worktree dependency progress verified; no trigger-rule closure",
+              "finding": "The checked membership provider now admits ordinary structural AssertConstraintUsage members. AttributeUsage roots use the existing required-base authority. Authored behavior/function parameter and return Features use the same complete owning-signature and positional-redefinition proof, while directed package/structural roots retain their qualification.",
+              "runtimeBoundary": "The full-library test checks exact duration mRef identities and the canonical Evaluation.result features. Canonical duration usages certify; legacy usages with missing Base::dataValues heritage remain incomplete until that heritage is explicitly supplied. Five new private tests cover malformed ownership, redefinition, missing/cyclic signatures and retry. All 94 workspace and 356 selected vendor tests pass.",
+              "remaining": "Generated FeatureReferenceExpression result roots still need a complete Type.feature certificate. Trigger argument ordering, result/wrapper predicates and canonical validation identifiers remain open; the installed app remains KERNEL-023."
+            },
+            "checkedGeneratedResultDomains": {
+              "executionEvidence": "generated-result-domain-progress-macos-arm64.json",
+              "status": "worktree dependency progress verified; no trigger-rule closure",
+              "finding": "Registered generated reference-expression result Features use current recipe evidence, the complete set of applicable canonical direct return bases and required source/result heritage before entering the shared checked Type.feature reducer. No textual scopes or separate inheritance graph are added.",
+              "runtimeBoundary": "94 Rust workspace and 380 selected vendor tests pass; Clippy is clean. Full-library CanonicalV3 duration results certify exact mRef identities. Legacy results retain incomplete status when required referent typing heritage is absent. Missing/cyclic dependencies, mutation, additional function bases, missing source specializations, empty domains and budget retry are tested.",
+              "remaining": "Other expression-result families, source owning-Type contexts, trigger argument selection/order, result/wrapper predicates and canonical validation identifiers remain open. The installed app remains KERNEL-023."
+            }
+          }
         }
+      },
+      "argumentBindingDependency": {
+        "executionEvidence": "trigger-binding-progress-macos-arm64.json",
+        "status": "bounded worktree dependency verified; this obligation remains open",
+        "finding": "Canonical trigger calls select a unique loaded declared Function and use the shared complete input projection and positional publisher. The argument report includes supplied values in input order; complete valuation absence excludes the generated receiver. A shared activation predicate repairs trigger-only models.",
+        "runtimeBoundary": "94 Rust workspace and 385 selected vendor tests pass, with clean Clippy. Full-library tests cover six trigger examples, and private tests cover missing/invalid/shadowed targets, public-import precedence, alias qualification, invalid kinds, six source changes and budget retry.",
+        "remaining": "This does not qualify all instantiatedType operation contexts, all input/redefinition configurations, defaults, generated receiver redefinition or result/argument validation. The installed release remains KERNEL-023."
+      },
+      "resultDependencyReview": "trigger-result-dependency-review.json",
+      "checkedReferenceResultDependency": {
+        "evidence": "reference-results-progress-macos-arm64.json",
+        "status": "selected dependency verified; complete trigger rule remains open",
+        "boundary": "All six CanonicalV3 full-library trigger examples now select their argument Expression.result through the checked report/property. Generated reference sources require current source/result/binding ownership and complete foreign-member redefinition domains.",
+        "verification": "95 Rust workspace tests and all 898 vendor model tests pass; Clippy is clean. Native/WASM and desktop release qualification remain pending."
+      },
+      "checkedPredicateImplementation": {
+        "evidence": "trigger-predicates-progress-macos-arm64.json",
+        "status": "bounded canonical predicate implementation verified; whole-rule and family review remain open",
+        "verification": "96 native workspace tests, 903 vendor model tests and clean Clippy. Six positive and eight negative full-library trigger cases assert verdicts and canonical diagnostic IDs.",
+        "remaining": "Broader argument/result providers, legacy bindings, additional abstract malformed/empty partitions, full conformance mappings, native/WASM and release qualification remain open."
+      },
+      "abstractPredicatePartitions": {
+        "evidence": "trigger-abstract-progress-macos-arm64.json",
+        "status": "bounded abstract argument/wrapper partitions verified; whole rule remains open",
+        "verification": "96 native workspace tests, 909 vendor model tests and clean Clippy. Empty and malformed argument evidence are distinct; when-wrapper ordering and kind checks include multiple members.",
+        "remaining": "Broader argument/result providers, defaults, legacy bindings, conformance mappings, native/WASM and release qualification remain open."
       }
     },
     {
@@ -70,6 +126,32 @@
         "boundary": "Existing source-based wrong_type checks use validateTriggerInvocationAction... diagnostic spellings, absent from the canonical rule registry. This is a code-review finding only; complete XMI argument/result/wrapper conditions and runtime diagnostics require new probes.",
         "executionEvidence": "trigger-argument-validation-before-macos-arm64.json",
         "runtimeObservation": "The invalid literal is rejected, but the emitted Action-spelled diagnostic code does not equal the canonical Expression-spelled rule ID. Complete rule semantics remain unqualified."
+      },
+      "argumentBindingDependency": {
+        "executionEvidence": "trigger-binding-progress-macos-arm64.json",
+        "status": "bounded worktree dependency verified; this obligation remains open",
+        "finding": "Canonical trigger calls select a unique loaded declared Function and use the shared complete input projection and positional publisher. The argument report includes supplied values in input order; complete valuation absence excludes the generated receiver. A shared activation predicate repairs trigger-only models.",
+        "runtimeBoundary": "94 Rust workspace and 385 selected vendor tests pass, with clean Clippy. Full-library tests cover six trigger examples, and private tests cover missing/invalid/shadowed targets, public-import precedence, alias qualification, invalid kinds, six source changes and budget retry.",
+        "remaining": "This does not qualify all instantiatedType operation contexts, all input/redefinition configurations, defaults, generated receiver redefinition or result/argument validation. The installed release remains KERNEL-023."
+      },
+      "resultDependencyReview": "trigger-result-dependency-review.json",
+      "checkedReferenceResultDependency": {
+        "evidence": "reference-results-progress-macos-arm64.json",
+        "status": "selected dependency verified; complete trigger rule remains open",
+        "boundary": "All six CanonicalV3 full-library trigger examples now select their argument Expression.result through the checked report/property. Generated reference sources require current source/result/binding ownership and complete foreign-member redefinition domains.",
+        "verification": "95 Rust workspace tests and all 898 vendor model tests pass; Clippy is clean. Native/WASM and desktop release qualification remain pending."
+      },
+      "checkedPredicateImplementation": {
+        "evidence": "trigger-predicates-progress-macos-arm64.json",
+        "status": "bounded canonical predicate implementation verified; whole-rule and family review remain open",
+        "verification": "96 native workspace tests, 903 vendor model tests and clean Clippy. Six positive and eight negative full-library trigger cases assert verdicts and canonical diagnostic IDs.",
+        "remaining": "Broader argument/result providers, legacy bindings, additional abstract malformed/empty partitions, full conformance mappings, native/WASM and release qualification remain open."
+      },
+      "abstractPredicatePartitions": {
+        "evidence": "trigger-abstract-progress-macos-arm64.json",
+        "status": "bounded abstract argument/wrapper partitions verified; whole rule remains open",
+        "verification": "96 native workspace tests, 909 vendor model tests and clean Clippy. Empty and malformed argument evidence are distinct; when-wrapper ordering and kind checks include multiple members.",
+        "remaining": "Broader argument/result providers, defaults, legacy bindings, conformance mappings, native/WASM and release qualification remain open."
       }
     },
     {
@@ -93,6 +175,67 @@
         "boundary": "Existing source-based wrong_type checks use validateTriggerInvocationAction... diagnostic spellings, absent from the canonical rule registry. This is a code-review finding only; complete XMI argument/result/wrapper conditions and runtime diagnostics require new probes.",
         "executionEvidence": "trigger-argument-validation-before-macos-arm64.json",
         "runtimeObservation": "The invalid literal is rejected, but the emitted Action-spelled diagnostic code does not equal the canonical Expression-spelled rule ID. Complete rule semantics remain unqualified."
+      },
+      "argumentBindingDependency": {
+        "executionEvidence": "trigger-binding-progress-macos-arm64.json",
+        "status": "bounded worktree dependency verified; this obligation remains open",
+        "finding": "Canonical trigger calls select a unique loaded declared Function and use the shared complete input projection and positional publisher. The argument report includes supplied values in input order; complete valuation absence excludes the generated receiver. A shared activation predicate repairs trigger-only models.",
+        "runtimeBoundary": "94 Rust workspace and 385 selected vendor tests pass, with clean Clippy. Full-library tests cover six trigger examples, and private tests cover missing/invalid/shadowed targets, public-import precedence, alias qualification, invalid kinds, six source changes and budget retry.",
+        "remaining": "This does not qualify all instantiatedType operation contexts, all input/redefinition configurations, defaults, generated receiver redefinition or result/argument validation. The installed release remains KERNEL-023."
+      },
+      "resultDependencyReview": "trigger-result-dependency-review.json",
+      "predicateResultDependency": {
+        "executionEvidence": "predicate-result-progress-macos-arm64.json",
+        "status": "bounded worktree dependency verified; this validator remains open",
+        "finding": "Checked Predicate signatures, Function.result selection and authored return-feature domains use the shared complete membership and positional proof with required BooleanEvaluation heritage. The full-library Boolean literal candidate has a checked Predicate-owned result and canonical feature domain.",
+        "runtimeBoundary": "94 Rust workspace tests and 409 selected vendor tests pass; Clippy is clean. Tests cover inherited returns, input replacement, required library identities, missing/cyclic owners, post-query mutations and budget retry. Legacy feature domains retain incomplete status when required data-value heritage is absent.",
+        "remaining": "The literal test locates the Expression.result candidate through the compatibility query. General checked Expression.result selection, nested reference source contexts and the complete when-wrapper predicate still need implementation and qualification. The installed app remains KERNEL-023."
+      },
+      "stepContextConstructionReview": "step-context-construction-review.json",
+      "expressionResultSelectionReview": "expression-result-dependency-review.json",
+      "nestedReferenceResultDependency": {
+        "evidence": "step-context-progress-macos-arm64.json",
+        "status": "selected dependency verified; trigger rule remains open",
+        "boundary": "Generated nested reference result feature domains require reciprocal source membership and actual contextual Step specialization paths. General checked Expression.result selection, all trigger configurations and effective-type-dependent composite Step construction remain open."
+      },
+      "typedStepConstructionDependency": {
+        "evidence": "typed-step-progress-macos-arm64.json",
+        "status": "selected dependency verified; trigger rule remains open",
+        "boundary": "Composite Step sources with independently complete effective Structure owner typing receive ownedPerformances through the shared atomic planner. Direct, inherited and pruned effective types are tested with all 94 library files. Coupled owner predicates remain incomplete; general checked Expression.result selection and the full trigger rules remain open.",
+        "verification": "95 Rust workspace tests, 517 selected vendor tests and Clippy pass. Native/WASM and desktop release qualification remain pending."
+      },
+      "checkedExpressionResultDependency": {
+        "evidence": "expression-results-progress-macos-arm64.json",
+        "status": "selected dependency verified; complete trigger rule remains open",
+        "boundary": "The Boolean literal now selects its exact inherited Predicate return through ExpressionResultReport and the checked result property. Ordinary expressions and six literal kinds use the complete shared membership reducer. General reference/invocation result selection and the when-wrapper referent predicate remain open.",
+        "verification": "95 Rust workspace tests, 522 selected vendor tests and Clippy pass. Native/WASM and desktop release qualification remain pending.",
+        "referenceSourceReview": "reference-result-membership-review.json",
+        "semanticPositionalDependency": {
+          "evidence": "semantic-positional-progress-macos-arm64.json",
+          "status": "shared-planner dependency verified; reference result and trigger rules remain open",
+          "boundary": "The checked Type provider now supplies its exact semantic membership and authored-redefinition inputs to the common positional algorithm. Five regressions cover generated returns and stale/incomplete/budget/replay cases. Complete foreign-member and binding redefinition domains are still required.",
+          "verification": "95 Rust workspace tests, 538 selected vendor tests and Clippy pass. Eleven existing positional tests are newly included in the selected runner.",
+          "fullVendorModelEvidence": "semantic-positional-full-model-macos-arm64.json",
+          "fullVendorModelVerification": "All 891 vendor model unit tests pass with 251 pinned upstream corpus files and all 94 bundled library files; this overlaps the selected vendor suite."
+        }
+      },
+      "checkedReferenceResultDependency": {
+        "evidence": "reference-results-progress-macos-arm64.json",
+        "status": "selected dependency verified; complete trigger rule remains open",
+        "boundary": "All six CanonicalV3 full-library trigger examples now select their argument Expression.result through the checked report/property. Generated reference sources require current source/result/binding ownership and complete foreign-member redefinition domains.",
+        "verification": "95 Rust workspace tests and all 898 vendor model tests pass; Clippy is clean. Native/WASM and desktop release qualification remain pending."
+      },
+      "checkedPredicateImplementation": {
+        "evidence": "trigger-predicates-progress-macos-arm64.json",
+        "status": "bounded canonical predicate implementation verified; whole-rule and family review remain open",
+        "verification": "96 native workspace tests, 903 vendor model tests and clean Clippy. Six positive and eight negative full-library trigger cases assert verdicts and canonical diagnostic IDs.",
+        "remaining": "Broader argument/result providers, legacy bindings, additional abstract malformed/empty partitions, full conformance mappings, native/WASM and release qualification remain open."
+      },
+      "abstractPredicatePartitions": {
+        "evidence": "trigger-abstract-progress-macos-arm64.json",
+        "status": "bounded abstract argument/wrapper partitions verified; whole rule remains open",
+        "verification": "96 native workspace tests, 909 vendor model tests and clean Clippy. Empty and malformed argument evidence are distinct; when-wrapper ordering and kind checks include multiple members.",
+        "remaining": "Broader argument/result providers, defaults, legacy bindings, conformance mappings, native/WASM and release qualification remain open."
       }
     },
     {
@@ -257,8 +400,8 @@
     "BindingConnector, relatedFeatures, implied connector/end construction and specialization/redefinition closure",
     "State/transition membership derivation discrepancies already recorded in state-property-review.json"
   ],
-  "nextImplementationReview": "Review the three trigger argument validators against their exact XMI conditions: existing source-expression checks and Action-spelled diagnostics are candidates, not qualification. For after, trace ScalarQuantityValue measurement-reference redefinition to DurationUnit; for when, validate the wrapper and referenced expression result independently.",
-  "nextFailureProbe": "The saved trigger-argument-validation-before-macos-arm64.json proves all three diagnostic-ID mismatches in otherwise valid action-body syntax. Next probe abstract-model wrapper/result conditions and duration-unit counterexamples; preserve the existing rejection behavior.",
+  "nextImplementationReview": "Review broader argument/result provider domains and the complete AcceptActionUsage/InvocationExpression dependency set, then update conformance mappings and qualify KERNEL-024 across native/WASM and release gates. Abstract empty and multi-member when-wrapper partitions now have bounded executed evidence.",
+  "nextFailureProbe": "Probe general invocation/operator/constructor result arguments and authored reference results through text and abstract model fixtures. Preserve incomplete provider errors separately from a false conditional validation predicate. Review inherited/default input mappings against deriveInvocationExpressionArgument.",
   "followUpSourceReview": {
     "reviewedAt": "2026-10-18T03:26:56.224726+00:00",
     "library": "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Triggers.kerml",

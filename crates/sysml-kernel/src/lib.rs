@@ -17,7 +17,7 @@ mod types;
 pub use engine::Engine;
 pub use query::{EffectiveMembers, InheritedMemberships, QueryError, SnapshotQuery};
 pub use source::SourceIndex;
-pub use syntax::{check_syntax, SyntaxReport};
+pub use syntax::{check_syntax, check_syntax_batch, SyntaxReport};
 pub use types::*;
 
 /// Required stack for native host threads calling the upstream recursive passes.

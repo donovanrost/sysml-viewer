@@ -1,0 +1,355 @@
+{
+  "recordedAt": "2026-10-19T02:22:35.243812+00:00",
+  "status": "pre-fix gaps reproduced",
+  "productionKernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+  "platform": "darwin",
+  "arch": "arm64",
+  "tests": {
+    "pass": 1,
+    "fail": 4
+  },
+  "partitions": {
+    "pass": 8,
+    "fail": 60,
+    "total": 68
+  },
+  "phases": [
+    {
+      "name": "owned_cross_prefix_baseline",
+      "filter": "json::owned_cross_prefix_baseline",
+      "status": "fail",
+      "startedAt": "2026-10-19T02:19:46.648Z",
+      "exitCode": 1,
+      "finishedAt": "2026-10-19T02:20:42.803Z",
+      "log": "target/trigger-validation/owned-cross-baseline-corrected-owned_cross_prefix_baseline.log",
+      "logSha256": "021b0918f71520e34c02af2566958ea16c61f0ec94ae338f74815985c0ab614c"
+    },
+    {
+      "name": "owned_cross_declaration_baseline",
+      "filter": "json::owned_cross_declaration_baseline",
+      "status": "fail",
+      "startedAt": "2026-10-19T02:20:42.804Z",
+      "exitCode": 1,
+      "finishedAt": "2026-10-19T02:20:42.925Z",
+      "log": "target/trigger-validation/owned-cross-baseline-corrected-owned_cross_declaration_baseline.log",
+      "logSha256": "de82bd45c9b1758997461045f5e60a7194874191dcc7b9db665c6e7c7bdff40e"
+    },
+    {
+      "name": "owned_cross_lookahead_baseline",
+      "filter": "json::owned_cross_lookahead_baseline",
+      "status": "fail",
+      "startedAt": "2026-10-19T02:20:42.925Z",
+      "exitCode": 1,
+      "finishedAt": "2026-10-19T02:20:43.017Z",
+      "log": "target/trigger-validation/owned-cross-baseline-corrected-owned_cross_lookahead_baseline.log",
+      "logSha256": "862dc54bf00d1a92a06a110771645fe311ecf6222abe130b9ac5185e960ef32c"
+    }
+  ],
+  "inputs": {
+    "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_declaration_baseline.rs": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+    "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_lookahead_baseline.rs": "de778bad1c22784f1daa65e61625a1230b9add8d847869d55fd221c53f4d9ba4",
+    "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_prefix_baseline.rs": "bee6a19cbd6a3319a6bb76bfe57a52937d2754547b3e8fb36c30d5694c11b3a7",
+    "target/trigger-validation/end-construction-baseline-stage/json.rs": "1b19529b380881b4d1469403a640b4e70f660e0f6ee14ab006a79ce953c046fb"
+  },
+  "prefixObservations": [
+    {
+      "format": "LegacyV2",
+      "case": "kerml-plain",
+      "actual": {
+        "isAbstract": false,
+        "isConstant": false,
+        "isVariable": false,
+        "isVariation": false,
+        "membership": "OwningMembership",
+        "metaclass": "ReferenceUsage",
+        "name": "x",
+        "nameResolvesToOwnedCross": false,
+        "ownerIsEnd": true
+      }
+    },
+    {
+      "format": "LegacyV2",
+      "case": "kerml-const",
+      "actual": {
+        "isAbstract": false,
+        "isConstant": true,
+        "isVariable": false,
+        "isVariation": false,
+        "membership": "OwningMembership",
+        "metaclass": "ReferenceUsage",
+        "name": "x",
+        "nameResolvesToOwnedCross": false,
+        "ownerIsEnd": true
+      }
+    },
+    {
+      "format": "LegacyV2",
+      "case": "sysml-plain",
+      "actual": {
+        "isAbstract": false,
+        "isConstant": false,
+        "isVariable": false,
+        "isVariation": false,
+        "membership": "OwningMembership",
+        "metaclass": "ReferenceUsage",
+        "name": "x",
+        "nameResolvesToOwnedCross": false,
+        "ownerIsEnd": true
+      }
+    },
+    {
+      "format": "LegacyV2",
+      "case": "sysml-variation",
+      "actual": {
+        "isAbstract": false,
+        "isConstant": false,
+        "isVariable": false,
+        "isVariation": true,
+        "membership": "OwningMembership",
+        "metaclass": "ReferenceUsage",
+        "name": "x",
+        "nameResolvesToOwnedCross": false,
+        "ownerIsEnd": true
+      }
+    },
+    {
+      "format": "LegacyV2",
+      "case": "sysml-constant",
+      "actual": {
+        "isAbstract": false,
+        "isConstant": true,
+        "isVariable": false,
+        "isVariation": false,
+        "membership": "OwningMembership",
+        "metaclass": "ReferenceUsage",
+        "name": "x",
+        "nameResolvesToOwnedCross": false,
+        "ownerIsEnd": true
+      }
+    },
+    {
+      "format": "CanonicalV3",
+      "case": "kerml-plain",
+      "actual": {
+        "isAbstract": false,
+        "isConstant": false,
+        "isVariable": false,
+        "isVariation": false,
+        "membership": "OwningMembership",
+        "metaclass": "ReferenceUsage",
+        "name": "x",
+        "nameResolvesToOwnedCross": false,
+        "ownerIsEnd": true
+      }
+    },
+    {
+      "format": "CanonicalV3",
+      "case": "kerml-const",
+      "actual": {
+        "isAbstract": false,
+        "isConstant": true,
+        "isVariable": false,
+        "isVariation": false,
+        "membership": "OwningMembership",
+        "metaclass": "ReferenceUsage",
+        "name": "x",
+        "nameResolvesToOwnedCross": false,
+        "ownerIsEnd": true
+      }
+    },
+    {
+      "format": "CanonicalV3",
+      "case": "sysml-plain",
+      "actual": {
+        "isAbstract": false,
+        "isConstant": false,
+        "isVariable": false,
+        "isVariation": false,
+        "membership": "OwningMembership",
+        "metaclass": "ReferenceUsage",
+        "name": "x",
+        "nameResolvesToOwnedCross": false,
+        "ownerIsEnd": true
+      }
+    },
+    {
+      "format": "CanonicalV3",
+      "case": "sysml-variation",
+      "actual": {
+        "isAbstract": false,
+        "isConstant": false,
+        "isVariable": false,
+        "isVariation": true,
+        "membership": "OwningMembership",
+        "metaclass": "ReferenceUsage",
+        "name": "x",
+        "nameResolvesToOwnedCross": false,
+        "ownerIsEnd": true
+      }
+    },
+    {
+      "format": "CanonicalV3",
+      "case": "sysml-constant",
+      "actual": {
+        "isAbstract": false,
+        "isConstant": true,
+        "isVariable": false,
+        "isVariation": false,
+        "membership": "OwningMembership",
+        "metaclass": "ReferenceUsage",
+        "name": "x",
+        "nameResolvesToOwnedCross": false,
+        "ownerIsEnd": true
+      }
+    }
+  ],
+  "declarationObservations": [
+    {
+      "format": "LegacyV2",
+      "dialect": "kerml",
+      "actual": {
+        "abstract": true,
+        "composite": true,
+        "constant": false,
+        "declaredName": "x",
+        "declaredResolves": false,
+        "derived": true,
+        "direction": "in",
+        "inheritedResolves": false,
+        "metaclass": "ReferenceUsage",
+        "ordered": false,
+        "shortName": "short",
+        "shortResolves": false,
+        "unique": true,
+        "variable": true,
+        "variation": false
+      }
+    },
+    {
+      "format": "LegacyV2",
+      "dialect": "sysml",
+      "actual": {
+        "abstract": false,
+        "composite": false,
+        "constant": true,
+        "declaredName": "x",
+        "declaredResolves": false,
+        "derived": true,
+        "direction": "in",
+        "inheritedResolves": false,
+        "metaclass": "ReferenceUsage",
+        "ordered": false,
+        "shortName": "short",
+        "shortResolves": false,
+        "unique": true,
+        "variable": false,
+        "variation": true
+      }
+    },
+    {
+      "format": "CanonicalV3",
+      "dialect": "kerml",
+      "actual": {
+        "abstract": true,
+        "composite": true,
+        "constant": false,
+        "declaredName": "x",
+        "declaredResolves": false,
+        "derived": true,
+        "direction": "in",
+        "inheritedResolves": false,
+        "metaclass": "ReferenceUsage",
+        "ordered": false,
+        "shortName": "short",
+        "shortResolves": false,
+        "unique": true,
+        "variable": true,
+        "variation": false
+      }
+    },
+    {
+      "format": "CanonicalV3",
+      "dialect": "sysml",
+      "actual": {
+        "abstract": false,
+        "composite": false,
+        "constant": true,
+        "declaredName": "x",
+        "declaredResolves": false,
+        "derived": true,
+        "direction": "in",
+        "inheritedResolves": false,
+        "metaclass": "ReferenceUsage",
+        "ordered": false,
+        "shortName": "short",
+        "shortResolves": false,
+        "unique": true,
+        "variable": false,
+        "variation": true
+      }
+    }
+  ],
+  "sufficientSyntaxFailures": [
+    "LegacyV2: syntax [Diagnostic { severity: Error, span: 35..42, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "CanonicalV3: syntax [Diagnostic { severity: Error, span: 35..42, message: \"expected `;` or `{`, found `feature`\", code: None }]"
+  ],
+  "unnamedSyntaxFailures": [
+    "LegacyV2 kerml : T: syntax [Diagnostic { severity: Error, span: 44..51, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "LegacyV2 kerml typed by T: syntax [Diagnostic { severity: Error, span: 51..58, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "LegacyV2 kerml :> f: syntax [Diagnostic { severity: Error, span: 45..52, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "LegacyV2 kerml subsets f: syntax [Diagnostic { severity: Error, span: 50..57, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "LegacyV2 kerml ::> f: syntax [Diagnostic { severity: Error, span: 46..53, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "LegacyV2 kerml references f: syntax [Diagnostic { severity: Error, span: 53..60, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "LegacyV2 kerml => f: syntax [Diagnostic { severity: Error, span: 45..52, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "LegacyV2 kerml crosses f: syntax [Diagnostic { severity: Error, span: 50..57, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "LegacyV2 kerml :>> f: syntax [Diagnostic { severity: Error, span: 46..53, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "LegacyV2 kerml redefines f: syntax [Diagnostic { severity: Error, span: 52..59, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "LegacyV2 kerml ~ f: syntax [Diagnostic { severity: Error, span: 40..41, message: \"expected a KerML element after prefix, found `~`\", code: None }]",
+    "LegacyV2 kerml conjugates f: syntax [Diagnostic { severity: Error, span: 40..50, message: \"expected a KerML element after prefix, found `conjugates`\", code: None }]",
+    "LegacyV2 sysml : T: syntax [Diagnostic { severity: Error, span: 52..56, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "LegacyV2 sysml defined by T: syntax [Diagnostic { severity: Error, span: 61..65, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "LegacyV2 sysml :> f: syntax [Diagnostic { severity: Error, span: 53..57, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "LegacyV2 sysml subsets f: syntax [Diagnostic { severity: Error, span: 58..62, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "LegacyV2 sysml ::> f: syntax [Diagnostic { severity: Error, span: 54..58, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "LegacyV2 sysml references f: syntax [Diagnostic { severity: Error, span: 61..65, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "LegacyV2 sysml => f: syntax [Diagnostic { severity: Error, span: 53..57, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "LegacyV2 sysml crosses f: syntax [Diagnostic { severity: Error, span: 58..62, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "LegacyV2 sysml :>> f: syntax [Diagnostic { severity: Error, span: 54..58, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "LegacyV2 sysml redefines f: syntax [Diagnostic { severity: Error, span: 60..64, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "CanonicalV3 kerml : T: syntax [Diagnostic { severity: Error, span: 44..51, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "CanonicalV3 kerml typed by T: syntax [Diagnostic { severity: Error, span: 51..58, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "CanonicalV3 kerml :> f: syntax [Diagnostic { severity: Error, span: 45..52, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "CanonicalV3 kerml subsets f: syntax [Diagnostic { severity: Error, span: 50..57, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "CanonicalV3 kerml ::> f: syntax [Diagnostic { severity: Error, span: 46..53, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "CanonicalV3 kerml references f: syntax [Diagnostic { severity: Error, span: 53..60, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "CanonicalV3 kerml => f: syntax [Diagnostic { severity: Error, span: 45..52, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "CanonicalV3 kerml crosses f: syntax [Diagnostic { severity: Error, span: 50..57, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "CanonicalV3 kerml :>> f: syntax [Diagnostic { severity: Error, span: 46..53, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "CanonicalV3 kerml redefines f: syntax [Diagnostic { severity: Error, span: 52..59, message: \"expected `;` or `{`, found `feature`\", code: None }]",
+    "CanonicalV3 kerml ~ f: syntax [Diagnostic { severity: Error, span: 40..41, message: \"expected a KerML element after prefix, found `~`\", code: None }]",
+    "CanonicalV3 kerml conjugates f: syntax [Diagnostic { severity: Error, span: 40..50, message: \"expected a KerML element after prefix, found `conjugates`\", code: None }]",
+    "CanonicalV3 sysml : T: syntax [Diagnostic { severity: Error, span: 52..56, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "CanonicalV3 sysml defined by T: syntax [Diagnostic { severity: Error, span: 61..65, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "CanonicalV3 sysml :> f: syntax [Diagnostic { severity: Error, span: 53..57, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "CanonicalV3 sysml subsets f: syntax [Diagnostic { severity: Error, span: 58..62, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "CanonicalV3 sysml ::> f: syntax [Diagnostic { severity: Error, span: 54..58, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "CanonicalV3 sysml references f: syntax [Diagnostic { severity: Error, span: 61..65, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "CanonicalV3 sysml => f: syntax [Diagnostic { severity: Error, span: 53..57, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "CanonicalV3 sysml crosses f: syntax [Diagnostic { severity: Error, span: 58..62, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "CanonicalV3 sysml :>> f: syntax [Diagnostic { severity: Error, span: 54..58, message: \"expected `;` or `{`, found `part`\", code: None }]",
+    "CanonicalV3 sysml redefines f: syntax [Diagnostic { severity: Error, span: 60..64, message: \"expected `;` or `{`, found `part`\", code: None }]"
+  ],
+  "controls": "Eight ordinary named-end cases in both dialects and graph formats retain isEnd and no owned cross feature.",
+  "findings": [
+    "KerML cross features are emitted as ReferenceUsage and carry isVariation instead of the required Feature metaclass.",
+    "KerML const misses isVariable, and SysML variation misses isAbstract.",
+    "Declared/short names and inherited scope are not registered; ordering/uniqueness flags are omitted.",
+    "KerML all and all44unnamed declaration partitions are rejected by incomplete optional-cross lookahead."
+  ],
+  "limits": "Raw grammar and construction evidence only. These models do not establish complete cross-feature semantics, implicit crossing/typing/featuring, validation or family conformance.",
+  "compileAttempt": {
+    "state": "target/trigger-validation/owned-cross-baseline.json",
+    "stateSha256": "56255886ba10f618dbf01f2980bfe0016efbb0dbac5d9769ec285cc4d7c427f3",
+    "status": "Fixture compile error, no assertions executed; retained separately."
+  }
+}

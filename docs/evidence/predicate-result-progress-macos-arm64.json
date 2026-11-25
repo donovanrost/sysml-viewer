@@ -1,0 +1,167 @@
+{
+  "generatedAt": "2026-10-18T06:03:19.766226+00:00",
+  "platform": "macOS-15.8-arm64-arm-64bit",
+  "status": "worktree dependency progress; not release qualification or trigger-rule closure",
+  "baselineCommit": "4ee0776",
+  "scope": "Checked Predicate membership, input and Function.result projections and authored return-feature domains through the shared required-base and positional proof. This supports the Predicate-owned result used by Boolean literals; it does not certify Expression.result selection or any trigger validation rule.",
+  "kernelInputSha256": "2eee63b218ffe854c0b4c92f01967b04cb19c699e63547e03587f03c14d6eb85",
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs": "a102acb47cde8ea4520c25b2d0d05ac22fc7e6bef6d748f84b94480eb07d747c",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs": "71f9886de8684e310ddfa2e523fd38d67a001012e9937da255966509c2e724cb",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs": "611f58f37f0cd43abad7cedcd95bae03cdfc9cc29280183599678b803b693757",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs": "78e3d006356af5795fb96d9b0d0cd1db30242dd3f79b4a9b1b84a50dc66cdec6",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs": "6fa0fb8af33417e56b0450e8240df57862373fa1e1050be84cd130adfde90ab6",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_redefinition.rs": "9b5d2d03574cbb4d961cbcab23af1c8fe6f5a3106238b0f35d9791819c7274ec",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "8fc1db8a46818dd2b11b2f013fea2977620ead5c956f6613cba06486ece35ddb",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "dc725738f7270041c8aaf2f6299de908245ea773bf5d4786045de9cd8e94e8bf",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_features.rs": "b65902d94280aa0b5d952e2ebc80150b7d932e76697c898acd9de8053bf87318",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/certified_types.rs": "a903ff0fb7e92d5cd40e5f8a5d4ef21659f994744cacb7a7e9deb6d98fd4d9f5",
+    "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Performances.kerml": "fd965e184b300737a192530de0c800cdbee236cb6220612f370400da21dfb327",
+    "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Base.kerml": "56df84cda67f62c63d4e79e2786fc26046cfa361a958c4fcf0843d32a5707e09",
+    "vendor/sysml-library/sources/Kernel Libraries/Kernel Data Type Library/ScalarValues.kerml": "4db25ce00dd170fd67261f6e7e21a2616bda15d233579dc5fb3193aaf61fa5a5",
+    "crates/sysml-kernel/tests/trigger_result_features.rs": "d4e42410940c82f2565cb94049b7698de8dc533632afb55675d9fad34d80b9a0",
+    "crates/sysml-kernel/tests/duration_feature_certificates.rs": "f1b07fbc132136ca9f3d4c843a55e0aa7708305bc0c2f3cfa5ff506011e4ba12",
+    "tests/conformance/fixtures/trigger-arguments-positive.sysml": "c4cb205b98c6128e9fca1fead8c84c6edffc41bfba9e17d7a0f9727d37db1a1f",
+    "tools/test-vendor.mjs": "99c23fbd751b26c29e3aa149092946acf97d921a4e0b2c37049263e80de9f3b6",
+    "patches/manifest.json": "f51681b819a876f6131d8e92bb29ca2fe5e10d97868b1b63c79ecdc108abb6d5",
+    "patches/0002-package-attribute-featuring.patch": "50d8137296cecedc399fd7ed96a6a2fb535e9f672ecb9a0b32ed11de9dbe74ec",
+    "patches/0003-checked-conditional-bindings.patch": "8d3ca1ea49c2f5bb6e962e599ff6a2ce4334e9600385aba4eb187e017b939ef5",
+    "patches/0004-designated-operator-cache.patch": "74933e6f3ea7da3ed508b40a51a4b8a3d93e0d724c6aeaba52f9d25666d9aed5",
+    "patches/0008-isolate-unresolved-specializations.patch": "42c4fe49b9d2a26be3c37250bf26853ac64ee7614451ed2a1ceffaae9912ae92",
+    "patches/0010-reuse-static-prefix.patch": "380179dc4b26aa80e92a591a85c8047f4e75d1e2e91a37dc7842ea1a6b15690a",
+    "patches/0019-preserve-distinct-view-renderings.patch": "860fd2ba217226a8b526c2238ff3819433774c748fe7ea10433610b6fc4919d4",
+    "patches/0027-generated-result-inheritance.patch": "b55675b3e6600f2df5adf33eff705fe93cdbab378a5c1f6f3960fa898a078be3",
+    "patches/0028-partial-result-heritage.patch": "bd0adec56613f6d52960f0623bc8d02a795b6b172f03b86894ff4e51d6fe1d43",
+    "patches/0029-assertion-member-evidence.patch": "0442d514b48b58a97d11e51a9e52bc96e891dd1de68ef196939fbeec61d9f8cc",
+    "patches/0030-attribute-feature-domains.patch": "687168fb98ff8b2692a24212b28f021432b9c42069fcd02826c4dcc2ef886f1f",
+    "patches/0031-generated-result-domain-witnesses.patch": "080b3ce6a9710cd454f80da0e592c0302e2dc12eca7107516157403aecfb6fcc",
+    "patches/0032-predicate-result-properties.patch": "4474987eba645ff03e44b88c0b284d5ed7edc569674a44d179b55b27036b0ea2"
+  },
+  "nativeTestBinaries": {
+    "target/release/deps/trigger_result_features-193bdccb12600a29": "9063ab77454e589a561237a4cf7af4b92eb4d98bba19e73fabdc9ab0e36bf6e8",
+    "target/release/deps/duration_feature_certificates-6a9da535672be798": "b3eb848272cf6f940f49224e5d92c862e73bedfbdbe6f1fe185ab994cf7dbde8"
+  },
+  "sources": [
+    {
+      "path": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+      "anchors": [
+        {
+          "owner": "Predicate",
+          "name": "checkPredicateSpecialization",
+          "expressions": [
+            {
+              "text": "specializesFromLibrary('Performances::BooleanEvaluation')",
+              "sha256": "c8857bdd725f55d9250457c7a135c29070d2fb00e54f1ae5c01f321daa884d3a"
+            }
+          ]
+        },
+        {
+          "owner": "Function",
+          "name": "deriveFunctionResult",
+          "expressions": [
+            {
+              "text": "result =     let resultParams : Sequence(Feature) =         featureMemberships->             selectByKind(ReturnParameterMembership).             ownedMemberParameter in     if resultParams->notEmpty() then resultParams->first()     else null     endif",
+              "sha256": "2511f6b349b77ff3f133397ce2d9e1153c7d26f3439c68a6a89b9b4b6f265142"
+            }
+          ]
+        },
+        {
+          "owner": "Function",
+          "name": "checkFunctionSpecialization",
+          "expressions": [
+            {
+              "text": "specializesFromLibrary('Performances::Evaluation')",
+              "sha256": "e9cf54908d97c33a56508812490bb6031a18e39f8c3a466085b145cc199af965"
+            }
+          ]
+        },
+        {
+          "owner": "Feature",
+          "name": "checkFeatureParameterRedefinition",
+          "expressions": [
+            {
+              "text": "owningType <> null and not owningFeatureMembership.     oclIsKindOf(ReturnParameterMembership) and (owningType.oclIsKindOf(Behavior) or  owningType.oclIsKindOf(Step) and     (owningType.oclIsKindOf(InvocationExpression) implies       not ownedRedefinition->exists(not isImplied))  implies     let i : Integer =         owningType.ownedFeature->select(direction <> null)->             reject(owningFeatureMembership.                 oclIsKindOf(ReturnParameterMembership))->             indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |             let ownedParameters : Sequence(Feature) =                 supertype.ownedFeature->select(direction <> null)->                      reject(owningFeatureMembership.                          oclIsKindOf(ReturnParameterMembership)) in             ownedParameters->size() >= i implies                 redefines(ownedParameters->at(i))",
+              "sha256": "27a1dc1ab5e6f5b947606a322260646f24c2fc6b54b91a789c93c06a8c0e6ac5"
+            }
+          ]
+        },
+        {
+          "owner": "Feature",
+          "name": "checkFeatureResultRedefinition",
+          "expressions": [
+            {
+              "text": "owningType <> null and (owningType.oclIsKindOf(Function) and     self = owningType.oclAsType(Function).result or  owningType.oclIsKindOf(Expression) and     self = owningType.oclAsType(Expression).result) implies     owningType.ownedSpecialization.general->         select(oclIsKindOf(Function) or oclIsKindOf(Expression))->         forAll(supertype |             redefines(                 if superType.oclIsKindOf(Function) then                     superType.oclAsType(Function).result                 else                     superType.oclAsType(Expression).result                 endif)",
+              "sha256": "2f5fdaba220ad7b327528b680664c529a019e43f33f760ae437fa9e0dd84b5a8"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "observations": [
+    "Predicate is admitted by the shared Type membership provider only with proven canonical Performances::BooleanEvaluation, Evaluation, Performance, Occurrence and Anything heritage. The library-role witness must be a loaded Predicate, not merely a Function or a user declaration with the same spelling.",
+    "Function.result and its checked property now admit Predicate through the existing ordered feature and membership proof. Directed authored Predicate inputs and return Features retain complete owning-signature and positional-redefinition dependencies.",
+    "Three new private regressions exercise owned and inherited returns, ordered input replacement, exact parameter/result feature identities, replay without graph growth, public properties, budget retry, missing or wrong-kind libraries, user shadows, missing/cyclic owners and five current-state mutations.",
+    "A metadata generation change alone permits a fresh proof. Incomplete metadata blocks both result and feature-domain queries; the test distinguishes these behaviors instead of requiring an error on a valid recertification.",
+    "The full 94-file pinned library test checks the Predicate-owned Boolean literal result with both function_result_report and the public Function.result property. Canonical result Type.feature is exactly Base::DataValue::self and Base::things::that.",
+    "The expected Boolean result feature was corrected by reviewing Base.kerml: DataValue::self explicitly redefines Anything::self, and Boolean specializes ScalarValue, which specializes DataValue. This differs from the untyped Evaluation.result case retained in the earlier duration test.",
+    "LegacyV2 can select the same Predicate return but cannot certify its feature domain without the required Base::dataValues path. Minimal legacy fixtures with explicit required heritage certify the same domains; the checked reader does not invent missing construction.",
+    "The selected vendor suite now also runs all 21 existing certified_types module regressions for policy, row-cache invalidation, metadata changes, aliases, relationship carriers and cumulative budgets."
+  ],
+  "verification": [
+    {
+      "command": [
+        "node",
+        "tools/test-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "passed": 409,
+      "log": "target/trigger-validation/predicate-final-vendor.log",
+      "logSha256": "c9f548c516facfb76c0cfe3dc6a73888b237397b7b018b916372b800c6286050"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "test",
+        "--locked",
+        "--release",
+        "--workspace"
+      ],
+      "exitCode": 0,
+      "passed": 94,
+      "log": "target/trigger-validation/predicate-final-workspace.log",
+      "logSha256": "858966a50e9f3e8241fc2456e1bda0180a65a7679025c270e05c8dcfcbc485fb"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "log": "target/trigger-validation/predicate-clippy.log",
+      "logSha256": "bdc29b057130c47088a39a34850aec32f5bc79381b12f1e21145de2bdabdd1e2"
+    }
+  ],
+  "buildReview": {
+    "workspaceDependencyBoundary": "The workspace builds sysmlv2-model as a dependency without cfg(test). Its production sections and the workspace test sources were unchanged after the workspace run began.",
+    "subsequentTestOnlyEdit": "While that build ran, empty_complete_root_does_not_widen_to_contextual_subclasses was updated inside type_features.rs #[cfg(test)] to expect IncompleteProvider for a Predicate lacking BooleanEvaluation, instead of the old UnsupportedConfiguration classification. This test-only edit is exercised by the final selected-vendor run.",
+    "typeFeaturesProductionSha256": "6642d1a606f30670f3c2b8555a8406dc86cec45bf992196b082314ab21336057"
+  },
+  "limitations": [
+    "This proves the selected membership domains, not whole-Predicate validity, return uniqueness or complete Function/Predicate conformance. Other conditional type/feature and metadata configurations retain the shared provider qualifications.",
+    "The Boolean-literal integration test locates the expression candidate with the compatibility result query, then checks its Predicate owner. General checked Expression.result selection remains open; this record must not be read as certifying that derivation.",
+    "Nested reference expressions still require the Step owning-Type context proof and construction. The singular/plural library target discrepancy remains recorded in trigger-result-dependency-review.json.",
+    "The three trigger validators still use source-based predicates and noncanonical identifiers. Complete argument/result/wrapper and quantity-reference validation remains open.",
+    "The installed application and qualified engine remain KERNEL-023. Current conformance-matrix, native/WASM, benchmark and desktop-release qualification have not been repeated for this worktree. Windows and Linux were not executed."
+  ]
+}

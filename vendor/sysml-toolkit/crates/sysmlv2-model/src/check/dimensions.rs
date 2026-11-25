@@ -18,20 +18,6 @@ enum Dimension {
     Unknown,
 }
 
-pub(super) fn known(r: &mut ResolvedModel, scope: usize, expr: &Expr) -> Option<QuantityDims> {
-    let mut infer = Inference {
-        model: r,
-        features: HashMap::new(),
-        types: HashMap::new(),
-        units: HashMap::new(),
-        findings: Vec::new(),
-    };
-    match infer.expr(scope, expr) {
-        Dimension::Known(d) => Some(d),
-        _ => None,
-    }
-}
-
 struct Inference<'a> {
     model: &'a mut ResolvedModel,
     features: HashMap<usize, Dimension>,

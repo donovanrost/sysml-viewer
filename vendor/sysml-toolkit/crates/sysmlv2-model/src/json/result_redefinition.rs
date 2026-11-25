@@ -368,6 +368,10 @@ pub(super) fn canonical_witness(
 
 #[derive(Default)]
 pub(super) struct Evidence {
+    /// Direct bases with the canonical effective return, proven at publication.
+    /// This is a positive set; readers must account for all applicable source bases.
+    pub canonical_bases: HashSet<usize>,
+    pub canonical_result: Option<usize>,
     pub sources: HashSet<usize>,
     pub relationships: HashSet<usize>,
 }
@@ -398,6 +402,7 @@ pub(super) fn prepare(
     let raw = StoredStructure::for_query(b, steps).ok_or_else(|| incomplete(steps))?;
     let metadata = b.metadata_association_generation.clone();
     let (bases, target) = canonical_witness(b, steps)?;
+    charge(steps, bases.len().saturating_add(1))?;
     let mut ids = HashSet::new();
     for row in rows {
         if raw.element_for_uuid(b, row.id).is_some() || !ids.insert(row.id) {
@@ -410,7 +415,11 @@ pub(super) fn prepare(
         rows: Vec::new(),
         roles: Vec::new(),
         replacements: Vec::new(),
-        evidence: Evidence::default(),
+        evidence: Evidence {
+            canonical_bases: bases.iter().copied().collect(),
+            canonical_result: Some(target),
+            ..Evidence::default()
+        },
         edges: Vec::new(),
     };
     for &role in roles {

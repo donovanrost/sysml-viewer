@@ -10,3 +10,4 @@ src-tauri/gen/
 target/
 tools/kernel-evaluation/target/
 packages/kernel-wasm/
+__pycache__/

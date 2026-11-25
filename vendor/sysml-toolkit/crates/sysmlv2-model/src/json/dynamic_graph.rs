@@ -34,6 +34,42 @@ pub(super) struct Snapshot {
     pub result_redefinition_outcome: Outcome,
 }
 impl Snapshot {
+    /// Preserve exact existing recipes across the dedicated default-binding
+    /// writer. Its private factory permits only anonymous OwningMemberships on
+    /// calls and new-source endpoint/featuring edges. It cannot alter any old
+    /// Type.feature sequence or positional source. General edits may NOT use
+    /// this operation; held semantic query evidence expires with the epoch.
+    pub(super) fn after_invocation_default_append(
+        &self,
+        b: &Builder,
+        epoch: publication::Revision,
+        rows: crate::layered::Revision,
+        append: &super::invocation_defaults::Append,
+        steps: &mut usize,
+    ) -> Option<Self> {
+        if !self.current(b) || !append.current(b) {
+            return None;
+        }
+        *steps = steps
+            .saturating_add(append.local.len())
+            .saturating_add(self.local_featuring.as_ref().map_or(0, |s| s.capacity()));
+        if *steps > crate::eval::MAX_STEPS {
+            return None;
+        }
+        let mut owners = self.local_featuring.as_deref().cloned().unwrap_or_default();
+        owners.extend(&append.local);
+        let mut next = self.clone();
+        next.epoch = epoch;
+        next.rows = rows;
+        next.typing = OnceLock::new();
+        if !owners.is_empty() {
+            next.local_featuring = Some(Arc::new(owners));
+            if !matches!(next.local_featuring_outcome, Outcome::Declined(_)) {
+                next.local_featuring_outcome = Outcome::Accepted;
+            }
+        }
+        Some(next)
+    }
     pub(super) fn new(
         b: &mut Builder,
         epoch: publication::Revision,
@@ -225,9 +261,9 @@ impl Builder {
             return Err(Refusal::WorkLimit);
         }
         if !self.elements.iter().take(self.explicit_len()).any(|e| {
-            e.ty == "InvocationExpression"
-                || (self.graph_format == crate::model::GraphFormat::CanonicalV3
-                    && matches!(e.ty, "ConstructorExpression" | "OperatorExpression"))
+            dynamic_invocations::is_candidate(e.ty, self.graph_format)
+                || super::step_context::typed_candidate(e)
+                || super::portion_context::candidate(e)
         }) {
             return Ok(None);
         }
@@ -243,31 +279,9 @@ impl Builder {
         } else {
             // Name materialization is needed only when constructing a prefix.
             // A same-transaction producer already supplied those recipes.
-            for (_, parts) in &self.lib_qnames {
-                *steps = steps.saturating_add(1);
-                for part in parts {
-                    *steps = steps.saturating_add(part.len());
-                }
-                if *steps > crate::eval::MAX_STEPS {
-                    return Err(Refusal::WorkLimit);
-                }
-            }
-            for name in self.external_implied_names.keys() {
-                *steps = steps.saturating_add(name.len().saturating_add(1));
-                if *steps > crate::eval::MAX_STEPS {
-                    return Err(Refusal::WorkLimit);
-                }
-            }
-            let names: HashMap<_, _> = self
-                .lib_qnames
-                .iter()
-                .map(|(id, parts)| (parts.join("::"), *id))
-                .chain(
-                    self.external_implied_names
-                        .iter()
-                        .map(|(name, id)| (name.clone(), *id)),
-                )
-                .collect();
+            let names = self
+                .planning_names(Some(&mut *steps))
+                .ok_or(Refusal::WorkLimit)?;
             self.static_specialization_prefix_with_workspace(
                 &names,
                 self.external_implied_names.is_empty(),

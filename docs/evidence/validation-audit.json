@@ -76,11 +76,11 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-      "sha256": "0d6adf4c0ba1cf041edb3e46aa51b77b743f7c7b12768d6aec3e2f081098efd7"
+      "sha256": "b0302f04a707143e9f2c80af90ad2ce798973619952537aa595ae220e5d9c163"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
+      "sha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/chains.rs",
@@ -92,7 +92,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/dimensions.rs",
-      "sha256": "1d7a97fdf4d73f20d0e1d0585c26d50643bceecc43a9fd8333345a28687be9b9"
+      "sha256": "60dbdb17097d1fd98338fefa74696ddc07bca1717f6ef1d4700239cbd44b566c"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/directions.rs",
@@ -184,11 +184,11 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
-      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
+      "sha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/accept_bindings.rs",
-      "sha256": "093342367127d0c41ee76ee0adb841ab0484b79f1748db8f8da2b03e3e46db19"
+      "sha256": "09b43994e93d277d4e5f1942dec05e89860169ee5c975ca6a10269be29a7697d"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/behavior.rs",
@@ -200,7 +200,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
-      "sha256": "55904e99c8f1a10492d76ae6098135aa883759a5df47feee6e8858dfc1910e8a"
+      "sha256": "f05f8577d58d5be76882c041733aa81395fe34d166ff4b0a69fa17c54f435ef6"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cases.rs",
@@ -212,7 +212,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs",
-      "sha256": "c85c9f315ecc5214fa624e720e493d15622f822a6410e47c33726d7cb5fc9d50"
+      "sha256": "7b2a9243fe54633a5bace1c2fabe7e486bd98d27ac663ccc530c0131d7166297"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/derived.rs",
@@ -228,11 +228,15 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
-      "sha256": "01c9aa635ad9d9fb3a7fdaf5d34071b626494a37da1db52eebf020e425ff2478"
+      "sha256": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
-      "sha256": "4e02c3ee3a88c75d1b398a91e91fe8bbbf0c71359161a3955171d998db815d96"
+      "sha256": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/effective_defaults.rs",
+      "sha256": "4ae1548ba4021e28a83c5242dfd891fdeabdc2e1f2384d581aa430ae5a7a1bb4"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/end_constancy.rs",
@@ -243,16 +247,20 @@
       "sha256": "69cd63c8bbde247c25f10f9c24f377bd4d59ee150bd3a8e50d9c7470fc5ff46e"
     },
     {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/expression_results.rs",
+      "sha256": "ba765ac8b392caac93c1056fa4960752e5a86b68d2fcec77dd0ab9582eb330df"
+    },
+    {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs",
-      "sha256": "46ada2d4023e868e6cbf421c87b2220e5889fbcab57c44b285d535ca5588512c"
+      "sha256": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs",
-      "sha256": "ac412907c391508980f2f94a86cae968169afe1ddfdec98688b8cc2c12c1382f"
+      "sha256": "1fb062ef5d9f688c41d283976be1f2807f95e27f25ff6935e9afbad83476bc06"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/readiness_tests.rs",
-      "sha256": "17033fd7e9dc6400762d227bbe89cbf2cdfcb74d0fe84566a8f7d5ca5eaa0a4a"
+      "sha256": "d71ce0c25f1d4569f08b4ace686a70afc1a56de22b9da1cef1af649bb0f767c3"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/report.rs",
@@ -260,7 +268,11 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/repository_tests.rs",
-      "sha256": "3353c4d825d6e6a7d8d2b62ae0c0f64907054d2bd7569a1c000cc31e21507ab0"
+      "sha256": "2466e1c8eb5a567b2eb4757baa9db2622da23bc67778ada3c1b29d4227ec3f85"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/semantic_positional_tests.rs",
+      "sha256": "1c0004d3df2ff04980d3ef927470eadd2b0aa99dc42ef5d04c8c7e24b8404791"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/function_specialization_readiness_tests.rs",
@@ -276,7 +288,19 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs",
-      "sha256": "8ad9da07aca2c4df6c04101aff6f0a79b8038fb8ae165953bdc0441c2fa65651"
+      "sha256": "a210635087b0a6713339e4ea77c18285890125ab1f8df84ea4b7c4f387615862"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/current_graph_tests.rs",
+      "sha256": "246c781f35a40e9ecf594d851658c921047b68543529cedb7a2e26b6baed23d3"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/minimizer_differential_tests.rs",
+      "sha256": "93a2d575fdb418fd0083e1e18a56f3b53f2f8a3cf873faf1603afb3a32bb4dd2"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/planning_names_tests.rs",
+      "sha256": "97269e0dd9c978d52697e5f2343c9e7e389b2a4ab22c6087bfe68292e5dd8d4a"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/import_memberships.rs",
@@ -288,7 +312,15 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
-      "sha256": "8329c60723149b689537a7f5afcf251396c196c71742102703cf20ab492dd015"
+      "sha256": "0fad34f0b57d139f495b01ab0b2b836a90886b2ca301d1ce29fcf0c44994af62"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_defaults.rs",
+      "sha256": "4c116f415d30f8d4c91ecc41fa79063d18b03985e0b0c9cb747790075aac3e16"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_results.rs",
+      "sha256": "9fd709dcb981b7e224656916b31934612828620c168166a0d751a2b4cd3c60d2"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/library_plans.rs",
@@ -300,19 +332,19 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/local_featuring.rs",
-      "sha256": "a00b11b2db553e10f74459ffa51acc5eb95c6fee7d528457cc681b5bd9d43d18"
+      "sha256": "f61ea53767433f012aaa4f9dec998df9b8ff52b6dc25250c496eb2bce917d493"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_context.rs",
-      "sha256": "a30f1afe26d49593ae3060d1db53bdcaf78d2da4ebf00f4f9c332fba006bee2b"
+      "sha256": "82997c8b71aca9a0e5e51fcd1e60b0ed48798b0e02d493b9b7499b698ed31043"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_evidence.rs",
-      "sha256": "877c113db727185db1a57775c3d78affb5baae5d0a5eab1e51ec3dac74ce454d"
+      "sha256": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_projection.rs",
-      "sha256": "266786624e02acf6a2e2fa99cc597d3f20bee4042cc497563cc85919270ef274"
+      "sha256": "01bc5c4f025a904cabcae2f2181e599748e552ab0b28340509d3156b8f381f14"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/metadata_associations.rs",
@@ -324,7 +356,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
-      "sha256": "08f521867657bed8204154c271036b5fdf12db1ea4f71f31e6e256a3dd77f3f3"
+      "sha256": "ae2f7350291639170ca2f70e1f537571fc1f8e90b37a4248b8910e1467775caa"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/named_argument_index_tests.rs",
@@ -340,7 +372,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces.rs",
-      "sha256": "9eb1f8bedba2cfe84f2edfa8291673918d260098096e8e67bf824757e6b95742"
+      "sha256": "fa1ce92b5551c28af23bed503d52e0ceb6e237e5f8a70d36916f16ce8853846c"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/imports.rs",
@@ -352,11 +384,11 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/recursive_features.rs",
-      "sha256": "adca4fcc827e7a1ce570d4d130101d1f1fc9cf378f6ef63efa815c1d384f4084"
+      "sha256": "b0bcbb1aa4cfa4e44609561aaf87b756bd986a1b96b98cf9a1922b5ae6ae51ba"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/resolution.rs",
-      "sha256": "4ebf0dcc1381d2972086f0efd3e8f8b1dd74c699e3cd66aeeefcaf3e5a4bc54c"
+      "sha256": "7bf1ae6e0ec7c7a709076ece987208af3e4e85f942fd12d830c356bc3418a7e0"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/type_memberships.rs",
@@ -364,7 +396,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs",
-      "sha256": "38a5065c480e39ac15e47a5ca7b7b070f1a3963de2083e18f3d3d256598879ad"
+      "sha256": "9494a14f87e2730319d3ec5e10069c113460510cab69d658e2d4327fa05ae256"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/parameter_context.rs",
@@ -375,12 +407,32 @@
       "sha256": "ea10fe45e48cdb85713845b9a663ff8e35f17bd1818c00fe333d1bf4090f6a4a"
     },
     {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/portion_context.rs",
+      "sha256": "3bcc0c9ae46a358ad42276c079e56a18d4cb06197529a6dcad637019d4f41836"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/portion_context/acceptance.rs",
+      "sha256": "405cae08a650f5a306e9b4249e889b1396f490bfcaadd83df6d8b25b76f0e62a"
+    },
+    {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional.rs",
-      "sha256": "845f8d8cc9f26b42933b31a5dd18b2dc109898ae1c3e78df83f78d3a68d5331f"
+      "sha256": "de466a581af29acd03724804fa4f9b3716610a274e77ccece39fed66a9e1127d"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/borrowed_role_subtypes.rs",
+      "sha256": "3f93ffd7d2c94519e95f6adb3716e810f27cb415303dfb451d7822e58a918431"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/checked.rs",
+      "sha256": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional_delta.rs",
       "sha256": "dfc0ccd67f589867e7aa6f4ce1623fc9bf01e28e37e09b0742612758f7db8995"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional_names.rs",
+      "sha256": "f25789690e57b923d7b503956762bcc92e54ef9780261010aff41309b0846c25"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/provider_completeness.rs",
@@ -415,12 +467,24 @@
       "sha256": "e53538bbb6a62b9bee313adc4aae585389535779a726ddf1992c3311ebfe9436"
     },
     {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/reference_memberships.rs",
+      "sha256": "3685226f5c3b5c4ec7596095cc28beaa502eeccdc111aa363696522039d8ee83"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/reference_memberships/foreign_members_tests.rs",
+      "sha256": "0289359cb7f9a65792d8a8e175c7633849381226ecd36dc711b5383f2f54fe79"
+    },
+    {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/replay_dependencies_tests.rs",
       "sha256": "ea43ecbc3550dca3262e405b75c6b689eee91943e9d08959f8afff25d728cc1d"
     },
     {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs",
+      "sha256": "6fa0fb8af33417e56b0450e8240df57862373fa1e1050be84cd130adfde90ab6"
+    },
+    {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_redefinition.rs",
-      "sha256": "f696d09c9e790c57d256d8a1dde8018718ea0faab6fa65dc1482c2a5b2c5eb23"
+      "sha256": "9b5d2d03574cbb4d961cbcab23af1c8fe6f5a3106238b0f35d9791819c7274ec"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/runtime_frames.rs",
@@ -432,11 +496,11 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic.rs",
-      "sha256": "eb1349600fbf45b348bdfec084445511df8d1642de891089e0463608a5997617"
+      "sha256": "bc592e894134ab4354aa0972c179d634adfb6183d42638640c8df73f49c0a0c5"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/certified_types.rs",
-      "sha256": "5126f86d4a70d8ce29edd70970fb27844b5ed9f50382be9659139876d0642d3e"
+      "sha256": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/definition_usage_tests.rs",
@@ -452,19 +516,23 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_batch.rs",
-      "sha256": "ff8a9b7df21ffac89df8dcf1cc8536055a553250e6c2276ed4b10d3bd71f8d41"
+      "sha256": "fb286a5ba37b55de65d7be9f49e2a5b56fdbca3a2239a4669850e06ca5231c99"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs",
-      "sha256": "9f724257d0b466612447e7b057b9bb543e47c316e9a763468b51d13ee829fa0a"
+      "sha256": "e7263e28777f0386588ac9265e004096426fde510801e9d1cef59145e0afac1e"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/settled.rs",
       "sha256": "f22a80abe0e4f09ec72e7641f58dfb060686f313fd32623327fa1b3530d6d2c6"
     },
     {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/step_context.rs",
+      "sha256": "1ef072f1ca0fa39880883e52c60e957621f15041bba91bae9d91e26a4afd9121"
+    },
+    {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs",
-      "sha256": "3a5edc38a13a690e01e7de33fea48e78122c1e2aba043be0ade7e758554577c2"
+      "sha256": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/succession_endpoints.rs",
@@ -475,12 +543,16 @@
       "sha256": "1d2f3d4f4de4185e4e7e3419d88985b68882f1e52888a782493e41ac19286c27"
     },
     {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+      "sha256": "fe6c3454577bfed1579ac03db4a82c0f6082937d0bf015d0f80a442e75e4f31b"
+    },
+    {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_features.rs",
-      "sha256": "25e8b6cf1b7ce551a68170ffd02623e15c80295b94dea1ac6b2d1c94dc733246"
+      "sha256": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs",
-      "sha256": "6e5e5e1d4d50a65d9a814aa4c6d5ca9243e559db912f91e2b6d188506132043a"
+      "sha256": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs/authored_dependencies.rs",
@@ -500,7 +572,31 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
-      "sha256": "581edf552f7a33497a0deea3268c912c3b91f255c7f6d3a3624aa5a02ce90925"
+      "sha256": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/association_domains_tests.rs",
+      "sha256": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/chaining_types_tests.rs",
+      "sha256": "ed2e58c08de989291bdb145febb535ef4bf76b799c85c567feed9692642a8494"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/namespace_member_tests.rs",
+      "sha256": "9047cd5301ac9cd62761084669586f1f4983977e6482c2b57ed74bbddaf311bb"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/ordinary_features_tests.rs",
+      "sha256": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/valuation.rs",
+      "sha256": "d014bf9399bc45d534ce1522aefa8d6cea68a31f011c49cfe5a1eef09e7c8aa9"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/valuation/tests.rs",
+      "sha256": "05365d24f4c8463dd22bdaed92c3091aca442a5a354f6cb22192be89c1d90636"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/typeops.rs",
@@ -536,7 +632,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/loader.rs",
-      "sha256": "4c04dfb8511f8e334c2884bfac74620ecd60149af733111a63d86f533eb61ce2"
+      "sha256": "b2103e157386af31fc349c2881739027b261dc6cb7c5b576f1d5211628741feb"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/metaclass.rs",
@@ -552,7 +648,7 @@
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/migration.rs",
-      "sha256": "8c3893bd18ffac599733977367d9772eb0e77093274625b2b06ba6eb6d714a48"
+      "sha256": "31d2091c1b5b97b7993eebecfcdfd422853a358205d901959f77598b26abd030"
     },
     {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/model.rs",
@@ -641,16 +737,16 @@
   ],
   "structuredInputHashEncoding": "JSON.stringify(parsed input), UTF-8",
   "catalogueSha256": "6e99879d8d7564e2fb160394b9dcd1c1b05bdb6603a05ca61c5ec2d29bce7f6b",
-  "assessmentsSha256": "fa102d9b8ccaa2d886f0f4c47c0fef8cfd0d8ea4d92c46d7c7fc5dea372d879b",
+  "assessmentsSha256": "073cd8aeda0309015f6303478a62c12e31a0b74165986418deb96b8463f6e39b",
   "matrixSha256": "75da18b846b65968c2cc07f2c1fc8d5e77bab29d1815be598a6921800910a004",
   "counts": {
     "rules": 180,
-    "registered": 97,
-    "withSourceMentions": 98,
-    "withoutSourceMentions": 82,
+    "registered": 100,
+    "withSourceMentions": 101,
+    "withoutSourceMentions": 79,
     "withDirectAssessments": 16,
     "withoutDirectAssessments": 164,
-    "unmatchedNames": 36
+    "unmatchedNames": 33
   },
   "rules": [
     {
@@ -675,7 +771,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 946
+          "line": 918
         }
       ],
       "assessments": [
@@ -3319,7 +3415,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs",
-          "line": 2472
+          "line": 2654
         }
       ],
       "assessments": [],
@@ -3357,7 +3453,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 677
+          "line": 649
         }
       ],
       "assessments": [
@@ -3464,7 +3560,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 334
+          "line": 337
         }
       ],
       "assessments": [
@@ -3534,7 +3630,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 886
+          "line": 858
         }
       ],
       "assessments": [
@@ -3587,11 +3683,11 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 681
+          "line": 653
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 685
+          "line": 657
         }
       ],
       "assessments": [
@@ -3700,7 +3796,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 335
+          "line": 338
         }
       ],
       "assessments": [
@@ -3889,7 +3985,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 924
+          "line": 896
         }
       ],
       "assessments": [
@@ -3944,7 +4040,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 618
+          "line": 590
         }
       ],
       "assessments": [],
@@ -3972,7 +4068,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 903
+          "line": 875
         }
       ],
       "assessments": [
@@ -4031,7 +4127,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 923
+          "line": 895
         }
       ],
       "assessments": [
@@ -4090,11 +4186,11 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 856
+          "line": 828
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 857
+          "line": 829
         }
       ],
       "assessments": [
@@ -4153,7 +4249,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 780
+          "line": 752
         }
       ],
       "assessments": [
@@ -4216,7 +4312,7 @@
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 816
+          "line": 788
         }
       ],
       "assessments": [
@@ -4262,30 +4358,108 @@
       "name": "validateTriggerInvocationExpressionAfterArgument",
       "standard": "sysml",
       "owner": "Systems-Actions-TriggerInvocationExpression",
-      "registrations": [],
-      "mentions": [],
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 135
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 561
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+          "line": 71
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+          "line": 160
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+          "line": 171
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+          "line": 390
+        }
+      ],
       "assessments": [],
-      "nextAction": "locate-or-implement"
+      "nextAction": "review-code-candidate"
     },
     {
       "sourceId": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAtArgument",
       "name": "validateTriggerInvocationExpressionAtArgument",
       "standard": "sysml",
       "owner": "Systems-Actions-TriggerInvocationExpression",
-      "registrations": [],
-      "mentions": [],
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 136
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
+          "line": 564
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+          "line": 72
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+          "line": 163
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+          "line": 391
+        }
+      ],
       "assessments": [],
-      "nextAction": "locate-or-implement"
+      "nextAction": "review-code-candidate"
     },
     {
       "sourceId": "SYSML-XMI-Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionWhenArgument",
       "name": "validateTriggerInvocationExpressionWhenArgument",
       "standard": "sysml",
       "owner": "Systems-Actions-TriggerInvocationExpression",
-      "registrations": [],
-      "mentions": [],
+      "registrations": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "symbol": "IMPLEMENTED_NORMATIVE_SEMANTIC_RULES"
+        }
+      ],
+      "mentions": [
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
+          "line": 137
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+          "line": 73
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+          "line": 144
+        },
+        {
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/trigger_arguments.rs",
+          "line": 392
+        }
+      ],
       "assessments": [],
-      "nextAction": "locate-or-implement"
+      "nextAction": "review-code-candidate"
     },
     {
       "sourceId": "KERML-XMI-Core-Types-Type-validateTypeAtMostOneConjugator",
@@ -4311,7 +4485,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 135
+          "line": 138
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4335,7 +4509,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 136
+          "line": 139
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4379,7 +4553,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 137
+          "line": 140
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4413,7 +4587,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 138
+          "line": 141
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4467,7 +4641,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 139
+          "line": 142
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4501,11 +4675,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 140
+          "line": 143
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 337
+          "line": 340
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -4656,11 +4830,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 141
+          "line": 144
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 339
+          "line": 342
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -5032,7 +5206,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 334
+          "line": 337
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -5045,38 +5219,11 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 335
+          "line": 338
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
           "line": 542
-        }
-      ]
-    },
-    {
-      "name": "validateTriggerInvocationActionAfterArgument",
-      "mentions": [
-        {
-          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 566
-        }
-      ]
-    },
-    {
-      "name": "validateTriggerInvocationActionAtArgument",
-      "mentions": [
-        {
-          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 570
-        }
-      ]
-    },
-    {
-      "name": "validateTriggerInvocationActionWhenArgument",
-      "mentions": [
-        {
-          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
-          "line": 574
         }
       ]
     },
@@ -5094,7 +5241,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 336
+          "line": 339
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
@@ -5107,7 +5254,7 @@
       "mentions": [
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
-          "line": 339
+          "line": 342
         },
         {
           "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",

@@ -1,0 +1,224 @@
+{
+  "recordedAt": "2026-10-18T13:23:27.217423+00:00",
+  "status": "All 949 vendor model tests, 99 native workspace tests, 39 public Node tests and 16 provenance/evidence tests pass. Clippy, native/WASM builds, contract, 133 conformance cases and matching requirements execution evidence pass on macOS arm64. No package or complete semantic obligation closes.",
+  "kernelInputSha256": "7302a833bbe787c306b3f1c20e816e2b9d110974659821e356cd1afbe81f9d1b",
+  "previousQualifiedKernelInputSha256": "c88a2fa55ad625f118b30c4f4bb9d6d44bcf63b0f8e0d9c8bfee17acb6522e43",
+  "problem": "The incomingTransferSort library default refers to a namespace-owned BooleanExpression. Its generated result and binding recipe are present, but the shared foreign-member provider previously admitted only Feature and AttributeUsage without owning Types.",
+  "repair": "Reuse the existing Step membership-family predicate in the same namespace-owned foreign-member branch. Preserve reciprocal ownership, flags, metadata and shared redefinition/positional checks. The foreign member remains outside the receiver feature list.",
+  "review": "docs/evidence/invocation-obligation-decomposition-review.json#foreignStepProductionReview",
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "2dc7fa1c8d22f6147bad4eacae5115a5818a15dbbabcf1459ecb060e1639516e",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/reference_memberships.rs": "11c52dd66778f6f1c1c5acafba3f4f56089d0152577c0fd28372b27ac51aed83",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/reference_memberships/foreign_members_tests.rs": "0289359cb7f9a65792d8a8e175c7633849381226ecd36dc711b5383f2f54fe79",
+    "crates/sysml-kernel/tests/invocation_defaults.rs": "c48500826187c3e22b6174944af83242ac47dfd8fefb8c369d3a2c2da6f5b0ba",
+    "patches/manifest.json": "ebf5cc251091e87e09d1606e7b2f91e24053ccf0b6a3572dd19f02caf4a68420"
+  },
+  "focusedQualification": {
+    "private": {
+      "status": "pass",
+      "tests": 55,
+      "groups": {
+        "reference_memberships": 11,
+        "type_inputs": 44
+      },
+      "newTests": 4
+    },
+    "native": {
+      "status": "pass",
+      "tests": 1,
+      "selectedDefaultResults": 51,
+      "calls": 5,
+      "libraryModels": 94
+    },
+    "provenanceEvidence": {
+      "status": "pass",
+      "tests": 16
+    },
+    "contract": {
+      "status": "pass"
+    },
+    "logs": {
+      "target/trigger-validation/foreign-step-membership-focused.log": "557432ed0de459f8fd1d6abecd325c8e3db639664ee76538cffd3d0a963d4ad7",
+      "target/trigger-validation/foreign-step-default-results.log": "41ac30096beacb2523e78731e45fc61711b5fc871158ef9b44c291e41602bb8e",
+      "target/trigger-validation/foreign-step-membership-focused-2.log": "4f1ad03d80b013570135752a36fab3df86d0ccd69b8022b18f8d42e2c5f9a51f",
+      "target/trigger-validation/foreign-step-default-results-2.log": "7733e6f66f9719101a7999b80d3acc991d68b5cb90f034666aed724ffbd6f209",
+      "target/trigger-validation/foreign-step-provenance-evidence.log": "10d209d238470481ee4cc2b7b92a9e5bce7c5c3ffa17f8dac8b10ce27d244d85",
+      "target/trigger-validation/foreign-step-contract.log": "c3822b6faf57332f91e31820cf2a9d49c9e68126e47d24091e51e59e53a15591"
+    },
+    "initialFailure": "The initial private run failed three added tests and the native run failed its property check because the fixtures did not request Closure(include_implied=true). The checked API correctly returned Approximate. Corrected fixtures retain the same assertions; production property behavior was unchanged."
+  },
+  "fullQualification": {
+    "status": "pass",
+    "record": "target/trigger-validation/foreign-step-membership-qualification.json",
+    "vendorLog": "target/trigger-validation/foreign-step-membership-full-model.log",
+    "vendor": {
+      "status": "pass",
+      "tests": 949,
+      "libraryModels": 94,
+      "corpusFiles": 251,
+      "log": "target/trigger-validation/foreign-step-membership-full-model.log",
+      "logSha256": "7d3367a45afd0ffc388e688a9d7038651866de6ac0e5c866aaba8532c348c77c",
+      "kernelInputSha256": "7302a833bbe787c306b3f1c20e816e2b9d110974659821e356cd1afbe81f9d1b"
+    },
+    "workspace": {
+      "status": "pass",
+      "log": "target/trigger-validation/foreign-step-membership-qualification-workspace.log",
+      "logSha256": "fc5689e03f39e42cfcc6ce08cfef5dd3f95328a9b7ebfc6e3f69a75f8c61cb07",
+      "tests": 99
+    },
+    "clippy": {
+      "status": "pass",
+      "log": "target/trigger-validation/foreign-step-membership-qualification-clippy.log",
+      "logSha256": "591bc953d83720a7adbe27b0ea2b8f7ce2387bd192fe3984825a7a9766a6622a"
+    },
+    "wasm": {
+      "status": "pass",
+      "log": "target/trigger-validation/foreign-step-membership-qualification-wasm.log",
+      "logSha256": "1d4042ddef24fefe4e8cf7b3b6d970fced8e022e0f481f9adbf30c50ed8066d3"
+    },
+    "cli": {
+      "status": "pass",
+      "log": "target/trigger-validation/foreign-step-membership-qualification-cli.log",
+      "logSha256": "012b569ecd73860cb84505eb0a57395707c49b1b2d398548e0bbf610f7a7cac5"
+    },
+    "public": {
+      "status": "pass",
+      "log": "target/trigger-validation/foreign-step-membership-qualification-public.log",
+      "logSha256": "ee051d6cb319db15cb2a2e396418a29ef369718c278b4719c282b23662adf11d",
+      "tests": 39
+    },
+    "pipeline": {
+      "kernelInputSha256": "7302a833bbe787c306b3f1c20e816e2b9d110974659821e356cd1afbe81f9d1b",
+      "startedAt": "2026-10-18T13:18:53.149Z",
+      "status": "passed",
+      "phases": [
+        {
+          "name": "workspace",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--workspace"
+          ],
+          "startedAt": "2026-10-18T13:18:53.149Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:27:34.902Z"
+        },
+        {
+          "name": "clippy",
+          "args": [
+            "tools/rust.mjs",
+            "clippy",
+            "--locked",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "startedAt": "2026-10-18T13:27:34.904Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:27:37.773Z"
+        },
+        {
+          "name": "wasm",
+          "args": [
+            "tools/build-kernel.mjs"
+          ],
+          "startedAt": "2026-10-18T13:27:37.774Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:28:34.335Z"
+        },
+        {
+          "name": "cli",
+          "args": [
+            "tools/rust.mjs",
+            "build",
+            "--locked",
+            "--release",
+            "-p",
+            "sysml-cli"
+          ],
+          "startedAt": "2026-10-18T13:28:34.335Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:29:16.636Z"
+        },
+        {
+          "name": "public",
+          "args": [
+            "--experimental-strip-types",
+            "--test",
+            "--test-concurrency=1",
+            "tests/accept-actions.test.ts",
+            "tests/families.test.ts",
+            "tests/kernel.test.ts",
+            "tests/state-subactions.test.ts",
+            "tests/kernel-client.test.ts",
+            "tests/conformance-runner.test.mjs"
+          ],
+          "startedAt": "2026-10-18T13:29:16.636Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:32:41.319Z"
+        },
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-18T13:32:41.319Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:42:58.786Z"
+        },
+        {
+          "name": "requirements",
+          "args": [
+            "tools/requirements.mjs",
+            "--conformance",
+            "target/conformance/report.json"
+          ],
+          "startedAt": "2026-10-18T13:42:58.787Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:42:59.863Z"
+        }
+      ],
+      "finishedAt": "2026-10-18T13:43:00.729Z"
+    },
+    "conformance": {
+      "status": "pass",
+      "log": "target/trigger-validation/foreign-step-membership-qualification-conformance.log",
+      "logSha256": "d2733c1dc9c76b7bee11d7cc0e436d1062c47f1aa8b4f42f225931898ca15e22",
+      "report": "docs/evidence/foreign-step-membership-conformance-macos-arm64.json",
+      "reportSha256": "d447bd7832b87a22ffbaf49baa5a72124dc7edd54efab2034b0808c94b09325d",
+      "kernelInputSha256": "7302a833bbe787c306b3f1c20e816e2b9d110974659821e356cd1afbe81f9d1b",
+      "binarySha256": "4a944c22029329a15f0e4f857678d29d40c28f9689951ee9e8ed0c64c3a590c3"
+    },
+    "requirements": {
+      "status": "pass",
+      "log": "target/trigger-validation/foreign-step-membership-qualification-requirements.log",
+      "logSha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76",
+      "report": "docs/evidence/foreign-step-membership-requirements-macos-arm64.json",
+      "reportSha256": "6033982729e16a19931bb4fa26fec13f0e1bd219022be4a677060ae53f22c1dd",
+      "kernelInputSha256": "7302a833bbe787c306b3f1c20e816e2b9d110974659821e356cd1afbe81f9d1b",
+      "binarySha256": "4a944c22029329a15f0e4f857678d29d40c28f9689951ee9e8ed0c64c3a590c3"
+    }
+  },
+  "limitations": [
+    "This proves admitted engine-level membership/result queries, not complete Feature.type, BindingConnector validity or whole-expression validity.",
+    "The shared Step-family predicate still excludes invocations and actions. Broader contexts remain pending.",
+    "Post-edit tests prove refusal to reuse stale success; fresh-graph tests separately require intrinsic errors before WorkLimit. Full-library rebuilding cost after arbitrary edits remains open.",
+    "The existing raw default binding endpoints are provisional; contextual value/result chains and full featuring semantics remain separate open work.",
+    "Prepared-library replay is tested here in CanonicalV3. Other existing graph-format behavior is covered only by its corresponding existing regressions.",
+    "No facade schema expansion, release or installation is included."
+  ],
+  "next": "Review and repair FeatureValue typing applicability for directed and explicitly specialized declarations, using the recorded 17-query baseline and retaining the implicit-only result-specialization dependency.",
+  "coverageCountsChanged": false,
+  "qualifiedAt": "2026-10-18T13:44:15.863026+00:00"
+}

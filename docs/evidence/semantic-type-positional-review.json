@@ -1,0 +1,108 @@
+{
+  "recordedAt": "2026-10-18T14:06:20.482061+00:00",
+  "status": "The single-proof implementation is admitted to production after the corrected seven-test acceptance suite. Native and full vendor qualification are running; no family or package closes.",
+  "kernelInputSha256": "4b7f6d7435e1e283f295bc6a3e8186034f7c588359ad27fcd91bd4bedb1009b4",
+  "sources": {
+    "kermlXmiSha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "rules": [
+      {
+        "name": "checkFeatureParameterRedefinition",
+        "id": "Core-Features-Feature-checkFeatureParameterRedefinition",
+        "body": "owningType <> null and not owningFeatureMembership.     oclIsKindOf(ReturnParameterMembership) and (owningType.oclIsKindOf(Behavior) or  owningType.oclIsKindOf(Step) and     (owningType.oclIsKindOf(InvocationExpression) implies       not ownedRedefinition->exists(not isImplied))  implies     let i : Integer =         owningType.ownedFeature->select(direction <> null)->             reject(owningFeatureMembership.                 oclIsKindOf(ReturnParameterMembership))->             indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |             let ownedParameters : Sequence(Feature) =                 supertype.ownedFeature->select(direction <> null)->                      reject(owningFeatureMembership.                          oclIsKindOf(ReturnParameterMembership)) in             ownedParameters->size() >= i implies                 redefines(ownedParameters->at(i))",
+        "bodySha256": "27a1dc1ab5e6f5b947606a322260646f24c2fc6b54b91a789c93c06a8c0e6ac5"
+      },
+      {
+        "name": "checkFeatureEndRedefinition",
+        "id": "Core-Features-Feature-checkFeatureEndRedefinition",
+        "body": "isEnd and owningType <> null implies     let i : Integer =          owningType.ownedEndFeature->indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |              supertype.endFeature->size() >= i implies                 redefines(supertype.endFeature->at(i))",
+        "bodySha256": "f65a91995d17c139317c9caaa87caf348139f221d5622658b83e8b09f30e796a"
+      },
+      {
+        "name": "checkFeatureResultRedefinition",
+        "id": "Core-Features-Feature-checkFeatureResultRedefinition",
+        "body": "owningType <> null and (owningType.oclIsKindOf(Function) and     self = owningType.oclAsType(Function).result or  owningType.oclIsKindOf(Expression) and     self = owningType.oclAsType(Expression).result) implies     owningType.ownedSpecialization.general->         select(oclIsKindOf(Function) or oclIsKindOf(Expression))->         forAll(supertype |             redefines(                 if superType.oclIsKindOf(Function) then                     superType.oclAsType(Function).result                 else                     superType.oclAsType(Expression).result                 endif)",
+        "bodySha256": "2f5fdaba220ad7b327528b680664c529a019e43f33f760ae437fa9e0dd84b5a8"
+      },
+      {
+        "name": "deriveFeatureType",
+        "id": "Core-Features-Feature-deriveFeatureType",
+        "body": "type =      let types : OrderedSet(Types) = OrderedSet{self}->         -- Note: The closure operation automatically handles circular relationships.         closure(typingFeatures()).typing.type->asOrderedSet() in     types->reject(t1 | types->exist(t2 | t2 <> t1 and t2.specializes(t1)))",
+        "bodySha256": "f9aed3e0a17318af2486c8f0dddc17b08a5a699c550080534de82bff5140460c"
+      }
+    ]
+  },
+  "problem": "The Feature.type adapter requires elem_scope for every parameter before reading a stored positional table. All seven generated reference results in the ten-default invocation have neither their own scope nor a source-expression scope. Their current shared checked membership sequence nevertheless certifies each owned result and its positional target.",
+  "confirmedFacts": [
+    "Each generated result passes complete_generated_reference_result against current construction evidence.",
+    "All seven source and result scopes are absent. A proposed source-scope fallback cannot fix these cases and would be the wrong abstraction.",
+    "The effective stored positional table has no target for any of the seven generated result identities.",
+    "For each generated result, checked_type_memberships(source) proves owned membership and the exact canonical result target through plan_checked_positional.",
+    "Public type queries precede private tracing in each pair; the trace itself may warm evidence and is diagnostic, not a cold-query performance result.",
+    "The four valued-feature refusals arise at three Behavior-owned ordinary Features and at the inverse-related portionOf dependency. Additional self-reference chains encounter inverse/portion dependencies."
+  ],
+  "design": "Use the common current semantic membership/positional certificate for Feature.type, as Type.feature already does. Preserve exact owned identity and positive/negative shared family evidence, cumulative budgets, authored redefinitions and publication stamps. Do not fabricate lexical scopes or use merely cached stored positions as evidence that targets are absent.",
+  "acceptancePartitions": [
+    "Generated reference results preserve exact referent type identities and redundant-supertype reduction.",
+    "Authored parameter/return/end projections preserve their existing positional ordering, override and malformed-provider behavior.",
+    "Full-library default results for localClock and incomingTransferSort expose the newly available types; other semantic dependencies remain explicit.",
+    "Queries do not add rows or alter generated identities.",
+    "Raw/prepared/serialized library replay agrees.",
+    "Fresh malformed source ownership, flags, referents and metadata do not produce complete type sets.",
+    "Post-query edits and damaged generated memberships or targets cannot reuse successful evidence.",
+    "Exhausted cumulative budgets refuse; a fresh retry succeeds.",
+    "Unresolved dependencies remain incomplete, including cycles containing an unresolved type; closed circular typing closures preserve exact types according to deriveFeatureType. Whole-model cycle validity is separate."
+  ],
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs": "efce9da9fb376ebe16f060d64ccd2d1688546bb66e0129d619679fab618c600a",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "9927723307dd96d1c726cb0adb1e14443b9f96164d8547b48b4437e3864ab1dc",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "2dc7fa1c8d22f6147bad4eacae5115a5818a15dbbabcf1459ecb060e1639516e",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/checked.rs": "1d07245e2d1ad544fe7d2786e03257a119c6078aca5336edb1e86ffb01d5748b",
+    "target/trigger-validation/default-type-dependency-private-probe.rs": "81364933e16b5349fa468faf4315fe7617ae9ebc56706cd93bf0ebac3d28a515",
+    "target/trigger-validation/test-default-type-dependency-trace.mjs": "60705033d59c463b471a3d0e9570c6b09475b65352d35eabb1785abd5c79fe96",
+    "target/trigger-validation/default-type-dependency-trace.log": "9315242d299b44b52003f23d0517d8138bd3a44466bac6baca374725a41a4912"
+  },
+  "coverageCountsChanged": false,
+  "prototype": {
+    "status": "pass",
+    "productionChanged": false,
+    "observed": "Using the complete semantic membership reduction for positional types admits five of ten selected default-result types, up from three. localClock has the more specific UniversalClockLife result type; incomingTransferSort has IncomingTransferSort. The five remaining result queries reach MissingRequiredFamilies instead of UnsupportedProjection. All ten default-result selections remain complete.",
+    "cost": "The first prototype repeats membership verification already performed during applicability and increases query steps. The next staged change returns the certified positional targets from that existing proof, avoiding a second traversal.",
+    "inputs": {
+      "target/trigger-validation/semantic-type-positional-adapter-prototype.rs": "81961999329321f0336c036a3e1fd1125397ab9d70636a8faf9f52040711c3ab",
+      "target/trigger-validation/test-semantic-type-positional-prototype.mjs": "f49c802b1f48e23c79d43ec164a00f8445da1aa996b97ce0e0843859b96d8845",
+      "target/trigger-validation/semantic-type-positional-prototype.log": "1c0edfe5c86fb9a64ad6b78c0abe7ddc7e6fe16f5294381452411a33a0aa266e"
+    }
+  },
+  "stagedQualification": {
+    "status": "84 focused tests pass; an additional source-dependency test is under review.",
+    "tests": 84,
+    "groups": {
+      "featureTypeProjection": 34,
+      "typeRelations": 50
+    },
+    "newAcceptanceTests": 6,
+    "log": "target/trigger-validation/semantic-type-positional-stage.log",
+    "logSha256": "e53126bb1dc223b9d48c907d06b062a047de6e4dac2d93e0b3301d777a5f1a2f",
+    "additionalTest": "The initial unresolved/cyclic referent test expected all results to be incomplete and failed. A trace now separates unresolved names from closed circular typing closures, which deriveFeatureType explicitly handles. No production change or removed assertion is being represented as a passed acceptance test."
+  },
+  "circularTypingReview": {
+    "recordedAt": "2026-10-18T14:16:34.515803+00:00",
+    "finding": "The failed expectation was the complete circular Subsetting case, not the unresolved type. Both the frozen production baseline and the staged semantic adapter reject unresolved typing as InvalidRelationship. The baseline computes Base::Anything for a closed untyped subsetting cycle and ScalarValues::Integer for the same cycle with Integer typing. deriveFeatureType explicitly says its closure handles circular relationships. This property computation does not certify the validity of the whole model.",
+    "correction": "Replace blanket cycle refusal with separate assertions: unresolved simple/cyclic dependencies remain incomplete; closed untyped/Integer cycles preserve their exact type. No implementation guard is changed for this correction.",
+    "inputs": {
+      "target/trigger-validation/semantic-type-positional-negative.log": "bb97794c555c915fedebaf70ba9d135d109c862c0ba7d663bfe1b350c551912a",
+      "target/trigger-validation/semantic-type-positional-negative-trace.log": "3b429f39fa6d2c5f02687d0834d60ed42b67e0e86a655874e9e32a515fd63919",
+      "target/trigger-validation/unresolved-typing-public-probe.rs": "4642ef4b32b452ba53e2338f0d7cabac1a93a82d388f06342d40fdb6fd5dbcd4",
+      "target/trigger-validation/unresolved-typing-public-probe.log": "cc7cea6f88feee6e9abc8ca11375500a621f76eada7de89c724390064416e396"
+    }
+  },
+  "acceptanceQualification": {
+    "status": "pass",
+    "tests": 7,
+    "log": "target/trigger-validation/semantic-type-positional-acceptance.log",
+    "logSha256": "78387a4d918d773af631faf3081ac4f7005bef945a5fc2c35b8b67b33017cc61",
+    "overlap": "Six of these tests are already included in the earlier 84-test staged run. The seventh covers unresolved dependencies versus closed circular type closures."
+  },
+  "productionKernelInputSha256": "85a9e3467da1025df18e4a1368f03d1350ac666429c4ca582c27f898704d3a15",
+  "productionReview": "semantic-type-positional-progress-macos-arm64.json"
+}

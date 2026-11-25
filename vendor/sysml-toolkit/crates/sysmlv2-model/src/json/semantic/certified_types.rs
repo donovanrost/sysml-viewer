@@ -43,6 +43,9 @@ pub fn conditional_property_capability(declaration: &str) -> Option<ConditionalP
         "Core-Types-Type-output" => "Core-Types-Type-output",
         "Core-Types-Type-directedFeature" => "Core-Types-Type-directedFeature",
         "Core-Types-Type-endFeature" => "Core-Types-Type-endFeature",
+        "Kernel-Associations-Association-associationEnd" => {
+            "Kernel-Associations-Association-associationEnd"
+        }
         "Kernel-Functions-Function-result" => "Kernel-Functions-Function-result",
         "Kernel-Functions-Expression-result" => "Kernel-Functions-Expression-result",
         "Kernel-Expressions-InstantiationExpression-instantiatedType" => {
@@ -233,7 +236,9 @@ impl CheckedRow {
             "Core-Types-Type-input" => &p.inputs,
             "Core-Types-Type-output" => &p.outputs,
             "Core-Types-Type-directedFeature" => &p.directed_features,
-            "Core-Types-Type-endFeature" => &p.end_features,
+            "Core-Types-Type-endFeature" | "Kernel-Associations-Association-associationEnd" => {
+                &p.end_features
+            }
             "Core-Types-Type-feature" => &p.features,
             "Core-Types-Type-featureMembership" => &p.feature_memberships,
             "Core-Types-Type-inheritedFeature" => &p.inherited_features,
@@ -377,6 +382,11 @@ impl CheckedRow {
             return Some(self.read_namespace(r, e, effective.id));
         }
         conditional_property_capability(effective.id)?;
+        if effective.id == "Kernel-Associations-Association-associationEnd"
+            && !matches!(r.element_type(e), "Association" | "AssociationStructure")
+        {
+            return None;
+        }
         // New plain-Type capabilities do not change the established error
         // contract for unsupported subclasses. Type.input predates this domain
         // expansion and retains its existing typed qualification.
@@ -391,12 +401,16 @@ impl CheckedRow {
         {
             return None;
         }
-        if matches!(
-            effective.id,
-            "Kernel-Functions-Expression-result"
-                | "Kernel-Expressions-InstantiationExpression-instantiatedType"
-        ) && (r.element_type(e) != "ConstructorExpression"
-            || r.b.graph_format != crate::model::GraphFormat::CanonicalV3)
+        if effective.id == "Kernel-Expressions-InstantiationExpression-instantiatedType"
+            && (r.element_type(e) != "ConstructorExpression"
+                || r.b.graph_format != crate::model::GraphFormat::CanonicalV3)
+        {
+            return None;
+        }
+        if effective.id == "Kernel-Functions-Expression-result"
+            && !(crate::json::step_context::supports_membership_domain(r.element_type(e))
+                || (r.element_type(e) == "ConstructorExpression"
+                    && r.b.graph_format == crate::model::GraphFormat::CanonicalV3))
         {
             return None;
         }
@@ -424,11 +438,10 @@ impl CheckedRow {
                 .map(DerivedValue::Bool)
                 .map_err(PropertyError::IncompleteUsageVariability);
         }
-        if matches!(
-            effective.id,
-            "Kernel-Functions-Expression-result"
-                | "Kernel-Expressions-InstantiationExpression-instantiatedType"
-        ) {
+        if effective.id == "Kernel-Expressions-InstantiationExpression-instantiatedType"
+            || (effective.id == "Kernel-Functions-Expression-result"
+                && r.element_type(e) == "ConstructorExpression")
+        {
             let report = r.constructor_selection_report_with_budget(e, self.steps);
             self.steps = report.steps.saturating_add(12);
             if self.steps > crate::eval::MAX_STEPS {
@@ -448,35 +461,35 @@ impl CheckedRow {
             validate_references(r, requested, &[selected])?;
             return Ok(DerivedValue::Reference(Reference::Element(selected)));
         }
-        if effective.id == "Kernel-Functions-Function-result" {
-            if r.element_type(e) != "Function" {
+        if matches!(
+            effective.id,
+            "Kernel-Functions-Function-result" | "Kernel-Functions-Expression-result"
+        ) {
+            let function = effective.id == "Kernel-Functions-Function-result";
+            if function && !matches!(r.element_type(e), "Function" | "Predicate") {
                 return Err(PropertyError::IncompleteFunctionResult(
                     crate::json::TypeInputIssue::UnsupportedConfiguration,
                 ));
             }
-            self.ensure_features(r, e)
-                .map_err(PropertyError::IncompleteFunctionResult)?;
-            let features = &self
+            let failure: fn(crate::json::TypeInputIssue) -> PropertyError = if function {
+                PropertyError::IncompleteFunctionResult
+            } else {
+                PropertyError::IncompleteExpressionResult
+            };
+            self.ensure_features(r, e).map_err(failure)?;
+            let sequence = &self
                 .features
                 .as_ref()
                 .expect("complete current certificate")
-                .projections
-                .features;
-            self.steps = self.steps.saturating_add(features.len()).saturating_add(12);
+                .projections;
+            let result =
+                r.b.select_return_parameter(sequence, &mut self.steps)
+                    .map_err(failure)?;
+            self.steps = self.steps.saturating_add(12);
             if self.steps > crate::eval::MAX_STEPS {
-                return Err(PropertyError::IncompleteFunctionResult(
-                    crate::json::TypeInputIssue::WorkLimit,
-                ));
+                return Err(failure(crate::json::TypeInputIssue::WorkLimit));
             }
-            let result = features
-                .iter()
-                .copied()
-                .find(|f| {
-                    r.b.elements[f.0].owning_relationship.is_some_and(|m| {
-                        crate::metaclass::conforms(r.b.elements[m].ty, "ReturnParameterMembership")
-                    })
-                })
-                .ok_or(PropertyError::MissingRequiredValue)?;
+            let result = result.ok_or(PropertyError::MissingRequiredValue)?;
             validate_references(r, effective, &[result])?;
             validate_references(r, requested, &[result])?;
             return Ok(DerivedValue::Reference(Reference::Element(result)));
@@ -554,7 +567,9 @@ impl CheckedRow {
                 handles.into_iter().map(Reference::Element).collect(),
             ));
         }
-        if effective.id.starts_with("Core-Types-Type-") {
+        if effective.id.starts_with("Core-Types-Type-")
+            || effective.id == "Kernel-Associations-Association-associationEnd"
+        {
             let value = self.read_features(r, e, effective.id)?;
             if let DerivedValue::References(refs) = &value {
                 let handles: Vec<_> = refs

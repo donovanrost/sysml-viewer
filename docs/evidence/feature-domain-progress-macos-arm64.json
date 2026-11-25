@@ -1,0 +1,123 @@
+{
+  "generatedAt": "2026-10-18T04:49:49.719657+00:00",
+  "platform": "macOS-15.8-arm64-arm-64bit",
+  "status": "worktree dependency progress; not release qualification or trigger-rule closure",
+  "baselineCommit": "4ee0776",
+  "scope": "Checked Type.feature domains for ordinary structural assertion members, AttributeUsage roots and authored Kernel behavior/function parameter and return Features. The shared complete membership, required-base and positional-redefinition authorities remain the only providers. This does not certify whole-model validity.",
+  "kernelInputSha256": "f8a4d8deaf04b7817bcf98650e8e0093cfc612ce9b11d53c9534f6b8f5c1ce96",
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_features.rs": "2b097c65fc28d8b3687f69ce0c9bb50b038d2b084c9846c1308a87b6fb8e08aa",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "91fe6f70ea99ca070778551ab301ecd4d78f1220c2a38ceb19941c76497aca77",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "7d1764729545e896fa0d907a14c9f13278c16e19e7b1b2994b503e856b556b39",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs": "ba8915e0b09ef3bd462578527ecfd18bc51c412e5dd37a500c53c522ac5411ff",
+    "crates/sysml-kernel/tests/duration_feature_certificates.rs": "f1b07fbc132136ca9f3d4c843a55e0aa7708305bc0c2f3cfa5ff506011e4ba12",
+    "crates/sysml-kernel/tests/trigger_result_features.rs": "e7b8ee2a54f7739dfc3e6edaeec432fca280ba8bee0f56c68ac82f43fe2fad98",
+    "tests/conformance/fixtures/trigger-arguments-positive.sysml": "c4cb205b98c6128e9fca1fead8c84c6edffc41bfba9e17d7a0f9727d37db1a1f",
+    "tools/test-vendor.mjs": "0ec8cefc325c92a7cc4129ca0ad1cdfd5fc3446ece799f3ce119ca78bb181c8b",
+    "patches/manifest.json": "c41a990ef7e415eaac5db2604431811859dee03f5ddf04615ba79797cd28ad42",
+    "patches/0002-package-attribute-featuring.patch": "d15a9ca2b9b556ae0ab6f250390f053bfe50fd227bedc98ad86122517633af4d",
+    "patches/0019-preserve-distinct-view-renderings.patch": "860fd2ba217226a8b526c2238ff3819433774c748fe7ea10433610b6fc4919d4",
+    "patches/0027-generated-result-inheritance.patch": "e6a98b8c2bbe8d073b9983f8d6dd1222aca5a71bc02fa59641b61b53a63a4e7c",
+    "patches/0028-partial-result-heritage.patch": "bd0adec56613f6d52960f0623bc8d02a795b6b172f03b86894ff4e51d6fe1d43",
+    "patches/0029-assertion-member-evidence.patch": "6e78e10116c7038600c5fa60e2ca0f96d16924d86b3e46aac5d6f97bc65d0fd1",
+    "patches/0030-attribute-feature-domains.patch": "6f70af7584915864e6f0a4cd80ea6d2cd3c658441e5e25c0cbda8d6559515d7b"
+  },
+  "specificationDependencies": [
+    {
+      "source": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+      "anchors": [
+        "Feature::checkFeatureSpecialization",
+        "Feature::checkFeatureParameterRedefinition",
+        "Feature::checkFeatureResultRedefinition",
+        "ReturnParameterMembership::validateReturnParameterMembershipOwningType"
+      ],
+      "boundary": "The newly admitted ordinary authored roles use the existing shared signature proof and required positional targets. No complete review of every inherited Feature obligation or every positional construction context is claimed."
+    },
+    {
+      "source": "target/standards/sysml.xmi",
+      "sha256": "caa65d54f56798bf7582d173f7567e1eea37a49c45984f8bd7df145011cf8c6f",
+      "anchors": [
+        "AssertConstraintUsage",
+        "AttributeUsage::checkAttributeUsageSpecialization",
+        "TriggerInvocationExpression::validateTriggerInvocationExpressionAfterArgument"
+      ],
+      "boundary": "Assertion bodies and optional reference subsetting do not introduce an outer positional role in the admitted structural-owner context. Duration validation consumes feature-domain evidence, but its validator remains unchanged."
+    }
+  ],
+  "observations": [
+    "The complete standard library contains AssertConstraintUsage members in TensorQuantityValue. Their omission from ordinary membership admission previously prevented checked duration-definition feature queries.",
+    "CanonicalV3 certifies custom, inherited custom and standard duration definitions and usages with exact mRef identities. Evaluation.result yields exactly Base::Anything::self and Base::things::that.",
+    "LegacyV2 definition queries remain complete. Its unmodified duration usages lack the required Base::dataValues heritage and correctly remain IncompleteProvider. Adding that explicit heritage makes the same usage queries complete. Legacy construction recipes are unchanged.",
+    "Five new private tests cover assertion inheritance/redefinition, six ownership/role mutations, attribute variation and missing/value dependencies, authored parameter/result heritage, budget retry, missing/cyclic owning signatures and four signature mutations.",
+    "Directed package and structural Feature root exclusions remain unchanged; the existing recursive namespace regression verifies that the new parameter path does not widen those contexts."
+  ],
+  "verification": [
+    {
+      "command": [
+        "node",
+        "tools/test-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "passed": 356,
+      "log": "target/trigger-validation/feature-domains-vendor.log",
+      "logSha256": "aaa608c6317dab4b1c55fbe3ba6dab58f8d2d50094af5928932b5bdbaea09e73"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "test",
+        "--locked",
+        "--release",
+        "-p",
+        "sysml-kernel",
+        "--test",
+        "duration_feature_certificates",
+        "--test",
+        "trigger_result_features"
+      ],
+      "exitCode": 0,
+      "passed": 2,
+      "log": "target/trigger-validation/feature-domains-native.log",
+      "logSha256": "623ad21354af4cee3f649356cfe459b30fb9d6d1fdc35c264e41f04659a033ba"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "test",
+        "--locked",
+        "--release",
+        "--workspace"
+      ],
+      "exitCode": 0,
+      "passed": 94,
+      "log": "target/trigger-validation/feature-domains-workspace.log",
+      "logSha256": "a2246bb80e0e5042882e6d5540f81bd5535f4e51d5e81a8ad679b718279f193b"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "log": "target/trigger-validation/feature-domains-clippy.log",
+      "logSha256": "86022c714b298d1e20a494841b0623a88ed230202da8b8a0ead544842743446c"
+    }
+  ],
+  "limitations": [
+    "Generated FeatureReferenceExpression result roots still need complete Type.feature certification. Their earlier compatibility projection is not a substitute for a complete negative existential proof.",
+    "Trigger argument ordering, result/wrapper checks, canonical validation rule identifiers and all three validators remain open. No named-rule assessment or family closure count is advanced.",
+    "The installed application and qualified engine remain KERNEL-023. Current conformance matrix, native/WASM parity, benchmarks and desktop release qualification have not been rerun for this worktree.",
+    "Windows and Linux were not executed."
+  ]
+}

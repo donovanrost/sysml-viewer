@@ -1,0 +1,113 @@
+{
+  "generatedAt": "2026-10-18T07:02:21.210259+00:00",
+  "platform": "macOS-15.8-arm64-arm-64bit",
+  "status": "verified worktree dependency progress; not release qualification or whole Step/trigger conformance",
+  "baselineCommit": "4ee0776",
+  "scope": "Construct the ownedPerformances specialization for composite Steps whose Feature owner has a complete effective type set containing a Structure, when that predicate is independent of every specialization writer in the atomic transaction.",
+  "kernelInputSha256": "3d1eb01ad8d3c042e65cc250a39a00ba2d005f11a0aa2f22fd3893ca6d0a31f8",
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/step_context.rs": "3754019e520db06a595374aef7d997ca7d854d7ceeb85e23ea7ddcae431395a3",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "4186abad0f6018420cfbd8bfe5285fca94c6706d3d5719e2946087aeb157b32f",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs": "8e1a88d90e0a962c84057e1a61f005083384e4a06bee476d5e02c871a828c4bf",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs": "efce9da9fb376ebe16f060d64ccd2d1688546bb66e0129d619679fab618c600a",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs": "d838425918a9453f6783a2de658c679f55fb0d02a72dc3d264683dd7b11813b6",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs": "f355ee8231872966024ac2bc05823be0fca3d4f9c8b83f2eb4f276aff19c9106",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "8b105bad00fa9e377222526b17ed8694424ac6f03e592ef8304aef788500c1ec",
+    "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Objects.kerml": "9057e2781fe8793d5108973c0647318caa26310be6231c6380152a4cbc894c25",
+    "crates/sysml-kernel/tests/step_contexts.rs": "10eb00459ad8035722e400c044ac79e1ae3fd733b840cfebd72bb6680fb8de17",
+    "tools/test-vendor.mjs": "71f99ef590112c91c711d61b7aeaa823ab641cd18ea9e6c4ba58fab2c210a230",
+    "patches/manifest.json": "efb973fbba6702a887f725f43f85c934fd70cbbe0f163afcec7def5c396ce492",
+    "patches/0002-package-attribute-featuring.patch": "f4a7ce19a8ffd1472be7f77be9c3778f53f9d75317c950cf4d9b3e12224e9cb4",
+    "patches/0003-checked-conditional-bindings.patch": "8d3ca1ea49c2f5bb6e962e599ff6a2ce4334e9600385aba4eb187e017b939ef5",
+    "patches/0004-designated-operator-cache.patch": "74933e6f3ea7da3ed508b40a51a4b8a3d93e0d724c6aeaba52f9d25666d9aed5",
+    "patches/0008-isolate-unresolved-specializations.patch": "36e7f00ac84c87730a3c99dc9a75cb3174fbdd63b9cba99f16d4b65ffa79ab75",
+    "patches/0010-reuse-static-prefix.patch": "ea444fe5ec6cf8c23492e0f4d3c37dbc359a6f994f96ff2a3f03ffd39ea9a4db",
+    "patches/0011-atomic-dynamic-staging.patch": "d72a5f7bb9bafdc274c9eeb0aa742b9358bdd49a9a44ab35fb333b66f7d4d853",
+    "patches/0019-preserve-distinct-view-renderings.patch": "12180450a54c848e90e108e5e0c132c704dd3c95321533c4c4d6ed65aec53dcd",
+    "patches/0027-generated-result-inheritance.patch": "b55675b3e6600f2df5adf33eff705fe93cdbab378a5c1f6f3960fa898a078be3",
+    "patches/0028-partial-result-heritage.patch": "bd0adec56613f6d52960f0623bc8d02a795b6b172f03b86894ff4e51d6fe1d43",
+    "patches/0029-assertion-member-evidence.patch": "485faf02b1325e8b262f6a303c0a776439320f7499aa23badccedfbbfcfcc248",
+    "patches/0030-attribute-feature-domains.patch": "687168fb98ff8b2692a24212b28f021432b9c42069fcd02826c4dcc2ef886f1f",
+    "patches/0031-generated-result-domain-witnesses.patch": "080b3ce6a9710cd454f80da0e592c0302e2dc12eca7107516157403aecfb6fcc",
+    "patches/0032-predicate-result-properties.patch": "4474987eba645ff03e44b88c0b284d5ed7edc569674a44d179b55b27036b0ea2",
+    "patches/0034-contextual-step-ownership.patch": "940c076835cd97f4a3c36686e779ba363c37ded1ea3c3670cd8fef7831d74dd6",
+    "patches/0035-stable-step-type-projection.patch": "80ffdb19bdc343a7a52683b9fd6ffae29ee3119719783cebf71a48988c050ccf",
+    "patches/0036-stable-step-type-adapter.patch": "d81d13c6714f0219d15f460b2ddc180dff1fa7715b389b0f6c8b065bd390ae62"
+  },
+  "nativeTestBinaries": {
+    "target/release/deps/step_contexts-1f9a6ad347f7125e": "4a2d0376b97213e0b1b73551c215f4b527b265e9100dc5112b3ebac09b678268"
+  },
+  "sourceReview": "step-context-construction-review.json",
+  "sourceUnit": "KERML-XMI-Kernel-Behaviors-Step-checkStepOwnedPerformanceSpecialization",
+  "sourceInterpretation": "Retain the previously recorded plural-library interpretation. The pinned singular normative name remains an open discrepancy, not an adopted erratum.",
+  "observations": [
+    "Direct and inherited Structure typing now construct the required path. A more specific Classifier that prunes the Structure from Feature.type does not enable construction; written typing alone is not used as the condition.",
+    "The ordinary complete Feature.type reducer is reused. Its planning adapter excludes all prospective invocation, composite Step, parameter and end specialization writers from typing inputs and specialization comparisons. Missing projections are unknown, never false.",
+    "Both true and false applicability facts trigger a final audit: every new dynamic or positional specialization source must belong to the same excluded writer set. Unexpected writes decline the transaction.",
+    "Typed requirements enter the existing minimizer, positional fixed point, dependency audit, identity reservation and atomic publisher. No provisional Builder graph or separate inheritance solver is exposed.",
+    "Five private tests cover both graph formats with required explicit heritage, inherited typing, pruning, noncomposite children, identity stability, prepared-library replay, missing/wrong-kind/duplicate library roles, damaged membership, changed flags/typing, unresolved types, finite subsetting cycles, future typing/comparison writers and exhausted-budget retry.",
+    "The native integration loads all 94 bundled library files and checks ten source contexts with all four generic/contextual paths. It also checks exact effective owner types for direct, inherited and pruned cases.",
+    "The unchanged 10,000-declaration cold query and 10,000,000-step allowance pass. Existing trigger-result, generated-result, arithmetic, invocation and positional tests remain in the executed suites."
+  ],
+  "review": {
+    "method": "Manual source review by the implementing agent plus executed counterexample partitions; no independent second reviewer is claimed.",
+    "checkedInvariants": [
+      "Forward membership, child backlink, owning Type and complete inverse membership domain agree before an owner predicate is used.",
+      "Complete projections use the same source graph, typing closure, specialization pruning and cumulative budget as public checked type queries.",
+      "A positive specialization witness can remain positive when unrelated edges are added; a negative witness cannot traverse a prospective writer. Reflexive identity does not depend on new bases.",
+      "The immutable static prefix is retained; all new dynamic and positional specialization rows are included in the final tail audit.",
+      "The adjacent result/default/accept families add specialization edges on newly generated sources. Those future sources cannot enter a complete current authored-owner typing proof. Constructor result sources are parameters and are excluded by the writer set.",
+      "Generated/reference/operator-specific feature type domains remain outside the planning adapter unless their ordinary shared provider is complete; no compatibility fallback is used."
+    ]
+  },
+  "verification": [
+    {
+      "command": [
+        "node",
+        "tools/test-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "passed": 517,
+      "log": "target/trigger-validation/typed-step-vendor-initial.log",
+      "logSha256": "bdbee461151680ed917eae5cefadf510624da70806462df4fbdd5439d490b621"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "test",
+        "--locked",
+        "--release",
+        "--workspace"
+      ],
+      "exitCode": 0,
+      "passed": 95,
+      "log": "target/trigger-validation/typed-step-workspace-initial.log",
+      "logSha256": "29e142e442ddf6ba6d9b2bc4f079a24b802c055449bfaadb796039f506d406aa"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "log": "target/trigger-validation/typed-step-clippy-initial.log",
+      "logSha256": "9b3110d196de02a556a515c348cc32c7218bdf30411dde1efa2764b1731b3be3"
+    }
+  ],
+  "remaining": [
+    "Coupled owner predicates that read prospective specialization writers require a mutually stable candidate-graph proof. They remain incomplete; this increment does not close all Step construction configurations.",
+    "General checked Expression.result selection, complete trigger argument validation and inherited/default receiver binding obligations remain open.",
+    "The current public snapshot remains a declaration projection, not a full metamodel CRUD interface.",
+    "Conformance matrix, native/WASM parity, benchmarks and desktop release qualification were not repeated. The installed application remains KERNEL-023; Windows/Linux execution remains pending.",
+    "All fifteen completion work packages remain open. Test counts are not a conformance denominator."
+  ]
+}

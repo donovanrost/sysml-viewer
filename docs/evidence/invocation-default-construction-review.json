@@ -1,0 +1,379 @@
+{
+  "reviewedAt": "2026-10-18T11:34:44.426588+00:00",
+  "status": "The identity-reuse repair passes 945 vendor model tests, 99 native tests, all 55 public/provenance/evidence Node tests, Clippy, native/WASM builds, contract, 133 conformance cases and the source-matched requirements report. See eligibility-identity-progress-macos-arm64.json for the exact source and runtime evidence. Default endpoint, contextual membership, directed valuation and connector semantics remain open; no package closes.",
+  "sources": [
+    {
+      "path": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+      "anchors": [
+        "Kernel-Expressions-InvocationExpression-checkInvocationExpressionDefaultValueBindingConnector",
+        "Kernel-Expressions-ConstructorExpression-checkConstructorExpressionResultDefaultValueBindingConnector"
+      ]
+    },
+    {
+      "path": "target/standards/kerml.txt",
+      "section": "8.4.4.11 Feature Values Semantics",
+      "printedPages": [
+        274,
+        275
+      ]
+    }
+  ],
+  "baseline": {
+    "evidence": "docs/evidence/lookup-default-progress-macos-arm64.json",
+    "vendorModelTests": 930,
+    "nativeTests": 98,
+    "nodeTests": 55,
+    "conformanceCases": 133,
+    "qualificationAppliesTo": "Historical lookup/effective-default baseline, not the new construction changes."
+  },
+  "implemented": [
+    "One shared effective-default resolver, with exact FeatureValue identity, owned override, complete absence, and explicit incomplete dependency outcomes.",
+    "Actual checked invocation argument mappings determine which callee feature defaults are omitted; noninput features remain eligible.",
+    "Constructors and invocations share collision admission, deterministic connector identities, binary endpoint construction and verification. Repeated effective valuation identity contributes one connector.",
+    "Invocation defaults are selected after accepted positional publication, under the same exclusive construction guard. Whole-owner collisions decline that owner; work exhaustion declines the entire staged default append.",
+    "Fresh anonymous OwningMemberships belong to invocations; both connector ends have exact ReferenceSubsetting targets and local TypeFeaturing relationships.",
+    "The append changes no existing row, adds no FeatureMembership to an existing Type, creates no name/scope/import/metadata contributions and has no existing-source specialization write. These boundaries preserve existing callee and positional recipes. A new epoch revokes query evidence; structural, lookup and typing caches are rebuilt.",
+    "Completed effective-default selections are reused only inside a stamp-bound batch. Same-length edits invalidate them. Incomplete selections are never memoized as absence.",
+    "Accepted dynamic plans retain checked designated callee identities. Type feature/Step readers use an already current effective positional table instead of recomputing static positions.",
+    "Static prefix recertification can clone the completed static positional table only when the exact authority object predates preparation and remains current. Rebuilt external authorities, source mutations, dynamic tables and in-progress planning cannot justify reuse."
+  ],
+  "acceptancePartitions": [
+    "supplied/omitted/named/positional arguments",
+    "inherited and owned defaults",
+    "same-value distinct identities versus shared valuation identity",
+    "private and return feature defaults",
+    "unresolved default expressions are selected without execution",
+    "all 94 pinned library files and all three trigger forms",
+    "binary owner/endpoints/featuring through real model rows",
+    "whole-call collision isolation",
+    "same-length endpoint mutation and stale evidence",
+    "work-limit refusal and retry",
+    "raw/cache/prepared/serialized-prepared equivalence",
+    "repeated demands preserve identities",
+    "cold positional proof reuse",
+    "cached versus freshly recomputed static positional rows, bases and specialization recipes, including incomplete providers and same-length source edits",
+    "replacement of external-name planning authority forces fresh positional work"
+  ],
+  "implementation": [
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/effective_defaults.rs",
+      "sha256": "4ae1548ba4021e28a83c5242dfd891fdeabdc2e1f2384d581aa430ae5a7a1bb4"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_defaults.rs",
+      "sha256": "4c116f415d30f8d4c91ecc41fa79063d18b03985e0b0c9cb747790075aac3e16"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/owned_results.rs",
+      "sha256": "9494a14f87e2730319d3ec5e10069c113460510cab69d658e2d4327fa05ae256"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/local_featuring.rs",
+      "sha256": "f61ea53767433f012aaa4f9dec998df9b8ff52b6dc25250c496eb2bce917d493"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs",
+      "sha256": "bae2c4214d5ecd0111cb3473d3e5a7865a468f84a35cd66957b776b78416e3d7"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
+      "sha256": "1e51bd7167a6057a5946abf723c1633b5bf9d4b7220882bab8164f827666213e"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
+      "sha256": "682dfa8012efbcbd8c5e7afaeb7e0c9f2ed8e88cff3b76e90de7680ba27bd02c"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_batch.rs",
+      "sha256": "fb286a5ba37b55de65d7be9f49e2a5b56fdbca3a2239a4669850e06ca5231c99"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs",
+      "sha256": "7b2a9243fe54633a5bace1c2fabe7e486bd98d27ac663ccc530c0131d7166297"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs",
+      "sha256": "ed8001eeaaca08c939d731779a71f4a57c8212a783252343b5ab392baf1310f4"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
+      "sha256": "b766b71536f916ecab37fc70d6253b0a192965e085262a7bc1eaddb46f8c2762"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
+      "sha256": "f05f8577d58d5be76882c041733aa81395fe34d166ff4b0a69fa17c54f435ef6"
+    }
+  ],
+  "regressions": [
+    {
+      "log": {
+        "path": "target/trigger-validation/invocation-default-construction-focused.log",
+        "sha256": "49f8f5ef1494b15cf57ae8221721accce9a54a868c2eb2b6803c536bf4d94a2d"
+      },
+      "reason": "Provenance guard rejected a newly modified leaf until its patch mapping was registered."
+    },
+    {
+      "log": {
+        "path": "target/trigger-validation/invocation-default-construction-focused-2.log",
+        "sha256": "576bb96736e15a83d9e7dcdab951594801daf843799cca2333f6b1da368c3795"
+      },
+      "reason": "Compilation required mutable Builder for the existing UUID index accessor."
+    },
+    {
+      "log": {
+        "path": "target/trigger-validation/invocation-default-construction-debug.log",
+        "sha256": "3e941055e63a74c168203146e47c0138196d48fb222c1b9e8951fbb754a296ae"
+      },
+      "reason": "Initial selection stamp preceded lazy positional initialization; full-library selection exceeded the unchanged work limit."
+    },
+    {
+      "log": {
+        "path": "target/trigger-validation/invocation-default-construction-debug-2.log",
+        "sha256": "48997a37c452b371279d0e1b6d2e0c928edaccb81faddc069bfd4b233fc781bb"
+      },
+      "reason": "Small-model publication fixed. Collision fixture used reserved first as a name and lacked a parse assertion; corrected to alpha/beta with explicit parse checks. Library selection still exceeded budget."
+    },
+    {
+      "log": {
+        "path": "target/trigger-validation/invocation-default-construction-debug-4.log",
+        "sha256": "afa1b27035e1bcb19331e7cca30744f684f27213288b7a142d55cf46833d8b3a"
+      },
+      "reason": "Nine focused tests passed; full-library staging still reached 10,032,923 steps. Current repair removes a redundant static positional walk."
+    },
+    {
+      "log": {
+        "path": "target/trigger-validation/invocation-default-full-model.log",
+        "sha256": "0b217c7062676a0ebf628bf6ca84619a783b959cd9efaf0d9939471ec79e9a68"
+      },
+      "reason": "Initial full suite: 940 passed, one post-edit trigger query exhausted its work limit during repeated static positional preparation."
+    },
+    {
+      "log": {
+        "path": "target/trigger-validation/invocation-default-workspace.log",
+        "sha256": "a49995b3e88306c453c524b9b78964de97bbb5da6e8fbdc4cd8f35145a52487d"
+      },
+      "reason": "Initial workspace run stopped at the full-library cold cardinality work-limit regression."
+    },
+    {
+      "log": {
+        "path": "target/trigger-validation/invocation-default-static-reuse.log",
+        "sha256": "c301794197a21a7514b0a90dbed38e42f6423563c410dfd8122f911412b4e109"
+      },
+      "reason": "New differential fixture correctly found nonempty positional targets, but asserted the wrong incomplete set. Unresolved source specializations belong to positional.incomplete; the corrected assertion preserves the incomplete-provider partition."
+    },
+    {
+      "log": {
+        "path": "target/trigger-validation/invocation-default-qualification-public.log",
+        "sha256": "a4ed9664a0454795c8cdcf45a61717302c01eabbc70a21b1bf7d527c5556d62f"
+      },
+      "reason": "Combined native/WASM API corpus reports rationalPresent as unknown(workLimit) instead of exact 7. The parity comparison passes; the semantic result regression must be repaired without increasing limits or reducing the workspace."
+    }
+  ],
+  "open": [
+    "Reconcile default connector endpoints and owned-member roles across metamodel prose, Table 11 and Feature Values Semantics before closing the default-binding obligation.",
+    "Run uninstrumented focused, complete vendor and native suites on the exact final source.",
+    "Complete Clippy, native/WASM parity, provenance, contract, requirements and conformance qualification.",
+    "Review complete InvocationExpression result/member certificates and bind them to these constructed default relationships.",
+    "Complete connector ancestry/featuring, general non-Function or Feature-typed invocation, metadata, initial/default value semantics and every other open dependency.",
+    "All C01-C15 completion packages remain open."
+  ],
+  "coverage": {
+    "boundedAssessments": 77,
+    "conformanceCases": 133,
+    "directNamedValidationAssessments": 16,
+    "namedValidationInventory": 180,
+    "closedCompletionPackages": 0,
+    "totalCompletionPackages": 15
+  },
+  "implementationEvidenceRefresh": {
+    "review": "Removing only the new effective_defaults/invocation_defaults module declarations and public exports reproduces the prior reviewed json.rs hash exactly. All six anchored implementations remain byte-identical. Their broader dependency changes are under current qualification; bounded assessment wording is unchanged.",
+    "previousSha256": "f4f42a2c887ecb810c93eba942dc7c7a100a0374cab156856280f13174596eef",
+    "currentSha256": "e248ef8f7d2bff3e457895b0067c2b455c68925c1cd891cd767e08abe406bff2",
+    "anchors": [
+      "graph",
+      "resolution",
+      "connector-ends",
+      "state-body-query",
+      "transition-construction",
+      "accept-construction"
+    ],
+    "assessmentsChanged": false,
+    "additionalAnchors": [
+      {
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
+        "anchors": [
+          "checked-featuring"
+        ],
+        "previousSha256": "737200f4389418424721fde76b7b8862d0c5c04021bc914aef87d4b8c37c0478",
+        "currentSha256": "b766b71536f916ecab37fc70d6253b0a192965e085262a7bc1eaddb46f8c2762",
+        "deltaReconstructedPriorHashExactly": true
+      },
+      {
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
+        "anchors": [
+          "checked-dynamic-isolation",
+          "checked-prefix-capture"
+        ],
+        "previousSha256": "f355ee8231872966024ac2bc05823be0fca3d4f9c8b83f2eb4f276aff19c9106",
+        "currentSha256": "682dfa8012efbcbd8c5e7afaeb7e0c9f2ed8e88cff3b76e90de7680ba27bd02c",
+        "deltaReconstructedPriorHashExactly": true
+      },
+      {
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
+        "anchors": [
+          "checked-prefix-reuse",
+          "atomic-dynamic-staging"
+        ],
+        "previousSha256": "d838425918a9453f6783a2de658c679f55fb0d02a72dc3d264683dd7b11813b6",
+        "currentSha256": "1e51bd7167a6057a5946abf723c1633b5bf9d4b7220882bab8164f827666213e",
+        "deltaReconstructedPriorHashExactly": true
+      },
+      {
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
+        "anchors": [
+          "certified_operators"
+        ],
+        "previousSha256": "55904e99c8f1a10492d76ae6098135aa883759a5df47feee6e8858dfc1910e8a",
+        "currentSha256": "f05f8577d58d5be76882c041733aa81395fe34d166ff4b0a69fa17c54f435ef6",
+        "deltaReconstructedPriorHashExactly": true
+      }
+    ],
+    "additionalReview": "The inverse of each new change exactly reproduces the previous reviewed file hash. Type relation readiness now accepts a current effective positional plan; unavailable/stale plans retain static preparation and all domain checks. Dynamic admission records only checked designated identities, retains all prior final fixed-point/collision audits, and publishes them with the existing snapshot. The new snapshot extension accepts only a current sealed invocation-default append and revokes all query evidence at a new epoch. Existing prefix capture, unresolved-source isolation and dynamic-row staging implementations are unchanged. Cardinality preparation now accepts a current effective positional table before falling back to static preparation. Reversing only that readiness condition exactly reproduces the previous reviewed file hash; certified_operators and all its acceptance/refusal conditions are unchanged. The full-library six-case cold-query regression passes."
+  },
+  "focusedDiagnostic": {
+    "path": "target/trigger-validation/invocation-default-construction-debug-5.log",
+    "sha256": "d6a170c790eb3283a94b79a61cfed02f2432e175fe66938d9d0640768a9963ce",
+    "passed": 53,
+    "instrumentation": "Only ignored disposable test workspace logging; production assertions and limits unchanged."
+  },
+  "updatedAt": "2026-10-18T12:04:58.205423+00:00",
+  "targetedRepairs": [
+    {
+      "path": "target/trigger-validation/invocation-default-cold-repair.log",
+      "passed": 2,
+      "boundary": "Six cold-query cases in one native regression plus the new native invocation-default integration."
+    },
+    {
+      "path": "target/trigger-validation/invocation-default-trigger-repair.log",
+      "passed": 1,
+      "boundary": "Disposable instrumented trigger mutation regression; final uninstrumented qualification remains required."
+    }
+  ],
+  "sourceReconciliationReview": "docs/evidence/invocation-obligation-decomposition-review.json",
+  "qualification": {
+    "kernelInputSha256": "e690037352d766a8bb37b5e70f322f84c854a9a834fd3feabbd6d6c5dad3cbcb",
+    "staticDifferential": {
+      "passed": 2,
+      "path": "target/trigger-validation/invocation-default-static-reuse-2.log",
+      "sha256": "02607d628f56f740e8eee4d802c04562f7654b128253f8361425689fbdc10137"
+    },
+    "provenanceAndEvidence": {
+      "passed": 16,
+      "path": "target/trigger-validation/invocation-default-provenance-evidence-final.log",
+      "sha256": "52aac5dc73fdcf1076cfe6b7ade6590093c3a3c932b98bda4b660f700ce3fa07"
+    },
+    "contract": {
+      "status": "pass",
+      "path": "target/trigger-validation/invocation-default-contract-final.log",
+      "sha256": "d891ed1a02b90670838288e7c18c26c9dcbef85a0de8ee622bb6005be06ea231"
+    },
+    "previousNativeWorkspace": {
+      "passed": 99,
+      "kernelInputSha256": "6709701a841f8627be51f523b3589554d302c29ee103953d4f17e4e33c9321db",
+      "boundary": "Before the guard requiring the same authority object to predate prefix preparation; final-source workspace is running.",
+      "path": "target/trigger-validation/invocation-default-workspace-final.log",
+      "sha256": "af7cfde181f50d254540aba53fdd7a93d089ba2693be2c305d8bf4d781304f2c"
+    },
+    "finalVendor": {
+      "status": "pass",
+      "passed": 943,
+      "libraryFiles": 94,
+      "corpusFiles": 251,
+      "log": "target/trigger-validation/invocation-default-full-model-final.log",
+      "sha256": "081bfe6159d18b58cbb432b5cb036adb5dd08f6a0c608ed18bb6cf736bc0d6f6",
+      "kernelInputSha256": "e690037352d766a8bb37b5e70f322f84c854a9a834fd3feabbd6d6c5dad3cbcb"
+    },
+    "finalPipeline": {
+      "status": "failed",
+      "record": "target/trigger-validation/invocation-default-qualification.json",
+      "phases": [
+        {
+          "name": "workspace",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--workspace"
+          ],
+          "startedAt": "2026-10-18T12:02:43.384Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T12:10:28.554Z"
+        },
+        {
+          "name": "clippy",
+          "args": [
+            "tools/rust.mjs",
+            "clippy",
+            "--locked",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "startedAt": "2026-10-18T12:10:28.555Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T12:10:31.348Z"
+        },
+        {
+          "name": "wasm",
+          "args": [
+            "tools/build-kernel.mjs"
+          ],
+          "startedAt": "2026-10-18T12:10:31.348Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T12:11:08.924Z"
+        },
+        {
+          "name": "cli",
+          "args": [
+            "tools/rust.mjs",
+            "build",
+            "--locked",
+            "--release",
+            "-p",
+            "sysml-cli"
+          ],
+          "startedAt": "2026-10-18T12:11:08.925Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T12:12:11.814Z"
+        },
+        {
+          "name": "public",
+          "args": [
+            "--experimental-strip-types",
+            "--test",
+            "--test-concurrency=1",
+            "tests/accept-actions.test.ts",
+            "tests/families.test.ts",
+            "tests/kernel.test.ts",
+            "tests/state-subactions.test.ts",
+            "tests/kernel-client.test.ts",
+            "tests/conformance-runner.test.mjs"
+          ],
+          "startedAt": "2026-10-18T12:12:11.815Z",
+          "status": "fail",
+          "exitCode": 1,
+          "finishedAt": "2026-10-18T12:15:29.366Z"
+        }
+      ]
+    },
+    "identityReuseRepair": "docs/evidence/eligibility-identity-progress-macos-arm64.json"
+  }
+}

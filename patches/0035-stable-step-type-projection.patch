@@ -1,0 +1,113 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs
+@@ -9,8 +9,109 @@
+ mod readiness_tests;
+ #[cfg(test)]
+ mod repository_tests;
++#[cfg(test)]
++mod semantic_positional_tests;
+ 
+ use std::collections::{HashMap, HashSet};
++
++/// Query-local recursion boundary shared with negative specialization readers.
++/// A nested reader cannot evade it by creating a new type projector. This holds
++/// active requests only, never semantic facts, and is independent of model state.
++#[derive(Clone, Default)]
++pub(super) struct ProjectionContext(std::sync::Arc<std::sync::Mutex<HashSet<usize>>>);
++struct ProjectionEntry {
++    context: ProjectionContext,
++    feature: usize,
++}
++impl ProjectionContext {
++    fn enter(&self, feature: usize) -> Result<ProjectionEntry, Incomplete> {
++        let mut active = self
++            .0
++            .lock()
++            .map_err(|_| Incomplete::UnsupportedProjection)?;
++        if active.len() >= crate::json::MAX_RESOLUTION_DEPTH {
++            return Err(Incomplete::Depth);
++        }
++        if !active.insert(feature) {
++            return Err(Incomplete::UnsupportedProjection);
++        }
++        Ok(ProjectionEntry {
++            context: self.clone(),
++            feature,
++        })
++    }
++}
++impl Drop for ProjectionEntry {
++    fn drop(&mut self) {
++        // No lock is held across a projection; unwind and early returns both
++        // remove the request so a later independent query can retry.
++        self.context
++            .0
++            .lock()
++            .unwrap_or_else(|e| e.into_inner())
++            .remove(&self.feature);
++    }
++}
++
++pub(super) fn contextual_owner_types(
++    builder: &mut crate::json::Builder,
++    owner: usize,
++    changing: Option<std::sync::Arc<HashSet<usize>>>,
++    context: ProjectionContext,
++    steps: &mut usize,
++) -> Result<crate::json::type_relations::CompositionOwner, Incomplete> {
++    let mut reader = adapter::RepositoryTyping::with_context(builder, changing, context, steps)?;
++    reader.owner_types(owner, steps)
++}
++
++/// Evaluate construction predicates with the ordinary complete type reducer.
++/// Missing entries are unknown, not false. No candidate model or semantic rows
++/// are published; every accepted projection excludes the supplied future writes.
++pub(super) fn structural_owners_for_planning(
++    builder: &mut crate::json::Builder,
++    owners: &[usize],
++    changing: std::sync::Arc<HashSet<usize>>,
++    steps: &mut usize,
++) -> Result<HashMap<usize, bool>, Incomplete> {
++    owners_of_kind_for_planning(builder, owners, changing, "Structure", steps)
++}
++
++pub(super) fn owners_of_kind_for_planning(
++    builder: &mut crate::json::Builder,
++    owners: &[usize],
++    changing: std::sync::Arc<HashSet<usize>>,
++    kind: &str,
++    steps: &mut usize,
++) -> Result<HashMap<usize, bool>, Incomplete> {
++    let mut reader = adapter::RepositoryTyping::for_planning(builder, changing, steps)?;
++    let mut complete = HashMap::new();
++    for &owner in owners {
++        if !charge(steps, 1, crate::eval::MAX_STEPS) {
++            return Err(Incomplete::Budget);
++        }
++        if complete.contains_key(&owner) {
++            continue;
++        }
++        let projection = reader.project(owner, steps);
++        if *steps > crate::eval::MAX_STEPS {
++            return Err(Incomplete::Budget);
++        }
++        if !projection.complete() {
++            continue;
++        }
++        if !charge(steps, projection.candidates.len(), crate::eval::MAX_STEPS) {
++            return Err(Incomplete::Budget);
++        }
++        complete.insert(
++            owner,
++            projection
++                .candidates
++                .iter()
++                .any(|&ty| reader.has_kind(ty, kind)),
++        );
++    }
++    Ok(complete)
++}
+ 
+ #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+ pub(super) enum Comparison {

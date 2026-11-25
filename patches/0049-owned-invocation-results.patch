@@ -1,0 +1,512 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_results.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_results.rs
+new file mode 100644
+--- /dev/null
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_results.rs
+@@ -0,0 +1,507 @@
++//! Result ownership required by InstantiationExpression, constructed before
++//! specialization planning. Result redefinitions remain the responsibility of
++//! the shared positional planner; lowering neither selects nor copies a callee.
++
++use super::Builder;
++use crate::{metaclass::conforms, model::GraphFormat};
++use serde_json::json;
++
++impl Builder {
++    /// Finish a freshly lowered invocation, including operator subclasses and
++    /// SysML triggers. Casts and extent expressions already supply a typed return
++    /// through their grammar. Constructors have a separate result-owned argument
++    /// construction. Never create a second return or a synthetic textual scope.
++    pub(super) fn construct_invocation_result(&mut self, expression: usize) {
++        if self.graph_format != GraphFormat::CanonicalV3
++            || !conforms(self.elements[expression].ty, "InvocationExpression")
++            || self.elements[expression]
++                .owned_relationships
++                .iter()
++                .any(|&r| conforms(self.elements[r].ty, "ReturnParameterMembership"))
++        {
++            return;
++        }
++        let membership = self.new_relationship("ReturnParameterMembership", expression, "result");
++        self.set(membership, "isImplied", json!(true));
++        let result = self.new_owned_element("Feature", membership, "result");
++        self.set(result, "direction", json!("out"));
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use crate::{
++        json::{ElementRef, ResolvedModel},
++        model::Model,
++    };
++
++    fn model(format: GraphFormat, file: &str, source: &str) -> ResolvedModel {
++        let mut model = Model::with_graph_format(format);
++        let parsed = model.add_source(file, source);
++        assert!(
++            parsed.diagnostics.is_empty(),
++            "{source}: {:?}",
++            parsed.diagnostics
++        );
++        ResolvedModel::build(&model)
++    }
++
++    fn returns(r: &ResolvedModel, expression: ElementRef) -> Vec<usize> {
++        r.b.elements[expression.0]
++            .owned_relationships
++            .iter()
++            .copied()
++            .filter(|&m| conforms(r.b.elements[m].ty, "ReturnParameterMembership"))
++            .collect()
++    }
++
++    const LIB: &str = "standard library package Base {classifier Anything; feature things:Anything;}
++        standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;}
++        standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;}
++        standard library package DataFunctions {function '+' {in x; in y; return sum;}}
++        standard library package Triggers {function TriggerAfter {in duration; in receiver; return result;} function TriggerAt {in instant; in receiver; return result;} function TriggerWhen {in condition; in receiver; return result;}}";
++
++    fn fixture(file: &str, source: &str) -> ResolvedModel {
++        let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++        assert!(
++            m.add_library_source("result-library.kerml", LIB)
++                .diagnostics
++                .is_empty()
++        );
++        assert!(m.add_source(file, source).diagnostics.is_empty());
++        ResolvedModel::build(&m)
++    }
++
++    #[test]
++    fn full_library_invocations_keep_their_complete_argument_mappings() {
++        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
++            .join("../../spec-refs/SysML-v2-Release/sysml.library");
++        let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++        assert_eq!(m.load_library_dir(&root).unwrap(), 94);
++        assert!(
++            m.add_source(
++                "calls.sysml",
++                "action a accept after 1 + 2; action b accept when 1 < 2;"
++            )
++            .diagnostics
++            .is_empty()
++        );
++        let mut r = ResolvedModel::build(&m);
++        let target = r.resolve_qualified("VectorFunctions::CartesianVectorOf::result::dimension");
++        assert!(
++            target.is_some(),
++            "unnamed library result must resolve before dynamic planning"
++        );
++        r.ensure_implied();
++        assert!(
++            r.b.effective_dynamic_plan().is_some(),
++            "{:?}",
++            r.b.dynamic_graph.as_ref().map(|g| &g.outcome)
++        );
++        let calls: Vec<_> = r
++            .user_elements()
++            .filter(|&e| {
++                matches!(
++                    r.element_type(e),
++                    "OperatorExpression" | "TriggerInvocationExpression"
++                )
++            })
++            .collect();
++        assert_eq!(calls.len(), 4);
++        for call in calls {
++            assert!(
++                r.invocation_binding_report(call).arguments.is_ok(),
++                "{}: {:?}",
++                r.element_type(call),
++                r.invocation_binding_report(call)
++            );
++        }
++    }
++
++    #[test]
++    fn shared_planner_redefines_callee_returns_without_changing_argument_order() {
++        for (file, source, kind, expected_args) in [
++            (
++                "function.kerml",
++                "function F {in a; in b; return r;} feature x = F(b=2,a=1);",
++                "InvocationExpression",
++                2,
++            ),
++            (
++                "operator.kerml",
++                "feature x = 1 + 2;",
++                "OperatorExpression",
++                2,
++            ),
++            (
++                "inherited.kerml",
++                "function Parent {in a; return r;} function F specializes Parent; feature x = F(a=1);",
++                "InvocationExpression",
++                1,
++            ),
++            (
++                "trigger.sysml",
++                "action x accept after 1;",
++                "TriggerInvocationExpression",
++                1,
++            ),
++            (
++                "trigger.sysml",
++                "action x accept at 1;",
++                "TriggerInvocationExpression",
++                1,
++            ),
++            (
++                "trigger.sysml",
++                "action x accept when true;",
++                "TriggerInvocationExpression",
++                1,
++            ),
++        ] {
++            let mut r = fixture(file, source);
++            let call = r
++                .user_elements()
++                .find(|&e| r.element_type(e) == kind)
++                .unwrap();
++            let result = r.b.elements[returns(&r, call)[0]].children[0];
++            let result_id = r.b.elements[result].id;
++            r.implied_relationships(call);
++            let args = r.invocation_binding_report(call).arguments.unwrap();
++            assert_eq!(args.bindings.len(), expected_args, "{source}");
++            assert!(args.bindings.iter().all(|arg| arg.parameter.0 != result));
++            let target = r
++                .function_result_report(args.callee)
++                .result
++                .unwrap()
++                .unwrap();
++            assert_ne!(result_id, r.element_id(target));
++            let owned =
++                super::super::semantic_ownership::owned_relationships(&r.b, result).unwrap();
++            assert!(
++                owned.iter().any(|edge| {
++                    r.b.elements[edge].ty == "Redefinition"
++                        && r.b.elements[edge]
++                            .props
++                            .get("redefiningFeature")
++                            .and_then(|v| v.as_reference())
++                            == Some(result_id)
++                        && r.b.elements[edge]
++                            .props
++                            .get("redefinedFeature")
++                            .and_then(|v| v.as_reference())
++                            == Some(r.element_id(target))
++                }),
++                "{source}: missing callee-result redefinition"
++            );
++            let count = r.b.elements.len();
++            r.implied_relationships(call);
++            assert_eq!(r.b.elements.len(), count);
++            assert_eq!(r.invocation_binding_report(call).arguments.unwrap(), args);
++        }
++    }
++
++    #[test]
++    fn implied_results_survive_compact_lifting_without_becoming_arguments() {
++        for (file, source) in [
++            (
++                "expressions.kerml",
++                "function F {in x; in y; return r;} feature a = F(1,2); feature b = 1->F(2); feature c = (1 + 2) * 3; feature d = c as F; feature e = all F;",
++            ),
++            (
++                "triggers.sysml",
++                "action a accept after 1; action b accept at 2; action c accept when true;",
++            ),
++        ] {
++            let mut original = Model::with_graph_format(GraphFormat::CanonicalV3);
++            assert!(original.add_source(file, source).diagnostics.is_empty());
++            let before = crate::json::model_to_compact_json(&original);
++            let lifted = crate::lift::from_compact_json(&before).unwrap();
++            assert!(lifted.errors.is_empty(), "{:?}", lifted.errors);
++            let printed = sysmlv2_syntax::print::print_source(&lifted.unit);
++            let mut replay = Model::with_graph_format(GraphFormat::CanonicalV3);
++            assert!(
++                replay.add_source(file, &printed).diagnostics.is_empty(),
++                "{printed}"
++            );
++            assert_eq!(
++                crate::json::model_to_compact_json(&replay),
++                before,
++                "{printed}"
++            );
++        }
++    }
++
++    #[test]
++    fn malformed_return_evidence_revokes_argument_certificates_and_allows_retry() {
++        for mutation in 0..3 {
++            let mut r = fixture(
++                "mutation.kerml",
++                "function F {in x; return r;} feature a = F(1);",
++            );
++            let call = r
++                .user_elements()
++                .find(|&e| r.element_type(e) == "InvocationExpression")
++                .unwrap();
++            let membership = returns(&r, call)[0];
++            let result = r.b.elements[membership].children[0];
++            r.implied_relationships(call);
++            let expected = r.invocation_binding_report(call).arguments.unwrap();
++            let callee_id = r.element_id(expected.callee);
++            let call_id = r.element_id(call);
++            let before = r.b.elements.len();
++            assert_eq!(
++                r.invocation_binding_report_with_budget(call, crate::eval::MAX_STEPS)
++                    .arguments,
++                Err(super::super::InvocationBindingIssue::WorkLimit)
++            );
++            assert_eq!(r.b.elements.len(), before);
++            assert_eq!(
++                r.invocation_binding_report(call).arguments.unwrap(),
++                expected
++            );
++            match mutation {
++                0 => {
++                    r.b.elements[result].props.insert("direction", json!("in"));
++                }
++                1 => {
++                    r.b.elements[result].owning_relationship = None;
++                }
++                _ => {
++                    r.b.elements[membership]
++                        .props
++                        .insert("owningRelatedElement", json!({"@id":callee_id}));
++                }
++            }
++            assert!(
++                r.invocation_binding_report(call).arguments.is_err(),
++                "mutation {mutation}"
++            );
++            assert_eq!(r.b.elements.len(), before);
++            match mutation {
++                0 => {
++                    r.b.elements[result].props.insert("direction", json!("out"));
++                }
++                1 => {
++                    r.b.elements[result].owning_relationship = Some(membership);
++                }
++                _ => {
++                    r.b.elements[membership]
++                        .props
++                        .insert("owningRelatedElement", json!({"@id":call_id}));
++                }
++            }
++            r.discard_owned_result_tail();
++            r.implied_relationships(call);
++            assert_eq!(
++                r.invocation_binding_report(call).arguments.unwrap(),
++                expected
++            );
++        }
++    }
++
++    #[test]
++    fn result_identities_and_relationships_replay_through_prepared_libraries() {
++        use crate::{libcache::LibraryCache, prepared::PreparedLibrary};
++        use std::sync::Arc;
++        let text = format!(
++            "{LIB} standard library package UserFunctions {{function F {{in x; return r;}} feature cached = F(1);}}"
++        );
++        let mut base = Model::with_graph_format(GraphFormat::CanonicalV3);
++        assert!(
++            base.add_library_source("result-library.kerml", &text)
++                .diagnostics
++                .is_empty()
++        );
++        base.record_library_cache();
++        ResolvedModel::build(&base);
++        let cache =
++            LibraryCache::from_bytes(&base.take_recorded_library_cache().unwrap().to_bytes())
++                .unwrap();
++        let prepared = base.prepare_library().unwrap();
++        let decoded =
++            Arc::new(PreparedLibrary::from_bytes(&prepared.to_bytes(149).unwrap(), 149).unwrap());
++        let mut expected = None;
++        for mode in 0..4 {
++            let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++            match mode {
++                2 => Arc::clone(&prepared).install(&mut m).unwrap(),
++                3 => Arc::clone(&decoded).install(&mut m).unwrap(),
++                _ => {
++                    m.add_library_source("result-library.kerml", &text);
++                    if mode == 1 {
++                        m.set_library_cache(cache.clone());
++                    }
++                }
++            }
++            m.add_source(
++                "calls.kerml",
++                "feature a = UserFunctions::F(1); feature b = 1 + 2;",
++            );
++            let mut r = ResolvedModel::build(&m);
++            r.ensure_implied();
++            let calls: Vec<_> = r
++                .elements()
++                .filter(|&e| {
++                    matches!(
++                        r.element_type(e),
++                        "InvocationExpression" | "OperatorExpression"
++                    )
++                })
++                .collect();
++            let mut facts = Vec::new();
++            for call in calls {
++                let args = r.invocation_binding_report(call).arguments.unwrap();
++                let membership = returns(&r, call)[0];
++                let result = r.b.elements[membership].children[0];
++                let owned =
++                    super::super::semantic_ownership::owned_relationships(&r.b, result).unwrap();
++                let targets: Vec<_> = owned
++                    .iter()
++                    .filter_map(|i| {
++                        (r.b.elements[i].ty == "Redefinition").then(|| {
++                            r.b.elements[i]
++                                .props
++                                .get("redefinedFeature")
++                                .and_then(|v| v.as_reference())
++                                .unwrap()
++                        })
++                    })
++                    .collect();
++                assert!(!targets.is_empty());
++                facts.push((
++                    r.element_id(call),
++                    r.element_id(args.callee),
++                    r.b.elements[membership].id,
++                    r.b.elements[result].id,
++                    targets,
++                ));
++            }
++            assert_eq!(facts.len(), 3);
++            if let Some(expected) = &expected {
++                assert_eq!(&facts, expected, "mode {mode}");
++            } else {
++                expected = Some(facts);
++            }
++        }
++    }
++
++    #[test]
++    fn canonical_invocation_lowering_owns_results_without_callee_or_library_evidence() {
++        for (file, source, expected) in [
++            (
++                "call.kerml",
++                "feature x = Missing(1);",
++                "InvocationExpression",
++            ),
++            (
++                "arrow.kerml",
++                "feature x = 1->Missing(2);",
++                "InvocationExpression",
++            ),
++            ("operator.kerml", "feature x = 1 + 2;", "OperatorExpression"),
++            ("index.kerml", "feature x = a#(1);", "IndexExpression"),
++            (
++                "chain.kerml",
++                "feature x = a.b.c;",
++                "FeatureChainExpression",
++            ),
++            ("select.kerml", "feature x = a.?{true};", "SelectExpression"),
++            ("collect.kerml", "feature x = a.{1};", "CollectExpression"),
++            (
++                "after.sysml",
++                "action a accept after 1;",
++                "TriggerInvocationExpression",
++            ),
++            (
++                "at.sysml",
++                "action a accept at 1;",
++                "TriggerInvocationExpression",
++            ),
++            (
++                "when.sysml",
++                "action a accept when true;",
++                "TriggerInvocationExpression",
++            ),
++        ] {
++            let mut r = model(GraphFormat::CanonicalV3, file, source);
++            let expression = r
++                .user_elements()
++                .find(|&e| r.element_type(e) == expected)
++                .unwrap();
++            let memberships = returns(&r, expression);
++            assert_eq!(memberships.len(), 1, "{source}");
++            let membership = memberships[0];
++            assert_eq!(
++                r.b.elements[membership]
++                    .props
++                    .get("isImplied")
++                    .and_then(|v| v.as_bool()),
++                Some(true)
++            );
++            assert_eq!(
++                r.b.elements[membership]
++                    .props
++                    .get("owningRelatedElement")
++                    .and_then(|v| v.as_reference()),
++                Some(r.element_id(expression))
++            );
++            let children = &r.b.elements[membership].children;
++            assert_eq!(children.len(), 1);
++            let result = children[0];
++            assert_eq!(r.b.elements[result].ty, "Feature");
++            assert_eq!(r.b.elements[result].owning_relationship, Some(membership));
++            assert_eq!(
++                r.b.elements[result]
++                    .props
++                    .get("direction")
++                    .and_then(|v| v.as_str()),
++                Some("out")
++            );
++            assert!(r.b.elements[result].owned_relationships.is_empty());
++            assert!(!r.b.elem_scope.contains_key(&result));
++            assert!(r.b.implied.is_none());
++            let before = r.b.elements.len();
++            r.b.construct_invocation_result(expression.0);
++            assert_eq!(r.b.elements.len(), before, "{source}");
++        }
++    }
++
++    #[test]
++    fn grammar_returns_and_legacy_shapes_are_preserved() {
++        for source in [
++            "feature x = a as T;",
++            "feature x = a meta T;",
++            "feature x = all T;",
++            "feature x = new T();",
++        ] {
++            let r = model(GraphFormat::CanonicalV3, "cast.kerml", source);
++            let expression = r
++                .user_elements()
++                .find(|&e| conforms(r.element_type(e), "InstantiationExpression"))
++                .unwrap();
++            let memberships = returns(&r, expression);
++            assert_eq!(memberships.len(), 1, "{source}");
++            assert_eq!(
++                r.b.elements[memberships[0]]
++                    .props
++                    .get("isImplied")
++                    .and_then(|v| v.as_bool()),
++                Some(false),
++                "{source}"
++            );
++        }
++        for (file, source) in [
++            ("legacy.kerml", "feature x = Missing(1 + 2);"),
++            ("legacy.sysml", "action a accept after 1;"),
++        ] {
++            let r = model(GraphFormat::LegacyV2, file, source);
++            for expression in r
++                .user_elements()
++                .filter(|&e| conforms(r.element_type(e), "InvocationExpression"))
++            {
++                assert!(returns(&r, expression).is_empty());
++            }
++        }
++    }
++}

@@ -1,0 +1,342 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/migration.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/migration.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/migration.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/migration.rs
+@@ -82,7 +82,10 @@
+                 ));
+             }
+         }
+-        if row.get("isImplied").is_some_and(|v| v != false) {
++        if row
++            .get("isImplied")
++            .is_some_and(|v| v != false && v != true)
++        {
+             return Err("migration requires authored compact rows".into());
+         }
+         if row
+@@ -163,7 +166,153 @@
+     if seen.len() != rows.len() {
+         return Err("unreachable ownership cycle".into());
+     }
++    // Canonical lowering owns one implied return pair per invocation. These
++    // structural rows are part of compact source transport. Other generated
++    // semantic relationships still require regeneration rather than migration.
++    for (i, row) in rows.iter().enumerate() {
++        charge(steps, 1)?;
++        if row["isImplied"] == true {
++            lowered_structural_member(rows, &by_id, i, steps)?;
++        }
++    }
+     Ok(by_id)
++}
++
++fn lowered_structural_member(
++    rows: &[Value],
++    by: &HashMap<Uuid, usize>,
++    membership: usize,
++    steps: &mut usize,
++) -> Result<(), String> {
++    let row = &rows[membership];
++    if !matches!(
++        row["@type"].as_str(),
++        Some("ReturnParameterMembership" | "ParameterMembership")
++    ) {
++        return Err("migration requires authored compact rows".into());
++    }
++    let owner = by[&id(&row["owningRelatedElement"])?];
++    let result = by[&one(row, "ownedRelatedElement")?];
++    let feature = &rows[result];
++    let invocation = row["@type"] == "ReturnParameterMembership"
++        && crate::metaclass::conforms(
++            rows[owner]["@type"].as_str().unwrap(),
++            "InvocationExpression",
++        );
++    let receiver =
++        row["@type"] == "ParameterMembership" && rows[owner]["@type"] == "AcceptActionUsage";
++    let (kind, direction) = if invocation {
++        ("Feature", "out")
++    } else if receiver {
++        ("ReferenceUsage", "in")
++    } else {
++        return Err("migration requires reconstructible structural memberships".into());
++    };
++    if feature["@type"] != kind
++        || feature["direction"] != direction
++        || !refs(row, "ownedRelationship")?.is_empty()
++        || !refs(feature, "ownedRelationship")?.is_empty()
++    {
++        return Err("invalid lowered invocation result".into());
++    }
++    for (node, allowed) in [
++        (
++            row,
++            &["owningRelatedElement", "ownedRelatedElement"] as &[_],
++        ),
++        (feature, &["owningRelationship"] as &[_]),
++    ] {
++        charge(steps, node.as_object().unwrap().len())?;
++        for (key, value) in node.as_object().unwrap() {
++            if (value.is_object() || value.is_array())
++                && !allowed.contains(&key.as_str())
++                && !value.as_array().is_some_and(Vec::is_empty)
++            {
++                return Err("unrepresentable lowered invocation result property".into());
++            }
++        }
++    }
++    let mut authored_membership = row.clone();
++    authored_membership["isImplied"] = json!(false);
++    constructor_syntax_scalars(&authored_membership, None)?;
++    let mut scalars = feature.clone();
++    if receiver {
++        if scalars["isVariation"] != false {
++            return Err("invalid lowered accept receiver".into());
++        }
++        scalars.as_object_mut().unwrap().remove("isVariation");
++    }
++    constructor_syntax_scalars(&scalars, Some(direction))?;
++    let relationships = refs(&rows[owner], "ownedRelationship")?;
++    charge(steps, relationships.len())?;
++    if invocation
++        && relationships
++            .iter()
++            .filter(|r| {
++                crate::metaclass::conforms(
++                    rows[by[r]]["@type"].as_str().unwrap(),
++                    "ReturnParameterMembership",
++                )
++            })
++            .count()
++            != 1
++    {
++        return Err("lowered invocation result must be unique".into());
++    }
++    if receiver
++        && relationships
++            .iter()
++            .filter(|r| {
++                crate::metaclass::conforms(
++                    rows[by[r]]["@type"].as_str().unwrap(),
++                    "ParameterMembership",
++                )
++            })
++            .nth(1)
++            .copied()
++            != Some(id(row)?)
++    {
++        return Err("lowered accept receiver must be the second parameter".into());
++    }
++    Ok(())
++}
++
++/// Source order is retained even for a graph whose rows are not a preorder.
++/// The forest was checked by `index`; compute containment order and the last
++/// existing row of every subtree once rather than rescanning each invocation.
++fn ownership_subtrees(
++    rows: &[Value],
++    by: &HashMap<Uuid, usize>,
++    steps: &mut usize,
++) -> Result<(Vec<usize>, Vec<usize>), String> {
++    charge(steps, rows.len())?;
++    let mut children = vec![Vec::new(); rows.len()];
++    let mut pending = Vec::new();
++    for (i, row) in rows.iter().enumerate() {
++        for key in ["ownedRelationship", "ownedRelatedElement"] {
++            let edges = refs(row, key)?;
++            charge(steps, edges.len())?;
++            children[i].extend(edges.into_iter().map(|id| by[&id]));
++        }
++        if row["owningRelationship"].is_null() && row["owningRelatedElement"].is_null() {
++            pending.push((i, false));
++        }
++    }
++    let mut order = Vec::with_capacity(rows.len());
++    let mut ends: Vec<_> = (0..rows.len()).collect();
++    while let Some((node, exiting)) = pending.pop() {
++        charge(steps, 1)?;
++        if exiting {
++            for &child in &children[node] {
++                ends[node] = ends[node].max(ends[child]);
++            }
++        } else {
++            order.push(node);
++            pending.push((node, true));
++            pending.extend(children[node].iter().rev().map(|&i| (i, false)));
++        }
++    }
++    Ok((order, ends))
+ }
+ 
+ // (FeatureValue, expression) for every grammar-owned conditional operand.
+@@ -774,6 +923,13 @@
+         .ok_or("expected a compact element array")?;
+     let mut steps = 0;
+     let by = index(rows, &mut steps)?;
++    if format == GraphFormat::LegacyV2
++        && rows
++            .iter()
++            .any(|row| row["isImplied"] == true && row["@type"] == "ReturnParameterMembership")
++    {
++        return Err("lowered invocation results require canonical graph format".into());
++    }
+     for (_, expression) in operands(rows, &by, &mut steps)? {
+         if wrapped(rows, &by, expression)? != (format == GraphFormat::CanonicalV3) {
+             return Err("conditional operand shape differs from graph format".into());
+@@ -1015,6 +1171,12 @@
+     let original = document
+         .as_array()
+         .ok_or("expected a compact element array")?;
++    if original
++        .iter()
++        .any(|row| row["isImplied"] == true && row["@type"] == "ReturnParameterMembership")
++    {
++        return Err("migration requires legacy authored compact rows".into());
++    }
+     let mut steps = 0;
+     let by = index(original, &mut steps)?;
+     let mut external_ids = HashSet::new();
+@@ -1081,6 +1243,49 @@
+         // for an empty constructor. Preserve all existing row order.
+         insertions
+             .entry(constructor.selector_end + 1)
++            .or_default()
++            .splice(0..0, additions);
++    }
++    let (order, ends) = ownership_subtrees(original, &by, &mut steps)?;
++    for owner_index in order {
++        let original_owner = &original[owner_index];
++        if !crate::metaclass::conforms(
++            original_owner["@type"].as_str().unwrap(),
++            "InvocationExpression",
++        ) {
++            continue;
++        }
++        let mut relationships = refs(original_owner, "ownedRelationship")?;
++        charge(&mut steps, relationships.len())?;
++        if relationships.iter().any(|r| {
++            crate::metaclass::conforms(
++                original[by[r]]["@type"].as_str().unwrap(),
++                "ReturnParameterMembership",
++            )
++        }) {
++            continue; // Cast and extent grammar already provides a return.
++        }
++        let owner = id(original_owner)?;
++        let result = Uuid::new_v5(&owner, b"canonical-invocation-result");
++        let membership = Uuid::new_v5(&owner, b"canonical-invocation-result-membership");
++        if !used.insert(result) || !used.insert(membership) {
++            return Err("temporary migration identity collision".into());
++        }
++        relationships.push(membership);
++        rows[owner_index]["ownedRelationship"] = json!(
++            relationships
++                .into_iter()
++                .map(|id| json!({"@id":id}))
++                .collect::<Vec<_>>()
++        );
++        let additions = vec![
++            json!({"@id":membership,"@type":"ReturnParameterMembership","elementId":membership,"isImplied":true,"isImpliedIncluded":false,"ownedRelationship":[],"ownedRelatedElement":[{"@id":result}],"owningRelationship":null,"owningRelatedElement":{"@id":owner}}),
++            json!({"@id":result,"@type":"Feature","elementId":result,"isImpliedIncluded":false,"ownedRelationship":[],"owningRelationship":{"@id":membership},"direction":"out"}),
++        ];
++        // Parents are visited before descendants; insertion at the same end
++        // position puts the nested call's result before its enclosing result.
++        insertions
++            .entry(ends[owner_index] + 1)
+             .or_default()
+             .splice(0..0, additions);
+     }
+@@ -1243,6 +1448,95 @@
+                 .is_empty()
+         );
+         model
++    }
++
++    #[test]
++    fn invocation_migration_matches_direct_lowering_for_nested_and_grammar_returns() {
++        for (file, source) in [
++            (
++                "call.kerml",
++                "function F {in x; return r;} feature x = F(F(1 + 2));",
++            ),
++            ("arrow.kerml", "feature x = 1->Missing(2);"),
++            ("index.kerml", "feature x = a#(1 + 2);"),
++            ("chain.kerml", "feature x = a.b.c;"),
++            ("select.kerml", "feature x = a.?{1 < 2};"),
++            ("collect.kerml", "feature x = a.{1 + 2};"),
++            ("cast.kerml", "class C; feature x = 1 as C;"),
++            ("extent.kerml", "class C; feature x = all C;"),
++            ("after.sysml", "action a accept after 1 + 2;"),
++            ("at.sysml", "action a accept at F();"),
++            ("when.sysml", "action a accept when 1 < 2;"),
++        ] {
++            let emit = |format| {
++                let mut model = Model::with_graph_format(format);
++                let parsed = model.add_source(file, source);
++                assert!(
++                    parsed.diagnostics.is_empty(),
++                    "{source}: {:?}",
++                    parsed.diagnostics
++                );
++                model_to_compact_json(&model)
++            };
++            let legacy = emit(GraphFormat::LegacyV2);
++            let canonical = emit(GraphFormat::CanonicalV3);
++            let migrated = migrate_conditional_graph(&legacy, &|_| None).unwrap();
++            assert_eq!(migrated.document, canonical, "{source}");
++            for (old, &index) in legacy
++                .as_array()
++                .unwrap()
++                .iter()
++                .zip(&migrated.element_indices)
++            {
++                assert_eq!(
++                    migrated.ids[&id(old).unwrap()],
++                    id(&canonical[index]).unwrap()
++                );
++            }
++            assert_eq!(
++                legacy.as_array().unwrap().len() + migrated.added.len(),
++                canonical.as_array().unwrap().len()
++            );
++            validate_graph_format(&canonical, GraphFormat::CanonicalV3).unwrap();
++        }
++    }
++
++    #[test]
++    fn compact_validation_only_admits_reconstructible_implied_return_pairs() {
++        let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
++        assert!(
++            model
++                .add_source("call.kerml", "feature x = F(1);")
++                .diagnostics
++                .is_empty()
++        );
++        let original = model_to_compact_json(&model);
++        let rows = original.as_array().unwrap();
++        let by = index(rows, &mut 0).unwrap();
++        let membership = rows.iter().position(|r| r["isImplied"] == true).unwrap();
++        let result = by[&one(&rows[membership], "ownedRelatedElement").unwrap()];
++        let owner = by[&id(&rows[membership]["owningRelatedElement"]).unwrap()];
++        validate_graph_format(&original, GraphFormat::CanonicalV3).unwrap();
++        assert!(validate_graph_format(&original, GraphFormat::LegacyV2).is_err());
++        assert!(migrate_conditional_graph(&original, &|_| None).is_err());
++        for mutation in 0..7 {
++            let mut document = original.clone();
++            match mutation {
++                0 => document[result]["direction"] = json!("in"),
++                1 => document[result]["declaredName"] = json!("lost"),
++                2 => document[result]["isComposite"] = json!(true),
++                3 => {
++                    document[membership]["memberElement"] = json!({"@id":id(&rows[owner]).unwrap()})
++                }
++                4 => document[membership]["@type"] = json!("ParameterMembership"),
++                5 => document[owner]["@type"] = json!("Expression"),
++                _ => document[membership]["isImplied"] = json!("true"),
++            }
++            assert!(
++                validate_graph_format(&document, GraphFormat::CanonicalV3).is_err(),
++                "mutation {mutation}"
++            );
++        }
+     }
+ 
+     #[test]

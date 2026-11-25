@@ -551,52 +551,24 @@ pub(super) fn validate(
             }
         }
         if is(&r.b, e, "TriggerInvocationExpression") {
-            let kind = r.b.elements[e]
-                .props
-                .get("kind")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .to_owned();
-            let Some((scope, expr)) = r.b.contract_exprs.get(&e).cloned() else {
-                continue;
-            };
-            let (required, rule) = match kind.as_str() {
-                "after" => (
-                    "ISQ::DurationValue",
-                    "validateTriggerInvocationActionAfterArgument",
-                ),
-                "at" => (
-                    "Time::TimeInstantValue",
-                    "validateTriggerInvocationActionAtArgument",
-                ),
-                "when" => (
-                    "ScalarValues::Boolean",
-                    "validateTriggerInvocationActionWhenArgument",
-                ),
-                _ => continue,
-            };
-            let origin = r.b.set_identity_origin(e);
-            let mut bad = expressions::wrong_type(&mut r.b, g, scope, &expr, required);
-            if kind == "after" {
-                if let Some(t) = expressions::library_type(&mut r.b, required) {
-                    if let (Some(actual), Some(expected)) = (
-                        super::dimensions::known(r, scope, &expr),
-                        r.quantity_dims_of_type(ElementRef(t)),
-                    ) {
-                        bad |= actual != expected;
+            let report = r.trigger_argument_report(ElementRef(e));
+            if let (Some(rule), Ok(false)) = (report.rule, report.valid) {
+                let argument_span =
+                    r.b.contract_exprs
+                        .get(&e)
+                        .map_or(span, |(_, expr)| expr.span);
+                let message = match rule {
+                    "validateTriggerInvocationExpressionAfterArgument" => {
+                        "An 'after' trigger requires a scalar quantity result with a duration measurement reference"
                     }
-                }
-            }
-            r.b.identity_origin_unit = origin;
-            if bad {
-                out.push((
-                    unit,
-                    super::rule_error(
-                        expr.span,
-                        rule,
-                        format!("A '{kind}' trigger argument must conform to {required}"),
-                    ),
-                ));
+                    "validateTriggerInvocationExpressionAtArgument" => {
+                        "An 'at' trigger requires an argument result specializing Time::TimeInstantValue"
+                    }
+                    _ => {
+                        "A 'when' trigger requires a reference to an expression with a Boolean result"
+                    }
+                };
+                out.push((unit, super::rule_error(argument_span, rule, message)));
             }
         }
     }

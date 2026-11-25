@@ -1,9 +1,12 @@
 import './style.css';
+import './system-map.css';
 import { icon } from './ui/icons.ts';
 import example from '../examples/CoastalExplorer.sysml?raw';
 import { ViewerModel, emptyModel, children, sourceOf, referenceTarget } from './viewer/model.ts';
 import { diagramEdges } from './viewer/diagram.ts';
 import { gridLayout } from './viewer/layout.ts';
+import { SystemMapView } from './viewer/map-view.ts';
+import type { MapGroup } from './viewer/system-map.ts';
 import { KernelClient } from './kernel/client.ts';
 import { desktop, readBrowserFiles, openNativeFiles } from './platform/files.ts';
 import type { ModelElement, SourceDocument, Reference } from './viewer/model.ts';
@@ -37,7 +40,9 @@ const kernel = new KernelClient();
 let model = emptyModel();
 let scopeId: string | null = null;
 let selectedId: string | null = scopeId;
-let mode: 'diagram' | 'source' = 'diagram';
+let mode: 'map' | 'diagram' | 'source' = 'map';
+let mapGroup: MapGroup | null = null;
+let mapGroupPage = 0;
 let edgeMode: 'connections' | 'types' = 'connections';
 let sourceId = 'example';
 let isExample = true,
@@ -53,8 +58,8 @@ const members = (e: ModelElement) => model.members(e.id);
 
 $('#app').innerHTML = `
   <header class="app-header">
-    <div class="brand"><div class="brand-mark">${icon('cube')}</div><div><strong>SysML Viewer</strong><span>A clearer view of your system</span></div><span class="version">0.2</span></div>
-    <div class="header-actions"><span class="local-label">${icon('lock')} Local workspace</span><button class="icon-button" data-action="theme" aria-label="Toggle light and dark theme" title="Toggle theme">${icon('sun')}</button><button class="icon-button" data-action="inspector" aria-label="Toggle inspector" title="Toggle inspector">${icon('panel')}</button><button class="primary" data-action="open">${icon('open')} Open models <kbd>${navigator.platform.includes('Mac') ? '⌘' : 'Ctrl+'}O</kbd></button></div>
+    <div class="brand"><div class="brand-mark">${icon('cube')}</div><strong>SysML Viewer</strong></div>
+    <div class="header-actions"><span id="status-text" class="loading-status" role="status" hidden></span><button data-action="diagnostics" id="diagnostics-button" class="diagnostics-badge" hidden></button><button class="icon-button" data-action="theme" aria-label="Toggle light and dark theme" title="Toggle theme">${icon('sun')}</button><button class="icon-button" data-action="inspector" aria-label="Toggle inspector" title="Toggle inspector">${icon('panel')}</button><button class="primary" data-action="open">${icon('open')} Open models <kbd>${navigator.platform.includes('Mac') ? '⌘' : 'Ctrl+'}O</kbd></button></div>
   </header>
   <div class="app-body">
     <aside class="sidebar"><div class="sidebar-title"><span>MODEL EXPLORER</span><span id="element-count"></span></div>
@@ -62,15 +67,15 @@ $('#app').innerHTML = `
       <div id="tree" class="tree" aria-label="Model elements"></div>
       <div class="sidebar-bottom"><div class="privacy">${icon('lock')} Files stay on your device</div><button data-action="example">Explore the example ${icon('arrow')}</button></div>
     </aside>
-    <main class="workspace">
+    <main class="workspace" data-mode="map">
       <nav id="breadcrumbs" class="breadcrumbs" aria-label="Model location"></nav>
-      <section class="view-heading"><div><div class="eyebrow" id="view-eyebrow">STRUCTURE VIEW</div><h1 id="scope-title"></h1><p id="scope-stats"></p></div>
-        <div class="segmented" aria-label="View mode"><button data-action="diagram" id="diagram-tab">${icon('grid')} Diagram</button><button data-action="source" id="source-tab">${icon('source')} Source</button></div>
+      <section class="view-heading"><h1 id="scope-title"></h1>
+        <div class="segmented" role="tablist" aria-label="View mode"><button data-action="map" id="map-tab" role="tab" aria-controls="system-map">${icon('grid')} System map</button><button data-action="diagram" id="diagram-tab" role="tab" aria-controls="canvas">${icon('grid')} Diagram</button><button data-action="source" id="source-tab" role="tab" aria-controls="source-pane">${icon('source')} Source</button></div>
       </section>
       <div class="view-tools"><div class="relationship-tabs"><button data-action="connections" id="connections-tab">Connections</button><button data-action="types" id="types-tab">Types & specialization</button></div><button class="text-button" data-action="up" title="Go up one level">${icon('up')} Up a level</button></div>
-      <div id="canvas" class="canvas"></div>
-      <div id="source-pane" class="source-pane" hidden></div>
-      <footer class="status"><span class="status-left"><i></i> <span id="status-text">SysML 2.0 analysis</span></span><button data-action="diagnostics" id="diagnostics-button"></button></footer>
+      <div id="canvas" role="tabpanel" aria-labelledby="diagram-tab" class="canvas"></div>
+      <div id="system-map" role="tabpanel" aria-labelledby="map-tab" class="system-map" hidden></div>
+      <div id="source-pane" role="tabpanel" aria-labelledby="source-tab" class="source-pane" hidden></div>
     </main>
     <aside id="inspector" class="inspector"></aside>
   </div>
@@ -78,6 +83,23 @@ $('#app').innerHTML = `
   <dialog id="diagnostics"><div class="dialog-heading"><h2>Model diagnostics</h2><button class="icon-button" data-action="close-dialog" aria-label="Close diagnostics">${icon('close')}</button></div><p class="limitations">Analysis uses the pinned SysML 2.0 / KerML 1.0 library. Imports, inheritance, redefinition and endpoint resolution come from the language engine. Validation coverage is partial. Diagrams hide standard-library members and show resolved binary connections between visible owner cards.</p><div id="diagnostic-list"></div><div class="dialog-footer"><button class="primary" data-action="close-dialog">Done</button></div></dialog>
   <div id="toast" class="toast" role="status" hidden></div>
   <div id="drop-overlay" class="drop-overlay" hidden><div>${icon('open')}<h2>Open your SysML models</h2><p>Drop .sysml and .kerml files together</p></div></div>`;
+
+const systemMap = new SystemMapView(
+  $('#system-map'),
+  (id) => {
+    selectedId = id;
+    mapGroup = null;
+    const e = selected();
+    scopeId = e?.parentId ?? null;
+    sourceId = e?.documentId || sourceId;
+    render();
+  },
+  (group) => {
+    mapGroup = group;
+    mapGroupPage = 0;
+    renderInspector();
+  },
+);
 
 function row(e: ModelElement, depth: number): string {
   const kids = children(model, e.id),
@@ -125,26 +147,35 @@ function render() {
   }
   $('#breadcrumbs').innerHTML =
     `<button data-action="root" title="All top-level elements" aria-label="Model root">${icon('grid')}</button>${path.map((e) => `${icon('chevron')}<button data-action="scope" data-id="${esc(e.id)}">${esc(e.name)}</button>`).join('')}<span class="model-badge">${isExample ? 'EXAMPLE MODEL' : `${model.documents.filter((d) => !d.id.startsWith('library://')).length} LOCAL FILE${model.documents.filter((d) => !d.id.startsWith('library://')).length === 1 ? '' : 'S'}`}</span>`;
-  $('#scope-title').textContent = scope()?.name ?? 'Model overview';
-  const nodes = model.members(scopeId),
-    links = model.connectionsFor(scopeId);
-  $('#scope-stats').textContent = `${nodes.length} elements · ${links.length} explicit connections`;
-  $('#view-eyebrow').textContent = mode === 'diagram' ? 'STRUCTURE VIEW' : 'ORIGINAL SOURCE';
+  $('#scope-title').textContent =
+    mode === 'map' ? 'System map' : (scope()?.name ?? 'Model overview');
+  const nodes = model.members(scopeId);
+  $('.workspace').dataset.mode = mode;
+  $('#breadcrumbs').hidden = mode === 'map';
+  $('#scope-title').hidden = mode === 'map';
+  for (const view of ['map', 'diagram', 'source']) {
+    $(`#${view}-tab`).setAttribute('aria-selected', String(mode === view));
+    $(`#${view}-tab`).tabIndex = mode === view ? 0 : -1;
+  }
+  $('#map-tab').classList.toggle('active', mode === 'map');
   $('#diagram-tab').classList.toggle('active', mode === 'diagram');
   $('#source-tab').classList.toggle('active', mode === 'source');
   $('#connections-tab').classList.toggle('active', edgeMode === 'connections');
   $('#types-tab').classList.toggle('active', edgeMode === 'types');
   $('#canvas').hidden = mode !== 'diagram';
+  $('#system-map').hidden = mode !== 'map';
   $('#source-pane').hidden = mode !== 'source';
   $('.view-tools').hidden = mode !== 'diagram';
-  $('#status-text').textContent = loading
-    ? 'Reading model…'
-    : `SysML 2.0 analysis · ${model.elements.length} elements`;
-  $('#diagnostics-button').innerHTML =
-    `${icon(model.diagnostics.length ? 'warning' : 'info')} ${model.diagnostics.length} diagnostics`;
-  $('#diagnostics-button').classList.toggle('has-issues', model.diagnostics.length > 0);
+  $('#status-text').hidden = !loading;
+  $('#status-text').textContent = loading ? 'Reading model…' : '';
+  const count = model.diagnostics.length;
+  $('#diagnostics-button').hidden = loading || count === 0;
+  $('#diagnostics-button').innerHTML = `${icon('warning')} ${count}`;
+  $('#diagnostics-button').setAttribute('aria-label', `${count} model diagnostics`);
+  $('#diagnostics-button').title = `View ${count} model diagnostics`;
   if (mode === 'diagram') renderDiagram(nodes);
-  else renderSource();
+  else if (mode === 'source') renderSource();
+  else systemMap.refresh();
   renderInspector();
   for (const p of scrollPositions) {
     $(p.s).scrollTop = p.top;
@@ -221,16 +252,43 @@ function renderDiagram(allNodes: ModelElement[]) {
 }
 
 function renderInspector() {
+  if (mode === 'map' && mapGroup) {
+    const group = mapGroup;
+    const records = group.records.slice(mapGroupPage * 50, (mapGroupPage + 1) * 50);
+    $('#inspector').innerHTML =
+      `<h2 class="inspector-eyebrow">RELATIONSHIPS</h2><h2 class="inspector-name">${esc(systemMap.elementFor(group.sourceId)?.name)} ${group.directed ? '→' : '—'} ${esc(systemMap.elementFor(group.targetId)?.name)}</h2><p>${esc(group.kind)} · ${group.records.length} source records</p>${records
+        .map((r) => {
+          const location =
+            r.reference?.source ?? model.byId.get(r.connectionId ?? '')?.semantic.source;
+          return `<div class="map-relation-record"><button data-action="inspect-reference" data-id="${esc(systemMap.elementFor(r.sourceId)?.id)}">${esc(r.sourceLabel)}</button><p>${esc(r.kind)}</p><button data-action="inspect-reference" data-id="${esc(systemMap.elementFor(r.targetId)?.id)}">${esc(r.targetLabel)}</button>${location ? `<p>${esc(model.documentsById.get(location.documentId)?.name)} · line ${location.start.line}</p><button data-action="diagnostic-source" data-doc="${esc(location.documentId)}" data-line="${location.start.line}">Reveal relationship source</button>` : ''}</div>`;
+        })
+        .join(
+          '',
+        )}<div class="map-navigation"><button data-action="map-group-previous" ${mapGroupPage === 0 ? 'disabled' : ''}>Previous</button><span>${mapGroupPage * 50 + 1}–${mapGroupPage * 50 + records.length}</span><button data-action="map-group-next" ${(mapGroupPage + 1) * 50 >= group.records.length ? 'disabled' : ''}>Next</button></div>`;
+    return;
+  }
   const e = selected();
   const field = (name: string, value: string) =>
     `<div class="field"><label>${name}</label><div>${esc(value)}</div></div>`;
   const reference = (r: Reference) => {
     const target = referenceTarget(model, r);
-    return `${field(r.kind, r.spelling)}${target ? `<button class="text-link" data-action="inspect-reference" data-id="${esc(target.id)}">Go to ${esc(target.name)} ${icon('arrow')}</button>` : `<span class="unresolved">${esc(r.resolution.status)}</span>`}`;
+    const names: Record<string, string> = {
+      typing: 'Type',
+      specialization: 'Specializes',
+      subsetting: 'Subsets',
+      redefinition: 'Redefines',
+    };
+    const name = names[r.kind] ?? r.kind;
+    return `${field(name, r.spelling)}${target ? `<button class="text-link" data-action="inspect-reference" data-id="${esc(target.id)}">Go to ${esc(target.name)} ${icon('arrow')}</button>` : `<span class="unresolved">${esc(r.resolution.status)}</span>`}`;
   };
+  const context = mode === 'map' ? systemMap.selectionContext() : undefined;
+  const provenance =
+    context && context.element.id === e?.id
+      ? `${field('In this structure', context!.contextName!)}${context!.inheritedFrom ? field('Inherited from', context!.inheritedFrom.qualifiedName) : ''}${context!.note ? `<p class="unresolved">${esc(context!.note)}</p>` : ''}`
+      : '';
   $('#inspector').innerHTML = `<h2 class="inspector-eyebrow">INSPECTOR</h2>${
     e
-      ? `<div class="inspector-icon ${tone(e)}">${icon(kindIcon(e))}</div><h2 class="inspector-name">${esc(e.name)}</h2><div class="element-kind ${tone(e)}">«${esc(label(e))}»</div>${e.documentation ? `<p class="documentation">${esc(e.documentation)}</p>` : ''}<hr>${field('Qualified name', e.qualifiedName)}${e.references
+      ? `<div class="inspector-icon ${tone(e)}">${icon(kindIcon(e))}</div><h2 class="inspector-name">${esc(e.name)}</h2><div class="element-kind ${tone(e)}">«${esc(label(e))}»</div>${e.documentation ? `<p class="documentation">${esc(e.documentation)}</p>` : ''}<hr>${provenance}${field('Qualified name', e.qualifiedName)}${e.definition ? `<button class="text-link" data-action="type-hierarchy" data-id="${esc(e.id)}">Show type hierarchy ${icon('arrow')}</button>` : ''}${e.references
           .filter((r) =>
             ['typing', 'specialization', 'subsetting', 'redefinition'].includes(r.kind),
           )
@@ -291,6 +349,11 @@ function notify(message: string) {
   }, 6500);
 }
 function explore(e: ModelElement) {
+  if (mode === 'map') {
+    if (!systemMap.explore(e.id))
+      notify('This annotation is available in the inspector, Diagram and Source.');
+    return;
+  }
   selectedId = e.id;
   if (members(e).length) scopeId = e.id;
   sourceId = e.documentId || sourceId;
@@ -308,19 +371,17 @@ function jumpToLine(line?: number) {
 }
 function install(parsed: ViewerModel, exampleModel: boolean) {
   model = parsed;
+  mapGroup = null;
+  systemMap.setModel(model);
   isExample = exampleModel;
   query = '';
   $<HTMLInputElement>('#search').value = '';
   collapsed.clear();
-  const roots = children(model, null);
-  scopeId = roots.length === 1 ? roots[0].id : null;
-  selectedId = scopeId ?? model.elements[0]?.id ?? null;
-  if (exampleModel) {
-    scopeId = model.elements.find((e) => e.name === 'SurveyVessel')?.id ?? scopeId;
-    selectedId = scopeId;
-  }
+  scopeId = null;
+  selectedId = null;
   sourceId = selected()?.documentId ?? model.documents[0]?.id ?? '';
-  mode = 'diagram';
+  mode = 'map';
+  systemMap.select(selectedId);
   loading = false;
   render();
   resetCanvas();
@@ -393,6 +454,11 @@ document.addEventListener('click', (event) => {
   if (!button || button.hasAttribute('disabled')) return;
   const action = button.dataset.action,
     e = model.byId.get(button.dataset.id ?? '');
+  if (action === 'map-group-next' || action === 'map-group-previous') {
+    mapGroupPage = Math.max(0, mapGroupPage + (action === 'map-group-next' ? 1 : -1));
+    renderInspector();
+    return;
+  }
   if (action === 'open') {
     void openModels();
     return;
@@ -402,11 +468,13 @@ document.addEventListener('click', (event) => {
     return;
   }
   if (action === 'inspect-reference' && e) {
+    mapGroup = null;
     selectedId = e.id;
     sourceId = e.documentId || sourceId;
-    mode = e.library ? 'source' : 'diagram';
+    mode = e.library ? 'source' : mode === 'map' ? 'map' : 'diagram';
     if (!e.library) scopeId = e.parentId;
     render();
+    if (mode === 'map') systemMap.select(e.id, true);
     if (mode === 'source') jumpToLine();
     return;
   }
@@ -416,10 +484,12 @@ document.addEventListener('click', (event) => {
     return;
   }
   if (action === 'select-tree' && e) {
+    mapGroup = null;
     selectedId = e.id;
     sourceId = e.documentId;
     scopeId = e.parentId;
     render();
+    if (mode === 'map') systemMap.select(e.id, true);
     if (mode === 'source') jumpToLine();
     return;
   }
@@ -435,6 +505,20 @@ document.addEventListener('click', (event) => {
   }
   if (action === 'explore' && e) {
     explore(e);
+    return;
+  }
+  if (action === 'type-hierarchy' && e) {
+    mode = 'map';
+    systemMap.showHierarchy(e.id);
+    render();
+    return;
+  }
+  if (mode === 'map' && ['root', 'up', 'scope'].includes(action ?? '')) {
+    if (action === 'root' || (action === 'up' && !scope())) systemMap.overview();
+    else {
+      const target = action === 'scope' ? e : scope();
+      if (target) systemMap.focus(target.id);
+    }
     return;
   }
   if (action === 'scope' && e) {
@@ -453,6 +537,10 @@ document.addEventListener('click', (event) => {
     }
   }
   if (action === 'diagram') mode = 'diagram';
+  if (action === 'map') {
+    mode = 'map';
+    systemMap.select(selectedId);
+  }
   if (action === 'source') {
     mode = 'source';
     sourceId = selected()?.documentId ?? sourceId;
@@ -527,6 +615,25 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
     (event.target as HTMLElement).click();
   }
+});
+$('.segmented').addEventListener('keydown', (event) => {
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('.segmented [role="tab"]')];
+  const index = tabs.indexOf(event.target as HTMLButtonElement);
+  if (index < 0) return;
+  const next =
+    event.key === 'ArrowRight'
+      ? (index + 1) % tabs.length
+      : event.key === 'ArrowLeft'
+        ? (index + tabs.length - 1) % tabs.length
+        : event.key === 'Home'
+          ? 0
+          : event.key === 'End'
+            ? tabs.length - 1
+            : null;
+  if (next === null) return;
+  event.preventDefault();
+  tabs[next].click();
+  tabs[next].focus();
 });
 $('#search').addEventListener('input', () => {
   query = $<HTMLInputElement>('#search').value;

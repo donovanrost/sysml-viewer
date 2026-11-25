@@ -1,0 +1,24 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/dimensions.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/dimensions.rs
+--- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/dimensions.rs
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/check/dimensions.rs
+@@ -16,20 +16,6 @@
+     Known(QuantityDims),
+     Zero,
+     Unknown,
+-}
+-
+-pub(super) fn known(r: &mut ResolvedModel, scope: usize, expr: &Expr) -> Option<QuantityDims> {
+-    let mut infer = Inference {
+-        model: r,
+-        features: HashMap::new(),
+-        types: HashMap::new(),
+-        units: HashMap::new(),
+-        findings: Vec::new(),
+-    };
+-    match infer.expr(scope, expr) {
+-        Dimension::Known(d) => Some(d),
+-        _ => None,
+-    }
+ }
+ 
+ struct Inference<'a> {

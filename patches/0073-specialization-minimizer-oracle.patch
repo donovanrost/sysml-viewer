@@ -1,0 +1,278 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/minimizer_differential_tests.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/minimizer_differential_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/minimizer_differential_tests.rs
+@@ -0,0 +1,273 @@
++//! Compare graph reduction with an independent transitive-closure oracle.
++//! The oracle intentionally recomputes closure after every candidate removal.
++use super::*;
++use crate::{json::type_relations::FeatureChainBases, model::Model};
++
++#[derive(Clone, Copy, Debug)]
++struct Candidate {
++    source: usize,
++    target: usize,
++    reference: bool,
++}
++
++fn oracle(
++    authored: &[Vec<usize>],
++    candidates: &[Candidate],
++    fixed: usize,
++    chains: &[(usize, usize)],
++) -> (Vec<bool>, Vec<Vec<usize>>) {
++    let n = authored.len();
++    let mut graph: Vec<Vec<(usize, Option<usize>)>> = authored
++        .iter()
++        .map(|targets| targets.iter().map(|&target| (target, None)).collect())
++        .collect();
++    for (index, edge) in candidates.iter().enumerate() {
++        graph[edge.source].push((edge.target, Some(index)));
++    }
++    for &(source, target) in chains {
++        graph[source].push((target, None));
++    }
++    // Recursive reverse-neighbour DFS is independent of the production stack
++    // and dense buckets. Graphs here are deliberately tiny, including cycles.
++    fn visit(
++        at: usize,
++        graph: &[Vec<(usize, Option<usize>)>],
++        seen: &mut [bool],
++        post: &mut Vec<usize>,
++    ) {
++        if seen[at] {
++            return;
++        }
++        seen[at] = true;
++        for &(next, _) in graph[at].iter().rev() {
++            visit(next, graph, seen, post);
++        }
++        post.push(at);
++    }
++    let mut seen = vec![false; n];
++    let mut post = Vec::new();
++    for edge in candidates {
++        visit(edge.source, &graph, &mut seen, &mut post);
++    }
++    let mut rank = vec![0; n];
++    for (index, source) in post.into_iter().enumerate() {
++        rank[source] = index;
++    }
++    let mut order: Vec<_> = (fixed..candidates.len()).collect();
++    order.sort_by_key(|&index| std::cmp::Reverse(rank[candidates[index].source]));
++    let mut retained = vec![true; candidates.len()];
++    for index in order {
++        let edge = candidates[index];
++        if edge.reference {
++            continue;
++        }
++        retained[index] = false;
++        let mut closure = vec![vec![false; n]; n];
++        for source in 0..n {
++            closure[source][source] = true;
++            for &(target, candidate) in &graph[source] {
++                if candidate.is_none_or(|index| retained[index]) {
++                    closure[source][target] = true;
++                }
++            }
++        }
++        for via in 0..n {
++            for source in 0..n {
++                for target in 0..n {
++                    closure[source][target] |= closure[source][via] && closure[via][target];
++                }
++            }
++        }
++        retained[index] = !closure[edge.source][edge.target];
++    }
++    let result = graph
++        .into_iter()
++        .map(|edges| {
++            let mut targets = Vec::new();
++            for (target, candidate) in edges {
++                if candidate.is_none_or(|index| retained[index]) && !targets.contains(&target) {
++                    targets.push(target);
++                }
++            }
++            targets
++        })
++        .collect();
++    (retained, result)
++}
++
++fn compare(
++    authored: &[Vec<usize>],
++    candidates: &[Candidate],
++    fixed: usize,
++    chains: &[(usize, usize)],
++) {
++    let mut model = Model::new();
++    let mut source = String::new();
++    for (node, targets) in authored.iter().enumerate() {
++        source.push_str(&format!("class N{node}"));
++        if !targets.is_empty() {
++            source.push_str(" specializes ");
++            source.push_str(
++                &targets
++                    .iter()
++                    .map(|target| format!("N{target}"))
++                    .collect::<Vec<_>>()
++                    .join(", "),
++            );
++        }
++        source.push(';');
++    }
++    assert!(
++        model
++            .add_source("minimizer.kerml", &source)
++            .diagnostics
++            .is_empty()
++    );
++    let mut r = ResolvedModel::build(&model);
++    let nodes: Vec<_> = (0..authored.len())
++        .map(|n| r.resolve_qualified(&format!("N{n}")).unwrap().0)
++        .collect();
++    let ids: Vec<_> = nodes.iter().map(|&node| r.b.elements[node].id).collect();
++    let plan: Vec<_> = candidates
++        .iter()
++        .map(|edge| {
++            (
++                nodes[edge.source],
++                if edge.reference {
++                    (
++                        "ReferenceSubsetting",
++                        "referencingFeature",
++                        "referencedFeature",
++                        ids[edge.target],
++                    )
++                } else {
++                    (
++                        "Subclassification",
++                        "subclassifier",
++                        "superclassifier",
++                        ids[edge.target],
++                    )
++                },
++            )
++        })
++        .collect();
++    let bases = FeatureChainBases {
++        targets: chains
++            .iter()
++            .map(|&(source, target)| (nodes[source], nodes[target]))
++            .collect(),
++        ..Default::default()
++    };
++    let owners = r.b.specialization_relation_owners();
++    let (keep, graph) =
++        r.b.required_specialization_edges_with_chain_bases(
++            &plan,
++            fixed,
++            r.b.explicit_len(),
++            &owners,
++            &bases,
++            Some(&mut 0),
++        )
++        .unwrap();
++    let expected = oracle(authored, candidates, fixed, chains);
++    assert_eq!(
++        keep, expected.0,
++        "source={source}, candidates={candidates:?}, fixed={fixed}, chains={chains:?}"
++    );
++    for (node, targets) in expected.1.iter().enumerate() {
++        let actual = graph.get(&ids[node]).map(Vec::as_slice).unwrap_or_default();
++        assert_eq!(
++            actual,
++            targets
++                .iter()
++                .map(|&target| ids[target])
++                .collect::<Vec<_>>(),
++            "node={node}, source={source}, candidates={candidates:?}, fixed={fixed}"
++        );
++    }
++    assert!(graph.keys().all(|id| ids.contains(id)));
++    // An interrupted reduction is never returned as a partial candidate plan.
++    let mut exhausted = crate::eval::MAX_STEPS;
++    assert!(
++        r.b.required_specialization_edges_with_chain_bases(
++            &plan,
++            fixed,
++            r.b.explicit_len(),
++            &owners,
++            &bases,
++            Some(&mut exhausted),
++        )
++        .is_none()
++    );
++    assert_eq!(
++        r.b.required_specialization_edges_with_chain_bases(
++            &plan,
++            fixed,
++            r.b.explicit_len(),
++            &owners,
++            &bases,
++            Some(&mut 0),
++        )
++        .unwrap(),
++        (keep, graph)
++    );
++}
++
++#[test]
++fn exhaustive_three_node_graphs_match_closure_oracle() {
++    for mask in 0..512 {
++        let authored: Vec<Vec<usize>> = (0..3)
++            .map(|source| {
++                (0..3)
++                    .filter(|&target| mask & (1 << (source * 3 + target)) != 0)
++                    .collect()
++            })
++            .collect();
++        for variant in 0..4 {
++            let mut candidates: Vec<_> = (0..9)
++                .map(|index| Candidate {
++                    source: index / 3,
++                    target: index % 3,
++                    reference: variant == 3 && index % 4 == 0,
++                })
++                .collect();
++            if variant % 2 == 1 {
++                candidates.reverse();
++            }
++            // Duplicate obligations must retain the same last surviving anchor.
++            candidates.push(candidates[variant]);
++            let fixed = if variant == 2 { 4 } else { 0 };
++            let chains = if variant == 3 { &[(1, 0)][..] } else { &[][..] };
++            compare(&authored, &candidates, fixed, chains);
++        }
++    }
++}
++
++#[test]
++fn deterministic_larger_graphs_match_closure_oracle() {
++    let mut state = 0x3ca5_972b_60d1_e8f4_u64;
++    let mut next = || {
++        state ^= state << 13;
++        state ^= state >> 7;
++        state ^= state << 17;
++        state as usize
++    };
++    for _ in 0..512 {
++        let n = 4 + next() % 4;
++        let authored: Vec<Vec<usize>> = (0..n)
++            .map(|_| (0..n).filter(|_| next() % 5 == 0).collect())
++            .collect();
++        let count = 1 + next() % 24;
++        let mut candidates: Vec<_> = (0..count)
++            .map(|_| Candidate {
++                source: next() % n,
++                target: next() % n,
++                reference: next() % 7 == 0,
++            })
++            .collect();
++        candidates.push(candidates[next() % count]);
++        let fixed = next() % (candidates.len() + 1);
++        let chains = [(next() % n, next() % n)];
++        compare(&authored, &candidates, fixed, &chains);
++    }
++}

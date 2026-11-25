@@ -1,0 +1,183 @@
+//! Checked antecedent of KerML checkFeaturePortionSpecialization.
+//! The recorded project interpretation follows the prose and plural library name.
+use super::{Builder, structural_index::StoredStructure, type_relations::TypeRelations};
+use crate::metaclass::conforms;
+use std::{collections::HashSet, sync::Arc};
+
+pub(super) const PORTIONS: &str = "Occurrences::Occurrence::portions";
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum Antecedent {
+    Inapplicable,
+    Applies,
+    OwnerType(usize),
+}
+fn charge(steps: &mut usize, amount: usize) -> Option<()> {
+    *steps = steps.saturating_add(amount);
+    (*steps <= crate::eval::MAX_STEPS).then_some(())
+}
+pub(super) fn candidate(element: &super::Elem) -> bool {
+    conforms(element.ty, "Feature")
+        && element.props.get("isPortion").and_then(|v| v.as_bool()) == Some(true)
+}
+/// Separate the owned-typing existential from an effective owning-Feature type.
+/// A false result requires complete relevant evidence, not an empty partial list.
+pub(super) fn antecedent(
+    b: &mut Builder,
+    feature: usize,
+    raw: &StoredStructure,
+    relations: &mut TypeRelations,
+    steps: &mut usize,
+) -> Option<Antecedent> {
+    charge(steps, 1)?;
+    let element = b.elements.get(feature)?;
+    if !conforms(element.ty, "Feature") || !raw.is_current(b) {
+        return None;
+    }
+    match element.props.get("isPortion") {
+        None => return Some(Antecedent::Inapplicable),
+        Some(value) => {
+            if !value.as_bool()? {
+                return Some(Antecedent::Inapplicable);
+            }
+        }
+    }
+    let typing = raw.typing(b, steps)?;
+    if raw.incomplete() || typing.sources_incomplete {
+        return None;
+    }
+    charge(steps, element.owned_relationships.len())?;
+    let owned: Vec<_> = element.owned_relationships.iter().copied().collect();
+    let mut owned_set = HashSet::new();
+    for &row in &owned {
+        if !owned_set.insert(row) {
+            return None;
+        }
+    }
+    let inverse = typing
+        .relationships
+        .get(&feature)
+        .map_or(&[][..], Vec::as_slice);
+    charge(steps, inverse.len())?;
+    let mut rows = owned;
+    rows.extend_from_slice(inverse);
+    let mut seen = HashSet::new();
+    let mut class = false;
+    for relationship in rows {
+        charge(steps, 1)?;
+        if !seen.insert(relationship) {
+            continue;
+        }
+        if !conforms(b.elements.get(relationship)?.ty, "FeatureTyping") {
+            continue;
+        }
+        let carrier =
+            super::semantic_ownership::checked_relationship_carrier(b, raw, relationship, steps)?;
+        if owned_set.contains(&relationship) && carrier != Some(feature) {
+            return None;
+        }
+        let target = super::type_relations::endpoint_with_carrier(
+            b,
+            feature,
+            carrier,
+            relationship,
+            &["typedFeature", "specific"],
+            &["type", "general"],
+            "Type",
+            steps,
+        )?;
+        if carrier == Some(feature) {
+            class |= conforms(b.elements[target].ty, "Class");
+        }
+    }
+    if !class {
+        return Some(Antecedent::Inapplicable);
+    }
+    let Some(owner) = relations.owning_type(b, feature, steps)? else {
+        return Some(Antecedent::Inapplicable);
+    };
+    if !raw.membership_domains(b, steps)?.owner_complete(owner) {
+        return None;
+    }
+    let kind = b.elements.get(owner)?.ty;
+    Some(if conforms(kind, "Class") {
+        Antecedent::Applies
+    } else if conforms(kind, "Feature") {
+        Antecedent::OwnerType(owner)
+    } else {
+        Antecedent::Inapplicable
+    })
+}
+
+pub(super) struct TypedRequirements {
+    pub(super) edges: Vec<(usize, usize)>,
+    pub(super) incomplete: HashSet<usize>,
+    pub(super) has_stable_predicate: bool,
+}
+/// Feature-owner predicates use the existing complete reducer while excluding
+/// all prospective specialization writers. Class-owner edges belong to static
+/// planning; a coupled Feature-owner predicate remains explicitly incomplete.
+pub(super) fn typed_requirements(
+    b: &mut Builder,
+    changing: Arc<HashSet<usize>>,
+    raw: &Arc<StoredStructure>,
+    steps: &mut usize,
+) -> Option<TypedRequirements> {
+    let mut relations = TypeRelations::with_structure(Arc::clone(raw));
+    let mut candidates = Vec::new();
+    let mut owners = Vec::new();
+    let mut seen = HashSet::new();
+    let mut result = TypedRequirements {
+        edges: Vec::new(),
+        incomplete: HashSet::new(),
+        has_stable_predicate: false,
+    };
+    charge(steps, b.explicit_len())?;
+    for source in 0..b.explicit_len() {
+        if !candidate(&b.elements[source]) {
+            continue;
+        }
+        match antecedent(b, source, raw, &mut relations, steps) {
+            Some(Antecedent::OwnerType(owner)) => {
+                candidates.push((source, owner));
+                if seen.insert(owner) {
+                    owners.push(owner);
+                }
+            }
+            None => {
+                result.incomplete.insert(source);
+            }
+            _ => {}
+        }
+    }
+    if owners.is_empty() {
+        return Some(result);
+    }
+    let projected = super::feature_type_projection::owners_of_kind_for_planning(
+        b, &owners, changing, "Class", steps,
+    );
+    charge(steps, 0)?;
+    let projected = projected.unwrap_or_default();
+    let target = relations.library_role(b, PORTIONS, steps);
+    charge(steps, 0)?;
+    for (source, owner) in candidates {
+        charge(steps, 1)?;
+        match projected.get(&owner) {
+            Some(true) => {
+                result.has_stable_predicate = true;
+                if let Some(target) = target {
+                    result.edges.push((source, target));
+                } else {
+                    result.incomplete.insert(source);
+                }
+            }
+            Some(false) => result.has_stable_predicate = true,
+            None => {
+                result.incomplete.insert(source);
+            }
+        }
+    }
+    Some(result)
+}
+
+#[cfg(test)]
+mod acceptance;

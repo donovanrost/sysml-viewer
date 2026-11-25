@@ -1,0 +1,229 @@
+{
+  "recordedAt": "2026-10-18T13:49:22.954469+00:00",
+  "status": "All 958 vendor model tests, 100 native workspace tests, 39 public Node tests and 16 provenance/evidence tests pass. Clippy, native/WASM builds, contract, 133 conformance cases and matching requirements execution evidence pass on macOS arm64. No package or complete semantic obligation closes.",
+  "kernelInputSha256": "4b7f6d7435e1e283f295bc6a3e8186034f7c588359ad27fcd91bd4bedb1009b4",
+  "previousQualifiedKernelInputSha256": "7302a833bbe787c306b3f1c20e816e2b9d110974659821e356cd1afbe81f9d1b",
+  "problem": "The complete Feature.type provider refused all owned FeatureValues, including declarations whose static type is independent of their value under KerML 8.4.4.11.",
+  "repair": "Shared TypeRelations valuation helper validates reciprocal local value membership and Boolean shapes, then proves a valid effective non-null direction or a complete nonempty explicit owned-specialization projection. Other feature-family requirements remain in the common provider. The helper adds no graph rows and neither evaluates nor types the value.",
+  "sourceReview": "feature-value-obligation-review.json",
+  "diagnosticReview": "invocation-obligation-decomposition-review.json#valuationApplicabilityPrototype",
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "9927723307dd96d1c726cb0adb1e14443b9f96164d8547b48b4437e3864ab1dc",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/valuation.rs": "d014bf9399bc45d534ce1522aefa8d6cea68a31f011c49cfe5a1eef09e7c8aa9",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/valuation/tests.rs": "05365d24f4c8463dd22bdaed92c3091aca442a5a354f6cb22192be89c1d90636",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/readiness_tests.rs": "d71ce0c25f1d4569f08b4ace686a70afc1a56de22b9da1cef1af649bb0f767c3",
+    "crates/sysml-kernel/tests/valued_feature_types.rs": "9e5784253cc0831543568712f0c1d81e5b2b9ed32723097bd9aa8ec4e78c6931",
+    "patches/manifest.json": "22fd2eecb2fc01b8d795b4e4cfeb68e715e8832b9ca2ff31aec73e575b9b50e3"
+  },
+  "anchorReview": {
+    "reviewedAt": "2026-10-18T13:45:29.090260+00:00",
+    "evidenceId": "checked-featuring",
+    "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
+    "previousSha256": "b766b71536f916ecab37fc70d6253b0a192965e085262a7bc1eaddb46f8c2762",
+    "currentSha256": "9927723307dd96d1c726cb0adb1e14443b9f96164d8547b48b4437e3864ab1dc",
+    "auditedFeaturingDomainBodySha256": "8bb9f7ec6a556d0c0cd3c48d9e58cbdc59312eaede8d69bce87ac4b0603a57b3",
+    "finding": "audited_featuring_domain is byte-identical. The source change adds the shared valuation applicability helper call to feature_requirements, used by complete typing and negative-specialization evidence. No package AttributeUsage featuring ownership, variability or metadata guard was removed. Existing bounded assessments retain their wording and limits; full source-matched qualification remains required.",
+    "normativeBasis": "KerML checkFeatureValuationSpecialization and 8.4.4.11 determine declared static types independently when direction is non-null or an owned specialization is explicit. The helper validates local valuation shape and reuses effective direction and complete explicit stored-specialization evidence.",
+    "stagedEvidence": "Eight focused tests pass, including raw/prepared/serialized replay, cumulative work retry, twelve fresh invalid-evidence partitions, edit refusal and parameter membership direction defaults.",
+    "readinessTestReview": "The old explicit-valued Feature negative was a blanket-refusal expectation. It is replaced by an explicit positive using exactly the same source and expected Function identity; the negative suite retains metadata and implicit-only inferred valuations."
+  },
+  "focusedQualification": {
+    "privateTests": 20,
+    "valuationTests": 8,
+    "readinessTests": 12,
+    "nativeTests": [
+      "calls_and_triggers_publish_default_bindings_with_exact_public_endpoints",
+      "values_preserve_declared_types_through_the_checked_report_and_property"
+    ],
+    "nativeTypeReportAndPropertyPairs": 10,
+    "nativeInferredTypeRefusal": true,
+    "logs": {
+      "target/trigger-validation/valuation-typing-focused.log": "4a73c44e775950cbcefae519b0d78c8e761ba69df66bbc7ef2f64a9ef74e610c",
+      "target/trigger-validation/valuation-typing-native-focused.log": "4b4d330e24c7ff89e6369eb674815dfd73db8a4d43e1b85aa8a6ce6d6f5154e5",
+      "target/trigger-validation/valuation-typing-native-focused-2.log": "a935b9575e73a43cc816b47a37ac01ec8b3d799e571eb87537d313eca5b57de5"
+    },
+    "fixtureCorrection": "The first new native test used a reserved identifier in its source fixture. The corrected fixture uses typedFeature/subsetFeature and prints parse diagnostics on failure. The existing default integration passed before that fixture correction; no production semantic code changed for the correction."
+  },
+  "fullQualification": {
+    "status": "pass",
+    "record": "target/trigger-validation/valuation-typing-qualification.json",
+    "vendorLog": "target/trigger-validation/valuation-typing-full-model.log",
+    "vendorModelTests": {
+      "status": "pass",
+      "tests": 958,
+      "log": "target/trigger-validation/valuation-typing-full-model.log",
+      "sha256": "3fc517fbeb74da798be0143a550a62958e7a48389d1b770b159a61e6f18eaa9e"
+    },
+    "contract": {
+      "status": "pass",
+      "log": "target/trigger-validation/valuation-typing-contract.log",
+      "sha256": "0b2e7a0e7b05ccc923fbd0ba7a665ad096a0729e241ad92b8fb20a23dce9527a"
+    },
+    "provenanceTests": {
+      "status": "pass",
+      "tests": 16,
+      "log": "target/trigger-validation/valuation-typing-provenance-evidence.log",
+      "sha256": "c7e829510baa15210cca982ad152e2d9cb820299bef2ac0ca1efa8839be53308"
+    },
+    "pipeline": {
+      "kernelInputSha256": "4b7f6d7435e1e283f295bc6a3e8186034f7c588359ad27fcd91bd4bedb1009b4",
+      "startedAt": "2026-10-18T13:48:25.284Z",
+      "status": "passed",
+      "phases": [
+        {
+          "name": "workspace",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--workspace"
+          ],
+          "startedAt": "2026-10-18T13:48:25.284Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:57:20.997Z"
+        },
+        {
+          "name": "clippy",
+          "args": [
+            "tools/rust.mjs",
+            "clippy",
+            "--locked",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "startedAt": "2026-10-18T13:57:20.999Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:57:24.826Z"
+        },
+        {
+          "name": "wasm",
+          "args": [
+            "tools/build-kernel.mjs"
+          ],
+          "startedAt": "2026-10-18T13:57:24.826Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:58:00.267Z"
+        },
+        {
+          "name": "cli",
+          "args": [
+            "tools/rust.mjs",
+            "build",
+            "--locked",
+            "--release",
+            "-p",
+            "sysml-cli"
+          ],
+          "startedAt": "2026-10-18T13:58:00.268Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:58:17.293Z"
+        },
+        {
+          "name": "public",
+          "args": [
+            "--experimental-strip-types",
+            "--test",
+            "--test-concurrency=1",
+            "tests/accept-actions.test.ts",
+            "tests/families.test.ts",
+            "tests/kernel.test.ts",
+            "tests/state-subactions.test.ts",
+            "tests/kernel-client.test.ts",
+            "tests/conformance-runner.test.mjs"
+          ],
+          "startedAt": "2026-10-18T13:58:17.294Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T14:01:16.420Z"
+        },
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-18T14:01:16.421Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T14:12:00.440Z"
+        },
+        {
+          "name": "requirements",
+          "args": [
+            "tools/requirements.mjs",
+            "--conformance",
+            "target/conformance/report.json"
+          ],
+          "startedAt": "2026-10-18T14:12:00.441Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T14:12:03.741Z"
+        }
+      ],
+      "finishedAt": "2026-10-18T14:12:06.590Z"
+    },
+    "workspace": {
+      "status": "pass",
+      "log": "target/trigger-validation/valuation-typing-qualification-workspace.log",
+      "logSha256": "59d8ddc27063dc2afaa63d55ba02eefc5cfebaba6e9cb32061df11b79c3c0476",
+      "tests": 100
+    },
+    "clippy": {
+      "status": "pass",
+      "log": "target/trigger-validation/valuation-typing-qualification-clippy.log",
+      "logSha256": "70ac74599ddbe2a140b60233fb1ca4826cfd08d7c5a2063a2a6f3494ae964b50"
+    },
+    "wasm": {
+      "status": "pass",
+      "log": "target/trigger-validation/valuation-typing-qualification-wasm.log",
+      "logSha256": "69d2a270104937e446debfdd64d9da3ce0414bfe2e63c22af90e7d2b9650b11a"
+    },
+    "cli": {
+      "status": "pass",
+      "log": "target/trigger-validation/valuation-typing-qualification-cli.log",
+      "logSha256": "801ce50eb3b701cea3a12be9f60f865394c8eb431197424a58ac64d67e8c7d8c"
+    },
+    "public": {
+      "status": "pass",
+      "log": "target/trigger-validation/valuation-typing-qualification-public.log",
+      "logSha256": "dab0d2188cca5f13a0a953c1292fcd86c141c63121bfaeabd1c6b59b7a0f6c85",
+      "tests": 39
+    },
+    "conformance": {
+      "status": "pass",
+      "log": "target/trigger-validation/valuation-typing-qualification-conformance.log",
+      "logSha256": "68d40870c9a0610417b64e50eda76a3bfcba7a9c387b847065fe00167703f71f",
+      "report": "docs/evidence/valuation-typing-conformance-macos-arm64.json",
+      "reportSha256": "df65941e817d3bd145abf04c30bbf2c23194a97b5f0981d4d844bcbe161ee6f9",
+      "kernelInputSha256": "4b7f6d7435e1e283f295bc6a3e8186034f7c588359ad27fcd91bd4bedb1009b4",
+      "binarySha256": "289b982daacfbc2cc80c5e519075d295c031f67c6cdd2457367d1982bd51f0cc"
+    },
+    "requirements": {
+      "status": "pass",
+      "log": "target/trigger-validation/valuation-typing-qualification-requirements.log",
+      "logSha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76",
+      "report": "docs/evidence/valuation-typing-requirements-macos-arm64.json",
+      "reportSha256": "73ba55b5192cfcf8e16688d2830c42687ad17650ba73aec2dfadf2f55b7e2bff",
+      "kernelInputSha256": "4b7f6d7435e1e283f295bc6a3e8186034f7c588359ad27fcd91bd4bedb1009b4",
+      "binarySha256": "289b982daacfbc2cc80c5e519075d295c031f67c6cdd2457367d1982bd51f0cc"
+    }
+  },
+  "limitations": [
+    "Undirected valuations without any non-implied owned specialization still need checked value-result specialization construction.",
+    "Declared type availability does not establish value compatibility, evaluation, initial-value validity, override validity or connector semantics.",
+    "Raw/prepared/serialized identity replay is tested in CanonicalV3; broader graph-format configurations remain subject to their corresponding qualification.",
+    "Post-edit refusals prevent stale success but do not prove every rebuilding path avoids WorkLimit.",
+    "No facade schema expansion, release or installation is included."
+  ],
+  "coverageCountsChanged": false,
+  "next": "Resolve remaining generated-reference result typing, library Feature-family and contextual value-result binding dependencies.",
+  "publicDependencyProbe": "invocation-obligation-decomposition-review.json#valuationTypingDependencyResults",
+  "qualifiedAt": "2026-10-18T14:12:06.590Z"
+}

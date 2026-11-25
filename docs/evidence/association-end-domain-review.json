@@ -1,0 +1,1016 @@
+{
+  "reviewedAt": "2026-10-18T19:23:31.432668+00:00",
+  "status": "Association membership/end-domain increment admitted and qualified on macOS arm64. Complete end typing, cross-feature semantics, related/source/target derivation, validation and conditional construction remain open.",
+  "sources": [
+    {
+      "path": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "Kernel-Associations-Association-validateAssociationStructureIntersection",
+      "name": "validateAssociationStructureIntersection",
+      "requirement": "If an Association is also a kind of Structure, then it must be an AssociationStructure.",
+      "sourceExpressions": [
+        "oclIsKindOf(Structure) = oclIsKindOf(AssociationStructure)"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Kernel-Associations-Association-validateAssociationBinarySpecialization",
+      "name": "validateAssociationBinarySpecialization",
+      "requirement": "If an Association has more than two associationEnds, then it must not specialize, directly or indirectly, the Association BinaryLink from the Kernel Semantic Library.",
+      "sourceExpressions": [
+        "associationEnds->size() > 2 implies not specializesFromLibrary('Links::BinaryLink')"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Kernel-Associations-Association-validateAssociationRelatedTypes",
+      "name": "validateAssociationRelatedTypes",
+      "requirement": "If an Association is concrete (not abstract), then it must have at least two relatedTypes.",
+      "sourceExpressions": [
+        "not isAbstract implies relatedType->size() >= 2"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Kernel-Associations-Association-deriveAssociationTargetType",
+      "name": "deriveAssociationTargetType",
+      "requirement": "",
+      "sourceExpressions": [
+        "targetType =     if relatedType->size() < 2 then OrderedSet{}     else          relatedType->             subSequence(2, relatedType->size())->             asOrderedSet()      endif"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Kernel-Associations-Association-checkAssociationSpecialization",
+      "name": "checkAssociationSpecialization",
+      "requirement": "An Association must directly or indirectly specialize the base Association Links::Link from the Kernel Semantic Library.",
+      "sourceExpressions": [
+        "specializesFromLibrary('Links::Link')"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Kernel-Associations-Association-deriveAssociationRelatedType",
+      "name": "deriveAssociationRelatedType",
+      "requirement": "The relatedTypes of an Association are the types of its associationEnds.",
+      "sourceExpressions": [
+        "relatedType = associationEnd.type"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Kernel-Associations-Association-validateAssociationEndTypes",
+      "name": "validateAssociationEndTypes",
+      "requirement": "The ownedEndFeatures of an Association must have exactly one type.",
+      "sourceExpressions": [
+        "ownedEndFeature->forAll(type->size() = 1)"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Kernel-Associations-Association-deriveAssociationSourceType",
+      "name": "deriveAssociationSourceType",
+      "requirement": "The sourceType of an Association is its first relatedType (if any).",
+      "sourceExpressions": [
+        "sourceType = if relatedType->isEmpty() then null else relatedType->first() endif"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Kernel-Associations-Association-checkAssociationBinarySpecialization",
+      "name": "checkAssociationBinarySpecialization",
+      "requirement": "A binary Association must directly or indirectly specialize the base Association Links::binaryLink from the Kernel Semantic Library.",
+      "sourceExpressions": [
+        "associationEnd->size() = 2 implies specializesFromLibrary('Links::BinaryLink')"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Kernel-Associations-AssociationStructure-checkAssociationStructureSpecialization",
+      "name": "checkAssociationStructureSpecialization",
+      "requirement": "An AssociationStructure must directly or indirectly specialize the base AssociationStructure Objects::LinkObject from the Kernel Semantic Library.",
+      "sourceExpressions": [
+        "specializesFromLibrary('Objects::LinkObject')"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Kernel-Associations-AssociationStructure-checkAssociationStructureBinarySpecialization",
+      "name": "checkAssociationStructureBinarySpecialization",
+      "requirement": "A binary AssociationStructure must directly or indirectly specialize the base AssociationStructure Objects::BinaryLinkObject from the Kernel Semantic Library.",
+      "sourceExpressions": [
+        "endFeature->size() = 2 implies specializesFromLibrary('Objects::BinaryLinkObject')"
+      ],
+      "status": "open"
+    }
+  ],
+  "scope": "Exact Association and AssociationStructure membership/end projections using shared Type reduction; required-family proof for specialization/type queries. Connector construction and end typing/crossing follow this dependency.",
+  "design": {
+    "candidate": "Read complete current association ancestry into a local candidate graph without publishing complete-base or negative-specialization facts. Preserve provider, identity, ownership, metadata, conjugation, work and stable-source guards.",
+    "reduction": "Use the same full membership/positional/redefinition reduction as the public Type query. Before caller exclusions, audit all visited Associations against their effective unique end-feature identities.",
+    "closure": "Every Association requires Links::Link and Base::Anything; exactly two effective ends require Links::BinaryLink. AssociationStructure additionally requires Objects::LinkObject, Objects::Object and Occurrences::Occurrence, plus Objects::BinaryLinkObject when binary. Required roles use loaded canonical identities and positive paths within the same candidate graph.",
+    "recursion": "The specialization reader invokes that checked membership proof with a query-local active-request guard; recursion refuses completeness. Candidate edges never enter complete-bases or negative-path caches.",
+    "separation": "A complete feature/end enumeration does not certify exactly-one end typing, concrete related-type cardinality, nonbinary incompatibility, crossing semantics or whole-model validity."
+  },
+  "acceptancePartitions": [
+    "Zero/one/two/three effective ends, including inheritance and zero owned ends. Exact ordered identities; private owned ends; namespace aliases must not create feature slots.",
+    "Explicit, inherited and absent binary bases; the final effective count, including positional redefinition suppression, controls applicability. A missing conditional base remains incomplete.",
+    "AssociationStructure requires both Association and Structure base families; missing, renamed or ambiguous canonical roles refuse.",
+    "Every ancestor is audited, including an invalid intermediate binary base hidden by a child end-count change. Query exclusions cannot hide incomplete ancestry.",
+    "Cold/warm queries, ownership/inverse damage, malformed isEnd flags, source edits and kind changes, metadata, conjugation, cyclic specialization and exhausted budgets.",
+    "Raw/prepared/serialized full libraries in both graph formats. Exact Link/BinaryLink/SelfLink and LinkObject/BinaryLinkObject projections; typed links feature consumers.",
+    "No graph append or certified fact leakage on failure; retry after repair uses fresh evidence; bounded cumulative work."
+  ],
+  "knownSourceDiscrepancies": [
+    "checkAssociationBinarySpecialization prose names Links::binaryLink, while its OCL and the pinned library identify Links::BinaryLink. Candidate follows the matching OCL/library identity; no normative ambiguity is declared resolved.",
+    "validateAssociationBinarySpecialization OCL spells associationEnds while the property is associationEnd. Broader validation review remains open."
+  ],
+  "candidate": {
+    "path": "target/trigger-validation/association-domain-stage",
+    "runner": "target/trigger-validation/test-association-domains.mjs",
+    "status": "Historical isolated candidate: nine domain acceptance tests passed, then full model qualification failed. Superseded by the admitted and qualified source linked in qualification.",
+    "productionKernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+    "inputs": {
+      "target/trigger-validation/association-domain-stage/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+      "target/trigger-validation/association-domain-stage/json/positional.rs": "de1ae58d1574fe78ca8826f1574eeea5fa5642b8ba9e1817347f9dd2e6197025",
+      "target/trigger-validation/association-domain-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+      "target/trigger-validation/association-domain-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+      "target/trigger-validation/association-domain-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+      "target/trigger-validation/association-domain-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+      "target/trigger-validation/association-domain-stage/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+      "target/trigger-validation/association-domain-stage/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662"
+    },
+    "session": 24587,
+    "log": "target/trigger-validation/association-candidate-full.log"
+  },
+  "remaining": [
+    "Complete owned-cross construction and checked selection before claiming end typing or crossing semantics.",
+    "Qualify general end Feature type/crossing domains and contextual chains.",
+    "Implement missing binary association and coupled connector base/end construction.",
+    "Finish all eleven direct constraints, inherited requirements and public interchange evidence."
+  ],
+  "diagnostic": {
+    "status": "pass; dependencies isolated, not acceptance completion",
+    "session": 1563,
+    "exitCode": 0,
+    "tests": 1,
+    "log": "target/trigger-validation/association-domains-corrected.log",
+    "logSha256": "431656ff4ebb8b954211ff952714eeb5338c7a376689d6a6364ac1dcc49939e0",
+    "candidateArchive": "target/trigger-validation/association-domain-first-stage",
+    "findings": [
+      "Both formats produce exact Link/BinaryLink, links/binaryLinks and LinkObject/BinaryLinkObject end projections, including authored positive pairs.",
+      "Both formats refuse MissingBinary with two owned/effective ends and no BinaryLink path.",
+      "SelfLink and selfLinks remain IncompleteProvider; diagnostic instrumentation is tracing the specific cause.",
+      "Cold full-library Link queries use about 8.22M (canonical) and 7.55M (legacy) steps; broader unchanged-budget acceptance is required."
+    ]
+  },
+  "updatedAt": "2026-10-19T02:18:40.691798+00:00",
+  "acceptanceProgress": {
+    "run": "target/trigger-validation/association-domains-end-properties.log",
+    "passed": 4,
+    "failed": 1,
+    "disposition": "Mutation, binary-base exclusion and specialization/budget tests pass. The broader positive test fails on a foreign end alias in LegacyV2; that failure remains open rather than changing the required behavior. This log also contains the diagnostic probe, which is not an acceptance proof.",
+    "publicProperty": "Positive cases preceding the foreign-alias failure check both endFeature and associationEnd through the checked property API.",
+    "foreignAliasFinding": "The checked adapter schedules borrowed local members only for CanonicalV3 and restricts foreign end owners to Class. Construction separately lacks local-alias prerequisites. An alias can suppress an inherited end through its referent redefinitions without itself contributing a FeatureMembership or a supertype.",
+    "selfLinkFinding": "Valid standalone Subclassification caused the initial refusal. The guarded source/target validation and complete source-alias indexing repair now passes exact SelfLink/selfLinks identity assertions in both graph formats; see expandedAcceptance."
+  },
+  "standaloneSubclassificationFinding": {
+    "status": "Guarded repair passed the full-library identity regression and 28 mutation partitions plus existing structural-index tests; subsequently admitted in the qualified Association source.",
+    "source": "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Occurrences.kerml",
+    "declaration": "subclassifier SelfLink specializes SelfSameLifeLink;",
+    "probe": "target/trigger-validation/association-selflink-rows.log",
+    "probeSha256": "5d94ec7e2278cccc45f5cf6eac177fa84e68cdd8eb9fe78adc2bc1e991a29a8e",
+    "obligationAnchors": [
+      "Core-Types-Type-supertypes_Boolean",
+      "Core-Types-Type-deriveTypeOwnedSpecialization",
+      "Core-Classifiers-Classifier-deriveClassifierOwnedSubclassification",
+      "Core-Classifiers-Subclassification"
+    ],
+    "cause": "Structural index correctly records this unowned source relationship. The complete Type supertype reader currently permits only valid standalone FeatureTyping rows, so this valid Subclassification makes SelfLink ancestry unqualified. The failure occurs before crossing-feature semantics are read.",
+    "correction": "Validate exact source/target Classifier roles, generic endpoint aliases and absence of a relationship carrier, then exclude it from the ownedSpecialization-based supertypes operation. Do not add the foreign superclass or its members to this operation.",
+    "acceptance": "Both formats; cold/warm; exact ends and absent foreign memberships/ancestry; malformed target metaclass, conflicting specific alias, forged carrier, unresolved target. The original standalone-typing guards remain shared.",
+    "sourceIndexRepair": "Extend the existing standalone FeatureTyping source-claim scan to Subclassification, retaining specific, subclassifier and all source/relatedElement source claims. Every named source is marked for validation; do not select a single alias before disagreement checks."
+  },
+  "attempts": [
+    {
+      "name": "standalone-subclassification",
+      "status": "failed acceptance after successful full-library diagnostic",
+      "session": 17041,
+      "log": "target/trigger-validation/association-standalone-subclassification.log",
+      "logSha256": "ed6144d03441178a27e95f01b80655a2c7697316bc10b7d889b8f54fb969fd28",
+      "inputs": {
+        "target/trigger-validation/association-domain-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+        "target/trigger-validation/association-domain-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+        "target/trigger-validation/association-domain-stage/json/type_relations.rs": "fa16d1820bdef798e9ead04c2a2cd5d54c0413479ab76ba2fb2880f1359cdf61",
+        "target/trigger-validation/association-domain-stage/json/type_relations/association_domains_tests.rs": "5e5c41bfada0b589898306ae501a04de614baf29af9f3c43729594df2df21a65",
+        "target/trigger-validation/association-domain-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3"
+      },
+      "finding": "SelfLink and selfLinks now have exact expected ends in both formats, but conflicting specific/subclassifier source identities could hide the original source from the structural index. The private negative test caught a false complete Pair projection."
+    }
+  ],
+  "sourceIndexAcceptance": {
+    "status": "pass",
+    "session": 9594,
+    "exitCode": 0,
+    "tests": 37,
+    "newRegressionPartitions": 28,
+    "existingStructuralIndexTests": 36,
+    "log": "target/trigger-validation/association-subclassification-source-index.log",
+    "logSha256": "10a65879176f36c994c581a2bbae8c2c7938f7cdeaf9cf950dc4418f7e286f12"
+  },
+  "expandedAcceptance": {
+    "status": "pass",
+    "session": 91550,
+    "exitCode": 0,
+    "tests": 65,
+    "suiteCounts": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      7,
+      17,
+      36
+    ],
+    "log": "target/trigger-validation/association-domains-expanded.log",
+    "logSha256": "649d2780001c4865064c791ae5f05048eaf3c0d9b9a23aadfa2c12e328f73877",
+    "limits": "The foreign-end alias acceptance is still failing in its separately recorded run; this selected success does not close the entire Association domain. Raw/prepared replay and full broader qualification remain pending."
+  },
+  "foreignAliasDependencyWork": {
+    "status": "Historical selected acceptance passed; full run 24587 later failed as recorded in fullCandidateQualification. Reviewed subtype and raw-name-index successors are admitted and qualified.",
+    "source": "target/standards/kerml.xmi",
+    "sourceSha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "anchors": [
+      {
+        "id": "Core-Types-Type-inheritedMemberships_Namespace_Type_Boolean",
+        "bodies": [
+          "removeRedefinedFeatures( inheritableMemberships(excludedNamespaces, excludedTypes, excludeImplied))"
+        ]
+      },
+      {
+        "id": "Core-Types-Type-nonPrivateMemberships_Namespace_Type_Boolean",
+        "bodies": [
+          "let publicMemberships : OrderedSet(Membership) =      membershipsOfVisibility(VisibilityKind::public, excludedNamespaces) in let protectedMemberships : OrderedSet(Membership) =      membershipsOfVisibility(VisibilityKind::protected, excludedNamespaces) in let inheritedMemberships : OrderedSet(Membership) =     inheritedMemberships(excludedNamespaces, excludedTypes, excludeImplied) in publicMemberships->     union(protectedMemberships)->     union(inheritedMemberships)"
+        ]
+      },
+      {
+        "id": "Core-Types-Type-removeRedefinedFeatures_Membership",
+        "bodies": [
+          "let reducedMemberships : Sequence(Membership) =     memberships->reject(mem1 |         memberships->excluding(mem1)->             exists(mem2 | allRedefinedFeaturesOf(mem2)->                 includes(mem1.memberElement))) in let redefinedFeatures : Set(Feature) =      ownedFeature.redefinition.redefinedFeature->asSet() in reducedMemberships->reject(mem | allRedefinedFeaturesOf(mem)->     exists(feature | redefinedFeatures->includes(feature)))"
+        ]
+      },
+      {
+        "id": "Core-Types-Type-deriveTypeEndFeature",
+        "bodies": [
+          "endFeature = feature->select(isEnd)"
+        ]
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureEndRedefinition",
+        "bodies": [
+          "isEnd and owningType <> null implies     let i : Integer =          owningType.ownedEndFeature->indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |              supertype.endFeature->size() >= i implies                 redefines(supertype.endFeature->at(i))"
+        ]
+      }
+    ],
+    "finding": "The checked adapter schedules borrowed local members only for CanonicalV3 and restricts foreign end owners to Class. Construction separately lacks local-alias prerequisites. An alias can suppress an inherited end through its referent redefinitions without itself contributing a FeatureMembership or a supertype.",
+    "design": "Share one borrowed-member dependency selector between stored construction and checked semantic queries in both formats. Schedule complete foreign Class/Structure/Association/AssociationStructure end domains before the consumer. Preserve exact identities, ordinary role checks, authored-source agreement, cycle and work guards. Existing legacy expanded-import limitations remain unchanged and open.",
+    "acceptance": [
+      "Original inherited/redefined/end-alias expectation unchanged in both formats.",
+      "Both left/right foreign aliases and both declaration orders: a Merged association inherits one surviving Parent end; its Consumer position redefines that surviving end. Alias membership survives without a foreign feature slot, unrelated members or foreign ancestry. Cold/warm exact queries.",
+      "Cold/warm damaged foreign flags, membership inverse, metaclass and ownership; missing/cyclic foreign ancestry; budget exhaustion followed by an exact retry.",
+      "Full 94-file library raw/prepared/serialized replay, preserving exact SelfLink and BinaryLinkObject identities plus a borrowed SelfLink end."
+    ],
+    "limits": [
+      "No test result yet for these new changes.",
+      "No change to the admitted kernel; the current candidate still requires complete selected/full-model/native/public qualification.",
+      "Does not close all Alias/import, Association, Connector, default endpoint or language-family obligations."
+    ],
+    "publicAcceptanceSource": "target/trigger-validation/association-ends-public.rs",
+    "publicAcceptanceRunner": "target/trigger-validation/test-association-ends-public.mjs",
+    "sharedNonownedGuard": "Static review found positional foreign-domain checks still blanket-refusing raw.bad_bases, which includes valid standalone Subclassification. Extract the already-reviewed exact standalone source/target/carrier validator and reuse it in both Type relation and positional source/owner readers. The new foreign-alias damage/retry fixtures include a valid standalone Subclassification; full-library replay borrows SelfLink::thisThing."
+  },
+  "currentCandidateInputs": {
+    "target/trigger-validation/association-domain-stage/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+    "target/trigger-validation/association-domain-stage/json/positional.rs": "de1ae58d1574fe78ca8826f1574eeea5fa5642b8ba9e1817347f9dd2e6197025",
+    "target/trigger-validation/association-domain-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+    "target/trigger-validation/association-domain-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+    "target/trigger-validation/association-domain-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+    "target/trigger-validation/association-domain-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+    "target/trigger-validation/association-domain-stage/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+    "target/trigger-validation/association-domain-stage/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662"
+  },
+  "preAliasTestedCandidate": {
+    "inputs": {
+      "target/trigger-validation/association-domain-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+      "target/trigger-validation/association-domain-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+      "target/trigger-validation/association-domain-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+      "target/trigger-validation/association-domain-stage/json/type_relations.rs": "fa16d1820bdef798e9ead04c2a2cd5d54c0413479ab76ba2fb2880f1359cdf61",
+      "target/trigger-validation/association-domain-stage/json/type_relations/association_domains_tests.rs": "d4221a0890356343e6d9b1f8e30e9ce9834e8111fd5392cad50374d0d27df9bc",
+      "target/trigger-validation/association-domain-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3"
+    },
+    "session": 91550,
+    "log": "target/trigger-validation/association-domains-expanded.log"
+  },
+  "remainingDerivationAcceptance": {
+    "sourceBoundary": "KerML 1.0 8.3.4.4.2-3, pinned PDF pages181-184 and Association/AssociationStructure XMI nodes. These partitions are reviewed requirements, not executed results.",
+    "relatedType": {
+      "anchors": [
+        "Kernel-Associations-Association-relatedType",
+        "Kernel-Associations-Association-deriveAssociationRelatedType"
+      ],
+      "requirement": "Flatten the checked type sequences of the effective association ends in end order; retain repeated Type identities because relatedType is ordered and nonunique. Unknown end/type evidence cannot become an empty contribution.",
+      "partitions": [
+        "No ends, one end, two ends with equal types, two different types, inherited/redefined ends, one end with zero/one/multiple types.",
+        "Repeated sequence [X,Y,X,Y] stays nonunique.",
+        "Authored/inherited typing, ambiguous/unresolved/cyclic type evidence, and selected-vs-pruned type candidates."
+      ]
+    },
+    "sourceType": {
+      "anchor": "Kernel-Associations-Association-deriveAssociationSourceType",
+      "requirement": "Select the first element of the resulting relatedType sequence; complete empty sequence gives no source.",
+      "partitions": [
+        "An empty-typed first end followed by a typed second end selects the second end type, rather than assuming raw slot one.",
+        "Unavailable type evidence does not certify absence."
+      ]
+    },
+    "targetType": {
+      "anchor": "Kernel-Associations-Association-deriveAssociationTargetType",
+      "requirement": "Drop the first position of relatedType, then deduplicate the tail as prescribed by asOrderedSet; do not remove all occurrences equal to sourceType.",
+      "partitions": [
+        "[] and [X] give []; [X,X] gives [X]; [X,Y,X,Y] gives [Y,X] in OCL result order.",
+        "Repeated identity and distinct identities sharing a spelling remain distinct decisions."
+      ]
+    },
+    "endTypeValidation": {
+      "anchor": "Kernel-Associations-Association-validateAssociationEndTypes",
+      "requirement": "Each ownedEndFeature has exactly one effective type. A complete empty set is invalid, and unavailable type proof remains unknown.",
+      "partitions": [
+        "Zero/one/multiple effective types, inherited typing, redundant vs independent type candidates, malformed owned membership, and inherited invalid parent checked on its owning Association."
+      ]
+    },
+    "concreteRelatedTypeValidation": {
+      "anchor": "Kernel-Associations-Association-validateAssociationRelatedTypes",
+      "requirement": "For nonabstract Associations, the relatedType sequence has size at least two, preserving repeated identities.",
+      "partitions": [
+        "Abstract/concrete with zero/one/two/three values; [X,X] counts as two.",
+        "Do not replace this rule with owned or effective end count; associationEnd prose separately states a concrete two-end requirement and depends on end typing."
+      ]
+    },
+    "structureIntersectionValidation": {
+      "anchor": "Kernel-Associations-Association-validateAssociationStructureIntersection",
+      "requirement": "Evaluate metaclass-kind intersection over Association instances and subtypes. A model specialization edge to a Structure does not itself change the instance metaclass.",
+      "partitions": [
+        "Plain Association, AssociationStructure and each applicable metaclass descendant; malformed serialized metaclass combinations where representable."
+      ]
+    },
+    "binaryValidationAndConstruction": {
+      "anchors": [
+        "Kernel-Associations-Association-checkAssociationBinarySpecialization",
+        "Kernel-Associations-Association-validateAssociationBinarySpecialization",
+        "Kernel-Associations-AssociationStructure-checkAssociationStructureBinarySpecialization"
+      ],
+      "requirement": "The effective end count controls required binary base paths; more than two ends independently forbids a BinaryLink path. Conditional base/end construction must reach a consistent final effective graph.",
+      "partitions": [
+        "Zero/one/two/three ends, abstract/concrete, inherited/redefined ends, binary path through an intermediate base, changing two-to-three and three-to-two after edits.",
+        "Base construction can introduce inherited ends; certify the final count jointly with positional redefinitions, rather than adding a base from a preliminary count."
+      ]
+    }
+  },
+  "orderingReview": {
+    "status": "Open normative interchange detail; not a resolved discrepancy.",
+    "finding": "Type::endFeature is explicitly ordered in the pinned XMI, while Association::associationEnd redefines it without an explicit isOrdered attribute. relatedType is explicitly ordered/nonunique. targetType lacks explicit isOrdered but its derivation returns OrderedSet. Current API candidate preserves shared Type end order; full interchange/collection conformance must review the redefinition/default semantics against the normative dependencies."
+  },
+  "aliasAcceptance": {
+    "status": "pass",
+    "session": 78641,
+    "exitCode": 0,
+    "tests": 9,
+    "expectedTotalModelTests": 1022,
+    "log": "target/trigger-validation/association-alias-dependencies.log",
+    "logSha256": "34954778a37001e96b048b3db50ea9aabb36f078a37c955ee9acce22a29e7fdd",
+    "inputs": {
+      "target/trigger-validation/association-domain-stage/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+      "target/trigger-validation/association-domain-stage/json/positional.rs": "de1ae58d1574fe78ca8826f1574eeea5fa5642b8ba9e1817347f9dd2e6197025",
+      "target/trigger-validation/association-domain-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+      "target/trigger-validation/association-domain-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+      "target/trigger-validation/association-domain-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+      "target/trigger-validation/association-domain-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+      "target/trigger-validation/association-domain-stage/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+      "target/trigger-validation/association-domain-stage/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662"
+    },
+    "scope": "All Association domain tests, including the formerly failing end-alias case, exact foreign suppression/local slot ordering in both declaration orders, current ownership/metaclass/flag damage, source-alias validation, work-limit retry and six raw/prepared/serialized full-library replays. This is not closure of all eleven direct constraints or inherited obligations."
+  },
+  "fullCandidateQualification": {
+    "status": "failed",
+    "session": 24587,
+    "runner": "target/trigger-validation/qualify-association-candidate.mjs",
+    "log": "target/trigger-validation/association-candidate-full.log",
+    "sleepAssertion": "caffeinate -is scoped to command; does not override lid closure",
+    "phases": [
+      "all 1022 model unit tests",
+      "external public association_ends integration test"
+    ],
+    "inputs": {
+      "target/trigger-validation/association-domain-stage/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+      "target/trigger-validation/association-domain-stage/json/positional.rs": "de1ae58d1574fe78ca8826f1574eeea5fa5642b8ba9e1817347f9dd2e6197025",
+      "target/trigger-validation/association-domain-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+      "target/trigger-validation/association-domain-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+      "target/trigger-validation/association-domain-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+      "target/trigger-validation/association-domain-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+      "target/trigger-validation/association-domain-stage/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+      "target/trigger-validation/association-domain-stage/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662"
+    },
+    "publicSource": "target/trigger-validation/association-ends-public.rs",
+    "publicSourceSha256": "97542663e522545f6b1ba7e897e9e4a9688720485da1439ec56f0e2f7e5afc41",
+    "exitCode": 1,
+    "modelPassed": 1008,
+    "modelFailed": 14,
+    "publicIntegration": "not run because model suite failed",
+    "logSha256": "6196b251f09ba52366c0de82101a561e199aa164e93b8a839009edbbb60d9270",
+    "finishedObservedAt": "2026-10-18T23:18:58.423752+00:00",
+    "failureNames": [
+      "json::invocation_defaults::tests::full_library_calls_retain_all_inherited_and_trigger_defaults",
+      "json::invocation_results::tests::full_library_invocations_keep_their_complete_argument_mappings",
+      "json::portion_context::acceptance::damaged_owner_types_revoke_negatives_and_coupled_contexts_remain_unknown",
+      "json::portion_context::acceptance::feature_owner_portions_have_complete_negative_specialization_proofs",
+      "json::portion_context::acceptance::owner_projection_negative_proofs_exclude_future_writers_and_retry_budgets",
+      "json::portion_context::acceptance::portion_graph_formats_keep_legacy_missing_owner_bases_explicit",
+      "json::portion_context::acceptance::portion_types_and_antecedents_use_owned_typing_and_complete_effective_owner_types",
+      "json::portion_context::acceptance::portion_types_preserve_raw_prepared_serialized_identity_and_budget_retry",
+      "json::reference_memberships::tests::foreign_return_dependencies_are_scheduled_without_becoming_inherited_features",
+      "json::trigger_arguments::tests::trigger_argument_budget_is_cumulative_retryable_and_read_only",
+      "json::trigger_arguments::tests::trigger_arguments_refuse_stale_results_memberships_and_library_evidence",
+      "json::trigger_arguments::tests::trigger_library_resolution_preserves_global_ambiguity_and_missing_library_uncertainty",
+      "json::trigger_arguments::tests::trigger_predicates_replay_prepared_and_serialized_libraries",
+      "json::trigger_arguments::tests::when_wrapper_uses_the_first_nonparameter_membership_and_reciprocal_ownership"
+    ]
+  },
+  "regressionInvestigation": {
+    "observedAt": "2026-10-18T23:21:19.903114+00:00",
+    "status": "Resolved for the reproduced subtype regressions by the reviewed shared positional dependency repair; see admitted source and final qualification.",
+    "unchangedBinaryReproduction": {
+      "tests": 1,
+      "exitCode": 101,
+      "log": "target/trigger-validation/association-invocation-repro.log",
+      "finding": "The full-library invocation failure repeats alone: dynamic graph Declined(Incomplete)."
+    },
+    "trace": {
+      "session": 84927,
+      "exitCode": 1,
+      "tests": 3,
+      "log": "target/trigger-validation/association-regression-trace.log",
+      "finding": "Invocation, portion and trigger regressions repeat. The new shared borrowed-member guard declines seventeen library InvocationExpression/FeatureChainExpression owners; observed budgets remain below the work limit. No association required-base refusal was printed. Exact guard cause still under investigation."
+    },
+    "legacyExpectation": {
+      "finding": "The legacy foreign-return test fails because result selection now succeeds. Replace the obsolete expected refusal with the same exact result and absence-of-foreign-feature assertions for both formats, plus budget retry and ownership damage/repair. This is an intentional expanded capability, pending execution of the stronger tests.",
+      "candidate": "target/trigger-validation/association-domain-stage/json/reference_memberships.rs",
+      "sha256": "5927676a9c53803da7c199a9b68376d15bff5a0e72d39dc3f42558d0996da1d2"
+    },
+    "guardTrace": {
+      "status": "failed",
+      "session": 92861,
+      "log": "target/trigger-validation/association-regression-guard-trace.log",
+      "exitCode": 1,
+      "finding": "All three selected failures repeat. Exact Feature/owner and membership-kind restrictions reject valid Expression, BooleanExpression, CalculationUsage and ReferenceUsage positional members in the pinned library; the subsequent subtype experiment still rejects the SubjectMembership in TradeStudyObjective."
+    },
+    "genericRoleExperiment": {
+      "session": 89019,
+      "exitCode": 1,
+      "log": "target/trigger-validation/association-generic-roles.log",
+      "finding": "All nine Association tests pass. Three integration regressions still fail before membership-kind generalization; the new foreign-return test also exposes private-row repair without a resolved-model rebuild as unsupported. No source was admitted."
+    },
+    "secondGuardTrace": {
+      "session": 72116,
+      "exitCode": 1,
+      "log": "target/trigger-validation/association-generic-guard-trace.log",
+      "finding": "Remaining explicit guard refusal is in TradeStudies::TradeStudyObjective, whose subject uses SubjectMembership. Membership subtypes must retain their parameter role."
+    },
+    "privateMutationLimit": "Direct private-row repair after a failed proof does not restore all derived state. The supported current edit lifecycle rebuilds the resolved model. The strengthened regression requires failure after damage and exact identity/result after rebuild; C13 editing/invalidation remains open.",
+    "roleSubtypeAcceptance": {
+      "status": "mixed preliminary run; corrected fixture passes",
+      "session": 74531,
+      "log": "target/trigger-validation/association-role-subtypes.log",
+      "candidate": "target/trigger-validation/association-role-generic-stage",
+      "scope": "Three integration regressions, strengthened two-format foreign-return test, all nine Association tests, and six new metaclass/format partitions with exact positional targets, foreign-feature exclusion, work-limit refusal and ownership damage.",
+      "exitCode": 1,
+      "passedTests": 13,
+      "fixtureFailure": "The new fixture used the reserved token first as an unquoted name. Corrected to alpha/beta; no parser implementation was changed.",
+      "correctedFixture": {
+        "session": 81100,
+        "exitCode": 0,
+        "tests": 1,
+        "partitions": 6,
+        "log": "target/trigger-validation/association-role-subtype-acceptance.log",
+        "logSha256": "18301ef2e56662a313a093e537beeae8b2d3a432b9855ae567ba622b23adbeee"
+      },
+      "finding": "The three representative existing invocation/portion/trigger regressions, the strengthened legacy/canonical foreign-return test and all nine Association tests pass. New subtype role/format acceptance passes after fixture repair. Complete qualification remains pending."
+    },
+    "roleSourceReview": {
+      "source": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+      "finding": "End redefinition applies to Feature instances with isEnd and an owning Type. Parameter redefinition applies through Behavior/Step kind membership; result redefinition applies through Function/Expression kind membership. Exact concrete metaclass equality is not the applicability condition. This repair certifies shared positional inputs; checked callers still independently certify complete owner-family semantics. These are bounded dependency assertions, not closure of the four full obligations.",
+      "anchors": [
+        {
+          "id": "Core-Types-Type-deriveTypeEndFeature",
+          "name": "deriveTypeEndFeature",
+          "bodies": [
+            "<p>The <code>endFeatures</code> of a <code>Type</code> are all its <code>features</code> for which <code>isEnd = true</code>.</p>",
+            "endFeature = feature->select(isEnd)"
+          ]
+        },
+        {
+          "id": "Core-Features-Feature-checkFeatureParameterRedefinition",
+          "name": "checkFeatureParameterRedefinition",
+          "bodies": [
+            "<p>If a <code>Feature</code> is a <code>parameter</code> of an <code>owningType</code> that is a <code>Behavior</code> or <code>Step</code>, but <em>not</em> </p> <ul>     <li>A <code>result</code> <code>parameter</code></li>     <li>A <code>parameter</code> of an <code>InvocationExpression</code>, with at least one non-implied <code>ownedRedefinition</code></li> </ul> <p>then, for each direct supertype of its <code>owningType</code> that is also a <code>Behavior</code> or <code>Step</code>, it must redefine the <code>parameter</code> at the same position, if any.</p>",
+            "owningType <> null and not owningFeatureMembership.     oclIsKindOf(ReturnParameterMembership) and (owningType.oclIsKindOf(Behavior) or  owningType.oclIsKindOf(Step) and     (owningType.oclIsKindOf(InvocationExpression) implies       not ownedRedefinition->exists(not isImplied))  implies     let i : Integer =         owningType.ownedFeature->select(direction <> null)->             reject(owningFeatureMembership.                 oclIsKindOf(ReturnParameterMembership))->             indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |             let ownedParameters : Sequence(Feature) =                 supertype.ownedFeature->select(direction <> null)->                      reject(owningFeatureMembership.                          oclIsKindOf(ReturnParameterMembership)) in             ownedParameters->size() >= i implies                 redefines(ownedParameters->at(i))"
+          ]
+        },
+        {
+          "id": "Core-Features-Feature-checkFeatureEndRedefinition",
+          "name": "checkFeatureEndRedefinition",
+          "bodies": [
+            "<p>If a <code>Feature</code> has <code>isEnd = true</code> and an <code>owningType</code> that is not empty, then, for each direct supertype of its <code>owningType</code>, it must redefine the <code>endFeature</code> at the same position, if any.</p>",
+            "isEnd and owningType <> null implies     let i : Integer =          owningType.ownedEndFeature->indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |              supertype.endFeature->size() >= i implies                 redefines(supertype.endFeature->at(i))"
+          ]
+        },
+        {
+          "id": "Core-Features-Feature-checkFeatureResultRedefinition",
+          "name": "checkFeatureResultRedefinition",
+          "bodies": [
+            "<p>If a <code>Feature</code> is a <code>result</code> <code>parameter</code> of an <code>owningType</code> that is a <code>Function</code> or <code>Expression</code>, then, for each direct supertype of its <code>owningType</code> that is also a <code>Function</code> or <code>Expression</code>, it must redefine the <code>result</code> <code>parameter</code>.</p>",
+            "owningType <> null and (owningType.oclIsKindOf(Function) and     self = owningType.oclAsType(Function).result or  owningType.oclIsKindOf(Expression) and     self = owningType.oclAsType(Expression).result) implies     owningType.ownedSpecialization.general->         select(oclIsKindOf(Function) or oclIsKindOf(Expression))->         forAll(supertype |             redefines(                 if superType.oclIsKindOf(Function) then                     superType.oclAsType(Function).result                 else                     superType.oclAsType(Expression).result                 endif)"
+          ]
+        }
+      ]
+    }
+  },
+  "roleSubtypeFullQualification": {
+    "status": "failed",
+    "session": 1761,
+    "startedObservedAt": "2026-10-18T23:34:19.013638+00:00",
+    "runner": "target/trigger-validation/qualify-association-role-subtypes.mjs",
+    "state": "target/trigger-validation/association-role-subtypes-full.json",
+    "log": "target/trigger-validation/association-role-subtypes-full.log",
+    "candidate": "target/trigger-validation/association-role-generic-stage",
+    "expectedModelTests": 1023,
+    "phases": [
+      "complete model unit suite",
+      "external public association_ends integration"
+    ],
+    "inputs": {
+      "target/trigger-validation/association-role-generic-stage/json/positional/borrowed_role_subtypes.rs": "3f93ffd7d2c94519e95f6adb3716e810f27cb415303dfb451d7822e58a918431",
+      "target/trigger-validation/association-role-generic-stage/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+      "target/trigger-validation/association-role-generic-stage/json/positional.rs": "de466a581af29acd03724804fa4f9b3716610a274e77ccece39fed66a9e1127d",
+      "target/trigger-validation/association-role-generic-stage/json/reference_memberships.rs": "3685226f5c3b5c4ec7596095cc28beaa502eeccdc111aa363696522039d8ee83",
+      "target/trigger-validation/association-role-generic-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+      "target/trigger-validation/association-role-generic-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+      "target/trigger-validation/association-role-generic-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+      "target/trigger-validation/association-role-generic-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+      "target/trigger-validation/association-role-generic-stage/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+      "target/trigger-validation/association-role-generic-stage/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662"
+    },
+    "scope": "Candidate only. Production remains frozen; no source admission, complete obligation, family, package, release or installed-app claim.",
+    "exitCode": 1,
+    "modelPassed": 1022,
+    "modelFailed": 1,
+    "publicIntegration": "not run because model suite failed",
+    "logSha256": "e8cc8064ef0c27ecc81836eb4171d024eddf68aea11b9871da0ac596f6d6952e",
+    "finishedObservedAt": "2026-10-18T23:46:29.874783+00:00",
+    "remainingFailure": "json::type_relations::ordinary_features_tests::valid_membership_role_change_removes_owning_type_without_erasing_declared_type",
+    "finding": "All fourteen original failures pass. One existing ordinary-feature membership edit exceeds MAX_STEPS=10000000 (observed10000008) and reproduces alone (10000007); the budget and assertions remain unchanged. Candidate is not admitted.",
+    "fixtureVerification": {
+      "path": "target/trigger-validation/association-role-subtypes-fixtures.json",
+      "sha256": "7d28b07c8e0e9be21f703da3be85f56c6ff0b1d8ce1550eae330b94456ca5a5b",
+      "libraries": 94,
+      "corpusFiles": 251,
+      "status": "pass"
+    }
+  },
+  "membershipEditBudgetInvestigation": {
+    "status": "Reproduced failure resolved by raw library-name index reuse and conservative retirement accounting. Rejected traversal batching and earlier failures remain recorded; final 1027-test model run and source qualification pass.",
+    "reproduction": {
+      "session": 79168,
+      "exitCode": 101,
+      "log": "target/trigger-validation/association-membership-budget-repro.log"
+    },
+    "traceStage": "target/trigger-validation/association-budget-trace-stage",
+    "tracePreparation": "First preparation assertion incorrectly assumed a unique test-helper statement; corrected to instrument only the first exact() helper. The accidental unchanged-binary repeat7543 failed as expected and is not diagnostic trace evidence.",
+    "trace": {
+      "status": "failed as reproduced",
+      "session": 16407,
+      "log": "target/trigger-validation/association-membership-budget-trace-diagnostic.log",
+      "scope": "Diagnostic stack traces at work-limit refusal and retained-typing phase receipts; no limit or assertion changes.",
+      "exitCode": 1,
+      "finishedObservedAt": "2026-10-18T23:56:15.947456+00:00",
+      "logSha256": "30c1525357173d725856030d1bc237592a62a6f7201013724d7b6fec3e5a1329"
+    },
+    "finding": "The unchanged budget is nearly exhausted by retained_typing_edges after the membership-role edit: 9,986,818 steps before the feature-type proof itself. The initial query uses 1,405,304 steps. A phase trace now separates static planning, positional gathering and physical-prefix capture; no limit or expected result changes.",
+    "phaseTrace": {
+      "status": "failed as reproduced",
+      "session": 17793,
+      "stage": "target/trigger-validation/association-budget-phases-stage",
+      "log": "target/trigger-validation/association-membership-budget-phases.log",
+      "exitCode": 1,
+      "logSha256": "d202b77d5f346de1fb2bd5fc30d93e75102ec6f5cbda48a4f5bcd9686ff7dee1"
+    },
+    "phaseFinding": {
+      "staticPrefixEntry": 623860,
+      "afterRequiredPlan": 5456532,
+      "afterDirectBases": 5751309,
+      "afterPositionalGather": 6078918,
+      "afterPositionalReduction": 9155762,
+      "afterStaticPrefix": 9419316,
+      "afterPhysicalCapture": 9888613,
+      "retainedTypingExit": 9986818,
+      "borrowedMemberProofWork": 48704,
+      "interpretation": "The borrowed-alias proof is less than one percent of this rebuild. Investigate existing specialization construction and shared positional reduction; do not remove valid alias evidence checks."
+    },
+    "reductionTrace": {
+      "status": "failed as reproduced",
+      "session": 45896,
+      "log": "target/trigger-validation/association-membership-budget-reduction-diagnostic.log",
+      "scope": "Aggregate phases within implied planning and positional reduction. An earlier preparation assertion left the workspace unchanged; the terminal run84890 is only a repeat, not this trace.",
+      "exitCode": 1,
+      "logSha256": "047607e002956529ef2fcf2cb45ab04b321d6d3dcba6212182655fc1d1850131"
+    },
+    "reductionFinding": {
+      "kindRequirementsExit": 2965942,
+      "successionExit": 3064478,
+      "chainExit": 3308352,
+      "minimizerExit": 5370823,
+      "positionalPairing": 31195,
+      "positionalMembershipReduction": 1715806,
+      "positionalExport": 776800
+    },
+    "batchedReductionCandidate": {
+      "status": "not selected for the current budget repair; correct on tested graphs but slightly more expensive on the failing library model",
+      "stage": "target/trigger-validation/association-batched-reduction-stage",
+      "runner": "target/trigger-validation/qualify-association-batched-reduction-focused-retry.mjs",
+      "design": [
+        "Within one immutable reduction, propagate One(origin) or Many through shared redefinition paths. Each vertex can transition at most twice. A sole origin does not suppress itself even through a self-cycle; another origin does. Duplicate membership identities retain the original counting rule.",
+        "Construct reverse adjacency during the first visit only when owned direct targets exist. One reverse traversal identifies all inherited sources whose closure intersects those targets.",
+        "No closure cache survives the call; graph additions/removals are visible on the next reduction. Existing ordered membership union, feature selection, and visibility export are unchanged. Empty inherited sequences need no suppression analysis."
+      ],
+      "queuedEvidence": [
+        "Independent pairwise oracle across 65536 combinations of all three-feature directed graphs, inherited subsets, duplicate aliases and owned targets.",
+        "Existing 96-round oracle including changing graphs, non-Feature members and budget failure/retry.",
+        "128 inherited roots sharing a 128-vertex path, cycles/edge removal and owned suppression, exact oracle agreement and bounded linear work.",
+        "Existing complete ordinary-feature, Association-domain and borrowed-subtype suites; full model/public qualification afterward."
+      ],
+      "limits": "Candidate only. Work limit and semantic assertions unchanged; no admitted source changes. Production conformance session59634 must be terminal before any candidate compilation.",
+      "inputs": {
+        "target/trigger-validation/association-batched-reduction-stage/json/membership_projection.rs": "7aaceb1183e240f43e317627ebd381ffb112f4ba55d95bf1fd74a0e0e27448e5",
+        "target/trigger-validation/association-batched-reduction-stage/json/positional/borrowed_role_subtypes.rs": "3f93ffd7d2c94519e95f6adb3716e810f27cb415303dfb451d7822e58a918431",
+        "target/trigger-validation/association-batched-reduction-stage/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+        "target/trigger-validation/association-batched-reduction-stage/json/positional.rs": "bb7590af392e0666eba4b4fb7b81b1bd69d8da2c9f7242c653043025b2a3cd9c",
+        "target/trigger-validation/association-batched-reduction-stage/json/reference_memberships.rs": "3685226f5c3b5c4ec7596095cc28beaa502eeccdc111aa363696522039d8ee83",
+        "target/trigger-validation/association-batched-reduction-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+        "target/trigger-validation/association-batched-reduction-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+        "target/trigger-validation/association-batched-reduction-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+        "target/trigger-validation/association-batched-reduction-stage/json/type_inputs.rs": "cd8645c6fdf35b240fbe34a25caa1b8b39e0ea9050c80df3b23d8d262336d363",
+        "target/trigger-validation/association-batched-reduction-stage/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+        "target/trigger-validation/association-batched-reduction-stage/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662"
+      },
+      "reviewedInvariants": [
+        "A lone inherited membership survives its own reflexive or cyclic closure unless an owned direct target intersects that closure.",
+        "Two distinct inherited origins reaching a feature suffice to suppress it regardless of which is its own identity; extra origins cannot change that result.",
+        "Distinct memberships of one Feature still count independently after relationship-identity deduplication.",
+        "Reverse adjacency includes every edge reachable from any nontrivial inherited root exactly once, so reverse reachability from owned targets is equivalent to each source-closure intersection.",
+        "Membership ordering, FeatureMembership classification and visibility export remain in the existing adapters; no public contract or budget change."
+      ],
+      "session": 56402,
+      "state": "target/trigger-validation/association-batched-reduction-focused-retry.json",
+      "log": "target/trigger-validation/association-batched-reduction-focused-retry.log",
+      "startedObservedAt": "2026-10-19T00:09:14.899016+00:00",
+      "attempts": [
+        {
+          "session": 38735,
+          "status": "compile failure; no tests executed",
+          "state": "target/trigger-validation/association-batched-reduction-focused.json",
+          "log": "target/trigger-validation/association-batched-reduction-focused.log",
+          "logSha256": "5c2fd63ca3cdf0afbda8519d95ff66b329e0781e8623a5d6cddca262eec35b15",
+          "finding": "Two Type input consumers still passed the old traversal-scratch argument. Updated both call sites and removed their now-unused scratch variables; ancestry traversal remains independent."
+        }
+      ],
+      "testMaintenance": "The reducer no longer consumes Reachability scratch. The old oracle retains all96 graph/membership/budget scenarios, now once per reduction instead of repeating each with unused dense/sparse scratch. Separate dense/sparse Reachability tests remain, and65536 independent graph-oracle combinations plus4 shared-tail/cycle/mutation partitions are added.",
+      "exitCode": 1,
+      "modelTestsPassed": 13,
+      "modelTestsFailed": 1,
+      "remainingSuites": "Association and borrowed-subtype phases skipped after ordinary-feature failure",
+      "trace": {
+        "session": 7911,
+        "exitCode": 1,
+        "stage": "target/trigger-validation/association-batched-budget-trace-stage",
+        "log": "target/trigger-validation/association-batched-budget-trace.log",
+        "logSha256": "5c2ef3ae1368dad20112b0a1d6b033be6bc4de307903ed68dfb1c204c48db24a",
+        "retainedTypingSteps": 10009100,
+        "retainedTypingComplete": false,
+        "membershipReductionSteps": 1738088,
+        "previousMembershipReductionSteps": 1715806,
+        "finding": "The batched algebra passes independent graph correctness and its shared-tail scaling test, but adds22282steps on this library rebuild. Preserve it as an experiment; the next candidate starts from the original role-generic source."
+      }
+    },
+    "nameIndexCandidate": {
+      "status": "Reviewed candidate admitted after1027model tests and public integration pass; final-source qualification pending.",
+      "stage": "target/trigger-validation/association-name-index-stage",
+      "session": 20116,
+      "state": "target/trigger-validation/association-name-index-full.json",
+      "log": "target/trigger-validation/association-name-index-full.log",
+      "runner": "target/trigger-validation/qualify-association-name-index-full.mjs",
+      "inputs": {
+        "target/trigger-validation/association-name-index-stage/json/dynamic_graph.rs": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e",
+        "target/trigger-validation/association-name-index-stage/json/implied/planning_names_tests.rs": "cc1d4eae491e678c51f2e28d6c6030bab05059554aacb9dcd74713378af34eb6",
+        "target/trigger-validation/association-name-index-stage/json/implied.rs": "a0df189455219bc6a52b88bfa1e763a59777b04159140e1b3d792611e8807dd5",
+        "target/trigger-validation/association-name-index-stage/json/positional/borrowed_role_subtypes.rs": "3f93ffd7d2c94519e95f6adb3716e810f27cb415303dfb451d7822e58a918431",
+        "target/trigger-validation/association-name-index-stage/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+        "target/trigger-validation/association-name-index-stage/json/positional.rs": "de466a581af29acd03724804fa4f9b3716610a274e77ccece39fed66a9e1127d",
+        "target/trigger-validation/association-name-index-stage/json/reference_memberships.rs": "3685226f5c3b5c4ec7596095cc28beaa502eeccdc111aa363696522039d8ee83",
+        "target/trigger-validation/association-name-index-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+        "target/trigger-validation/association-name-index-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+        "target/trigger-validation/association-name-index-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+        "target/trigger-validation/association-name-index-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+        "target/trigger-validation/association-name-index-stage/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+        "target/trigger-validation/association-name-index-stage/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662",
+        "target/trigger-validation/association-name-index-stage/json.rs": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+      },
+      "design": [
+        "Share only the raw joined library-name-to-UUID map under the exact lib_qnames content revision. This carries no semantic role, ownership, membership or specialization facts.",
+        "Name edits and ID remaps invalidate the observed table revision. Builder clones retain immutable maps while their own name edits produce new snapshots.",
+        "External name overrides always materialize fresh maps. Failure before construction leaves the old snapshot and revision unchanged.",
+        "All semantic provider and physical-prefix checks remain current-row checks; no work limit, expected result or supported-language domain was changed."
+      ],
+      "tests": [
+        "Same-length name and UUID edits, Unicode names and independent cloned snapshots.",
+        "External overlay replacement and removal.",
+        "Cold and changed-source budget failure/retry, including a budget-exhausted cache hit.",
+        "Existing full ordinary-feature,Association and borrowed-subtype suites."
+      ],
+      "scope": "Candidate only,not admitted. The preceding frozen production source is fully qualified on macOS arm64.",
+      "focusedQualification": {
+        "status": "pass",
+        "session": 66587,
+        "exitCode": 0,
+        "tests": 22,
+        "state": "target/trigger-validation/association-name-index-focused.json",
+        "log": "target/trigger-validation/association-name-index-focused.log",
+        "logSha256": "abd30b07083fafb0b4c2c00a78a82027fcf77e212de7dda8dc7f81597569fc35",
+        "archivedStage": "target/trigger-validation/association-name-index-focused-passed-stage",
+        "phases": [
+          {
+            "name": "names",
+            "startedAt": "2026-10-19T01:52:20.732Z",
+            "status": "pass",
+            "exitCode": 0,
+            "finishedAt": "2026-10-19T01:53:15.932Z"
+          },
+          {
+            "name": "membership-edit",
+            "startedAt": "2026-10-19T01:53:15.932Z",
+            "status": "pass",
+            "exitCode": 0,
+            "finishedAt": "2026-10-19T01:54:25.441Z"
+          },
+          {
+            "name": "associations",
+            "startedAt": "2026-10-19T01:54:25.441Z",
+            "status": "pass",
+            "exitCode": 0,
+            "finishedAt": "2026-10-19T01:54:36.672Z"
+          },
+          {
+            "name": "borrowed-subtypes",
+            "startedAt": "2026-10-19T01:54:36.672Z",
+            "status": "pass",
+            "exitCode": 0,
+            "finishedAt": "2026-10-19T01:54:36.718Z"
+          }
+        ],
+        "originalMembershipEditRegression": "passes with unchanged ten-million-step allowance and exact declared type/owningType assertions",
+        "scope": "3 raw-name-index tests,9 existing ordinary-feature tests,9 Association-domain tests,1 borrowed-subtype test with6 dialect/format role partitions"
+      },
+      "finalSourceReview": {
+        "reviewedAt": "2026-10-19T01:56:10.192547+00:00",
+        "changesAfterFocusedPass": [
+          "The initial materialize_semantic_graph path now uses the same raw-name helper, avoiding a duplicate spelling map and seeding the immutable snapshot before positional planning.",
+          "The external-overlay test additionally checks exhausted-budget refusal and loaded-name edits while an overlay is active, followed by overlay removal."
+        ],
+        "unchangedSemantics": "All specialization,ownership,required-role,metadata and physical-prefix checks remain outside the name map and revalidate their current inputs. The name map is never a positive or negative semantic certificate.",
+        "nextGate": "Complete1026model tests and external association_ends public integration on this exact final candidate. No source admission yet."
+      },
+      "retirementReview": {
+        "recordedAt": "2026-10-19T02:02:56.595258+00:00",
+        "finding": "A sampled Arc strong_count cannot establish that another reader will still exist when a stale map is replaced. Charge old capacity conservatively before replacement, regardless of outstanding readers. This changes only cold/stale raw-name rebuilding, not the cached names or semantic proof.",
+        "status": "Old source reproduction retained; corrected reader-independent budget test passes in the complete1027test suite.",
+        "stage": "target/trigger-validation/association-name-index-reviewed-stage",
+        "inputs": {
+          "target/trigger-validation/association-name-index-reviewed-stage/json/dynamic_graph.rs": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/implied/planning_names_tests.rs": "97269e0dd9c978d52697e5f2343c9e7e389b2a4ab22c6087bfe68292e5dd8d4a",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/implied.rs": "a210635087b0a6713339e4ea77c18285890125ab1f8df84ea4b7c4f387615862",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/positional/borrowed_role_subtypes.rs": "3f93ffd7d2c94519e95f6adb3716e810f27cb415303dfb451d7822e58a918431",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/positional.rs": "de466a581af29acd03724804fa4f9b3716610a274e77ccece39fed66a9e1127d",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/reference_memberships.rs": "3685226f5c3b5c4ec7596095cc28beaa502eeccdc111aa363696522039d8ee83",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+          "target/trigger-validation/association-name-index-reviewed-stage/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662",
+          "target/trigger-validation/association-name-index-reviewed-stage/json.rs": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        },
+        "before": {
+          "status": "reproduced",
+          "startedAt": "2026-10-19T02:06:19.274Z",
+          "productionKernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+          "sourceSha256": "a0df189455219bc6a52b88bfa1e763a59777b04159140e1b3d792611e8807dd5",
+          "testSha256": "97269e0dd9c978d52697e5f2343c9e7e389b2a4ab22c6087bfe68292e5dd8d4a",
+          "expected": "The retained reader must not change the retirement budget or publication decision.",
+          "exitCode": 1,
+          "finishedAt": "2026-10-19T02:07:19.642Z",
+          "logSha256": "464bdb45ca11209a2bf2cd5a35b391e5280df4af4c2a8f346ebb72bccac01439",
+          "log": "target/trigger-validation/association-name-retirement-before.log"
+        }
+      },
+      "consolidatedFullQualification": {
+        "status": "pass",
+        "modelTests": 1026,
+        "publicTests": 1,
+        "state": "target/trigger-validation/association-name-index-full.json",
+        "stateSha256": "7bfc36423c1df7cc46ea18309ee67a3c011013fa70ec2b18deeca0d64893626e",
+        "log": "target/trigger-validation/association-name-index-full.log",
+        "logSha256": "fc98fb19cc48a849f95ab5d9285776c8b54788c6fd89beae8f3bb98d737570ec",
+        "phases": [
+          {
+            "name": "model",
+            "startedAt": "2026-10-19T01:55:25.228Z",
+            "status": "pass",
+            "exitCode": 0,
+            "finishedAt": "2026-10-19T02:05:31.455Z"
+          },
+          {
+            "name": "public",
+            "startedAt": "2026-10-19T02:05:31.456Z",
+            "status": "pass",
+            "exitCode": 0,
+            "finishedAt": "2026-10-19T02:06:12.508Z"
+          }
+        ],
+        "disposition": "Valid full model/public result retained. Superseded only by subsequent conservative raw-cache retirement accounting and its regression."
+      },
+      "reviewedFullQualification": {
+        "status": "pass",
+        "session": 4365,
+        "state": "target/trigger-validation/association-name-index-reviewed-full.json",
+        "log": "target/trigger-validation/association-name-index-reviewed-full.log",
+        "modelTests": 1027,
+        "publicTests": 1,
+        "phases": [
+          {
+            "name": "model",
+            "startedAt": "2026-10-19T02:07:22.632Z",
+            "status": "pass",
+            "exitCode": 0,
+            "finishedAt": "2026-10-19T02:17:25.867Z"
+          },
+          {
+            "name": "public",
+            "startedAt": "2026-10-19T02:17:25.874Z",
+            "status": "pass",
+            "exitCode": 0,
+            "finishedAt": "2026-10-19T02:18:05.751Z"
+          }
+        ],
+        "stateSha256": "d1dcf093f7f78530153110caf1d549ff30325b79a4bc8a6c2cf49d93bfea753f",
+        "logSha256": "986ea37ad1c5e9a0cd92a0df66075abeadd1ae0949fe7f7832e3c6b31408c236"
+      }
+    }
+  },
+  "admission": {
+    "recordedAt": "2026-10-19T02:18:16.443751+00:00",
+    "previousQualifiedKernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+    "kernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+    "files": {
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/planning_names_tests.rs": "97269e0dd9c978d52697e5f2343c9e7e389b2a4ab22c6087bfe68292e5dd8d4a",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "a210635087b0a6713339e4ea77c18285890125ab1f8df84ea4b7c4f387615862",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/borrowed_role_subtypes.rs": "3f93ffd7d2c94519e95f6adb3716e810f27cb415303dfb451d7822e58a918431",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional.rs": "de466a581af29acd03724804fa4f9b3716610a274e77ccece39fed66a9e1127d",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/reference_memberships.rs": "3685226f5c3b5c4ec7596095cc28beaa502eeccdc111aa363696522039d8ee83",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d",
+      "crates/sysml-kernel/tests/association_ends.rs": "97542663e522545f6b1ba7e897e9e4a9688720485da1439ec56f0e2f7e5afc41",
+      "patches/manifest.json": "30c0aaa5573185e3dff3f3faa4c71052880dcc1154b40cb66b493942a309157a",
+      "standards/assessments.json": "d5f6d57829b98f87e0f75ea4bc6c300e117b54f632a744ee3fa476683b8c4a2c"
+    },
+    "sourceReview": {
+      "assessmentAnchors": [
+        {
+          "evidenceId": "graph",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        },
+        {
+          "evidenceId": "resolution",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        },
+        {
+          "evidenceId": "connector-ends",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        },
+        {
+          "evidenceId": "checked-featuring",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
+          "previousSha256": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683",
+          "currentSha256": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662"
+        },
+        {
+          "evidenceId": "checked-prefix-reuse",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
+          "previousSha256": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+          "currentSha256": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e"
+        },
+        {
+          "evidenceId": "atomic-dynamic-staging",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
+          "previousSha256": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+          "currentSha256": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e"
+        },
+        {
+          "evidenceId": "state-body-query",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        },
+        {
+          "evidenceId": "transition-construction",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        },
+        {
+          "evidenceId": "accept-construction",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        }
+      ],
+      "finding": "Only a skipped raw-index field changes json.rs. audited_featuring_domain is byte-identical. The dynamic-graph delta only replaces raw name materialization; all staging, physical-prefix and recipe proof logic is unchanged. Tests retain exact identity, missing dependency, mutation, replay and bounded-work assertions. No assessment wording or coverage claim is expanded."
+    }
+  },
+  "finalCandidateAcceptance": {
+    "private": {
+      "status": "pass",
+      "tests": 1027,
+      "log": "target/trigger-validation/association-name-index-reviewed-full.log",
+      "logSha256": "986ea37ad1c5e9a0cd92a0df66075abeadd1ae0949fe7f7832e3c6b31408c236",
+      "inputs": {
+        "target/trigger-validation/association-name-index-accepted-stage/json/dynamic_graph.rs": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e",
+        "target/trigger-validation/association-name-index-accepted-stage/json/implied/planning_names_tests.rs": "97269e0dd9c978d52697e5f2343c9e7e389b2a4ab22c6087bfe68292e5dd8d4a",
+        "target/trigger-validation/association-name-index-accepted-stage/json/implied.rs": "a210635087b0a6713339e4ea77c18285890125ab1f8df84ea4b7c4f387615862",
+        "target/trigger-validation/association-name-index-accepted-stage/json/positional/borrowed_role_subtypes.rs": "3f93ffd7d2c94519e95f6adb3716e810f27cb415303dfb451d7822e58a918431",
+        "target/trigger-validation/association-name-index-accepted-stage/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+        "target/trigger-validation/association-name-index-accepted-stage/json/positional.rs": "de466a581af29acd03724804fa4f9b3716610a274e77ccece39fed66a9e1127d",
+        "target/trigger-validation/association-name-index-accepted-stage/json/reference_memberships.rs": "3685226f5c3b5c4ec7596095cc28beaa502eeccdc111aa363696522039d8ee83",
+        "target/trigger-validation/association-name-index-accepted-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+        "target/trigger-validation/association-name-index-accepted-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662",
+        "target/trigger-validation/association-name-index-accepted-stage/json.rs": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+      }
+    },
+    "public": {
+      "status": "pass",
+      "tests": 1,
+      "source": "crates/sysml-kernel/tests/association_ends.rs",
+      "sourceSha256": "97542663e522545f6b1ba7e897e9e4a9688720485da1439ec56f0e2f7e5afc41",
+      "executedSourceSha256": "1e7153be23c7029ec03d93e5187b3196ba20cdac081799c04450c60e758155a2",
+      "log": "target/trigger-validation/association-name-index-reviewed-full.log",
+      "logSha256": "986ea37ad1c5e9a0cd92a0df66075abeadd1ae0949fe7f7832e3c6b31408c236"
+    }
+  },
+  "qualification": {
+    "path": "docs/evidence/association-end-domains-progress-macos-arm64.json",
+    "kernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+    "status": "pass",
+    "qualifiedAt": "2026-10-19T02:43:58.314Z"
+  }
+}

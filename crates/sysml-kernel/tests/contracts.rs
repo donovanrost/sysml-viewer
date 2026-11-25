@@ -186,6 +186,37 @@ fn input_policy_applies_before_syntax_or_semantic_construction() {
 }
 
 #[test]
+fn batch_syntax_check_preserves_dialects_and_enforces_workspace_limits() {
+    let a = document("a", "package P { part p : ExternalType; }");
+    let b = SourceDocument {
+        id: "b".into(),
+        name: "b.kerml".into(),
+        text: "package Q { class C; }".into(),
+    };
+    let reports = check_syntax_batch(vec![a.clone(), b]).unwrap();
+    assert_eq!(reports.len(), 2);
+    assert!(reports.iter().all(|r| r.diagnostics.is_empty()));
+    assert!(matches!(
+        check_syntax_batch(vec![a.clone(), a]),
+        Err(AnalysisError::InvalidInput(_))
+    ));
+    let many = (0..33)
+        .map(|i| document(&i.to_string(), "package P;"))
+        .collect();
+    assert!(matches!(
+        check_syntax_batch(many),
+        Err(AnalysisError::InvalidInput(_))
+    ));
+    let oversized_workspace = (0..5)
+        .map(|i| document(&i.to_string(), &" ".repeat(4_000_001)))
+        .collect();
+    assert!(matches!(
+        check_syntax_batch(oversized_workspace),
+        Err(AnalysisError::InvalidInput(_))
+    ));
+}
+
+#[test]
 fn deeply_nested_syntax_is_bounded_and_keeps_diagnostic_ranges_valid() {
     std::thread::Builder::new()
         .stack_size(ANALYSIS_STACK_BYTES)

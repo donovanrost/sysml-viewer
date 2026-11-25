@@ -56,7 +56,8 @@ fn charge(steps: &mut usize, n: usize) -> Result<(), InvocationBindingIssue> {
 }
 impl ResolvedModel {
     /// Certify supplied arguments of ordinary InvocationExpressions and admitted
-    /// canonical numeric and conditional OperatorExpressions calling exact loaded library Functions.
+    /// canonical numeric and conditional OperatorExpressions and trigger invocations
+    /// calling exact loaded library Functions.
     /// Each argument must have one checked owned direct Redefinition.
     /// Named authored mappings are supported without truncating after an omitted
     /// earlier input. Positional mappings additionally require the current shared
@@ -107,16 +108,22 @@ impl super::Builder {
         batch: &mut super::constructor_bindings::ConstructorBatchEvidence,
     ) -> Result<InvocationBindings, InvocationBindingIssue> {
         charge(steps, 1)?;
-        let operator =
-            self.elements.get(receiver).ok_or(InvalidElement)?.ty == "OperatorExpression";
-        if (!operator && self.elements[receiver].ty != "InvocationExpression")
-            || (operator && self.graph_format != crate::model::GraphFormat::CanonicalV3)
+        let kind = self.elements.get(receiver).ok_or(InvalidElement)?.ty;
+        let operator = kind == "OperatorExpression";
+        let trigger = kind == "TriggerInvocationExpression";
+        if (!operator && !trigger && kind != "InvocationExpression")
+            || ((operator || trigger)
+                && self.graph_format != crate::model::GraphFormat::CanonicalV3)
             || self.positional_planning
         {
             return Err(UnsupportedConfiguration);
         }
         let raw = StoredStructure::for_query(self, steps).ok_or(IncompleteProvider)?;
-        let callee = if operator {
+        let callee = if trigger {
+            batch
+                .trigger_target(self, receiver, steps)
+                .ok_or(IncompleteProvider)?
+        } else if operator {
             batch
                 .operator_target(self, receiver, steps)
                 .ok_or(UnsupportedConfiguration)?
@@ -142,7 +149,7 @@ impl super::Builder {
                 _ => IncompleteProvider,
             })?;
         let inputs = &features.inputs;
-        if operator {
+        if operator || trigger {
             // The admitted generic parameter rule pairs direct owned slots;
             // inherited-only or interleaved-output signatures stay qualified.
             charge(
@@ -169,6 +176,7 @@ impl super::Builder {
         }
         let raw = StoredStructure::for_query(self, steps).ok_or(IncompleteProvider)?;
         if !operator
+            && !trigger
             && membership_evidence::first_unowned_member(
                 self,
                 &raw,
@@ -179,6 +187,9 @@ impl super::Builder {
                 steps,
             ) != Some(callee)
         {
+            return Err(StaleEvidence);
+        }
+        if trigger && batch.trigger_target(self, receiver, steps) != Some(callee) {
             return Err(StaleEvidence);
         }
         let domains = raw
@@ -247,6 +258,13 @@ impl super::Builder {
             }
             let position = argument_position;
             argument_position += 1;
+            // Invocation.argument excludes null valuations. A trigger's
+            // generated receiver is bound by a connector, not a FeatureValue.
+            // The complete membership/value proof above establishes absence;
+            // it does not invent a default or a positional argument.
+            if trigger && valuation.is_none() {
+                continue;
+            }
             let (value_membership, value) = valuation.ok_or(UnmappedArgument)?;
             for key in ["isInitial", "isDefault"] {
                 if self.elements[value_membership]
@@ -350,7 +368,7 @@ impl super::Builder {
             }
             let input = if let Some(target) = target {
                 target
-            } else if let Some(proposed) = proposed.as_deref_mut().filter(|_| operator) {
+            } else if let Some(proposed) = proposed.as_deref_mut().filter(|_| operator || trigger) {
                 let target = inputs.get(position).ok_or(UnmappedArgument)?.0;
                 proposed.insert(parameter, vec![target]);
                 target
@@ -482,6 +500,108 @@ pub(super) fn designated_operator_target(
         .then_some(target)
 }
 
+/// TriggerKind selects an exact function in the normative Triggers package.
+/// Unknown raw enum values are unavailable, never treated as `after`.
+pub(super) fn designated_trigger_name(b: &super::Builder, receiver: usize) -> Option<&'static str> {
+    if b.elements.get(receiver)?.ty != "TriggerInvocationExpression" {
+        return None;
+    }
+    match b.elements[receiver].props.get("kind")?.as_str()? {
+        "after" => Some("TriggerAfter"),
+        "at" => Some("TriggerAt"),
+        "when" => Some("TriggerWhen"),
+        _ => None,
+    }
+}
+
+pub(super) fn designated_trigger_target(
+    b: &mut super::Builder,
+    receiver: usize,
+    steps: &mut usize,
+    names: &mut DesignatedOperatorNames,
+) -> Option<usize> {
+    let name = designated_trigger_name(b, receiver)?;
+    let raw = StoredStructure::for_query(b, steps)?;
+    if !raw.ids_unique || raw.annotations_incomplete || b.metadata_associations_incomplete {
+        return None;
+    }
+    charge(steps, b.unit_starts.len()).ok()?;
+    let mut package = None;
+    for &(root, _) in &b.unit_starts {
+        if b.elements[root].ty != "Namespace" || b.elements[root].owning_relationship.is_some() {
+            return None;
+        }
+        if let Some(found) = names.member(b, &raw, root, "Triggers", false, steps)? {
+            if package.replace(found).is_some() {
+                return None;
+            }
+        }
+    }
+    let package = package?;
+    if !matches!(b.elements[package].ty, "Package" | "LibraryPackage") {
+        return None;
+    }
+    // A declared member takes precedence over imports. Triggers publicly
+    // imports other packages, so absence of imports is not a valid precondition.
+    // Use reciprocal local membership evidence; aliases/filters/metadata remain
+    // qualified instead of being silently omitted from this name domain.
+    if !raw.membership_domains(b, steps)?.owner_complete(package)
+        || raw.metadata_annotation_targets.contains(&package)
+        || b.metadata_of.get(&package).is_some_and(|m| !m.is_empty())
+    {
+        return None;
+    }
+    let rows = semantic_ownership::owned_relationships(b, package)?;
+    charge(steps, rows.len()).ok()?;
+    let mut seen = HashSet::new();
+    let mut selected = None;
+    for relationship in rows.iter() {
+        if !seen.insert(relationship)
+            || semantic_ownership::checked_relationship_carrier(b, &raw, relationship, steps)?
+                != Some(package)
+        {
+            return None;
+        }
+        let row = &b.elements[relationship];
+        if row.ty == "ElementFilterMembership" {
+            return None;
+        }
+        if !conforms(row.ty, "Membership") {
+            continue;
+        }
+        if !conforms(row.ty, "OwningMembership") {
+            return None;
+        }
+        let member = membership_evidence::member(b, &raw, package, relationship, steps)?;
+        let mut matches_name = false;
+        for key in ["declaredName", "declaredShortName"] {
+            if let Some(value) = b.elements[member].props.get(key).filter(|v| !v.is_null()) {
+                let value = value.as_str()?;
+                charge(steps, value.len()).ok()?;
+                matches_name |= value == name;
+            }
+        }
+        if matches_name {
+            if row
+                .props
+                .get("visibility")
+                .is_some_and(|v| v.as_str() != Some("public"))
+                || selected.replace(member).is_some()
+            {
+                return None;
+            }
+        }
+    }
+    let target = selected?;
+    let id = names.library_identity(b, "Triggers", name, steps)?;
+    (target < b.lib_boundary
+        && b.elements[target].ty == "Function"
+        && b.elements[target].id == id
+        && !raw.metadata_annotation_targets.contains(&target)
+        && b.metadata_of.get(&target).is_none_or(|m| m.is_empty()))
+    .then_some(target)
+}
+
 /// Successful complete direct-name projections, scoped to ConstructorBatchEvidence's
 /// source/publication stamp. Every namespace relationship is audited once per
 /// visibility context; later operators reuse that exact absence/identity proof.
@@ -516,6 +636,7 @@ impl DesignatedOperatorNames {
                     "BaseFunctions" => "BaseFunctions",
                     "DataFunctions" => "DataFunctions",
                     "ControlFunctions" => "ControlFunctions",
+                    "Triggers" => "Triggers",
                     _ => continue,
                 };
                 charge(steps, operator.len().saturating_add(1)).ok()?;
@@ -1043,17 +1164,34 @@ mod tests {
             .props
             .insert("memberElement", serde_json::json!({"@ref":"Missing"}));
         assert!(r.invocation_binding_report(call).arguments.is_err());
-        // An edit transaction retracts the shared tail before replanning. The
-        // unsupported call may then be locally qualified, never retain old
-        // dynamic rows under a new accepted plan with a smaller owner set.
+        // The newly owned result has a static positional redefinition. An
+        // unresolved Membership makes its complete membership sequence unknown,
+        // so retracting only the dynamic tail cannot certify the old static row.
+        // Refuse the changed immutable prefix and never retain dynamic rows.
         r.discard_owned_result_tail();
         r.implied_relationships(call);
-        let current = r.b.effective_dynamic_plan().unwrap();
-        assert!(current.incomplete_bases.contains(&call.0));
-        assert!(!current.affected_owners.contains(&call.0));
-        assert!(current.tail.iter().all(|edge| !old_ids.contains(&edge.id)));
+        assert!(r.b.effective_dynamic_plan().is_none());
+        assert_eq!(
+            r.b.dynamic_graph.as_ref().unwrap().outcome,
+            super::super::dynamic_graph::Outcome::Declined(
+                super::super::dynamic_invocations::Refusal::StaticMismatch
+            )
+        );
         assert!(r.b.elements.iter().all(|row| !old_ids.contains(&row.id)));
         assert!(r.invocation_binding_report(call).arguments.is_err());
+        // Restoring the source permits the unchanged static prefix and a fresh
+        // tail. This checks retry, not a general abstract-model edit transaction.
+        let target = r.resolve_qualified("F").unwrap();
+        let target_id = r.element_id(target);
+        r.b.elements[callee].props.insert(
+            "memberElement",
+            serde_json::json!({"@id": target_id}),
+        );
+        r.discard_owned_result_tail();
+        r.implied_relationships(call);
+        assert!(r.invocation_binding_report(call).arguments.is_ok());
+        let restored = r.b.effective_dynamic_plan().unwrap();
+        assert_eq!(restored.tail.iter().map(|edge| edge.id).collect::<Vec<_>>(), old_ids);
     }
 
     #[test]
@@ -1519,5 +1657,205 @@ mod tests {
             r.property(call, "argument"),
             Err(PropertyError::Approximate)
         );
+    }
+    const TRIGGERS: &str = "standard library package Triggers {function TriggerAfter {in feature duration;in feature receiver;in feature clock;return feature result;} function TriggerAt {in feature instant;in feature receiver;return feature result;} function TriggerWhen {in feature condition;in feature receiver;return feature result;}}";
+    fn trigger_fixture(library: &str, user: &str) -> ResolvedModel {
+        let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
+        m.add_library_source("trigger-base.kerml", LIB);
+        m.add_library_source("trigger-library.kerml", library);
+        m.add_source("trigger-user.sysml", user);
+        assert!(!m.has_errors());
+        ResolvedModel::build(&m)
+    }
+    fn trigger(r: &ResolvedModel) -> ElementRef {
+        r.user_elements()
+            .find(|&e| r.element_type(e) == "TriggerInvocationExpression")
+            .unwrap()
+    }
+    #[test]
+    fn trigger_bindings_follow_designated_inputs_and_skip_unvalued_receivers() {
+        for (kind, function, input, count) in [
+            ("after", "TriggerAfter", "duration", 3),
+            ("at", "TriggerAt", "instant", 2),
+            ("when", "TriggerWhen", "condition", 2),
+        ] {
+            let mut r = trigger_fixture(TRIGGERS, &format!("action a accept {kind} 1;"));
+            let call = trigger(&r);
+            let before = r.b.elements.len();
+            assert!(r.invocation_binding_report(call).arguments.is_err());
+            assert_eq!(r.b.elements.len(), before);
+            r.implied_relationships(call);
+            let after = r.b.elements.len();
+            let expected_callee = r
+                .resolve_qualified(&format!("Triggers::{function}"))
+                .unwrap();
+            let expected_input = r
+                .resolve_qualified(&format!("Triggers::{function}::{input}"))
+                .unwrap();
+            for _ in 0..2 {
+                let report = r.invocation_binding_report(call);
+                let args = report.arguments.unwrap_or_else(|e| {
+                    panic!(
+                        "{kind}: {e:?}, {} steps; dynamic {:?}",
+                        report.steps,
+                        r.b.dynamic_graph.as_ref().map(|s| &s.outcome)
+                    )
+                });
+                assert_eq!(args.callee, expected_callee);
+                assert_eq!(args.inputs.len(), count);
+                assert_eq!(args.bindings.len(), 1);
+                assert_eq!(args.bindings[0].input, expected_input);
+                assert_eq!(
+                    r.element_type(args.bindings[0].value),
+                    if kind == "when" {
+                        "FeatureReferenceExpression"
+                    } else {
+                        "LiteralInteger"
+                    }
+                );
+                assert_eq!(r.b.elements.len(), after);
+                r.set_closure_policy(ClosurePolicy::Closure {
+                    include_implied: true,
+                });
+                assert_eq!(
+                    r.property(call, "argument"),
+                    Ok(serde_json::json!([{"@id":r.element_id(args.bindings[0].value)}]))
+                );
+            }
+            assert_eq!(
+                r.invocation_binding_report_with_budget(call, crate::eval::MAX_STEPS)
+                    .arguments,
+                Err(WorkLimit)
+            );
+            assert!(r.invocation_binding_report(call).arguments.is_ok());
+        }
+    }
+    #[test]
+    fn trigger_designation_requires_unique_loaded_public_function_and_valid_kind() {
+        let cases = [
+            ("", "action a accept after 1;".to_owned()),
+            (
+                "",
+                "package Triggers {part def TriggerAfter;} action a accept after 1;".to_owned(),
+            ),
+            (
+                "standard library package Triggers {class TriggerAfter;}",
+                "action a accept after 1;".to_owned(),
+            ),
+            (
+                "standard library package Triggers {private function TriggerAfter;}",
+                "action a accept after 1;".to_owned(),
+            ),
+            (
+                TRIGGERS,
+                "package Triggers {part def TriggerAfter;} action a accept after 1;".to_owned(),
+            ),
+        ];
+        for (library, user) in cases {
+            let mut r = trigger_fixture(library, &user);
+            let call = trigger(&r);
+            assert!(
+                designated_trigger_target(
+                    &mut r.b,
+                    call.0,
+                    &mut 0,
+                    &mut DesignatedOperatorNames::default()
+                )
+                .is_none(),
+                "{library}: {user}"
+            );
+            r.implied_relationships(call);
+            assert!(r.invocation_binding_report(call).arguments.is_err());
+        }
+        for kind in [
+            serde_json::Value::Null,
+            serde_json::json!("unknown"),
+            serde_json::json!(true),
+        ] {
+            let mut r = trigger_fixture(TRIGGERS, "action a accept after 1;");
+            let call = trigger(&r);
+            r.b.set(call.0, "kind", kind);
+            assert!(
+                designated_trigger_target(
+                    &mut r.b,
+                    call.0,
+                    &mut 0,
+                    &mut DesignatedOperatorNames::default()
+                )
+                .is_none()
+            );
+        }
+    }
+    #[test]
+    fn trigger_direct_declaration_wins_over_imported_names_but_not_local_aliases() {
+        let imported = format!(
+            "standard library package Other {{function TriggerAfter;}} {}",
+            TRIGGERS.replace(
+                "package Triggers {",
+                "package Triggers {public import Other::*;"
+            )
+        );
+        let mut r = trigger_fixture(&imported, "action a accept after 1;");
+        let call = trigger(&r);
+        let expected = r.resolve_qualified("Triggers::TriggerAfter").unwrap();
+        assert_eq!(
+            designated_trigger_target(
+                &mut r.b,
+                call.0,
+                &mut 0,
+                &mut DesignatedOperatorNames::default()
+            ),
+            Some(expected.0)
+        );
+        r.implied_relationships(call);
+        assert_eq!(
+            r.invocation_binding_report(call).arguments.unwrap().callee,
+            expected
+        );
+        let aliased = TRIGGERS.replace(
+            "package Triggers {",
+            "package Triggers {alias Alias for TriggerAfter;",
+        );
+        let mut r = trigger_fixture(&aliased, "action a accept after 1;");
+        let call = trigger(&r);
+        assert!(
+            designated_trigger_target(
+                &mut r.b,
+                call.0,
+                &mut 0,
+                &mut DesignatedOperatorNames::default()
+            )
+            .is_none()
+        );
+    }
+    #[test]
+    fn trigger_binding_evidence_is_revoked_by_signature_value_and_kind_edits() {
+        for change in 0..6 {
+            let mut r = trigger_fixture(TRIGGERS, "action a accept after 1;");
+            let call = trigger(&r);
+            r.implied_relationships(call);
+            let args = r.invocation_binding_report(call).arguments.unwrap();
+            let binding = &args.bindings[0];
+            match change {
+                0 => r.b.set(call.0, "kind", serde_json::json!("at")),
+                1 => {
+                    r.b.set(binding.input.0, "direction", serde_json::json!("out"))
+                }
+                2 => r.b.elements[binding.value.0].owning_relationship = None,
+                3 => r.b.elements[binding.parameter.0]
+                    .owned_relationships
+                    .make_mut()
+                    .clear(),
+                4 => {
+                    r.b.set(args.callee.0, "declaredName", serde_json::json!("Renamed"))
+                }
+                5 => r.b.metadata_association_generation = Some(std::sync::Arc::new(())),
+                _ => unreachable!(),
+            }
+            assert!(
+                r.invocation_binding_report(call).arguments.is_err(),
+                "change {change}"
+            );
+        }
     }
 }

@@ -1,0 +1,207 @@
+{
+  "reviewedAt": "2026-10-18T05:48:23.595251+00:00",
+  "status": "construction interpretation, acceptance decomposition and before-fix graph probe; implementation pending",
+  "scope": "Contextual required Step specializations needed by nested Expression sources, including FeatureReferenceExpression inside a deferred when wrapper. This does not close Expression.result, trigger validation, temporal execution or all Step conformance.",
+  "sourceAnchors": [
+    {
+      "sourceUnit": "KERML-XMI-Kernel-Behaviors-Step-checkStepSubperformanceSpecialization",
+      "expressions": [
+        "owningType <> null and     (owningType.oclIsKindOf(Behavior) or      owningType.oclIsKindOf(Step)) and     self.isComposite implies     specializesFromLibrary('Performances::Performance::subperformance')"
+      ]
+    },
+    {
+      "sourceUnit": "KERML-XMI-Kernel-Behaviors-Step-checkStepSpecialization",
+      "expressions": [
+        "specializesFromLibrary('Performances::performances')"
+      ]
+    },
+    {
+      "sourceUnit": "KERML-XMI-Kernel-Behaviors-Step-checkStepEnclosedPerformanceSpecialization",
+      "expressions": [
+        "owningType <> null and     (owningType.oclIsKindOf(Behavior) or      owningType.oclIsKindOf(Step)) implies     specializesFromLibrary('Performances::Performance::enclosedPerformance')"
+      ]
+    },
+    {
+      "sourceUnit": "KERML-XMI-Kernel-Behaviors-Step-checkStepOwnedPerformanceSpecialization",
+      "expressions": [
+        "isComposite and owningType <> null and (owningType.oclIsKindOf(Structure) or  owningType.oclIsKindOf(Feature) and  owningType.oclAsType(Feature).type->     exists(oclIsKindOf(Structure)) implies     specializesFromLibrary('Objects::Object::ownedPerformance')"
+      ]
+    }
+  ],
+  "proseAnchors": [
+    "KERML-CLAUSE-8.3.4.6.3",
+    "KERML-CLAUSE-8.4.4.7.2",
+    "KERML-CLAUSE-9.2.6.2.14",
+    "KERML-CLAUSE-9.2.5.2.7"
+  ],
+  "sourceHashes": {
+    "target/standards/kerml.xmi": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "target/standards/kerml.txt": "c838e109913913769c4949ed3cd151fbc2e0cd3b1b31d037844c5b6c9e6d7ae1",
+    "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Performances.kerml": "fd965e184b300737a192530de0c800cdbee236cb6220612f370400da21dfb327",
+    "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Objects.kerml": "9057e2781fe8793d5108973c0647318caa26310be6231c6380152a4cbc894c25"
+  },
+  "interpretation": {
+    "decision": "When implementing contextual Step construction, use the declared plural library identities below while preserving the applicability conditions in the pinned rules. Treat this as a documented project interpretation of inconsistent source names, not an adopted OMG erratum or evidence of literal conformance to the singular paths.",
+    "targets": [
+      {
+        "rule": "checkStepEnclosedPerformanceSpecialization",
+        "sourcePath": "Performances::Performance::enclosedPerformance",
+        "declaredLibraryPath": "Performances::Performance::enclosedPerformances",
+        "libraryDeclarationLine": 47
+      },
+      {
+        "rule": "checkStepSubperformanceSpecialization",
+        "sourcePath": "Performances::Performance::subperformance",
+        "declaredLibraryPath": "Performances::Performance::subperformances",
+        "libraryDeclarationLine": 63
+      },
+      {
+        "rule": "checkStepOwnedPerformanceSpecialization",
+        "sourcePath": "Objects::Object::ownedPerformance",
+        "declaredLibraryPath": "Objects::Object::ownedPerformances",
+        "libraryDeclarationLine": 55
+      }
+    ],
+    "reason": "The pinned semantic library supplies the plural declarations, and the prose points to those same library sections. The published issue corroborates the enclosed and owned spelling discrepancies. The subperformances mapping is separately inferred from the pinned declaration and section reference; KERML11-207 does not explicitly report that spelling.",
+    "issueObservations": [
+      {
+        "url": "https://issues.omg.org/issues/KERML11-207",
+        "observedStatus": "open",
+        "recheckedThisReview": true,
+        "scope": "enclosed and owned target-name discrepancies"
+      },
+      {
+        "url": "https://issues.omg.org/issues/KERML11-21",
+        "observedStatus": "open",
+        "recheckedThisReview": true,
+        "scope": "broader temporal meaning of Step contexts; no change to applicability is inferred from this open question"
+      }
+    ],
+    "claimPolicy": "Keep the exact named obligations open while the authority conflict remains unresolved. Record passing interpreted behavior separately from exact source conformance. Do not synthesize singular members, alias arbitrary user names or silently broaden/narrow the owning-Type conditions."
+  },
+  "acceptancePartitions": [
+    {
+      "condition": "Step with no owning Type (e.g. ordinary package-owned step or value expression owned through FeatureValue)",
+      "required": [
+        "Performances::performances"
+      ],
+      "contextualRequirement": "none; prove owningType absence from reciprocal membership evidence"
+    },
+    {
+      "condition": "noncomposite Step owned by a Behavior or Step, including metaclass descendants",
+      "required": [
+        "Performances::performances",
+        "Performances::Performance::enclosedPerformances"
+      ],
+      "contextualRequirement": "prove the owning-Type relationship and loaded role identity"
+    },
+    {
+      "condition": "composite Step owned by a Behavior or Step",
+      "required": [
+        "Performances::performances",
+        "Performances::Performance::enclosedPerformances",
+        "Performances::Performance::subperformances"
+      ],
+      "contextualRequirement": "requirements accumulate independently; minimization may remove an edge only when another actual path proves it"
+    },
+    {
+      "condition": "composite Step owned by a Structure",
+      "required": [
+        "Performances::performances",
+        "Objects::Object::ownedPerformances"
+      ],
+      "contextualRequirement": "prove the actual owning-Type metaclass"
+    },
+    {
+      "condition": "composite Step owned by a Feature whose effective type includes a Structure",
+      "required": [
+        "Performances::performances",
+        "Objects::Object::ownedPerformances"
+      ],
+      "contextualRequirement": "use checked effective typing, including inherited typing; a missing or partial domain cannot prove the predicate false"
+    },
+    {
+      "condition": "noncomposite Step in a structural context",
+      "required": [
+        "Performances::performances"
+      ],
+      "contextualRequirement": "do not add ownedPerformances from structural context alone"
+    },
+    {
+      "condition": "missing, wrong-kind, duplicate, non-library or user-shadowed canonical role",
+      "required": [],
+      "contextualRequirement": "never use the wrong identity or fabricate a substitute; independently available requirements survive; complete readers remain qualified"
+    },
+    {
+      "condition": "missing/conflicting membership aliases, inverse ownership, invalid Boolean flags, metadata dependencies, cycles or insufficient budget",
+      "required": [],
+      "contextualRequirement": "refuse the affected completeness claim; do not turn unavailable evidence into an empty context or false applicability"
+    },
+    {
+      "condition": "same-length owner/kind/flag/typing/library-name mutations after publication",
+      "required": [],
+      "contextualRequirement": "revoke prior evidence and prove rebuilt rows before reuse; include replay and exhausted-budget retry"
+    },
+    {
+      "condition": "the library contextual features themselves",
+      "required": [],
+      "contextualRequirement": "minimize self/indirect paths without self-edges or synthetic cycles; preserve exact source identities and explicit relationships"
+    }
+  ],
+  "implementationBoundaries": [
+    "Extend the shared static specialization planner and its loaded-library role authority; do not introduce another inheritance graph or mutate through compatibility readers.",
+    "Use the existing checked semantic ownership and typed-feature providers. The static prefix cannot depend on its generated dynamic suffix.",
+    "For generated reference-result certification, replace the blanket no-owning-Type guard only after the particular source context and every applicable contextual path are proven. Preserve the current canonical-result, metadata, positional and conjugation checks.",
+    "Keep trigger semantic validation separate from check::Facts arrays, which are explicitly sized to authored elements. A generated result/relationship index must never be passed into those arrays.",
+    "Expose checked Expression.result selection through the library and checked property layer before using it in the trigger rules. A compatibility candidate plus a checked Predicate-owned return does not prove the Expression derivation.",
+    "Map source spans from the authored trigger separately from graph facts; replace the old trigger AST predicate only when all argument/result/wrapper and quantity-reference acceptance partitions are executed."
+  ],
+  "existingEvidence": [
+    "trigger-result-dependency-review.json"
+  ],
+  "executionEvidence": [
+    {
+      "status": "diagnostic observation of existing materialized paths, not passing interpreted conformance",
+      "buildCommand": [
+        "/Users/donovanrost/.cargo/bin/rustup",
+        "run",
+        "1.97.0",
+        "rustc",
+        "--edition",
+        "2021",
+        "-C",
+        "lto=thin",
+        "-C",
+        "opt-level=2",
+        "target/trigger-validation/step-context-probe.rs",
+        "-L",
+        "dependency=target/release/deps",
+        "--extern",
+        "sysmlv2_model=target/release/deps/libsysmlv2_model-a26fbaa0c1aa74b0.rlib",
+        "-o",
+        "target/trigger-validation/step-context-probe"
+      ],
+      "command": [
+        "target/trigger-validation/step-context-probe"
+      ],
+      "exitCode": 0,
+      "artifacts": {
+        "target/trigger-validation/step-context-probe.rs": "a32046997b0b23c71fb95ffe3ca0e10a853fa1425b7f457e06b6b8d3dc471906",
+        "target/trigger-validation/step-context-probe": "89058d7889672cf51ecc60239aaad5c4f04bb9dd6b1176d19fa8ea0140bdec57",
+        "target/trigger-validation/step-context-probe.log": "2d2714635de559eb6813fc05a47d73b75c6049b7072575ef08c20e9ecf2cd01a",
+        "target/release/deps/libsysmlv2_model-a26fbaa0c1aa74b0.rlib": "83fb8a3e846afb8ebe5581a228be96e1bdd42dba5bd2a2f3e7526a20bdc3caca"
+      },
+      "sourceCode": "use std::path::Path;\nuse sysmlv2_model::{model::{Model, GraphFormat}, json::{Derived, ResolvedModel}};\nfn library(model: &mut Model, path: &Path) {\n    let mut entries: Vec<_> = std::fs::read_dir(path).unwrap().map(|e| e.unwrap().path()).collect();\n    entries.sort();\n    for entry in entries {\n        if entry.is_dir() { library(model, &entry); }\n        else if matches!(entry.extension().and_then(|x|x.to_str()), Some(\"sysml\"|\"kerml\")) {\n            assert!(model.add_library_source(entry.to_string_lossy(), &std::fs::read_to_string(&entry).unwrap()).diagnostics.is_empty());\n        }\n    }\n}\nconst SOURCE: &str = \"package Probe {\n behavior B {step enclosed; composite step owned;}\n step outer {step enclosed; composite step owned;}\n struct S {step plain; composite step owned;}\n feature structural:S {composite step owned;}\n step unowned;\n}\";\nfn main() { std::thread::Builder::new().stack_size(16*1024*1024).spawn(|| {\n let mut model=Model::with_graph_format(GraphFormat::CanonicalV3);\n library(&mut model,Path::new(\"vendor/sysml-library/sources\"));\n assert!(model.add_source(\"step-contexts.kerml\", SOURCE).diagnostics.is_empty());\n let mut r=ResolvedModel::build(&model);\n let root=r.resolve_qualified(\"Probe\").unwrap(); r.implied_relationships(root);\n let roles = [\"Performances::performances\", \"Performances::Performance::enclosedPerformances\", \"Performances::Performance::subperformances\", \"Objects::Object::ownedPerformances\"];\n let targets: Vec<_> = roles.iter().map(|n|r.resolve_qualified(n).unwrap()).collect();\n for singular in [\"Performances::Performance::enclosedPerformance\", \"Performances::Performance::subperformance\", \"Objects::Object::ownedPerformance\"] {\n  assert!(r.resolve_qualified(singular).is_none());\n }\n for (name, owner) in [(\"B::enclosed\",Some(\"B\")),(\"B::owned\",Some(\"B\")),(\"outer::enclosed\",Some(\"outer\")),(\"outer::owned\",Some(\"outer\")),(\"S::plain\",Some(\"S\")),(\"S::owned\",Some(\"S\")),(\"structural::owned\",Some(\"structural\")),(\"unowned\",None)] {\n  let e=r.resolve_qualified(&format!(\"Probe::{name}\")).unwrap();\n  let expected_owner=owner.map(|n|r.resolve_qualified(&format!(\"Probe::{n}\")).unwrap());\n  let owning_type=match r.derived(e,\"owningType\") {Derived::Value(v)=>v.element(),_=>None};\n  assert_eq!(owning_type,expected_owner,\"{name}\");\n  let paths:Vec<_>=targets.iter().map(|t|r.conforms_with_implied(e,*t)).collect();\n  assert!(paths[0],\"missing generic performance path: {name}\");\n  println!(\"{name}: ownerKind={:?}, composite={:?}, paths={paths:?}\",owning_type.map(|o|r.element_type(o)),r.is_composite(e));\n }\n }).unwrap().join().unwrap();}\n",
+      "output": "B::enclosed: ownerKind=Some(\"Behavior\"), composite=Some(false), paths=[true, false, false, false]\nB::owned: ownerKind=Some(\"Behavior\"), composite=Some(true), paths=[true, false, false, false]\nouter::enclosed: ownerKind=Some(\"Step\"), composite=Some(false), paths=[true, false, false, false]\nouter::owned: ownerKind=Some(\"Step\"), composite=Some(true), paths=[true, false, false, false]\nS::plain: ownerKind=Some(\"Structure\"), composite=Some(false), paths=[true, false, false, false]\nS::owned: ownerKind=Some(\"Structure\"), composite=Some(true), paths=[true, false, false, false]\nstructural::owned: ownerKind=Some(\"Feature\"), composite=Some(true), paths=[true, false, false, false]\nunowned: ownerKind=None, composite=Some(false), paths=[true, false, false, false]\n",
+      "pathOrder": [
+        "Performances::performances",
+        "Performances::Performance::enclosedPerformances",
+        "Performances::Performance::subperformances",
+        "Objects::Object::ownedPerformances"
+      ],
+      "interpretation": "All eight declared examples have their expected owning-Type identity, and the generic performance path is present. No contextual role path is found by the current materialized-graph compatibility query, including the six examples whose interpreted obligations require such a path. The two remaining examples exercise contexts that do not require a contextual role. A false compatibility query is not a complete negative semantic proof.",
+      "claimBoundary": "This probe does not assert that the contextual obligations pass. It records current construction behavior to guide the planned fix. Its compiled model library is pinned by artifact hash; it does not establish a new release or platform qualification."
+    }
+  ],
+  "remaining": "Implement and execute these partitions, record interpreted construction evidence, and integrate complete checked result/trigger validation. Predicate-return progress is a separate dependency checkpoint."
+}

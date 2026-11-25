@@ -1,0 +1,475 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional_names.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional_names.rs
+new file mode 100644
+--- /dev/null
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional_names.rs
+@@ -0,0 +1,470 @@
++//! Owned names supplied by positional redefinition. Textual scope tables hold
++//! declared names and written redefinition hints; unnamed parameter/result/end
++//! slots also acquire names from the actual features they implicitly redefine.
++
++use super::{Binding, Builder, LookupAccess, LookupResult, parameters::SlotMemo};
++use crate::metaclass::conforms;
++use std::{
++    collections::{HashMap, HashSet},
++    sync::Arc,
++};
++
++/// Only source row identities are cached. An observed revision is retained to
++/// detect every source mutation; live outcomes and their dependencies are read
++/// by the caller. Cloned builders may share this immutable index until edited.
++pub(super) struct RecordedRedefinitionRows {
++    revision: crate::layered::Revision,
++    by_owner: HashMap<usize, Vec<usize>>,
++}
++impl RecordedRedefinitionRows {
++    pub(super) fn rows(&self, owner: usize) -> &[usize] {
++        self.by_owner.get(&owner).map_or(&[], Vec::as_slice)
++    }
++}
++
++impl Builder {
++    pub(super) fn ensure_lookup_redefinition_rows(&mut self) {
++        if self.lookup_redefinition_rows.as_ref().is_some_and(|index| {
++            self.spec_targets
++                .revision()
++                .is_some_and(|now| index.revision.same_as(now))
++        }) {
++            return;
++        }
++        let revision = self.spec_targets.observe_revision();
++        let mut by_owner: HashMap<usize, Vec<usize>> = HashMap::new();
++        for (row, (owner, kind, _, _)) in self.spec_targets.iter().enumerate() {
++            if *kind == "Redefinition" {
++                by_owner.entry(*owner).or_default().push(row);
++            }
++        }
++        self.lookup_redefinition_rows =
++            Some(Arc::new(RecordedRedefinitionRows { revision, by_owner }));
++    }
++
++    /// Reuse membership reduction before merging inherited name hits. The
++    /// construction adapter reads the same positional targets as scope bases,
++    /// so a renamed owned parameter also removes the inherited old spelling.
++    pub(super) fn reduce_owned_lookup_redefinitions(
++        &mut self,
++        scope: usize,
++        hits: &mut Vec<LookupResult>,
++    ) {
++        // A redefinition header selects from the owner's bases. While that
++        // header is being resolved its owned redefiners cannot suppress the
++        // very target they are declaring (including implicit library bases).
++        if self.scopes[scope].owner.is_some_and(|owner| {
++            self.redefinition_lookup_owner == Some(owner)
++                || self.exclude.and_then(|e| self.owner_elem(e)) == Some(owner)
++        }) {
++            return;
++        }
++        let membership_order: Vec<_> = hits
++            .iter()
++            .filter_map(|hit| match *hit {
++                LookupResult::Found(e, _, membership) => {
++                    membership.or(self.elements[e].owning_relationship)
++                }
++                _ => None,
++            })
++            .collect();
++        if membership_order.is_empty() {
++            return;
++        }
++        let reduced = self.reduce_membership_projection_with_lookup(
++            self.scopes[scope].owner,
++            true,
++            super::MembershipProjection {
++                membership_order,
++                ..Default::default()
++            },
++            None,
++            true,
++        );
++        let retained: HashSet<_> = reduced.membership_order.into_iter().collect();
++        hits.retain(|hit| match *hit {
++            LookupResult::Found(e, _, membership) => membership
++                .or(self.elements[e].owning_relationship)
++                .is_none_or(|m| retained.contains(&m)),
++            _ => true,
++        });
++    }
++
++    pub(super) fn lookup_owned_positional_name(
++        &mut self,
++        scope: usize,
++        name: &str,
++        access: LookupAccess,
++    ) -> LookupResult {
++        let Some(owner) = self.scopes[scope].owner else {
++            return LookupResult::Missing;
++        };
++        let mut result = LookupResult::Missing;
++        let mut memo = SlotMemo::default();
++        for feature in self.owned_member_elems(owner, true) {
++            if Some(feature) == self.exclude
++                || self.effective_name(feature).is_some()
++                || self.effective_hint.contains_key(&feature)
++            {
++                continue;
++            }
++            let membership = self.elements[feature].owning_relationship;
++            if super::naming::reference_names_feature(
++                self.elements[feature].ty,
++                membership.map(|r| self.elements[r].ty),
++            ) {
++                continue;
++            }
++            let Some(target) = self
++                .positional_targets(feature, owner, &mut memo)
++                .first()
++                .copied()
++            else {
++                continue;
++            };
++            // A written redefinition is the first naming edge, even if it is
++            // unresolved. Positional naming must never override that evidence.
++            if self.elements[feature]
++                .owned_relationships
++                .iter()
++                .any(|&r| conforms(self.elements[r].ty, "Redefinition"))
++            {
++                continue;
++            }
++            if !self.positional_naming_matches(target, name, &mut memo) {
++                continue;
++            }
++            let visibility = membership
++                .and_then(|r| self.elements[r].props.get("visibility"))
++                .and_then(|v| v.as_str());
++            let binding = Binding {
++                elem: feature,
++                sub_scope: self.elem_scope.get(&feature).copied(),
++                visibility: match visibility {
++                    Some("private") => LookupAccess::All,
++                    Some("protected") => LookupAccess::Protected,
++                    _ => LookupAccess::Public,
++                },
++            };
++            result = self.merge_lookup(
++                result,
++                self.binding_result(Some(&[binding]), access, self.exclude, true),
++            );
++        }
++        result
++    }
++
++    fn positional_naming_matches(
++        &mut self,
++        mut feature: usize,
++        name: &str,
++        memo: &mut SlotMemo,
++    ) -> bool {
++        let mut seen = HashSet::new();
++        while seen.len() <= super::MAX_RESOLUTION_DEPTH && seen.insert(feature) {
++            let props = &self.elements[feature].props;
++            let names = ["declaredName", "declaredShortName"]
++                .map(|key| props.get(key).and_then(|v| v.as_str()));
++            if names.iter().any(Option::is_some) {
++                return names.into_iter().flatten().any(|declared| declared == name);
++            }
++            let explicit = self.elements[feature]
++                .owned_relationships
++                .iter()
++                .copied()
++                .find(|&r| conforms(self.elements[r].ty, "Redefinition"));
++            if let Some(relation) = explicit {
++                let Some(target) = self.elements[relation]
++                    .props
++                    .get("redefinedFeature")
++                    .and_then(|v| v.as_reference())
++                    .and_then(|id| self.element_index_of_uuid(id))
++                else {
++                    return false;
++                };
++                feature = target;
++            } else {
++                let Some(owner) = self.owner_elem(feature) else {
++                    return false;
++                };
++                let Some(target) = self
++                    .positional_targets(feature, owner, memo)
++                    .first()
++                    .copied()
++                else {
++                    return false;
++                };
++                feature = target;
++            }
++        }
++        false
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use crate::{
++        json::ResolvedModel,
++        model::{GraphFormat, Model},
++    };
++
++    fn model(source: &str) -> ResolvedModel {
++        let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
++        let parsed = model.add_source("names.kerml", &format!("datatype R; {source}"));
++        assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
++        ResolvedModel::build(&model)
++    }
++
++    #[test]
++    fn unnamed_result_resolves_to_the_owned_feature_and_its_members() {
++        let mut r = model(
++            "package P {
++            function Base {return answer;}
++            function F specializes Base {return :R {feature dimension;}}
++            function G specializes F {return :R {feature :>> F::answer::dimension;}}
++        }",
++        );
++        let f = r.resolve_qualified("P::F").unwrap();
++        let result = r.resolve_qualified("P::F::answer").unwrap();
++        assert_eq!(r.owner(result), Some(f));
++        let dimension = r.resolve_qualified("P::F::answer::dimension").unwrap();
++        assert_eq!(r.owner(dimension), Some(result));
++        assert_eq!(r.unresolved_count(), 0);
++        assert!(r.resolve_qualified("P::G::answer::dimension").is_some());
++    }
++
++    #[test]
++    fn unnamed_input_uses_its_position_and_retains_the_local_body() {
++        let mut r = model(
++            "package P {
++            function Base {in x; in y;}
++            function F specializes Base {in feature :R {feature local;} in renamed;}
++            feature bad = F::y;
++        }",
++        );
++        let f = r.resolve_qualified("P::F").unwrap();
++        let input = r.resolve_qualified("P::F::x").unwrap();
++        assert_eq!(r.owner(input), Some(f));
++        assert!(r.resolve_qualified("P::F::x::local").is_some());
++        assert!(r.resolve_qualified("P::F::y").is_none());
++        assert_eq!(r.unresolved_count(), 1);
++    }
++
++    #[test]
++    fn ambiguous_owned_results_do_not_select_a_foreign_result() {
++        let mut r = model(
++            "package P {
++            function Base {return answer;}
++            function F specializes Base {return :R; return :R;}
++        }",
++        );
++        assert!(r.resolve_qualified("P::F::answer").is_none());
++    }
++
++    #[test]
++    fn missing_naming_evidence_never_invents_the_spelling_result() {
++        let mut r = model("package P {function F {return :R {feature local;}}}");
++        assert!(r.resolve_qualified("P::F::result").is_none());
++    }
++
++    #[test]
++    fn positional_names_preserve_short_names_and_private_access() {
++        let mut r = model(
++            "package P {
++            function Base {return <r> answer;}
++            function F specializes Base {private return :R {feature local;}}
++            feature outside = F::answer::local;
++        }",
++        );
++        let f = r.resolve_qualified("P::F").unwrap();
++        let result = r.resolve_qualified("P::F::answer").unwrap();
++        assert_eq!(r.owner(result), Some(f));
++        assert_eq!(r.resolve_qualified("P::F::r"), Some(result));
++        assert_eq!(r.unresolved_count(), 1);
++    }
++
++    #[test]
++    fn inherited_names_and_local_identity_survive_library_replay() {
++        use crate::{libcache::LibraryCache, prepared::PreparedLibrary};
++        use std::sync::Arc;
++        let source = "standard library package P {
++            datatype R; function Base {return <r> answer;}
++            function F specializes Base {return :R {feature dimension;}}
++            function G specializes F {return :R {feature :>> F::answer::dimension;}}
++        }";
++        for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++            let mut base = Model::with_graph_format(format);
++            assert!(
++                base.add_library_source("names.kerml", source)
++                    .diagnostics
++                    .is_empty()
++            );
++            base.record_library_cache();
++            ResolvedModel::build(&base);
++            let cache =
++                LibraryCache::from_bytes(&base.take_recorded_library_cache().unwrap().to_bytes())
++                    .unwrap();
++            let prepared = base.prepare_library().unwrap();
++            let decoded = Arc::new(
++                PreparedLibrary::from_bytes(&prepared.to_bytes(151).unwrap(), 151).unwrap(),
++            );
++            let mut expected = None;
++            for mode in 0..4 {
++                let mut m = Model::with_graph_format(format);
++                match mode {
++                    2 => Arc::clone(&prepared).install(&mut m).unwrap(),
++                    3 => Arc::clone(&decoded).install(&mut m).unwrap(),
++                    _ => {
++                        m.add_library_source("names.kerml", source);
++                        if mode == 1 {
++                            m.set_library_cache(cache.clone());
++                        }
++                    }
++                }
++                assert!(
++                    m.add_source("use.kerml", "feature x redefines P::G::answer::dimension;")
++                        .diagnostics
++                        .is_empty()
++                );
++                let mut r = ResolvedModel::build(&m);
++                assert_eq!(r.unresolved_count(), 0, "{format:?}, mode {mode}");
++                let g = r.resolve_qualified("P::G").unwrap();
++                let result = r.resolve_qualified("P::G::answer").unwrap();
++                assert_eq!(r.owner(result), Some(g));
++                assert_eq!(r.resolve_qualified("P::G::r"), Some(result));
++                let dimension = r.resolve_qualified("P::G::answer::dimension").unwrap();
++                assert_eq!(r.owner(dimension), Some(result));
++                let identities = [r.element_id(result), r.element_id(dimension)];
++                if let Some(expected) = expected {
++                    assert_eq!(identities, expected);
++                } else {
++                    expected = Some(identities);
++                }
++            }
++        }
++    }
++
++    #[test]
++    fn a_redefinition_header_can_select_a_suppressed_implicit_base_member() {
++        let mut r = model(
++            "standard library package Objects {
++            struct Object {feature self;} feature objects:Object;
++        }
++        struct Monitor {private thisMonitor:Monitor redefines self;}
++        ",
++        );
++        assert_eq!(r.unresolved_count(), 0);
++        let local = r.resolve_qualified("Monitor::thisMonitor").unwrap();
++        let target = r.resolve_qualified("Objects::Object::self").unwrap();
++        assert!(
++            r.explicit_specializations(local)
++                .contains(&("Redefinition", target))
++        );
++        assert!(r.resolve_qualified("Monitor::self").is_none());
++    }
++
++    #[test]
++    fn recorded_lookup_rows_preserve_live_outcomes_and_refresh_on_source_changes() {
++        let mut model =
++            crate::model::Model::with_graph_format(crate::model::GraphFormat::CanonicalV3);
++        assert!(
++            model
++                .add_source(
++                    "recorded.kerml",
++                    "function A {in a;in b;} function B specializes A {in x redefines a;}"
++                )
++                .diagnostics
++                .is_empty()
++        );
++        let mut r = crate::json::ResolvedModel::build(&model);
++        let x = r.resolve_qualified("B::x").unwrap().0;
++        let a = r.resolve_qualified("A::a").unwrap().0;
++        let b = r.resolve_qualified("A::b").unwrap().0;
++        r.b.semantic_ready = false;
++        r.b.spec_index = None;
++        let row =
++            r.b.spec_targets
++                .iter()
++                .position(|(owner, kind, _, _)| *owner == x && *kind == "Redefinition")
++                .unwrap();
++        let mut read = Vec::new();
++        assert_eq!(r.b.recorded_redefinition_targets(x, &mut read), [a]);
++        assert_eq!(read, [row]);
++        // An unchanged source table does not freeze the current outcome.
++        r.b.spec_resolved[row] = Some(b);
++        read.clear();
++        assert_eq!(r.b.recorded_redefinition_targets(x, &mut read), [b]);
++        assert_eq!(read, [row]);
++        r.b.spec_resolved[row] = None;
++        read.clear();
++        assert!(r.b.recorded_redefinition_targets(x, &mut read).is_empty());
++        assert_eq!(
++            read,
++            [row],
++            "unresolved outcomes remain lookup dependencies"
++        );
++        // Mid-lowering append and same-length owner/kind edits both change the
++        // index domain, while duplicate targets retain every dependency row.
++        let added = r.b.spec_targets.len();
++        r.b.spec_targets.push(r.b.spec_targets[row].clone());
++        r.b.spec_resolved.push(Some(b));
++        r.b.spec_resolved[row] = Some(b);
++        read.clear();
++        assert_eq!(r.b.recorded_redefinition_targets(x, &mut read), [b]);
++        assert_eq!(read, [row, added]);
++        r.b.spec_targets[added].0 = a;
++        read.clear();
++        assert_eq!(r.b.recorded_redefinition_targets(x, &mut read), [b]);
++        assert_eq!(read, [row]);
++        read.clear();
++        assert_eq!(r.b.recorded_redefinition_targets(a, &mut read), [b]);
++        assert_eq!(read, [added]);
++        r.b.spec_targets[row].1 = "Subsetting";
++        read.clear();
++        assert!(r.b.recorded_redefinition_targets(x, &mut read).is_empty());
++        assert!(read.is_empty());
++        r.b.spec_resolved[added] = Some(a);
++        read.clear();
++        assert!(r.b.recorded_redefinition_targets(a, &mut read).is_empty());
++        assert_eq!(read, [added], "self-targets remain dependencies");
++        // Cloning may share source rows and their immutable index, but current
++        // outcomes and later source changes belong to each builder separately.
++        let mut cloned = r.b.clone();
++        cloned.spec_resolved[added] = Some(b);
++        read.clear();
++        assert_eq!(cloned.recorded_redefinition_targets(a, &mut read), [b]);
++        assert_eq!(read, [added]);
++        read.clear();
++        assert!(r.b.recorded_redefinition_targets(a, &mut read).is_empty());
++        assert_eq!(read, [added]);
++        let mut replaced: Vec<_> = cloned.spec_targets.iter().cloned().collect();
++        replaced[added].0 = x;
++        cloned.spec_targets = replaced.into();
++        read.clear();
++        assert!(
++            cloned
++                .recorded_redefinition_targets(a, &mut read)
++                .is_empty()
++        );
++        assert!(read.is_empty());
++        read.clear();
++        assert_eq!(cloned.recorded_redefinition_targets(x, &mut read), [b]);
++        assert_eq!(read, [added]);
++        cloned.spec_targets.truncate_tail(added);
++        cloned.spec_resolved.truncate_tail(added);
++        read.clear();
++        assert!(
++            cloned
++                .recorded_redefinition_targets(x, &mut read)
++                .is_empty()
++        );
++        assert!(read.is_empty());
++        read.clear();
++        assert!(r.b.recorded_redefinition_targets(a, &mut read).is_empty());
++        assert_eq!(read, [added], "the original builder retains its source row");
++        assert!(
++            r.b.spec_index.is_none(),
++            "lookup must not publish the permanent index"
++        );
++    }
++}

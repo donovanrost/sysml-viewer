@@ -1,0 +1,128 @@
+{
+  "generatedAt": "2026-10-18T07:26:58.555129+00:00",
+  "platform": "macOS-15.8-arm64-arm-64bit",
+  "status": "verified worktree dependency progress; not release qualification or complete Expression/trigger conformance",
+  "baselineCommit": "4ee0776",
+  "scope": "Checked first effective return selection for ordinary noncomposite undirected Expressions, BooleanExpressions and literal expressions through the shared complete Type feature-membership reducer.",
+  "kernelInputSha256": "417ed2b5397cdc38645a5c0b10f94a067a57cd53872c52354cd11028136defaa",
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "034c54f07382936b68fc4652e589b5be616a0c79849f33f1f3ac3b2629578564",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/expression_results.rs": "511f7475765fe14b1c7ace4d42c8128efc57a90601fb73e429d89f2f57d5dd5f",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_features.rs": "5e5d76a416a6e81e45a036e9ba440c40975043d7ae32e18647cdc3ed897c52c4",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "5f43963326287150bcbb3cd248c0741932f1a50999255f0a76ac0efa674330d8",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "c878770368e5110f79f5d3ba8a26ab783ea9723c2c6e168800b3df5680247814",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/step_context.rs": "4142a1157bc68ccad4146c71dde9aeee82e6ac83e99d4028025a68dae7da514f",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic.rs": "bc592e894134ab4354aa0972c179d634adfb6183d42638640c8df73f49c0a0c5",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/certified_types.rs": "620c63f29672122903f762aab2cf605cd6f04ab5869607d41edeb14b70516efb",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/readiness_tests.rs": "0a26e19c7fba9922fee050a5784175ba392d6bbda586e82c61cf34286b1d2fbe",
+    "crates/sysml-kernel/tests/trigger_result_features.rs": "d04bf8249a442122b849fa07171999b0b90955936ae95fe614199ca0bf91d649",
+    "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Performances.kerml": "fd965e184b300737a192530de0c800cdbee236cb6220612f370400da21dfb327",
+    "tools/test-vendor.mjs": "e4383474ffdf8be09efa06cb6f6bbd4239995e11637ed003fbc704199fd6240d",
+    "patches/manifest.json": "3ad0a61dd49a61c9f09655c404f3ad8b4cfb046ffbe20b49c68cb65f7923685e",
+    "patches/0002-package-attribute-featuring.patch": "53fd12035d4eaa92cbca49efe8be6a17b4e96540910802742ec1257d9406f8d0",
+    "patches/0003-checked-conditional-bindings.patch": "8d3ca1ea49c2f5bb6e962e599ff6a2ce4334e9600385aba4eb187e017b939ef5",
+    "patches/0004-designated-operator-cache.patch": "74933e6f3ea7da3ed508b40a51a4b8a3d93e0d724c6aeaba52f9d25666d9aed5",
+    "patches/0008-isolate-unresolved-specializations.patch": "36e7f00ac84c87730a3c99dc9a75cb3174fbdd63b9cba99f16d4b65ffa79ab75",
+    "patches/0010-reuse-static-prefix.patch": "ea444fe5ec6cf8c23492e0f4d3c37dbc359a6f994f96ff2a3f03ffd39ea9a4db",
+    "patches/0011-atomic-dynamic-staging.patch": "d72a5f7bb9bafdc274c9eeb0aa742b9358bdd49a9a44ab35fb333b66f7d4d853",
+    "patches/0019-preserve-distinct-view-renderings.patch": "3a76b5eb85592effe52678edad632212e9764c533118f8147bef2e16fc75295c",
+    "patches/0027-generated-result-inheritance.patch": "b55675b3e6600f2df5adf33eff705fe93cdbab378a5c1f6f3960fa898a078be3",
+    "patches/0028-partial-result-heritage.patch": "bd0adec56613f6d52960f0623bc8d02a795b6b172f03b86894ff4e51d6fe1d43",
+    "patches/0029-assertion-member-evidence.patch": "f47aa0bb3a83c47d4c6344137b83b80199c020aea9fc07f02e0e35588a97e0bf",
+    "patches/0030-attribute-feature-domains.patch": "1cdcebdeb8f83942a707444e471293c4641e4de5778af10cee629dd6584df9e6",
+    "patches/0031-generated-result-domain-witnesses.patch": "080b3ce6a9710cd454f80da0e592c0302e2dc12eca7107516157403aecfb6fcc",
+    "patches/0032-predicate-result-properties.patch": "2358db9f79054bd4fc80d5b1a0e2e3fc4ae8ed2dde35c5bbbd3cc3450756a413",
+    "patches/0034-contextual-step-ownership.patch": "d3112a025df1c2b90817b8ed6358063b45a2b3c73520bd7798772479277c55df",
+    "patches/0035-stable-step-type-projection.patch": "80ffdb19bdc343a7a52683b9fd6ffae29ee3119719783cebf71a48988c050ccf",
+    "patches/0036-stable-step-type-adapter.patch": "d81d13c6714f0219d15f460b2ddc180dff1fa7715b389b0f6c8b065bd390ae62",
+    "patches/0037-checked-expression-results.patch": "c456868fa5b2d932564b94fef5d2bd6fe59d67b7faeedec784a9a26b8e02a208",
+    "patches/0038-expression-result-errors.patch": "ca596b21c8320d8d4afd9af455c2515dcb35095c9e6dff7a14b00adf4bb8dbac",
+    "patches/0039-expression-owned-type-proof.patch": "e10319165ba62d18fb0ede1fbc68a58437cc4a2c0ef95b7a8a60b61b89f0ccc1"
+  },
+  "nativeTestBinaries": {
+    "target/release/deps/trigger_result_features-193bdccb12600a29": "be4b3ede5643f344490e10c55bc68df11fd637fc2b07b56691783e8d13ab1f28"
+  },
+  "sourceReview": "expression-result-dependency-review.json",
+  "normativeInputs": {
+    "target/standards/kerml.xmi": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466"
+  },
+  "sourceAnchors": [
+    "Expression::deriveExpressionResult",
+    "Function::deriveFunctionResult",
+    "Type::deriveTypeFeatureMembership",
+    "Expression::checkExpressionSpecialization",
+    "BooleanExpression::checkBooleanExpressionSpecialization",
+    "LiteralExpression::checkLiteralExpressionSpecialization",
+    "Expression::validateExpressionResultParameterMembership"
+  ],
+  "observations": [
+    "ExpressionResultReport selects the first effective ReturnParameterMembership-owned parameter. FunctionResultReport and checked Function/Expression result properties now share this exact membership selector.",
+    "The complete ordered membership reducer preserves inherited order, diamond reduction and explicit redefinition. Report queries do not publish graph rows or execute expressions.",
+    "Ordinary Step/Expression base proofs use reciprocal source context and current identity-based required library roles, including subtype-specific Boolean and literal roles. Literal values need no fabricated body scope.",
+    "All 94 library files are mandatory in the private integration test. CanonicalV3 and LegacyV2 select exact inherited return identities for ordinary expressions and Boolean, integer, infinity, rational, string and null literals.",
+    "Complete absence yields report Ok(None), while the required result property yields MissingRequiredValue. The distinct exactly-one and output-direction validation obligations are not silently substituted for derivation.",
+    "Tests cover multiple effective returns and order changes, inherited/owned replacements, nested ownership, missing/cyclic evidence, malformed membership aliases, flags and metadata, changed library identity, closure policy, exhausted-budget retry and prepared/serialized library replay.",
+    "The native trigger integration now selects the Boolean literal result through the checked report and property, then checks its Predicate return and feature domain. Its reference-expression selections still use compatibility reads and remain outside this increment.",
+    "The unchanged cold 10,000-declaration query and 10,000,000-step limit pass with the selected dependency suites."
+  ],
+  "review": {
+    "method": "Manual source and normative-artifact review by the implementing agent plus executed acceptance partitions; no independent second review is claimed.",
+    "checkedInvariants": [
+      "Exactly supported metaclasses are admitted. Derived invocation, reference, metadata-access and constructor families do not inherit this new source-domain permission.",
+      "Composite, directed, end, variable and unsupported contextual configurations remain qualified rather than falling back to compatibility derivations.",
+      "Owned ResultExpressionMembership is excluded until its additional binding construction is certified. Owning FeatureValue context requires reciprocal membership.",
+      "Return selection consumes membership identities, not an arbitrary first owned result or a direction-only feature scan.",
+      "Existing canonical Constructor result-property behavior is retained through its separate certificate."
+    ]
+  },
+  "verification": [
+    {
+      "command": [
+        "node",
+        "tools/test-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "passed": 522,
+      "log": "target/trigger-validation/expression-results-vendor-verified.log",
+      "logSha256": "6e5216fa506ba2719231cb1c72d3ab3623b7167c1c0ce800ddbac2e49907c848"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "test",
+        "--locked",
+        "--release",
+        "--workspace"
+      ],
+      "exitCode": 0,
+      "passed": 95,
+      "log": "target/trigger-validation/expression-results-workspace-verified.log",
+      "logSha256": "6ce5b41b833198616ff8cf7e6ca1dec4dbd416a955ab8fb40eb95b8b38ee1c40"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "log": "target/trigger-validation/expression-results-clippy-verified.log",
+      "logSha256": "baaf3de35dc1a72ed8a217e1713a21b60823c02bcfe88aa48e167e6abda68ada"
+    }
+  ],
+  "remaining": [
+    "Complete reference-expression source membership and redefinition domains are needed before generated result selection is certified. A positive generated-result feature-domain witness is not sufficient.",
+    "General invocation/operator results, ResultExpressionMembership bindings, broader contextual configurations and coupled Step construction remain open.",
+    "The three trigger argument validators, inherited/default bindings and public metamodel APIs remain incomplete.",
+    "The conformance matrix, native/WASM parity, benchmarks and desktop release qualification were not repeated. The installed app remains KERNEL-023; Windows/Linux execution remains pending.",
+    "All fifteen completion packages remain open. These test counts do not establish a conformance percentage."
+  ]
+}

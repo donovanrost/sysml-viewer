@@ -1,0 +1,235 @@
+{
+  "recordedAt": "2026-10-18T18:21:57.434011+00:00",
+  "status": "Namespace-feature source admitted and qualified on macOS arm64. No complete family or package closes.",
+  "kernelInputSha256": "52813ee85839cef183e993ed155113272e72bc60f22c815a2563df6a4b85d2bf",
+  "previousQualifiedKernelInputSha256": "73b44bcd0d7606066d5fc8f3187ed5b6fe131d348d572c4bebb190b10cbc6819",
+  "files": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs": "1fb062ef5d9f688c41d283976be1f2807f95e27f25ff6935e9afbad83476bc06",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/current_graph_tests.rs": "246c781f35a40e9ecf594d851658c921047b68543529cedb7a2e26b6baed23d3",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/minimizer_differential_tests.rs": "93a2d575fdb418fd0083e1e18a56f3b53f2f8a3cf873faf1603afb3a32bb4dd2",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "91df261d12964e7b84d35ae76a42879f7759ce18fa1ace49b39e5843ee5bc7b8",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_evidence.rs": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs": "0157eda9274226507c2a461234daf3b80e90d480a1c57912374642c1404b2ccb",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/namespace_member_tests.rs": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/ordinary_features_tests.rs": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683",
+    "crates/sysml-kernel/tests/namespace_feature_members.rs": "685d795421311bd98675f0788411bf4319d8d20da45553d2148aa8e80702e286",
+    "patches/manifest.json": "e04855dceb0c43370a50348d1c870da977f3704d4348f92d3652f62cdb5fc580"
+  },
+  "anchorReview": {
+    "reviewedAt": "2026-10-18T18:21:55.998530+00:00",
+    "evidenceId": "checked-featuring",
+    "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
+    "previousSha256": "6540aa4caca201f3565e59a572661e4ae2f2631c802f18b45290da28a5846f79",
+    "currentSha256": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683",
+    "auditedFeaturingSectionSha256": "d28626be5211bdcafe33c525ea460234defa3d49dac2f43029b73fd544edb47a",
+    "finding": "The audited package AttributeUsage featuring method is byte-identical. The changed feature_requirements branch accepts ordinary Type namespace membership only through reciprocal current ownership, complete membership-domain and metadata checks, with no owningType, parameter, result, composite or cross-feature role invented. Shared input reading uses that same certificate. The full isolated model suite, independent graph oracle and public integration pass. Existing assessment assertions and limits are unchanged; final-source qualification remains pending."
+  },
+  "acceptance": {
+    "private": {
+      "status": "pass",
+      "tests": 1008,
+      "log": "target/trigger-validation/context-member-index-full-model.log",
+      "logSha256": "457625dc4d5c789f3b6fb191d4c482bd96cc15d7d0e3ac37644b95c5aefe73a7",
+      "archivedInputs": {
+        "target/trigger-validation/context-member-index-accepted-stage/json/feature_type_projection/adapter.rs": "1fb062ef5d9f688c41d283976be1f2807f95e27f25ff6935e9afbad83476bc06",
+        "target/trigger-validation/context-member-index-accepted-stage/json/implied/current_graph_tests.rs": "246c781f35a40e9ecf594d851658c921047b68543529cedb7a2e26b6baed23d3",
+        "target/trigger-validation/context-member-index-accepted-stage/json/implied/minimizer_differential_tests.rs": "93a2d575fdb418fd0083e1e18a56f3b53f2f8a3cf873faf1603afb3a32bb4dd2",
+        "target/trigger-validation/context-member-index-accepted-stage/json/implied.rs": "91df261d12964e7b84d35ae76a42879f7759ce18fa1ace49b39e5843ee5bc7b8",
+        "target/trigger-validation/context-member-index-accepted-stage/json/membership_evidence.rs": "f86b7939e191264bd14b4da8024f8687f1803e7856795c32b31b72f9ce56335d",
+        "target/trigger-validation/context-member-index-accepted-stage/json/structural_index.rs": "0157eda9274226507c2a461234daf3b80e90d480a1c57912374642c1404b2ccb",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_inputs.rs": "c3a84914b39bd467552456e27bc55d31eef29d6e698ad9b03285d0ca47939dfa",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_relations/namespace_member_tests.rs": "dd2f6620bd9f6c9195c0738647bbd44024a7649aa97cca5deba3c6816fcb51cc",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_relations/ordinary_features_tests.rs": "b6651b3112ca92750b63084ff8268fff246baa6981c7cff80a992e4996b1ebb9",
+        "target/trigger-validation/context-member-index-accepted-stage/json/type_relations.rs": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683"
+      }
+    },
+    "public": {
+      "status": "pass",
+      "tests": 1,
+      "source": "crates/sysml-kernel/tests/namespace_feature_members.rs",
+      "sourceSha256": "685d795421311bd98675f0788411bf4319d8d20da45553d2148aa8e80702e286",
+      "log": "target/trigger-validation/context-member-index-public.log",
+      "logSha256": "23e82e284113702b36cbf95bf809977dd7bc56d1fa9ce3c99ecc1b6a6d3f18aa"
+    }
+  },
+  "fullQualification": {
+    "status": "pass",
+    "startedAt": "2026-10-18T18:22:41.116650+00:00",
+    "sessions": {
+      "pipeline": 51106
+    },
+    "pipelineState": "target/trigger-validation/namespace-feature-members-qualification.json",
+    "provenance": {
+      "status": "pass",
+      "tests": 16,
+      "log": "target/trigger-validation/namespace-feature-members-provenance.log",
+      "logSha256": "3af6363120ed0f34ade5c6e5553d620b0cebe2fb2b436d0f2a19b55f3de7b5c1"
+    },
+    "contract": {
+      "status": "pass",
+      "log": "target/trigger-validation/namespace-feature-members-contract.log",
+      "logSha256": "30a25c50f6d5834d2dbb0ec625aeda4df8732dff24eace0f30d9f1c36bd30d64"
+    },
+    "lastObserved": {
+      "session": 51106,
+      "state": "terminal exit 0",
+      "observedAt": "2026-10-18T18:50:26.120739+00:00"
+    },
+    "pipeline": {
+      "kernelInputSha256": "52813ee85839cef183e993ed155113272e72bc60f22c815a2563df6a4b85d2bf",
+      "startedAt": "2026-10-18T18:22:10.354Z",
+      "status": "passed",
+      "phases": [
+        {
+          "name": "workspace",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--workspace"
+          ],
+          "startedAt": "2026-10-18T18:22:10.355Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T18:32:06.833Z",
+          "log": "target/trigger-validation/namespace-feature-members-qualification-workspace.log",
+          "logSha256": "841061028897c26eb388df76c2fbf8cac9ef18e2c47b26acc4f50d0319f37883"
+        },
+        {
+          "name": "clippy",
+          "args": [
+            "tools/rust.mjs",
+            "clippy",
+            "--locked",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "startedAt": "2026-10-18T18:32:06.834Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T18:32:11.342Z",
+          "log": "target/trigger-validation/namespace-feature-members-qualification-clippy.log",
+          "logSha256": "eb30415043672961003d944ab81b63156f3380c93ac4be95c3c395ea778d6553"
+        },
+        {
+          "name": "wasm",
+          "args": [
+            "tools/build-kernel.mjs"
+          ],
+          "startedAt": "2026-10-18T18:32:11.342Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T18:32:47.248Z",
+          "log": "target/trigger-validation/namespace-feature-members-qualification-wasm.log",
+          "logSha256": "ad6d8274b492db67cbf0d175689f28a31d2872b3a91e5265f35dddb713d3505e"
+        },
+        {
+          "name": "cli",
+          "args": [
+            "tools/rust.mjs",
+            "build",
+            "--locked",
+            "--release",
+            "-p",
+            "sysml-cli"
+          ],
+          "startedAt": "2026-10-18T18:32:47.248Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T18:33:22.934Z",
+          "log": "target/trigger-validation/namespace-feature-members-qualification-cli.log",
+          "logSha256": "c16586c3a6d684316a375a192bf917f33989f19fc7f6ae6bc71c1794f2b38cc9"
+        },
+        {
+          "name": "public",
+          "args": [
+            "--experimental-strip-types",
+            "--test",
+            "--test-concurrency=1",
+            "tests/accept-actions.test.ts",
+            "tests/families.test.ts",
+            "tests/kernel.test.ts",
+            "tests/state-subactions.test.ts",
+            "tests/kernel-client.test.ts",
+            "tests/conformance-runner.test.mjs"
+          ],
+          "startedAt": "2026-10-18T18:33:22.935Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T18:37:12.349Z",
+          "log": "target/trigger-validation/namespace-feature-members-qualification-public.log",
+          "logSha256": "2a863cba41d8af9591b85d15189ff15795c6573ab097efce8b5bbc26db6d9c12"
+        },
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-18T18:37:12.350Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T18:48:41.895Z",
+          "log": "target/trigger-validation/namespace-feature-members-qualification-conformance.log",
+          "logSha256": "8b50bd6f903ecaaf7dc36fcf94721e3258ba0823e3f6f8739ef8460c6c24a0be"
+        },
+        {
+          "name": "requirements",
+          "args": [
+            "tools/requirements.mjs",
+            "--conformance",
+            "target/conformance/report.json"
+          ],
+          "startedAt": "2026-10-18T18:48:41.896Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T18:48:43.234Z",
+          "log": "target/trigger-validation/namespace-feature-members-qualification-requirements.log",
+          "logSha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76"
+        }
+      ],
+      "finishedAt": "2026-10-18T18:48:44.282Z"
+    },
+    "native": {
+      "status": "pass",
+      "tests": 105,
+      "log": "target/trigger-validation/namespace-feature-members-qualification-workspace.log",
+      "logSha256": "841061028897c26eb388df76c2fbf8cac9ef18e2c47b26acc4f50d0319f37883"
+    },
+    "finishedAt": "2026-10-18T18:48:44.282Z",
+    "reports": {
+      "conformance": {
+        "path": "docs/evidence/namespace-feature-members-conformance-macos-arm64.json",
+        "sha256": "31a7d545883f2eb3dfb51af679b08616e059dda531b0b777b85e6afe0f37be8a",
+        "status": "pass"
+      },
+      "requirements": {
+        "path": "docs/evidence/namespace-feature-members-requirements-macos-arm64.json",
+        "sha256": "373db2a86a33f1cc6fea06ee2d0d834cc06578b73a631cc4f832c64eee14caa8",
+        "status": "pass"
+      }
+    },
+    "terminalSession": {
+      "id": 51106,
+      "exitCode": 0
+    },
+    "counts": {
+      "native": 105,
+      "public": 39,
+      "conformance": 133,
+      "provenance": 16,
+      "privateModel": 1008
+    }
+  },
+  "limits": [
+    "Possible owned cross features retain explicit incomplete results until their crossing obligations are supported.",
+    "Contextual default binding endpoints, mutually stable conditional construction and adjacent validation obligations remain open.",
+    "All C01-C15 remain open. No version bump, release or installation."
+  ],
+  "updatedAt": "2026-10-18T18:50:26.120739+00:00"
+}

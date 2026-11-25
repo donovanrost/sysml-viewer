@@ -238,6 +238,17 @@ pub(super) fn capture_and_prepare_with_workspace(
     prepare_validated_prefix(b, prefix, reserved, raw, steps, workspace)
 }
 
+/// Family activation and candidate traversal must recognize the same kinds.
+/// Recognition is not admission: every candidate still needs a complete plan.
+pub(super) fn is_candidate(kind: &str, format: crate::model::GraphFormat) -> bool {
+    kind == "InvocationExpression"
+        || (format == crate::model::GraphFormat::CanonicalV3
+            && matches!(
+                kind,
+                "ConstructorExpression" | "OperatorExpression" | "TriggerInvocationExpression"
+            ))
+}
+
 fn prepare_validated_prefix(
     b: &mut Builder,
     prefix: Arc<StaticPrefix>,
@@ -443,14 +454,60 @@ fn prepare_validated_prefix(
     let mut required = Vec::new();
     let mut constructor_positional = HashMap::new();
     let mut unadmitted = HashSet::new();
+    // Predicate proofs may read the current graph only when their typing and
+    // specialization dependencies exclude every prospective writer. Parameters
+    // and ends cover positional deltas; constructor results are parameters too.
+    let mut changing = HashSet::new();
+    for source in 0..authored {
+        charge(steps, 1)?;
+        let row = &b.elements[source];
+        if is_candidate(row.ty, b.graph_format)
+            || super::step_context::typed_candidate(row)
+            || super::portion_context::candidate(row)
+            || (conforms(row.ty, "Feature")
+                && (b.is_parameter(source)
+                    || row.props.get("direction").is_some_and(|v| !v.is_null())
+                    || row
+                        .props
+                        .get("isEnd")
+                        .is_some_and(|v| v.as_bool() != Some(false))))
+        {
+            changing.insert(source);
+        }
+    }
+    let changing = Arc::new(changing);
+    let typed_steps =
+        super::step_context::typed_requirements(b, Arc::clone(&changing), &raw, steps)
+            .ok_or_else(|| incomplete(steps))?;
+    let typed_portions =
+        super::portion_context::typed_requirements(b, Arc::clone(&changing), &raw, steps)
+            .ok_or_else(|| incomplete(steps))?;
+    let guard_predicates = typed_steps.has_stable_predicate || typed_portions.has_stable_predicate;
+    unadmitted.extend(typed_steps.incomplete);
+    unadmitted.extend(typed_portions.incomplete);
+    for (source, target) in typed_steps.edges.into_iter().chain(typed_portions.edges) {
+        required.push(source);
+        candidates.push((
+            source,
+            (
+                "Subsetting",
+                "subsettingFeature",
+                "subsettedFeature",
+                b.elements[target].id,
+            ),
+        ));
+    }
     let mut constructor_batch = super::constructor_bindings::ConstructorBatchEvidence::default();
+    let mut designated_callees = HashMap::new();
     for invocation in 0..authored {
         charge(steps, 1)?;
         let constructor = b.graph_format == crate::model::GraphFormat::CanonicalV3
             && b.elements[invocation].ty == "ConstructorExpression";
         let operator = b.graph_format == crate::model::GraphFormat::CanonicalV3
             && b.elements[invocation].ty == "OperatorExpression";
-        if b.elements[invocation].ty != "InvocationExpression" && !constructor && !operator {
+        let trigger = b.graph_format == crate::model::GraphFormat::CanonicalV3
+            && b.elements[invocation].ty == "TriggerInvocationExpression";
+        if !is_candidate(b.elements[invocation].ty, b.graph_format) {
             continue;
         }
         let constructor_result = if constructor {
@@ -461,7 +518,7 @@ fn prepare_validated_prefix(
         } else {
             None
         };
-        let operator_target = if operator {
+        let designated_target = if operator || trigger {
             let mut proposed = HashMap::new();
             match b.checked_invocation_bindings_in_batch(
                 invocation,
@@ -471,6 +528,8 @@ fn prepare_validated_prefix(
             ) {
                 Ok(arguments) => {
                     constructor_positional.extend(proposed);
+                    charge(steps, 1)?;
+                    designated_callees.insert(invocation, arguments.callee.0);
                     Some(arguments.callee.0)
                 }
                 Err(_) if *steps > crate::eval::MAX_STEPS => return Err(Refusal::WorkLimit),
@@ -485,7 +544,7 @@ fn prepare_validated_prefix(
         // Legacy publication retains whole-batch refusal. Canonical candidates
         // with a localized missing callee remain unadmitted; the final closure
         // audit prevents any accepted family from consuming their signatures.
-        let target = if let Some(target) = operator_target {
+        let target = if let Some(target) = designated_target {
             target
         } else {
             match membership_evidence::first_unowned_member(
@@ -678,7 +737,7 @@ fn prepare_validated_prefix(
             .ok_or_else(|| incomplete(steps))?;
         if !matches!(
             b.elements[owner].ty,
-            "InvocationExpression" | "OperatorExpression"
+            "InvocationExpression" | "OperatorExpression" | "TriggerInvocationExpression"
         ) {
             continue;
         }
@@ -813,6 +872,11 @@ fn prepare_validated_prefix(
     }
     for row in &tail {
         charge(steps, 1)?;
+        if guard_predicates && !changing.contains(&row.owner) {
+            // A new family or unexpected positional write cannot silently
+            // invalidate a previously read construction predicate.
+            return Err(Refusal::Incomplete);
+        }
         if raw.element_for_uuid(b, row.id).is_some()
             || reserved.contains(&row.id)
             || !assigned.insert(row.id)
@@ -843,6 +907,7 @@ fn prepare_validated_prefix(
     charge(steps, required.len().saturating_add(delta.len()))?;
     let affected_owners = required.into_iter().chain(delta.keys().copied()).collect();
     Ok(Plan {
+        designated_callees,
         affected_owners,
         added_bases,
         static_prefix: prefix,

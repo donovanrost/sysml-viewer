@@ -4,11 +4,18 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 publish = false
+description = "Standalone SysML v2 and KerML parsing, validation, and model inspection"
+default-run = "sysml"
+
+[[bin]]
+name = "sysml"
+path = "src/main.rs"
 
 [[bin]]
 name = "sysml-inspect"
-path = "src/main.rs"
+path = "src/bin/sysml-inspect.rs"
 
 [dependencies]
 sysml-kernel.workspace = true
+serde.workspace = true
 serde_json.workspace = true

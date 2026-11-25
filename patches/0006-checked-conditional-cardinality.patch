@@ -1,7 +1,21 @@
 diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
 --- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
 +++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs
-@@ -786,16 +786,90 @@
+@@ -198,9 +198,10 @@
+             }
+             // Shared preparation precedes the stamp; readers never publish a
+             // competing graph or retain a partial proof across a mutation.
+-            if !self
+-                .b
+-                .ensure_positional_redefinitions_with_budget(&mut steps)
++            if self.b.effective_positional_redefinitions().is_none()
++                && !self
++                    .b
++                    .ensure_positional_redefinitions_with_budget(&mut steps)
+             {
+                 return Err(CardinalityIssue::IncompleteProvider);
+             }
+@@ -786,16 +787,90 @@
      context: Option<usize>,
      steps: &mut usize,
  ) -> Result<crate::eval::CheckedMultiplicityExpressions, CardinalityIssue> {
@@ -94,7 +108,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
          if !seen.insert(expression) {
              continue;
          }
-@@ -811,10 +885,11 @@
+@@ -811,10 +886,11 @@
          // not its separate model-level classification. Other expression kinds
          // retain the existing model-level admission requirement.
          if r.b.elements[expression].ty != "FeatureReferenceExpression" {
@@ -108,7 +122,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
              "FeatureReferenceExpression" => {
                  certify_reference_domain(&r.b, &raw, expression, steps)?;
                  // The referenced Feature is the first non-parameter member,
-@@ -840,7 +915,7 @@
+@@ -840,7 +916,7 @@
                      .owner_elem(target)
                      .is_none_or(|owner| !conforms(r.b.elements[owner].ty, "Type"))
                  {
@@ -117,7 +131,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
                  } else {
                      let receiver = context
                          .and_then(|scope| r.b.scope_owner(scope))
-@@ -881,7 +956,7 @@
+@@ -881,7 +957,7 @@
                  operators
                      .references
                      .insert(expression, (target, selected, value));
@@ -126,7 +140,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
                  continue;
              }
              "OperatorExpression" => {}
-@@ -892,19 +967,115 @@
+@@ -892,19 +968,115 @@
          let arguments = report
              .arguments
              .map_err(|_| CardinalityIssue::UnsupportedBound)?;
@@ -243,7 +257,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
          charge(steps, arguments.bindings.len())?;
          let operands: Vec<_> = arguments
              .bindings
-@@ -916,10 +1087,53 @@
+@@ -916,10 +1088,53 @@
          {
              return Err(CardinalityIssue::UnsupportedBound);
          }
@@ -298,7 +312,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
  }
  
  /// A contextual reference replaces only the model-level eligibility predicate,
-@@ -972,9 +1186,10 @@
+@@ -972,9 +1187,10 @@
  fn require_model_level_value(
      r: &mut ResolvedModel,
      expression: usize,
@@ -310,7 +324,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs b
      *steps = proof.steps;
      if proof.classification == super::ModelLevelEvaluability::Evaluable {
          Ok(())
-@@ -1003,6 +1218,572 @@
+@@ -1003,6 +1219,572 @@
      fn bounds(r: &mut ResolvedModel, name: &str) -> Result<CardinalityBounds, CardinalityIssue> {
          let e = r.resolve_qualified(name).unwrap();
          r.cardinality_report(e).bounds

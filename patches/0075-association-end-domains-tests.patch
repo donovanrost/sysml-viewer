@@ -1,0 +1,560 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/association_domains_tests.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/association_domains_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/association_domains_tests.rs
+@@ -0,0 +1,555 @@
++use crate::{
++    json::{ElementRef, ResolvedModel},
++    model::{GraphFormat, Model},
++};
++
++fn fixture(format: GraphFormat, source: &str) -> ResolvedModel {
++    let mut m = Model::with_graph_format(format);
++    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
++        .join("../../spec-refs/SysML-v2-Release/sysml.library");
++    assert_eq!(m.load_library_dir(&root).unwrap(), 94);
++    let p = m.add_source("association-domains.kerml", source);
++    assert!(p.diagnostics.is_empty(), "{:?}", p.diagnostics);
++    ResolvedModel::build(&m)
++}
++fn names(r: &mut ResolvedModel, refs: &[ElementRef]) -> Vec<String> {
++    refs.iter()
++        .map(|&e| {
++            r.element_qualified_name(e)
++                .unwrap_or_else(|| r.element_id(e).to_string())
++        })
++        .collect()
++}
++#[test]
++fn association_library_end_identities_and_conditional_refusal() {
++    for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
++        let mut r = fixture(
++            format,
++            "abstract assoc Empty; assoc Pair specializes Links::BinaryLink {end feature left:Base::Anything; end feature right:Base::Anything;} assoc MissingBinary {end feature left:Base::Anything; end feature right:Base::Anything;} assoc struct ObjectPair specializes Objects::BinaryLinkObject {end feature left:Objects::Object; end feature right:Objects::Object;}",
++        );
++        for (name, expected) in [
++            ("Links::Link", vec![]),
++            (
++                "Links::BinaryLink",
++                vec!["Links::BinaryLink::source", "Links::BinaryLink::target"],
++            ),
++            (
++                "Links::SelfLink",
++                vec!["Links::SelfLink::thisThing", "Links::SelfLink::sameThing"],
++            ),
++            ("Links::links", vec![]),
++            (
++                "Links::binaryLinks",
++                vec!["Links::BinaryLink::source", "Links::BinaryLink::target"],
++            ),
++            (
++                "Links::selfLinks",
++                vec!["Links::selfLinks::thisThing", "Links::selfLinks::sameThing"],
++            ),
++            ("Objects::LinkObject", vec![]),
++            (
++                "Objects::BinaryLinkObject",
++                vec!["Links::BinaryLink::source", "Links::BinaryLink::target"],
++            ),
++            ("Empty", vec![]),
++            ("Pair", vec!["Pair::left", "Pair::right"]),
++            ("ObjectPair", vec!["ObjectPair::left", "ObjectPair::right"]),
++        ] {
++            exact_ends(&mut r, name, &expected);
++        }
++        let missing = r.resolve_qualified("MissingBinary").unwrap();
++        assert!(r.type_feature_report(missing).projections.is_err());
++        assert!(r.property(missing, "associationEnd").is_err());
++    }
++}
++
++const LIB: &str = r#"
++standard library package Base { classifier Anything; feature things:Anything; }
++standard library package Occurrences { class Occurrence specializes Base::Anything; }
++standard library package Links {
++ abstract assoc Link specializes Base::Anything;
++ assoc BinaryLink specializes Link {
++  end feature source:Base::Anything;
++  end feature target:Base::Anything;
++ }
++}
++standard library package Objects {
++ struct Object specializes Occurrences::Occurrence;
++ abstract assoc struct LinkObject specializes Links::Link,Object;
++ assoc struct BinaryLinkObject specializes Links::BinaryLink,LinkObject;
++}
++"#;
++fn small(format: GraphFormat, source: &str) -> ResolvedModel {
++    let mut m = Model::with_graph_format(format);
++    assert!(
++        m.add_library_source("association-library.kerml", LIB)
++            .diagnostics
++            .is_empty()
++    );
++    let parsed = m.add_source("association-acceptance.kerml", source);
++    assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
++    ResolvedModel::build(&m)
++}
++fn exact_ends(r: &mut ResolvedModel, name: &str, expected: &[&str]) {
++    let owner = r.resolve_qualified(name).unwrap();
++    let report = r.type_feature_report(owner);
++    let p = report
++        .projections
++        .unwrap_or_else(|e| panic!("{name}: {e:?} steps={}", report.steps));
++    assert_eq!(names(r, &p.end_features), expected, "{name}");
++    assert!(report.steps < crate::eval::MAX_STEPS);
++    r.set_closure_policy(crate::json::ClosurePolicy::Closure {
++        include_implied: true,
++    });
++    let expected = serde_json::Value::Array(
++        p.end_features
++            .iter()
++            .map(|&end| serde_json::json!({"@id":r.element_id(end)}))
++            .collect(),
++    );
++    let properties = if r.is_kind(owner, "Association") {
++        vec!["endFeature", "associationEnd"]
++    } else {
++        vec!["endFeature"]
++    };
++    for property in properties {
++        assert_eq!(
++            r.property(owner, property),
++            Ok(expected.clone()),
++            "{name}: {property}"
++        );
++    }
++}
++#[test]
++fn association_end_count_uses_inherited_and_redefined_feature_identities() {
++    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++        let mut r = small(
++            format,
++            r#"
++   abstract assoc Empty;
++   assoc One {end feature left:Base::Anything;}
++   assoc Pair specializes Links::BinaryLink {end feature left:Base::Anything; end feature right:Base::Anything;}
++   assoc Inherited specializes Pair;
++   assoc Replaced specializes Pair {end feature e1:Base::Anything; end feature e2:Base::Anything;}
++   assoc Three {end feature e1:Base::Anything; end feature e2:Base::Anything; end feature e3:Base::Anything;}
++   assoc ThreeWithBinary specializes Links::BinaryLink {end feature e1:Base::Anything; end feature e2:Base::Anything; end feature e3:Base::Anything;}
++   abstract assoc Aliased {alias referencedEnd for Pair::left;}
++   assoc struct ObjectPair specializes Objects::BinaryLinkObject {end feature left:Objects::Object; end feature right:Objects::Object;}
++  "#,
++        );
++        for (name, expected) in [
++            ("Empty", vec![]),
++            ("One", vec!["One::left"]),
++            ("Pair", vec!["Pair::left", "Pair::right"]),
++            ("Inherited", vec!["Pair::left", "Pair::right"]),
++            ("Replaced", vec!["Replaced::e1", "Replaced::e2"]),
++            ("Three", vec!["Three::e1", "Three::e2", "Three::e3"]),
++            // This enumeration does not certify the separate prohibition on >2 ends specializing BinaryLink.
++            (
++                "ThreeWithBinary",
++                vec![
++                    "ThreeWithBinary::e1",
++                    "ThreeWithBinary::e2",
++                    "ThreeWithBinary::e3",
++                ],
++            ),
++            ("Aliased", vec![]),
++            ("ObjectPair", vec!["ObjectPair::left", "ObjectPair::right"]),
++        ] {
++            exact_ends(&mut r, name, &expected);
++        }
++    }
++}
++
++#[test]
++fn association_alias_prerequisites_preserve_foreign_suppression_and_local_slots() {
++    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++        for reversed in [false, true] {
++            for (selected, remaining) in [("left", "q"), ("right", "p")] {
++                let parent = "assoc Parent specializes Links::BinaryLink {end feature p:Base::Anything; end feature q:Base::Anything;}";
++                let foreign = "assoc Foreign specializes Parent {end feature left:Base::Anything; end feature right:Base::Anything; feature foreignOnly;}";
++                let consumers = format!(
++                    "abstract assoc Aliases {{alias selected for Foreign::{selected};}} assoc Merged specializes Parent,Aliases; assoc Consumer specializes Merged {{end feature local:Base::Anything;}}"
++                );
++                let source = if reversed {
++                    format!("{consumers} {foreign} {parent}")
++                } else {
++                    format!("{parent} {foreign} {consumers}")
++                };
++                let mut r = small(format, &source);
++                for _ in 0..2 {
++                    exact_ends(&mut r, "Merged", &[&format!("Parent::{remaining}")]);
++                    exact_ends(&mut r, "Consumer", &["Consumer::local"]);
++                    exact_ends(&mut r, "Aliases", &[]);
++                    let consumer = r.resolve_qualified("Consumer").unwrap();
++                    let foreign = r.resolve_qualified("Foreign").unwrap();
++                    let borrowed = r
++                        .resolve_qualified(&format!("Foreign::{selected}"))
++                        .unwrap();
++                    let unrelated = r.resolve_qualified("Foreign::foreignOnly").unwrap();
++                    let projection = r.type_feature_report(consumer).projections.unwrap();
++                    assert!(!projection.features.contains(&borrowed));
++                    assert!(!projection.features.contains(&unrelated));
++                    let members = projection.members.unwrap();
++                    assert!(members.contains(&borrowed));
++                    assert!(!members.contains(&unrelated));
++                    assert_eq!(
++                        super::TypeRelations::default()
++                            .specializes(&mut r.b, consumer.0, foreign.0, &mut 0),
++                        super::RelationFact::No,
++                        "a proof prerequisite is not an ancestor"
++                    );
++                    let local = r.resolve_qualified("Consumer::local").unwrap();
++                    let target = r
++                        .resolve_qualified(&format!("Parent::{remaining}"))
++                        .unwrap();
++                    assert_eq!(
++                        r.b.effective_positional_redefinitions()
++                            .unwrap()
++                            .targets
++                            .get(&local.0),
++                        Some(&vec![target.0]),
++                        "{format:?} reversed={reversed} selected={selected}"
++                    );
++                }
++            }
++        }
++    }
++}
++
++#[test]
++fn association_alias_dependencies_refuse_damage_cycles_and_budget_exhaustion() {
++    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++        for warm in [false, true] {
++            for damage in 0..4 {
++                let mut r = small(
++                    format,
++                    "assoc Pair specializes Links::BinaryLink {end feature left:Base::Anything; end feature right:Base::Anything;} classifier Other; subclassifier Pair specializes Other; abstract assoc Holder {alias selected for Pair::left;}",
++                );
++                let holder = r.resolve_qualified("Holder").unwrap();
++                let pair = r.resolve_qualified("Pair").unwrap();
++                let left = r.resolve_qualified("Pair::left").unwrap();
++                let right = r.resolve_qualified("Pair::right").unwrap();
++                let membership = r.b.elements[left.0].owning_relationship.unwrap();
++                if warm {
++                    exact_ends(&mut r, "Holder", &[]);
++                }
++                match damage {
++                    0 => r.b.set(left.0, "isEnd", serde_json::json!("true")),
++                    1 => {
++                        let id = r.element_id(right);
++                        r.b.set(membership, "memberElement", serde_json::json!({"@id":id}));
++                    }
++                    2 => r.b.elements[pair.0].ty = "AssociationStructure",
++                    3 => r.b.elements[left.0].owning_relationship = None,
++                    _ => unreachable!(),
++                }
++                let report = r.type_feature_report(holder);
++                assert!(
++                    report.projections.is_err(),
++                    "{format:?} warm={warm} damage={damage}"
++                );
++                assert!(report.steps < crate::eval::MAX_STEPS, "{report:?}");
++            }
++        }
++        for source in [
++            "assoc Pair specializes Missing {end feature left:Base::Anything;} abstract assoc Holder {alias selected for Pair::left;}",
++            "assoc Pair specializes Other {end feature left:Base::Anything;} assoc Other specializes Pair; abstract assoc Holder {alias selected for Pair::left;}",
++        ] {
++            let mut r = small(format, source);
++            let holder = r.resolve_qualified("Holder").unwrap();
++            assert!(r.type_feature_report(holder).projections.is_err());
++        }
++        let mut r = small(
++            format,
++            "assoc Pair specializes Links::BinaryLink {end feature left:Base::Anything; end feature right:Base::Anything;} classifier Other; subclassifier Pair specializes Other; abstract assoc Holder {alias selected for Pair::left;}",
++        );
++        let holder = r.resolve_qualified("Holder").unwrap();
++        assert_eq!(
++            r.type_feature_report_with_budget(holder, crate::eval::MAX_STEPS)
++                .projections,
++            Err(crate::json::TypeInputIssue::WorkLimit)
++        );
++        exact_ends(&mut r, "Holder", &[]);
++    }
++}
++
++#[test]
++fn association_end_identities_replay_from_raw_prepared_and_serialized_full_libraries() {
++    use crate::prepared::PreparedLibrary;
++    use std::sync::Arc;
++
++    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++        let raw = || {
++            let mut model = Model::with_graph_format(format);
++            let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
++                .join("../../spec-refs/SysML-v2-Release/sysml.library");
++            assert_eq!(model.load_library_dir(&root).unwrap(), 94);
++            model
++        };
++        let prepared = raw().prepare_library().unwrap();
++        let decoded =
++            Arc::new(PreparedLibrary::from_bytes(&prepared.to_bytes(145).unwrap(), 145).unwrap());
++        let mut expected = None;
++        for replay in [None, Some(prepared), Some(decoded)] {
++            let mut model = if let Some(replay) = replay {
++                let mut model = Model::with_graph_format(format);
++                replay.install(&mut model).unwrap();
++                model
++            } else {
++                raw()
++            };
++            assert!(model.add_source("association-replay.kerml", "abstract assoc Borrowed {alias selected for Links::SelfLink::thisThing;} assoc Dependent specializes Borrowed {end feature own:Base::Anything;}").diagnostics.is_empty());
++            let mut r = ResolvedModel::build(&model);
++            let mut identities = Vec::new();
++            for (name, ends) in [
++                ("Dependent", vec!["Dependent::own"]),
++                ("Borrowed", vec![]),
++                (
++                    "Links::SelfLink",
++                    vec!["Links::SelfLink::thisThing", "Links::SelfLink::sameThing"],
++                ),
++                (
++                    "Objects::BinaryLinkObject",
++                    vec!["Links::BinaryLink::source", "Links::BinaryLink::target"],
++                ),
++            ] {
++                exact_ends(&mut r, name, &ends);
++                let owner = r.resolve_qualified(name).unwrap();
++                let projection = r.type_feature_report(owner).projections.unwrap();
++                identities.push((
++                    r.element_id(owner).to_string(),
++                    projection
++                        .end_features
++                        .into_iter()
++                        .map(|e| r.element_id(e).to_string())
++                        .collect::<Vec<_>>(),
++                ));
++            }
++            if let Some(expected) = &expected {
++                assert_eq!(&identities, expected, "{format:?}");
++            } else {
++                expected = Some(identities);
++            }
++        }
++    }
++}
++#[test]
++fn association_conditional_bases_cannot_be_hidden_by_descendants_or_selection() {
++    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++        let mut r = small(
++            format,
++            r#"
++   assoc MissingBinary {end feature left:Base::Anything; end feature right:Base::Anything;}
++   assoc Child specializes MissingBinary {end feature e1:Base::Anything; end feature e2:Base::Anything; end feature e3:Base::Anything;}
++   assoc struct MissingObject;
++   assoc struct MissingObjectBinary specializes Objects::LinkObject {end feature left:Objects::Object; end feature right:Objects::Object;}
++   classifier Other;
++  "#,
++        );
++        let other = r.resolve_qualified("Other").unwrap();
++        for name in [
++            "MissingBinary",
++            "Child",
++            "MissingObject",
++            "MissingObjectBinary",
++        ] {
++            let e = r.resolve_qualified(name).unwrap();
++            assert!(
++                r.type_feature_report(e).projections.is_err(),
++                "{format:?} {name}"
++            );
++            assert_eq!(
++                super::TypeRelations::default().specializes(&mut r.b, e.0, other.0, &mut 0),
++                super::RelationFact::Unknown,
++                "{name}"
++            );
++        }
++        let child = r.resolve_qualified("Child").unwrap();
++        let parent = r.resolve_qualified("MissingBinary").unwrap();
++        for exclude_implied in [false, true] {
++            assert!(
++                r.b.checked_type_membership_operation(
++                    child.0,
++                    &[],
++                    &[parent.0],
++                    exclude_implied,
++                    &mut 0
++                )
++                .is_err()
++            );
++        }
++    }
++}
++#[test]
++fn association_domains_recheck_damaged_memberships_roles_and_metaclasses() {
++    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++        for warm in [false, true] {
++            for damage in 0..6 {
++                let mut r = small(
++                    format,
++                    "assoc Pair specializes Links::BinaryLink {end feature left:Base::Anything; end feature right:Base::Anything;}",
++                );
++                let owner = r.resolve_qualified("Pair").unwrap();
++                let left = r.resolve_qualified("Pair::left").unwrap();
++                let right = r.resolve_qualified("Pair::right").unwrap();
++                let membership = r.b.elements[left.0].owning_relationship.unwrap();
++                if warm {
++                    exact_ends(&mut r, "Pair", &["Pair::left", "Pair::right"]);
++                }
++                match damage {
++                    0 => r.b.set(left.0, "isEnd", serde_json::json!("true")),
++                    1 => {
++                        let id = r.element_id(right);
++                        r.b.set(membership, "memberElement", serde_json::json!({"@id":id}));
++                    }
++                    2 => r.b.elements[left.0].owning_relationship = None,
++                    3 => r.b.elements[owner.0].ty = "AssociationStructure",
++                    4 => {
++                        let link = r.resolve_qualified("Links::Link").unwrap();
++                        r.b.set(link.0, "declaredName", serde_json::json!("Renamed"));
++                    }
++                    5 => {
++                        let binary = r.resolve_qualified("Links::BinaryLink").unwrap();
++                        r.b.set(binary.0, "declaredName", serde_json::json!("Renamed"));
++                    }
++                    _ => unreachable!(),
++                }
++                let report = r.type_feature_report(owner);
++                assert!(
++                    report.projections.is_err(),
++                    "{format:?} warm={warm} damage={damage}: {report:?}"
++                );
++                assert!(
++                    report.steps < crate::eval::MAX_STEPS,
++                    "{format:?} warm={warm} damage={damage}: {report:?}"
++                );
++            }
++        }
++    }
++}
++#[test]
++fn association_specialization_proof_and_budget_retry_do_not_leak_partial_facts() {
++    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++        let mut r = small(
++            format,
++            "assoc Pair specializes Links::BinaryLink {end feature left:Base::Anything; end feature right:Base::Anything;} classifier Other;",
++        );
++        let owner = r.resolve_qualified("Pair").unwrap();
++        let other = r.resolve_qualified("Other").unwrap();
++        assert_eq!(
++            r.type_feature_report_with_budget(owner, crate::eval::MAX_STEPS)
++                .projections,
++            Err(crate::json::TypeInputIssue::WorkLimit)
++        );
++        exact_ends(&mut r, "Pair", &["Pair::left", "Pair::right"]);
++        let mut relations = super::TypeRelations::default();
++        assert_eq!(
++            relations.specializes(&mut r.b, owner.0, other.0, &mut 0),
++            super::RelationFact::No
++        );
++        let binary = r.resolve_qualified("Links::BinaryLink").unwrap();
++        r.b.set(binary.0, "declaredName", serde_json::json!("Renamed"));
++        assert_eq!(
++            relations.specializes(&mut r.b, owner.0, other.0, &mut 0),
++            super::RelationFact::Unknown
++        );
++        assert_eq!(
++            super::TypeRelations::default().specializes(&mut r.b, owner.0, other.0, &mut 0),
++            super::RelationFact::Unknown
++        );
++        r.b.set(binary.0, "declaredName", serde_json::json!("BinaryLink"));
++        exact_ends(&mut r, "Pair", &["Pair::left", "Pair::right"]);
++        assert_eq!(
++            super::TypeRelations::default().specializes(&mut r.b, owner.0, other.0, &mut 0),
++            super::RelationFact::No
++        );
++    }
++}
++
++#[test]
++fn standalone_subclassification_is_audited_without_adding_owned_ancestry() {
++    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++        for warm in [false, true] {
++            for damage in 0..7 {
++                let mut r = small(
++                    format,
++                    "assoc Pair specializes Links::BinaryLink {end feature left:Base::Anything; end feature right:Base::Anything;} classifier Foreign {feature external;} subclassifier Pair specializes Foreign;",
++                );
++                let pair = r.resolve_qualified("Pair").unwrap();
++                let foreign = r.resolve_qualified("Foreign").unwrap();
++                let left = r.resolve_qualified("Pair::left").unwrap();
++                let mut relation_reader = super::TypeRelations::default();
++                relation_reader.evidence.index(&mut r.b, &mut 0).unwrap();
++                let relationship = relation_reader.evidence.structure.nonowned_bases[&pair.0][0];
++                if warm {
++                    exact_ends(&mut r, "Pair", &["Pair::left", "Pair::right"]);
++                }
++                match damage {
++                    0 => {}
++                    1 => {
++                        let id = r.element_id(left);
++                        r.b.set(
++                            relationship,
++                            "superclassifier",
++                            serde_json::json!({"@id":id}),
++                        );
++                    }
++                    2 => {
++                        let id = r.element_id(foreign);
++                        r.b.set(relationship, "specific", serde_json::json!({"@id":id}));
++                    }
++                    3 => {
++                        let id = r.element_id(pair);
++                        r.b.set(
++                            relationship,
++                            "owningRelatedElement",
++                            serde_json::json!({"@id":id}),
++                        );
++                    }
++                    4 => r.b.set(
++                        relationship,
++                        "superclassifier",
++                        serde_json::json!({"@id":uuid::Uuid::new_v4()}),
++                    ),
++                    5 => {
++                        let id = r.element_id(foreign);
++                        r.b.set(relationship, "source", serde_json::json!([{"@id":id}]));
++                    }
++                    6 => {
++                        let id = r.element_id(foreign);
++                        r.b.set(
++                            relationship,
++                            "relatedElement",
++                            serde_json::json!([{"@id":id},{"@id":id}]),
++                        );
++                    }
++                    _ => unreachable!(),
++                }
++                let report = r.type_feature_report(pair);
++                if damage == 0 {
++                    let p = report.projections.unwrap();
++                    let external = r.resolve_qualified("Foreign::external").unwrap();
++                    assert!(!p.features.contains(&external));
++                    assert_eq!(
++                        super::TypeRelations::default()
++                            .specializes(&mut r.b, pair.0, foreign.0, &mut 0),
++                        super::RelationFact::No
++                    );
++                    exact_ends(&mut r, "Pair", &["Pair::left", "Pair::right"]);
++                } else {
++                    assert!(
++                        report.projections.is_err(),
++                        "{format:?} warm={warm} damage={damage}: {report:?}"
++                    );
++                    if matches!(damage, 2 | 5 | 6) {
++                        assert!(
++                            r.type_feature_report(foreign).projections.is_err(),
++                            "every conflicting source claim must remain qualified"
++                        );
++                    }
++                }
++            }
++        }
++    }
++}

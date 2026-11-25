@@ -12,7 +12,7 @@ use crate::{
 };
 use std::collections::HashSet;
 pub(in crate::json) mod imports;
-mod resolution;
+pub(in crate::json) mod resolution;
 use sysmlv2_syntax::{
     ast::Dialect,
     lexer::{tokenize, unescape},

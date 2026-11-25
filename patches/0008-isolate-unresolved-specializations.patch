@@ -70,7 +70,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocati
      b: &mut Builder,
      prefix: Arc<StaticPrefix>,
      reserved: &HashSet<Uuid>,
-@@ -160,6 +213,39 @@
+@@ -160,6 +213,50 @@
          return Err(Refusal::Incomplete);
      }
      validate_fixed_prefix(b, &prefix, &raw, physical_static_end, true, steps)?;
@@ -99,6 +99,17 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocati
 +    prepare_validated_prefix(b, prefix, reserved, raw, steps, workspace)
 +}
 +
++/// Family activation and candidate traversal must recognize the same kinds.
++/// Recognition is not admission: every candidate still needs a complete plan.
++pub(super) fn is_candidate(kind: &str, format: crate::model::GraphFormat) -> bool {
++    kind == "InvocationExpression"
++        || (format == crate::model::GraphFormat::CanonicalV3
++            && matches!(
++                kind,
++                "ConstructorExpression" | "OperatorExpression" | "TriggerInvocationExpression"
++            ))
++}
++
 +fn prepare_validated_prefix(
 +    b: &mut Builder,
 +    prefix: Arc<StaticPrefix>,
@@ -110,7 +121,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocati
      let revision = b.elements.observe_revision();
      let authored = b.explicit_len();
      charge(steps, b.elements.len())?;
-@@ -268,26 +354,31 @@
+@@ -268,26 +365,31 @@
          }
          // A local unresolved target cannot enter the minimizer's identity
          // graph. Canonical planning may retain an unrelated complete component,
@@ -157,7 +168,105 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocati
              }
              unresolved_sources.insert(source);
  
-@@ -710,10 +801,14 @@
+@@ -352,14 +454,60 @@
+     let mut required = Vec::new();
+     let mut constructor_positional = HashMap::new();
+     let mut unadmitted = HashSet::new();
++    // Predicate proofs may read the current graph only when their typing and
++    // specialization dependencies exclude every prospective writer. Parameters
++    // and ends cover positional deltas; constructor results are parameters too.
++    let mut changing = HashSet::new();
++    for source in 0..authored {
++        charge(steps, 1)?;
++        let row = &b.elements[source];
++        if is_candidate(row.ty, b.graph_format)
++            || super::step_context::typed_candidate(row)
++            || super::portion_context::candidate(row)
++            || (conforms(row.ty, "Feature")
++                && (b.is_parameter(source)
++                    || row.props.get("direction").is_some_and(|v| !v.is_null())
++                    || row
++                        .props
++                        .get("isEnd")
++                        .is_some_and(|v| v.as_bool() != Some(false))))
++        {
++            changing.insert(source);
++        }
++    }
++    let changing = Arc::new(changing);
++    let typed_steps =
++        super::step_context::typed_requirements(b, Arc::clone(&changing), &raw, steps)
++            .ok_or_else(|| incomplete(steps))?;
++    let typed_portions =
++        super::portion_context::typed_requirements(b, Arc::clone(&changing), &raw, steps)
++            .ok_or_else(|| incomplete(steps))?;
++    let guard_predicates = typed_steps.has_stable_predicate || typed_portions.has_stable_predicate;
++    unadmitted.extend(typed_steps.incomplete);
++    unadmitted.extend(typed_portions.incomplete);
++    for (source, target) in typed_steps.edges.into_iter().chain(typed_portions.edges) {
++        required.push(source);
++        candidates.push((
++            source,
++            (
++                "Subsetting",
++                "subsettingFeature",
++                "subsettedFeature",
++                b.elements[target].id,
++            ),
++        ));
++    }
+     let mut constructor_batch = super::constructor_bindings::ConstructorBatchEvidence::default();
++    let mut designated_callees = HashMap::new();
+     for invocation in 0..authored {
+         charge(steps, 1)?;
+         let constructor = b.graph_format == crate::model::GraphFormat::CanonicalV3
+             && b.elements[invocation].ty == "ConstructorExpression";
+         let operator = b.graph_format == crate::model::GraphFormat::CanonicalV3
+             && b.elements[invocation].ty == "OperatorExpression";
+-        if b.elements[invocation].ty != "InvocationExpression" && !constructor && !operator {
++        let trigger = b.graph_format == crate::model::GraphFormat::CanonicalV3
++            && b.elements[invocation].ty == "TriggerInvocationExpression";
++        if !is_candidate(b.elements[invocation].ty, b.graph_format) {
+             continue;
+         }
+         let constructor_result = if constructor {
+@@ -370,7 +518,7 @@
+         } else {
+             None
+         };
+-        let operator_target = if operator {
++        let designated_target = if operator || trigger {
+             let mut proposed = HashMap::new();
+             match b.checked_invocation_bindings_in_batch(
+                 invocation,
+@@ -380,6 +528,8 @@
+             ) {
+                 Ok(arguments) => {
+                     constructor_positional.extend(proposed);
++                    charge(steps, 1)?;
++                    designated_callees.insert(invocation, arguments.callee.0);
+                     Some(arguments.callee.0)
+                 }
+                 Err(_) if *steps > crate::eval::MAX_STEPS => return Err(Refusal::WorkLimit),
+@@ -394,7 +544,7 @@
+         // Legacy publication retains whole-batch refusal. Canonical candidates
+         // with a localized missing callee remain unadmitted; the final closure
+         // audit prevents any accepted family from consuming their signatures.
+-        let target = if let Some(target) = operator_target {
++        let target = if let Some(target) = designated_target {
+             target
+         } else {
+             match membership_evidence::first_unowned_member(
+@@ -587,7 +737,7 @@
+             .ok_or_else(|| incomplete(steps))?;
+         if !matches!(
+             b.elements[owner].ty,
+-            "InvocationExpression" | "OperatorExpression"
++            "InvocationExpression" | "OperatorExpression" | "TriggerInvocationExpression"
+         ) {
+             continue;
+         }
+@@ -710,14 +860,23 @@
      incomplete_bases.extend(unresolved_sources);
      incomplete_bases.extend(unadmitted);
      let mut assigned = HashSet::new();
@@ -176,7 +285,24 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocati
          }
      }
      for row in &tail {
-@@ -892,6 +987,221 @@
+         charge(steps, 1)?;
++        if guard_predicates && !changing.contains(&row.owner) {
++            // A new family or unexpected positional write cannot silently
++            // invalidate a previously read construction predicate.
++            return Err(Refusal::Incomplete);
++        }
+         if raw.element_for_uuid(b, row.id).is_some()
+             || reserved.contains(&row.id)
+             || !assigned.insert(row.id)
+@@ -748,6 +907,7 @@
+     charge(steps, required.len().saturating_add(delta.len()))?;
+     let affected_owners = required.into_iter().chain(delta.keys().copied()).collect();
+     Ok(Plan {
++        designated_callees,
+         affected_owners,
+         added_bases,
+         static_prefix: prefix,
+@@ -892,6 +1052,221 @@
      fn static_prefix(r: &mut ResolvedModel) -> Arc<StaticPrefix> {
          r.b.static_specialization_prefix(&HashMap::new(), true, Some(&mut 0))
              .unwrap()
@@ -398,7 +524,7 @@ diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocati
      }
      #[test]
      fn canonical_nested_signature_qualification_tracks_actual_consumers() {
-@@ -1238,6 +1548,105 @@
+@@ -1238,6 +1613,105 @@
              .unwrap()
      }
      #[test]

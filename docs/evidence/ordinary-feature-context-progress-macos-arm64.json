@@ -1,0 +1,241 @@
+{
+  "recordedAt": "2026-10-18T14:45:44.948912+00:00",
+  "status": "All 972 vendor model tests, 102 native workspace tests, 39 public Node tests and 16 provenance/evidence tests pass. Clippy, native/WASM builds, contract, 133 conformance cases and matching requirements execution evidence pass on macOS arm64. No package or complete semantic obligation closes.",
+  "kernelInputSha256": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028",
+  "previousQualifiedKernelInputSha256": "85a9e3467da1025df18e4a1368f03d1350ac666429c4ca582c27f898704d3a15",
+  "implementation": {
+    "owner": "Plain noncomposite undirected non-end Features use the reviewed conditional specialization applicability under Type owners, excluding FlowEnd. Reciprocal exact FeatureMembership, metadata, variability, portion, value and specialization proofs are retained.",
+    "inverse": "Owned FeatureInverting uses the shared checked reciprocal carrier and endpoint aliases. It adds no typing dependency, consistent with deriveFeatureType. Both public Feature.type and negative specialization proofs use this guard.",
+    "defaultTypes": "Native acceptance covers all ten selected library-default feature types. The separate result-type regression admits only the additional dispatchScope result, giving six complete results and retaining four unknown dependencies."
+  },
+  "files": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "b309cb83230d7b00e1070c0206b3090eb10d9857f6e51eaa9c5c4f46baf90493",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/ordinary_features_tests.rs": "74e1f8c46719267bec9b2a4ab3f79a80a3d11ab3870cb8eb1e701f5a4d27a6aa",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/semantic_positional_tests.rs": "f4efcb9306a89ac635f9f300eab2f4ccf9f00e6fa4bb99361e20f8ee9cd13579",
+    "crates/sysml-kernel/tests/ordinary_feature_types.rs": "b4ea3a504cd59ee9d774ddcdb25ca8052a9053edbe4cd4ae42baa889a7fb465f",
+    "crates/sysml-kernel/tests/reference_result_types.rs": "7e47326b7c4f66b90c10312afca524b86ccf4ce22ededfb4e24f1327b76453d3",
+    "patches/manifest.json": "a26238991cba0b7661aef2bf21c9dd2c7349ecf35015349b3920074e03daedd3",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/recursive_features.rs": "c9e528623c9f8f7491ff5aca534fb37ed7e7e0267231ad36bcbb0c7240675392"
+  },
+  "acceptance": {
+    "privateTests": 7,
+    "ownerDamagePartitions": 13,
+    "inverseDamagePartitions": 11,
+    "contexts": 18,
+    "log": "target/trigger-validation/ordinary-feature-context-carrier-stage.log",
+    "logSha256": "0195fd99a538a80941984acc3d680d41619954da0bc58a12834ecf8ca37d2d61",
+    "partitions": [
+      "Exact static types and report/property agreement",
+      "Ordinary members retain feature membership without input/output roles",
+      "Inherited/subset/redefined narrowing and inverse-independent target types",
+      "Fresh invalid ownership/flag/endpoint evidence refused below WorkLimit",
+      "Post-query edits revoke previously complete types",
+      "Negative specialization is Unknown for malformed inverse relationships, including duplicate physical carrier",
+      "Raw/prepared/serialized identities and cumulative budget retry without row publication"
+    ]
+  },
+  "fullQualification": {
+    "status": "pass",
+    "vendor": {
+      "status": "pass",
+      "log": "target/trigger-validation/ordinary-feature-context-full-model.log",
+      "kernelInputSha256": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028",
+      "session": 24198,
+      "tests": 972,
+      "logSha256": "8daebbb7555a544ec2ca34fda9f74b7dded3fb45dd50ef3dd78894069855d9e1"
+    },
+    "provenance": {
+      "status": "pass",
+      "tests": 16,
+      "log": "target/trigger-validation/ordinary-feature-context-final-provenance.log",
+      "logSha256": "2f06d20bf277606b4cbd6de657f302b4a6927a733cb7fff17834ccef294a48dd",
+      "kernelInputSha256": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028"
+    },
+    "initialAttempt": {
+      "kernelInputSha256": "f755be887904a283eb35301afbe05c03b867ba56ea9195dcf94d4333e6e6ba54",
+      "pipeline": "target/trigger-validation/ordinary-feature-context-initial-qualification.json",
+      "vendorLog": "target/trigger-validation/ordinary-feature-context-initial-full-model.log",
+      "vendorPassed": 970,
+      "vendorFailed": 2,
+      "pipelineStopped": true
+    },
+    "regressions": {
+      "status": "pass",
+      "tests": 10,
+      "log": "target/trigger-validation/ordinary-feature-context-regressions.log",
+      "logSha256": "cfb072aa3a70c99dcde9099316f49a5fc2120765d876e3f430e4b43880f87c3b",
+      "kernelInputSha256": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028"
+    },
+    "contract": {
+      "status": "pass",
+      "log": "target/trigger-validation/ordinary-feature-context-contract.log",
+      "logSha256": "8f133543bde2c5933fa7a4923a3f74c120a5c82d70f6626f0fcad65f82d5a6ec",
+      "kernelInputSha256": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028"
+    },
+    "pipeline": {
+      "kernelInputSha256": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028",
+      "startedAt": "2026-10-18T15:00:19.508Z",
+      "status": "passed",
+      "phases": [
+        {
+          "name": "workspace",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--workspace"
+          ],
+          "startedAt": "2026-10-18T15:00:19.509Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:10:17.867Z"
+        },
+        {
+          "name": "clippy",
+          "args": [
+            "tools/rust.mjs",
+            "clippy",
+            "--locked",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "startedAt": "2026-10-18T15:10:17.868Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:10:21.086Z"
+        },
+        {
+          "name": "wasm",
+          "args": [
+            "tools/build-kernel.mjs"
+          ],
+          "startedAt": "2026-10-18T15:10:21.086Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:11:00.730Z"
+        },
+        {
+          "name": "cli",
+          "args": [
+            "tools/rust.mjs",
+            "build",
+            "--locked",
+            "--release",
+            "-p",
+            "sysml-cli"
+          ],
+          "startedAt": "2026-10-18T15:11:00.730Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:11:41.729Z"
+        },
+        {
+          "name": "public",
+          "args": [
+            "--experimental-strip-types",
+            "--test",
+            "--test-concurrency=1",
+            "tests/accept-actions.test.ts",
+            "tests/families.test.ts",
+            "tests/kernel.test.ts",
+            "tests/state-subactions.test.ts",
+            "tests/kernel-client.test.ts",
+            "tests/conformance-runner.test.mjs"
+          ],
+          "startedAt": "2026-10-18T15:11:41.730Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:14:50.196Z"
+        },
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-18T15:14:50.196Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:25:00.067Z"
+        },
+        {
+          "name": "requirements",
+          "args": [
+            "tools/requirements.mjs",
+            "--conformance",
+            "target/conformance/report.json"
+          ],
+          "startedAt": "2026-10-18T15:25:00.067Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:25:01.229Z"
+        }
+      ],
+      "finishedAt": "2026-10-18T15:25:02.171Z"
+    },
+    "initialFocusedNative": {
+      "session": 75814,
+      "log": "target/trigger-validation/ordinary-feature-context-native.log",
+      "status": "pass",
+      "tests": 2,
+      "logSha256": "fdd3028112fa687b97a0541e097b5be0a9df02821f75fd1b7fbf068260bf4109",
+      "kernelInputSha256": "f755be887904a283eb35301afbe05c03b867ba56ea9195dcf94d4333e6e6ba54"
+    },
+    "workspace": {
+      "status": "pass",
+      "log": "target/trigger-validation/ordinary-feature-context-qualification-workspace.log",
+      "logSha256": "9a4918733b8771a8f572b2d53e128664f5e4d95ab782eb376a34e78a61beb46a",
+      "tests": 102
+    },
+    "clippy": {
+      "status": "pass",
+      "log": "target/trigger-validation/ordinary-feature-context-qualification-clippy.log",
+      "logSha256": "bc4452b3838a9d3a1702de617c260a2518db679eed3f016ff57e180df8e592c7"
+    },
+    "wasm": {
+      "status": "pass",
+      "log": "target/trigger-validation/ordinary-feature-context-qualification-wasm.log",
+      "logSha256": "c35775f65aef7c40845a1db97fba8a487e5bd93c7c0d99f8dd4b9320e2826481"
+    },
+    "cli": {
+      "status": "pass",
+      "log": "target/trigger-validation/ordinary-feature-context-qualification-cli.log",
+      "logSha256": "4f6801cbb3c8085d9d464a7603b73fc0328b6d88be9e655b7681da7178e4d324"
+    },
+    "public": {
+      "status": "pass",
+      "log": "target/trigger-validation/ordinary-feature-context-qualification-public.log",
+      "logSha256": "9d910ab295720eb18f36de8c1ef31f5b01cb312b3e779bd350e5b73089ac59f4",
+      "tests": 39
+    },
+    "conformance": {
+      "status": "pass",
+      "log": "target/trigger-validation/ordinary-feature-context-qualification-conformance.log",
+      "logSha256": "db29c164827a913ca1a97eda084be6d48ad704f5b32c948f37882362340ee421",
+      "report": "docs/evidence/ordinary-feature-context-conformance-macos-arm64.json",
+      "reportSha256": "341c15e6db79d987d236061f93d741e2dbea2239154dc110ba877edf169e4366",
+      "kernelInputSha256": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028",
+      "binarySha256": "72320f3f43365e5aa49da9744884c482e5a7fe69aafd9a9aae886ebe48c92319"
+    },
+    "requirements": {
+      "status": "pass",
+      "log": "target/trigger-validation/ordinary-feature-context-qualification-requirements.log",
+      "logSha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76",
+      "report": "docs/evidence/ordinary-feature-context-requirements-macos-arm64.json",
+      "reportSha256": "0f33c8235d2f9aca60fc4cdb9e12a578c1167edce8d880a11ae3c632b0ac2b02",
+      "kernelInputSha256": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028",
+      "binarySha256": "72320f3f43365e5aa49da9744884c482e5a7fe69aafd9a9aae886ebe48c92319"
+    }
+  },
+  "limits": [
+    "This does not validate inverse value semantics or whole-model validity.",
+    "FlowEnd, chaining, portions and remaining contextual/default binding semantics stay open.",
+    "No package, family, named validation rule or overall coverage percentage is promoted."
+  ],
+  "next": "Complete shared feature-chaining typing acceptance, then remaining portion and contextual default-binding dependencies.",
+  "initialKernelInputSha256": "f755be887904a283eb35301afbe05c03b867ba56ea9195dcf94d4333e6e6ba54",
+  "qualifiedAt": "2026-10-18T15:25:02.171Z"
+}

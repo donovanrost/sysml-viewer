@@ -1,0 +1,341 @@
+{
+  "recordedAt": "2026-10-19T02:18:16.448335+00:00",
+  "status": "Association end-domain source is qualified on macOS arm64: 1027 isolated model tests, 107 native workspace tests, 39 public regressions, 13 provenance checks, Clippy, native/WASM builds, contract, all 133 conformance cases and source-matched requirements evidence pass. Complete Association semantics and all C01-C15 remain open.",
+  "kernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+  "previousQualifiedKernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+  "admission": {
+    "recordedAt": "2026-10-19T02:18:16.443751+00:00",
+    "previousQualifiedKernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+    "kernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+    "files": {
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied/planning_names_tests.rs": "97269e0dd9c978d52697e5f2343c9e7e389b2a4ab22c6087bfe68292e5dd8d4a",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "a210635087b0a6713339e4ea77c18285890125ab1f8df84ea4b7c4f387615862",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/borrowed_role_subtypes.rs": "3f93ffd7d2c94519e95f6adb3716e810f27cb415303dfb451d7822e58a918431",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional.rs": "de466a581af29acd03724804fa4f9b3716610a274e77ccece39fed66a9e1127d",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/reference_memberships.rs": "3685226f5c3b5c4ec7596095cc28beaa502eeccdc111aa363696522039d8ee83",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d",
+      "crates/sysml-kernel/tests/association_ends.rs": "97542663e522545f6b1ba7e897e9e4a9688720485da1439ec56f0e2f7e5afc41",
+      "patches/manifest.json": "30c0aaa5573185e3dff3f3faa4c71052880dcc1154b40cb66b493942a309157a",
+      "standards/assessments.json": "d5f6d57829b98f87e0f75ea4bc6c300e117b54f632a744ee3fa476683b8c4a2c"
+    },
+    "sourceReview": {
+      "assessmentAnchors": [
+        {
+          "evidenceId": "graph",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        },
+        {
+          "evidenceId": "resolution",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        },
+        {
+          "evidenceId": "connector-ends",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        },
+        {
+          "evidenceId": "checked-featuring",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
+          "previousSha256": "e487f9bf1a504b8e6631582941112a2ec8a2b78f97f6539876549f0d43449683",
+          "currentSha256": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662"
+        },
+        {
+          "evidenceId": "checked-prefix-reuse",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
+          "previousSha256": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+          "currentSha256": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e"
+        },
+        {
+          "evidenceId": "atomic-dynamic-staging",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
+          "previousSha256": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+          "currentSha256": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e"
+        },
+        {
+          "evidenceId": "state-body-query",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        },
+        {
+          "evidenceId": "transition-construction",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        },
+        {
+          "evidenceId": "accept-construction",
+          "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+          "previousSha256": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+          "currentSha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+        }
+      ],
+      "finding": "Only a skipped raw-index field changes json.rs. audited_featuring_domain is byte-identical. The dynamic-graph delta only replaces raw name materialization; all staging, physical-prefix and recipe proof logic is unchanged. Tests retain exact identity, missing dependency, mutation, replay and bounded-work assertions. No assessment wording or coverage claim is expanded."
+    }
+  },
+  "acceptance": {
+    "private": {
+      "status": "pass",
+      "tests": 1027,
+      "log": "target/trigger-validation/association-name-index-reviewed-full.log",
+      "logSha256": "986ea37ad1c5e9a0cd92a0df66075abeadd1ae0949fe7f7832e3c6b31408c236",
+      "inputs": {
+        "target/trigger-validation/association-name-index-accepted-stage/json/dynamic_graph.rs": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e",
+        "target/trigger-validation/association-name-index-accepted-stage/json/implied/planning_names_tests.rs": "97269e0dd9c978d52697e5f2343c9e7e389b2a4ab22c6087bfe68292e5dd8d4a",
+        "target/trigger-validation/association-name-index-accepted-stage/json/implied.rs": "a210635087b0a6713339e4ea77c18285890125ab1f8df84ea4b7c4f387615862",
+        "target/trigger-validation/association-name-index-accepted-stage/json/positional/borrowed_role_subtypes.rs": "3f93ffd7d2c94519e95f6adb3716e810f27cb415303dfb451d7822e58a918431",
+        "target/trigger-validation/association-name-index-accepted-stage/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+        "target/trigger-validation/association-name-index-accepted-stage/json/positional.rs": "de466a581af29acd03724804fa4f9b3716610a274e77ccece39fed66a9e1127d",
+        "target/trigger-validation/association-name-index-accepted-stage/json/reference_memberships.rs": "3685226f5c3b5c4ec7596095cc28beaa502eeccdc111aa363696522039d8ee83",
+        "target/trigger-validation/association-name-index-accepted-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+        "target/trigger-validation/association-name-index-accepted-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662",
+        "target/trigger-validation/association-name-index-accepted-stage/json.rs": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+      }
+    },
+    "public": {
+      "status": "pass",
+      "tests": 1,
+      "source": "crates/sysml-kernel/tests/association_ends.rs",
+      "sourceSha256": "97542663e522545f6b1ba7e897e9e4a9688720485da1439ec56f0e2f7e5afc41",
+      "executedSourceSha256": "1e7153be23c7029ec03d93e5187b3196ba20cdac081799c04450c60e758155a2",
+      "log": "target/trigger-validation/association-name-index-reviewed-full.log",
+      "logSha256": "986ea37ad1c5e9a0cd92a0df66075abeadd1ae0949fe7f7832e3c6b31408c236"
+    }
+  },
+  "fullQualification": {
+    "status": "pass",
+    "session": 79275,
+    "pipelineState": "target/trigger-validation/association-domains-qualification.json",
+    "pipeline": {
+      "kernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+      "startedAt": "2026-10-19T02:21:12.674Z",
+      "status": "passed",
+      "phases": [
+        {
+          "name": "provenance",
+          "args": [
+            "--test",
+            "--test-concurrency=1",
+            "tests/vendor-patches.test.mjs",
+            "tests/requirements.test.mjs"
+          ],
+          "startedAt": "2026-10-19T02:21:12.675Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:21:14.518Z"
+        },
+        {
+          "name": "contract",
+          "args": [
+            "tools/generate-contract.mjs",
+            "--check"
+          ],
+          "startedAt": "2026-10-19T02:21:14.519Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:21:29.009Z"
+        },
+        {
+          "name": "workspace",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--workspace"
+          ],
+          "startedAt": "2026-10-19T02:21:29.010Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:30:37.146Z"
+        },
+        {
+          "name": "clippy",
+          "args": [
+            "tools/rust.mjs",
+            "clippy",
+            "--locked",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "startedAt": "2026-10-19T02:30:37.147Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:30:44.103Z"
+        },
+        {
+          "name": "wasm",
+          "args": [
+            "tools/build-kernel.mjs"
+          ],
+          "startedAt": "2026-10-19T02:30:44.104Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:31:17.975Z"
+        },
+        {
+          "name": "cli",
+          "args": [
+            "tools/rust.mjs",
+            "build",
+            "--locked",
+            "--release",
+            "-p",
+            "sysml-cli"
+          ],
+          "startedAt": "2026-10-19T02:31:17.975Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:31:51.747Z"
+        },
+        {
+          "name": "public",
+          "args": [
+            "--experimental-strip-types",
+            "--test",
+            "--test-concurrency=1",
+            "tests/accept-actions.test.ts",
+            "tests/families.test.ts",
+            "tests/kernel.test.ts",
+            "tests/state-subactions.test.ts",
+            "tests/kernel-client.test.ts",
+            "tests/conformance-runner.test.mjs"
+          ],
+          "startedAt": "2026-10-19T02:31:51.747Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:34:46.298Z"
+        },
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-19T02:34:46.298Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:43:56.229Z"
+        },
+        {
+          "name": "requirements",
+          "args": [
+            "tools/requirements.mjs",
+            "--conformance",
+            "target/conformance/report.json"
+          ],
+          "startedAt": "2026-10-19T02:43:56.229Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:43:57.314Z"
+        }
+      ],
+      "finishedAt": "2026-10-19T02:43:58.314Z"
+    },
+    "provenance": {
+      "status": "pass",
+      "log": "target/trigger-validation/association-domains-qualification-provenance.log",
+      "logSha256": "2c05dbf70995dc62db1f1b2b68ce64174d10f77df60c99e0b065467a0f008381",
+      "tests": 13
+    },
+    "contract": {
+      "status": "pass",
+      "log": "target/trigger-validation/association-domains-qualification-contract.log",
+      "logSha256": "63dcf00205a0bcc4a37ff97d389eeeb4e40b0e6b7f988014d8bac3f6b0c91d46"
+    },
+    "workspace": {
+      "status": "pass",
+      "log": "target/trigger-validation/association-domains-qualification-workspace.log",
+      "logSha256": "6e1a254bba73ba89d7b5e8105a4a16a981c24410fade2e00ee073d4d35c8ad94",
+      "tests": 107
+    },
+    "clippy": {
+      "status": "pass",
+      "log": "target/trigger-validation/association-domains-qualification-clippy.log",
+      "logSha256": "cf5d3941ea8d0e37a33301f43641d669a908b619f37c1e2bf1b2932b93d4cf2f"
+    },
+    "wasm": {
+      "status": "pass",
+      "log": "target/trigger-validation/association-domains-qualification-wasm.log",
+      "logSha256": "54724165035589fb98490ec5cb3c3bf422199d16b95d898b39d4c3d274cd0052"
+    },
+    "cli": {
+      "status": "pass",
+      "log": "target/trigger-validation/association-domains-qualification-cli.log",
+      "logSha256": "a40b0d7d072064e582fea2a2b4bcecf5cd31c43af83db3ef8c6dc9601197af3b"
+    },
+    "public": {
+      "status": "pass",
+      "log": "target/trigger-validation/association-domains-qualification-public.log",
+      "logSha256": "84bf8d07e618808abe069c191ef094ab4a6824f929893c68f0a432d1f9b91ca7",
+      "tests": 39
+    },
+    "conformance": {
+      "status": "pass",
+      "log": "target/trigger-validation/association-domains-qualification-conformance.log",
+      "logSha256": "02a90295b61fc8ca1956b67cc632640462a0519664cca9caabe0a656f12a77ee",
+      "report": "docs/evidence/association-end-domains-conformance-macos-arm64.json",
+      "reportSha256": "0e2cf965aee1562996f7bcd46b0d84eaf9116f003ae5c32e11d905027f6a83fd",
+      "kernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+      "binarySha256": "889313aaea61b430c4a306b730b26f2bd95172498d76ebd1bd5d5b2ea5ebf650"
+    },
+    "requirements": {
+      "status": "pass",
+      "log": "target/trigger-validation/association-domains-qualification-requirements.log",
+      "logSha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76",
+      "report": "docs/evidence/association-end-domains-requirements-macos-arm64.json",
+      "reportSha256": "7ccb080861b311d07140a9574138a35ada3effe3c3eaf76cbc085ecaa74347a0",
+      "kernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+      "binarySha256": "889313aaea61b430c4a306b730b26f2bd95172498d76ebd1bd5d5b2ea5ebf650"
+    },
+    "vendor": {
+      "status": "pass",
+      "tests": 1027,
+      "log": "target/trigger-validation/association-name-index-reviewed-full.log",
+      "logSha256": "986ea37ad1c5e9a0cd92a0df66075abeadd1ae0949fe7f7832e3c6b31408c236",
+      "inputs": {
+        "target/trigger-validation/association-name-index-accepted-stage/json/dynamic_graph.rs": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e",
+        "target/trigger-validation/association-name-index-accepted-stage/json/implied/planning_names_tests.rs": "97269e0dd9c978d52697e5f2343c9e7e389b2a4ab22c6087bfe68292e5dd8d4a",
+        "target/trigger-validation/association-name-index-accepted-stage/json/implied.rs": "a210635087b0a6713339e4ea77c18285890125ab1f8df84ea4b7c4f387615862",
+        "target/trigger-validation/association-name-index-accepted-stage/json/positional/borrowed_role_subtypes.rs": "3f93ffd7d2c94519e95f6adb3716e810f27cb415303dfb451d7822e58a918431",
+        "target/trigger-validation/association-name-index-accepted-stage/json/positional/checked.rs": "0eb8b34c1077fabe7d2ef490fd1aff1eeda82f901f6a5ebebb5186bc61a7c058",
+        "target/trigger-validation/association-name-index-accepted-stage/json/positional.rs": "de466a581af29acd03724804fa4f9b3716610a274e77ccece39fed66a9e1127d",
+        "target/trigger-validation/association-name-index-accepted-stage/json/reference_memberships.rs": "3685226f5c3b5c4ec7596095cc28beaa502eeccdc111aa363696522039d8ee83",
+        "target/trigger-validation/association-name-index-accepted-stage/json/semantic/certified_types.rs": "3a051162a740a81eec1099e4f4665f6709737df6aa4ae0726b415fcd14d777c3",
+        "target/trigger-validation/association-name-index-accepted-stage/json/structural_index.rs": "43105d8b1e140aae004e846b51996d5a52c38a9523c7e0047010495bcf640b58",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_features.rs": "fa13fa6a032d32cb8a424c28171996013dda99bdd69bccb9f5ee4f3b63f2f04e",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_inputs.rs": "0c2b3b56bec722e229cac240d57a0fe46e6bcf7af64cfd0e180f3ee89ee5ed9a",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_relations/association_domains_tests.rs": "83e1f953aa5260460bf154b4d969e3d02da85f7e790809091603b36015a0d92d",
+        "target/trigger-validation/association-name-index-accepted-stage/json/type_relations.rs": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662",
+        "target/trigger-validation/association-name-index-accepted-stage/json.rs": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
+      }
+    }
+  },
+  "limits": [
+    "Exact checked Association/AssociationStructure memberships and end projections only.",
+    "End typing, related/source/target derivations, crossing/chaining obligations, validation and mutually stable conditional binary-base construction remain open.",
+    "The raw name index shares spelling/identity only; every semantic certificate retains its current-source proof.",
+    "All C01-C15 remain open. No version bump, release or installation."
+  ],
+  "qualifiedAt": "2026-10-19T02:43:58.314Z",
+  "next": "Complete owned-cross construction, Association end typing and related/source/target derivations, then coupled conditional construction and validation with all dependencies."
+}

@@ -132,6 +132,9 @@ pub const IMPLEMENTED_NORMATIVE_SEMANTIC_RULES: &[&str] = &[
     "validateTransitionUsageParameters",
     "validateTransitionUsageSuccession",
     "validateTransitionUsageTriggerActions",
+    "validateTriggerInvocationExpressionAfterArgument",
+    "validateTriggerInvocationExpressionAtArgument",
+    "validateTriggerInvocationExpressionWhenArgument",
     "validateTypeDifferencingTypesNotSelf",
     "validateTypeIntersectingTypesNotSelf",
     "validateTypeOwnedMultiplicity",
@@ -412,6 +415,17 @@ pub fn validate_semantics_with(
     out.extend(chains::validate(r, model));
     // The immutable facts already index ownership and binary relationship
     // targets for every later validator. Reuse them for connector checks too.
+    // Trigger argument predicates consume the shared constructed graph. Prepare
+    // before the explicit-only Facts snapshot; generated indices are read only
+    // through checked semantic providers, never through Facts arrays.
+    if (r.b.lib_boundary..r.b.explicit_len())
+        .any(|e| r.b.elements[e].ty == "TriggerInvocationExpression")
+    {
+        let root = r.elements().next();
+        if let Some(root) = root {
+            r.implied_relationships(root);
+        }
+    }
     let facts = facts::Facts::new(&mut r.b);
     out.extend(connectors::validate(r, model, &facts));
     out.extend(structural::validate(r, model, &facts));

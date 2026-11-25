@@ -1,0 +1,1157 @@
+{
+  "reviewedAt": "2026-10-18T12:01:02.357716+00:00",
+  "status": "Open decomposition of the nine directly owned constraints and two operations. No assessment or completion package closes.",
+  "scope": "KerML InvocationExpression direct obligations plus inherited dependencies; not the complete SysML accept/trigger family.",
+  "sources": [
+    {
+      "path": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466"
+    },
+    {
+      "path": "target/standards/kerml.pdf",
+      "sha256": "3bcc96f989bfa9d05cd28e026df3351b795fe8d494187b87bff3db7d96373697"
+    }
+  ],
+  "pdfSections": [
+    "8.3.4.8.8 (printed pages 210\u2013212)",
+    "8.4.4.1 Table 11 and Notes 1, 3, 4 (printed pages 251\u2013253)",
+    "8.4.4.9.5 (Invocation Expressions)",
+    "8.4.4.11 (Feature Values Semantics, printed pages 274\u2013275)"
+  ],
+  "constraints": [
+    {
+      "id": "validateInvocationExpressionParameterRedefinition",
+      "sourceId": "Kernel-Expressions-InvocationExpression-validateInvocationExpressionParameterRedefinition",
+      "requirement": "For each effective input of the invocation, count the intersection of its owned redefinition targets with instantiatedType inputs and require exactly one.",
+      "sourceExpressions": [
+        "let parameters : OrderedSet(Feature) = instantiatedType.input in input->forAll(inp |      inp.ownedRedefinition.redefinedFeature->         intersection(parameters)->size() = 1)"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "zero/one/multiple matches",
+        "duplicate raw edges versus distinct targets",
+        "inherited/redefined input order and incomplete target sets"
+      ],
+      "closure": "Requires complete dependency review, public API evidence, executed positive/negative/abstract cases and explicit second review; existing query refusal alone is not named-validation coverage."
+    },
+    {
+      "id": "checkInvocationExpressionBehaviorResultSpecialization",
+      "sourceId": "Kernel-Expressions-InvocationExpression-checkInvocationExpressionBehaviorResultSpecialization",
+      "requirement": "For a non-Function Behavior or Feature not typed by Function, the invocation result specializes the exact instantiatedType.",
+      "sourceExpressions": [
+        "not instantiatedType.oclIsKindOf(Function) and not (instantiatedType.oclIsKindOf(Feature) and       instantiatedType.oclAsType(Feature).type->exists(oclIsKindOf(Function))) implies     result.specializes(instantiatedType)"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Behavior/Function boundary and inherited Function typing",
+        "exact result identity and specialization endpoint",
+        "missing type/result, malformed ownership, stale publication"
+      ],
+      "closure": "Requires complete dependency review, public API evidence, executed positive/negative/abstract cases and explicit second review; existing query refusal alone is not named-validation coverage."
+    },
+    {
+      "id": "validateInvocationExpressionNoDuplicateParameterRedefinition",
+      "sourceId": "Kernel-Expressions-InvocationExpression-validateInvocationExpressionNoDuplicateParameterRedefinition",
+      "requirement": "Review the prose over owned features and OCL over input pairs; ensure distinct applicable invocation features do not share an instantiatedType feature target.",
+      "sourceExpressions": [
+        "let features : OrderedSet(Feature) = instantiatedType.feature in input->forAll(inp1 | input->forAll(inp2 |     inp1 <> inp2 implies         inp1.ownedRedefinition.redefinedFeature->             intersection(inp2.ownedRedefinition.redefinedFeature)->             intersection(features)->isEmpty()))"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "pairwise overlap, nonoverlap and transitive paths",
+        "owned output/noninput features versus OCL input-only quantification",
+        "complete and unavailable instantiatedType feature sets"
+      ],
+      "closure": "Requires complete dependency review, public API evidence, executed positive/negative/abstract cases and explicit second review; existing query refusal alone is not named-validation coverage."
+    },
+    {
+      "id": "checkInvocationExpressionSpecialization",
+      "sourceId": "Kernel-Expressions-InvocationExpression-checkInvocationExpressionSpecialization",
+      "requirement": "Construct the specialization to the exact instantiatedType, using the relationship kind applicable to the target metaclass.",
+      "sourceExpressions": [
+        "specializes(instantiatedType)"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "direct and inherited Function/Behavior",
+        "Feature-typed callees",
+        "all invocation subclasses, stale targets, required library roles"
+      ],
+      "closure": "Requires complete dependency review, public API evidence, executed positive/negative/abstract cases and explicit second review; existing query refusal alone is not named-validation coverage."
+    },
+    {
+      "id": "deriveInvocationExpressionArgument",
+      "sourceId": "Kernel-Expressions-InvocationExpression-deriveInvocationExpressionArgument",
+      "requirement": "Select valuation value expressions in instantiatedType input order through actual owned redefinitions; preserve identities and the difference between absent values and unavailable evidence.",
+      "sourceExpressions": [
+        "instantiatedType.input->collect(inp |      ownedFeatures->select(redefines(inp)).valuation->     select(v | v <> null).value )"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "named/positional/mixed inputs",
+        "reordered inherited inputs and multiple redefinition paths",
+        "missing valuations, default inputs, duplicate targets, malformed ownership"
+      ],
+      "closure": "Requires complete dependency review, public API evidence, executed positive/negative/abstract cases and explicit second review; existing query refusal alone is not named-validation coverage."
+    },
+    {
+      "id": "checkInvocationExpressionBehaviorBindingConnector",
+      "sourceId": "Kernel-Expressions-InvocationExpression-checkInvocationExpressionBehaviorBindingConnector",
+      "requirement": "For the non-Function case, require a binding between the invocation and its own result; reconcile the ownedFeature expression in OCL with namespace-owned implied relationships.",
+      "sourceExpressions": [
+        "not instantiatedType.oclIsKindOf(Function) and not (instantiatedType.oclIsKindOf(Feature) and       instantiatedType.oclAsType(Feature).type->exists(oclIsKindOf(Function))) implies     ownedFeature.selectByKind(BindingConnector)->exists(         relatedFeature->includes(self) and         relatedFeature->includes(result))"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "actual reciprocal connector ownership and exact endpoints",
+        "missing/duplicate/conflicting bindings",
+        "connector ancestry, default featuring and source edits"
+      ],
+      "closure": "Requires complete dependency review, public API evidence, executed positive/negative/abstract cases and explicit second review; existing query refusal alone is not named-validation coverage."
+    },
+    {
+      "id": "validateInvocationExpressionOwnedFeatures",
+      "sourceId": "Kernel-Expressions-InvocationExpression-validateInvocationExpressionOwnedFeatures",
+      "requirement": "Every owned feature other than the selected result has input direction; verify the selected result separately through inherited InstantiationExpression requirements.",
+      "sourceExpressions": [
+        "ownedFeature->forAll(f | f <> result implies f.direction = FeatureDirectionKind::_'in')"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "zero/one/duplicate return memberships",
+        "direction absent/in/out/inout and malformed values",
+        "anonymous generated bindings: owned member versus owned feature membership"
+      ],
+      "closure": "Requires complete dependency review, public API evidence, executed positive/negative/abstract cases and explicit second review; existing query refusal alone is not named-validation coverage."
+    },
+    {
+      "id": "checkInvocationExpressionDefaultValueBindingConnector",
+      "sourceId": "Kernel-Expressions-InvocationExpression-checkInvocationExpressionDefaultValueBindingConnector",
+      "requirement": "For each applicable effective default, construct the required binding with explicit ownership and exact related feature identities after reconciling metamodel prose with Table 11 and its Note 4.",
+      "sourceExpressions": [
+        "TBD"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "owned/inherited/absent/conflicting defaults",
+        "supplied input override, private/noninput/return defaults",
+        "callee featureWithValue versus local redefining feature; value Expression versus its result",
+        "initial defaults, connector ancestry/featuring, identity collisions, stale proof and work limits"
+      ],
+      "closure": "Requires complete dependency review, public API evidence, executed positive/negative/abstract cases and explicit second review; existing query refusal alone is not named-validation coverage."
+    },
+    {
+      "id": "validateInvocationExpressionInstantiatedType",
+      "sourceId": "Kernel-Expressions-InvocationExpression-validateInvocationExpressionInstantiatedType",
+      "requirement": "Accept Behavior or a Feature with exactly one effective type that is a Behavior; refuse complete counterexamples and preserve unknown dependencies separately.",
+      "sourceExpressions": [
+        "instantiatedType.oclIsKindOf(Behavior) or instantiatedType.oclIsKindOf(Feature) and     instantiatedType.type->exists(oclIsKindOf(Behavior)) and     instantiatedType.type->size(1)"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Function and non-Function Behavior",
+        "Feature typed by Function or Behavior",
+        "zero/multiple effective types, missing/ambiguous membership, inheritance, metadata and cycles"
+      ],
+      "closure": "Requires complete dependency review, public API evidence, executed positive/negative/abstract cases and explicit second review; existing query refusal alone is not named-validation coverage."
+    }
+  ],
+  "operations": [
+    {
+      "id": "modelLevelEvaluable",
+      "sourceId": "Kernel-Expressions-InvocationExpression-modelLevelEvaluable_Feature",
+      "status": "open",
+      "review": "Review target/context semantics, result sequence identity and order, failure versus unavailability, recursive visited handling and full Function behavior. Current bounded scalar evaluability does not close general invocation evaluation."
+    },
+    {
+      "id": "evaluate",
+      "sourceId": "Kernel-Expressions-InvocationExpression-evaluate_Element",
+      "status": "open",
+      "review": "Review target/context semantics, result sequence identity and order, failure versus unavailability, recursive visited handling and full Function behavior. Current bounded scalar evaluability does not close general invocation evaluation."
+    }
+  ],
+  "inheritedDependencies": [
+    "InstantiationExpression.instantiatedType operation/derivation and non-null validation",
+    "InstantiationExpression result ownership",
+    "Expression result selection, function derivation and result-expression binding",
+    "Step/Feature/Type membership, parameter/result redefinition, featuring, specialization and library-role requirements",
+    "BindingConnector semantics, defaultFeaturingType, endpoint Feature requirements and semantic metadata",
+    "SysML TriggerInvocationExpression designated types and all three argument predicates"
+  ],
+  "sourceReconciliation": [
+    {
+      "id": "invocation-default-endpoint-formulation",
+      "status": "open",
+      "evidence": [
+        "Metamodel default constraint and 8.4.4.11 name featureWithValue and value Expression.",
+        "Table 11 names features of the invocation and results of default value Expressions; Note 4 scopes the binding to owned features redefining a feature with an effective default.",
+        "The 8.4.4.11 example uses f::e.result and explicitly suppresses a default when an argument supplies its value."
+      ],
+      "currentBoundary": "Current construction follows the direct metamodel prose and shares the constructor recipe. Its tests prove those row identities, not equivalence to every formulation. Do not widen membership/result admission or close the default rule until the endpoint/ownership interpretation is reconciled.",
+      "next": "Compare construction rules for argument wrappers and default valuations, trace result/feature chaining semantics, and test exact local/inherited endpoint identities in an independently constructed abstract model."
+    },
+    {
+      "id": "invocation-binding-membership-role",
+      "status": "open",
+      "evidence": [
+        "Behavior binding OCL searches ownedFeature; Table 11 Note 1 gives the constrained element as owningNamespace.",
+        "OwnedFeatures other than result are constrained to input direction.",
+        "Current default bindings use anonymous OwningMembership and therefore contribute no FeatureMembership or input parameter."
+      ],
+      "next": "Review whether the binding role needs namespace ownership only or a feature membership in each obligation; do not reuse the default append noninterference argument for behavior bindings without proof."
+    },
+    {
+      "id": "duplicate-redefinition-domain",
+      "status": "open",
+      "evidence": [
+        "Prose quantifies distinct ownedFeatures; OCL quantifies input pairs."
+      ],
+      "next": "Assess result/noninput counterexamples and record the chosen interpretation with both sources before mapping named validation evidence."
+    }
+  ],
+  "implementationCandidates": [
+    "json/invocation_bindings.rs",
+    "json/invocation_defaults.rs",
+    "json/invocation_results.rs",
+    "json/dynamic_invocations.rs",
+    "json/type_inputs.rs",
+    "json/type_relations.rs",
+    "json/expression_results.rs"
+  ],
+  "nextSequence": [
+    "Complete current default-construction regression qualification.",
+    "Resolve the default endpoint and binding-membership formulations using the pinned source set.",
+    "Implement a current invocation membership/result certificate through shared Type and return-membership providers.",
+    "Complete Feature-typed and non-Function Behavior callee construction and validation; qualify the full direct and inherited obligation set."
+  ],
+  "coverageCountsChanged": false,
+  "externalIssueContext": {
+    "checkedAt": "2026-10-18T12:04:04.256534+00:00",
+    "authority": "OMG public issue tracker; contextual evidence only, not an amendment of the pinned normative baseline. Open issue reports do not settle the interpretation.",
+    "issues": [
+      {
+        "id": "SYSML21-384",
+        "url": "https://issues.omg.org/issues/SYSML21-384",
+        "observedStatus": "open",
+        "finding": "Reports the missing OCL for invocation default bindings. It supplies no replacement endpoint rule."
+      },
+      {
+        "id": "KERML11-90",
+        "url": "https://issues.omg.org/issues/KERML11-90",
+        "observedStatus": "open",
+        "finding": "Reports the unspecified formal constructor default-binding rule. Shared implementation does not resolve that missing specification."
+      },
+      {
+        "id": "KERML11-8",
+        "url": "https://issues.omg.org/issues/KERML11-8",
+        "observedStatus": "open",
+        "finding": "Reports that the referent/result binding of a reference expression can lack a common default featuring type. Related connector evidence needs explicit interpretation."
+      },
+      {
+        "id": "KERML11-145",
+        "url": "https://issues.omg.org/issues/KERML11-145",
+        "observedStatus": "open",
+        "finding": "Reports that direct value-result specialization conflicts with featuring constraints and proposes a value/result chain; it also identifies related Expression and Function binding problems. This is relevant context, not an adopted default-binding correction."
+      }
+    ]
+  },
+  "independentSourceComparison": {
+    "reviewedAt": "2026-10-18T12:08:09.905144+00:00",
+    "repository": "https://github.com/Systems-Modeling/SysML-v2-Pilot-Implementation",
+    "revision": "d69dbffd6f7a5c076a4be4960deda463795a4928",
+    "commitDate": "2026-10-14T14:57:40Z",
+    "method": "Static inspection of selected files at one immutable revision; the pilot was not built or executed. No third-party source was copied into the kernel.",
+    "files": [
+      {
+        "path": "org.omg.sysml.logic/src/main/java/org/omg/sysml/adapter/ConstructorExpressionAdapter.java",
+        "sha256": "f2448d01858410398b96fa2a29b18cead29acac02b04e3ab8c6389913a73dbfd"
+      },
+      {
+        "path": "org.omg.sysml.logic/src/main/java/org/omg/sysml/adapter/InstantiationExpressionAdapter.java",
+        "sha256": "4ac9c85abaabcf4ca94042fa7c234cc399c2af7bddf156cdad3d4fa978e10c33"
+      },
+      {
+        "path": "org.omg.sysml.logic/src/main/java/org/omg/sysml/adapter/InvocationExpressionAdapter.java",
+        "sha256": "a62a675127ea161fdf7dedc2f49cc0302e08095aca37e75d408ff4bc7e8b4c44"
+      },
+      {
+        "path": "org.omg.sysml.logic/src/main/java/org/omg/sysml/adapter/TriggerInvocationExpressionAdapter.java",
+        "sha256": "274a67d09179cfb35f1c0dea41b61324d31c838cedd246dc86ee045ecab0fecc"
+      },
+      {
+        "path": "org.omg.sysml.logic/src/main/java/org/omg/sysml/util/ElementUtil.java",
+        "sha256": "e50851a0c5515b9e78273eaad4003d8384303903b51a527f3b9ef3241f217441"
+      },
+      {
+        "path": "org.omg.sysml.logic/src/main/java/org/omg/sysml/util/FeatureUtil.java",
+        "sha256": "332080c8e258a9e27feacb71d963a7d9d51425f9802e42c9e0ade2d18d7f7780"
+      },
+      {
+        "path": "org.omg.sysml.logic/src/main/java/org/omg/sysml/util/TypeUtil.java",
+        "sha256": "5a791292cc32a61184afaf5646b2fe4e63c82fc42002c8f0ef72cb7f2604d803"
+      },
+      {
+        "path": "org.omg.sysml.logic/src/main/java/org/omg/sysml/adapter/ExpressionAdapter.java",
+        "sha256": "435d8f22006137d91f793d4a20be3c88e72a017db838bf1b1d7da654672d7141"
+      },
+      {
+        "path": "org.omg.sysml.logic/src/main/java/org/omg/sysml/adapter/FeatureAdapter.java",
+        "sha256": "131c2452554814e0a8bf96abc788f4388c894eadcea9acc55dc32f1f9abe1455"
+      },
+      {
+        "path": "org.omg.sysml.logic/src/main/java/org/omg/sysml/adapter/TypeAdapter.java",
+        "sha256": "bbf1fb1376477df59297dfc1a3696362bd468229e6ec0c5fe9bac76a6817b500"
+      },
+      {
+        "path": "org.omg.sysml.logic/src/main/java/org/omg/sysml/util/ConnectorUtil.java",
+        "sha256": "0c54aacdcda2209a3f82aaaece7d3c8409877c226819996edf052043abaee083"
+      }
+    ],
+    "findings": [
+      {
+        "source": "https://github.com/Systems-Modeling/SysML-v2-Pilot-Implementation/blob/d69dbffd6f7a5c076a4be4960deda463795a4928/org.omg.sysml.logic/src/main/java/org/omg/sysml/adapter/FeatureAdapter.java#L182",
+        "symbol": "getBoundValueResult",
+        "finding": "For nondefault valuations, the adapter selects the value result and chains the value Expression to that result. It explicitly excludes default valuations; this does not implement the default rule."
+      },
+      {
+        "source": "https://github.com/Systems-Modeling/SysML-v2-Pilot-Implementation/blob/d69dbffd6f7a5c076a4be4960deda463795a4928/org.omg.sysml.logic/src/main/java/org/omg/sysml/adapter/TypeAdapter.java#L515",
+        "symbol": "addBindingConnector",
+        "finding": "The adapter chooses feature membership when computed connector context equals its owner and member membership otherwise; external context can supply explicit featuring."
+      },
+      {
+        "source": "https://github.com/Systems-Modeling/SysML-v2-Pilot-Implementation/blob/d69dbffd6f7a5c076a4be4960deda463795a4928/org.omg.sysml.logic/src/main/java/org/omg/sysml/util/TypeUtil.java#L497",
+        "symbol": "insertImplicitBindingConnectors",
+        "finding": "Physical insertion preserves the feature/member role chosen by the adapter and transforms newly inserted connectors."
+      },
+      {
+        "source": "https://github.com/Systems-Modeling/SysML-v2-Pilot-Implementation/blob/d69dbffd6f7a5c076a4be4960deda463795a4928/org.omg.sysml.logic/src/main/java/org/omg/sysml/adapter/InvocationExpressionAdapter.java#L90",
+        "symbol": "createSelfResultConnector and addResultTyping",
+        "finding": "Non-Function invocation construction binds the invocation to its owned result and specializes that result to the instantiated type. The inspected invocation adapter does not supply a direct default-binding implementation."
+      },
+      {
+        "source": "https://github.com/Systems-Modeling/SysML-v2-Pilot-Implementation/blob/d69dbffd6f7a5c076a4be4960deda463795a4928/org.omg.sysml.logic/src/main/java/org/omg/sysml/util/ConnectorUtil.java#L55",
+        "symbol": "transformBindingConnector",
+        "finding": "Generated bindings receive a binary connector library specialization and transformed ends; raw binary ownership alone is not a complete connector certificate."
+      }
+    ],
+    "conclusion": "The comparison supports explicit result-chain and contextual membership review, but does not resolve default endpoints or replace normative obligations. Do not infer whole-pilot absence or behavior from these selected source files."
+  },
+  "endpointIdentityProbe": {
+    "kernelInputSha256": "e690037352d766a8bb37b5e70f322f84c854a9a834fd3feabbd6d6c5dad3cbcb",
+    "executedAt": "2026-10-18T12:13:36.027425+00:00",
+    "log": "target/trigger-validation/default-endpoint-probe.log",
+    "logSha256": "5c67e0bc8235aebd5831b4cf8521e181a4e409993f2293358262ba2eddd12d10",
+    "source": "function F {in x : ScalarValues::Integer default=1; return result : ScalarValues::Integer;} feature call=F();",
+    "libraryFiles": 94,
+    "method": "One diagnostic test appended only to a disposable vendor workspace; production source unchanged.",
+    "observed": {
+      "boundary": "Probe of current raw identity and checked queries; no execution or whole binding semantic verdict.",
+      "distinctSelectedResult": "3caafe7c-76f1-5067-94c3-e2b0eb59f8ce",
+      "publishedTarget": "f34b05b8-d9b6-53e3-8783-99fa06f33650",
+      "rows": [
+        {
+          "id": "e03aa86a-ebbb-5f79-b0f3-ad6845875d99",
+          "kind": "Feature",
+          "owner": "c351b050-8b2e-52f1-8f27-1b61b892037d",
+          "role": "featureWithValue",
+          "types": "Err(MissingRequiredFamilies)"
+        },
+        {
+          "id": "f34b05b8-d9b6-53e3-8783-99fa06f33650",
+          "kind": "LiteralInteger",
+          "owner": "e03aa86a-ebbb-5f79-b0f3-ad6845875d99",
+          "role": "valueExpression",
+          "types": "Ok([Object {\"id\": String(\"175c7980-47e6-5cb6-9aec-d8c25829ac40\"), \"kind\": String(\"Function\"), \"name\": String(\"Performances::LiteralIntegerEvaluation\")}])"
+        },
+        {
+          "id": "3caafe7c-76f1-5067-94c3-e2b0eb59f8ce",
+          "kind": "Feature",
+          "owner": "175c7980-47e6-5cb6-9aec-d8c25829ac40",
+          "role": "selectedResult",
+          "types": "Ok([Object {\"id\": String(\"f2350199-2ab1-5258-8514-58812ef25dc6\"), \"kind\": String(\"DataType\"), \"name\": String(\"ScalarValues::Integer\")}])"
+        }
+      ]
+    },
+    "interpretation": "The published raw value endpoint is the LiteralInteger expression, whose checked type is Performances::LiteralIntegerEvaluation. Checked result selection yields a distinct library-owned Feature with type ScalarValues::Integer. This demonstrates a real identity/type distinction and motivates a contextual value/result chain; it does not itself prove whole-connector validity or a violation because the featureWithValue type report remains incomplete."
+  },
+  "defaultResultDependencies": {
+    "kernelInputSha256": "e690037352d766a8bb37b5e70f322f84c854a9a834fd3feabbd6d6c5dad3cbcb",
+    "log": "target/trigger-validation/default-result-dependencies-probe.log",
+    "logSha256": "d1faed18f921dadcc7416debf596f0224d7ce9404d6cdfdfcf832391563d30fc",
+    "observed": [
+      {
+        "feature": "F::x",
+        "selectedResult": "Ok(Some(ElementRef(88150)))",
+        "steps": 72519,
+        "valueKind": "LiteralInteger"
+      },
+      {
+        "feature": "Performances::Performance::isDispatch",
+        "selectedResult": "Ok(Some(ElementRef(88138)))",
+        "steps": 78044,
+        "valueKind": "LiteralBoolean"
+      },
+      {
+        "feature": "Performances::Performance::dispatchScope",
+        "selectedResult": "Ok(Some(ElementRef(168786)))",
+        "steps": 74688,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Performances::Performance::thisPerformance",
+        "selectedResult": "Ok(Some(ElementRef(168797)))",
+        "steps": 74724,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Occurrences::Occurrence::portionOfLife",
+        "selectedResult": "Ok(Some(ElementRef(168049)))",
+        "steps": 74711,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Occurrences::Occurrence::this",
+        "selectedResult": "Ok(Some(ElementRef(168060)))",
+        "steps": 74711,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Occurrences::Occurrence::localClock",
+        "selectedResult": "Ok(Some(ElementRef(168071)))",
+        "steps": 74714,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Occurrences::Occurrence::isRunToCompletion",
+        "selectedResult": "Ok(Some(ElementRef(88138)))",
+        "steps": 78076,
+        "valueKind": "LiteralBoolean"
+      },
+      {
+        "feature": "Occurrences::Occurrence::runToCompletionScope",
+        "selectedResult": "Ok(Some(ElementRef(168720)))",
+        "steps": 74711,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Occurrences::Occurrence::incomingTransferSort",
+        "selectedResult": "Err(IncompleteProvider)",
+        "steps": 25405,
+        "valueKind": "FeatureReferenceExpression"
+      }
+    ],
+    "finding": "Nine of ten selected default values have complete result selection in the original full-library call. incomingTransferSort remains IncompleteProvider in production. Subsequent isolated probes distinguish foreign BooleanExpression membership from the independent directed-valuation Feature.type limitation; see sortResultDependencyTrace and foreignBooleanMembershipPrototype.",
+    "boundary": "These are per-query results, not a shared-budget construction proof or an argument/default evaluation result."
+  },
+  "directedValuationPrototype": {
+    "status": "diagnostic only; no production changes",
+    "log": "target/trigger-validation/directed-valuation-dependencies-probe.log",
+    "logSha256": "6105a9d7886aa5852497bc8907844a6b84aa4423c97553cc23e045ef41292144",
+    "change": "In a disposable copy only, permit an owned FeatureValue through feature_requirements for an already admitted directed ordinary parameter. No complete acceptance review was performed.",
+    "findings": [
+      "The declared Integer type of F::x becomes complete.",
+      "The value Expression remains typed by LiteralIntegerEvaluation and its selected result remains typed by Integer.",
+      "incomingTransferSort result selection remains IncompleteProvider; the proposed guard change is not sufficient for that missing dependency."
+    ],
+    "next": "Retain as evidence for a directed-valuation applicability review. The foreignBooleanMembershipPrototype independently isolates the missing sort-result dependency without accepting any production relaxation.",
+    "acceptancePlan": {
+      "source": "KerML 1.0 checkFeatureValuationSpecialization: the valuation-result specialization antecedent requires direction = null and every owned specialization implied.",
+      "requiredPartitions": [
+        "For admitted Behavior/Function/Predicate input and return features, compare declared Feature.type with and without owned default and nondefault valuations; test in, out and inout independently.",
+        "Keep undirected valued features separate: implied-only and explicit-specialization cases have different antecedents and need checked value-result evidence where applicable.",
+        "Preserve inherited/redefined parameter order, missing/ambiguous type targets, malformed FeatureValue ownership and property values, metadata and cyclic dependencies.",
+        "Assert exact result/feature identities, mutation invalidation, prepared-library replay and cold cumulative work bounds; incomplete constructor/invocation arguments must remain incomplete.",
+        "Review nondefault value-binding and initial-value featuring as separate dependencies. A false valuation-specialization antecedent does not establish those connector obligations."
+      ],
+      "status": "Not implemented or qualified; the disposable guard change only shows one sufficient cause of F::x type incompleteness. It does not resolve incomingTransferSort result selection."
+    }
+  },
+  "sortResultDependencyTrace": {
+    "kernelInputSha256": "c88a2fa55ad625f118b30c4f4bb9d6d44bcf63b0f8e0d9c8bfee17acb6522e43",
+    "recordedAt": "2026-10-18T12:43:08.064381+00:00",
+    "log": "target/trigger-validation/default-sort-result-probe-2.log",
+    "sha256": "175b96cd704db170e72dd6c00443bc02aa3823510eafeee36d20e97df222a6e6",
+    "method": "A diagnostic test appended only in a disposable workspace. Production source is unchanged. Initial diagnostic compilation failed because Properties lacks Debug; the trace was corrected to print its JSON view.",
+    "observed": {
+      "source": 87237,
+      "generatedResult": 168731,
+      "resultBases": [
+        {
+          "index": 87335,
+          "kind": "BooleanExpression",
+          "name": "Occurrences::earlierFirstIncomingTransferSort"
+        },
+        {
+          "index": 88083,
+          "kind": "Feature",
+          "name": "Performances::Evaluation::result"
+        }
+      ],
+      "completeGeneratedReferenceResult": 87237,
+      "referenceMembershipBinding": 168734,
+      "expressionResult": "Err(IncompleteProvider)"
+    },
+    "finding": "The current generated-result recipe and reference binding certificate are complete; the failure is downstream in complete membership collection. The namespace-owned foreign-member branch currently admits only Feature and AttributeUsage. The referenced BooleanExpression has no owningType, so that explicit kind guard is the next hypothesis.",
+    "next": "A disposable prototype adds only BooleanExpression to that branch, retaining all existing reciprocal ownership, flags, metadata and redefinition checks. This is diagnostic evidence, not a production relaxation."
+  },
+  "foreignBooleanMembershipPrototype": {
+    "status": "Diagnostic only; production source unchanged.",
+    "recordedAt": "2026-10-18T12:45:15.143079+00:00",
+    "baselineKernelInputSha256": "c88a2fa55ad625f118b30c4f4bb9d6d44bcf63b0f8e0d9c8bfee17acb6522e43",
+    "log": "target/trigger-validation/sort-foreign-membership-prototype.log",
+    "sha256": "9a1d02f7af6b04bb5d6ddea5f0708a204b88c518b856fbb7048e61e1035f97c8",
+    "change": "In a disposable copy of type_inputs.rs, add only BooleanExpression beside Feature and AttributeUsage in the namespace-owned foreign-member branch. Preserve the branch's reciprocal OwningMembership, namespace kind, direction/flags, metadata and redefinition checks. No directed-valuation guard change is included.",
+    "observed": [
+      {
+        "feature": "F::x",
+        "selectedResult": "Ok(Some(ElementRef(88150)))",
+        "steps": 72535,
+        "valueKind": "LiteralInteger"
+      },
+      {
+        "feature": "Performances::Performance::isDispatch",
+        "selectedResult": "Ok(Some(ElementRef(88138)))",
+        "steps": 78048,
+        "valueKind": "LiteralBoolean"
+      },
+      {
+        "feature": "Performances::Performance::dispatchScope",
+        "selectedResult": "Ok(Some(ElementRef(168786)))",
+        "steps": 74688,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Performances::Performance::thisPerformance",
+        "selectedResult": "Ok(Some(ElementRef(168797)))",
+        "steps": 74724,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Occurrences::Occurrence::portionOfLife",
+        "selectedResult": "Ok(Some(ElementRef(168049)))",
+        "steps": 74711,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Occurrences::Occurrence::this",
+        "selectedResult": "Ok(Some(ElementRef(168060)))",
+        "steps": 74711,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Occurrences::Occurrence::localClock",
+        "selectedResult": "Ok(Some(ElementRef(168071)))",
+        "steps": 74714,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Occurrences::Occurrence::isRunToCompletion",
+        "selectedResult": "Ok(Some(ElementRef(88138)))",
+        "steps": 78072,
+        "valueKind": "LiteralBoolean"
+      },
+      {
+        "feature": "Occurrences::Occurrence::runToCompletionScope",
+        "selectedResult": "Ok(Some(ElementRef(168720)))",
+        "steps": 74711,
+        "valueKind": "FeatureReferenceExpression"
+      },
+      {
+        "feature": "Occurrences::Occurrence::incomingTransferSort",
+        "selectedResult": "Ok(Some(ElementRef(168731)))",
+        "steps": 74710,
+        "valueKind": "FeatureReferenceExpression"
+      }
+    ],
+    "finding": "All ten default values now have complete result selection, including incomingTransferSort with generated result 168731. F::x Feature.type still reports MissingRequiredFamilies. The two missing dependency causes are independent: foreign BooleanExpression membership blocks the sort result, while directed owned valuation blocks the declared Integer feature type.",
+    "acceptancePlan": [
+      "Review namespace-owned foreign Step/Expression members through the shared admitted-family and ownership provider, rather than hard-coding one library expression or its name.",
+      "Exercise exact returned identities, alias/foreign-member visibility and ordering, direct and inherited/redefined returns, and independent valid peers.",
+      "Retain rejection of non-reciprocal ownership, unsupported owner contexts, non-null directions, variable/composite/portion/end flags, metadata, unresolved/cyclic and unadmitted families.",
+      "Verify edits, source/semantic generation replacement, prepared-library replay and cumulative budget retry before production admission.",
+      "Re-run the full ten-default dependency query before replacing raw default endpoints with contextual value/result chains; result selection alone does not certify the connectors."
+    ],
+    "sourceInterpretation": {
+      "anchors": [
+        "deriveFeatureReferenceExpressionReferent",
+        "deriveNamespaceOwnedMember",
+        "deriveTypeFeature",
+        "deriveTypeFeatureMembership",
+        "Type::inheritedMemberships",
+        "Type::removeRedefinedFeatures",
+        "deriveExpressionResult"
+      ],
+      "review": "The reference referent rule admits a Feature, including an Expression subclass. OwningMembership establishes a namespace-owned member without making that member an owned feature of the referring expression. Type feature membership and redefinition reduction must retain that distinction. The result selector then chooses the first ReturnParameterMembership from the complete ordered feature-membership projection.",
+      "implementationBoundary": "Extend the existing namespace-owned foreign-member certificate consistently with admitted Step/Expression families. Do not add the foreign member as an owned feature, inject its namespace as a supertype, or invent a direction/positional role. Keep the common membership reducer and exact selected result identity.",
+      "separateProperties": "Complete Expression.result selection does not imply complete Feature.type for that result or whole-model validity. The declared-type/valuation and connector obligations remain separate."
+    }
+  },
+  "foreignStepMembershipPrototype": {
+    "status": "Diagnostic only; no production admission change.",
+    "baselineKernelInputSha256": "c88a2fa55ad625f118b30c4f4bb9d6d44bcf63b0f8e0d9c8bfee17acb6522e43",
+    "log": "target/trigger-validation/foreign-step-membership-prototype-2.log",
+    "sha256": "74a53b58456b2fd2c9b522a8dd1a1b7717a21be2f0e3e77302ce6c88fa2b60eb",
+    "change": "Replace the disposable BooleanExpression-only addition with the existing shared step_context::supports_membership_domain predicate, retaining the foreign-membership and namespace ownership guard.",
+    "positiveEvidence": "Step, Expression, BooleanExpression and the existing Feature control all select the exact generated result. The owned feature-membership list contains exactly the generated return, the foreign referent is retained in members but excluded from features, and no rows are published. Each cold result query uses 1428874 steps. Exhausted queries remain WorkLimit and independent fresh queries retry successfully.",
+    "negativeEvidence": "An unadmitted ActionUsage stays incomplete. Six edited-graph cases stay incomplete after missing ownership, direction, compositeness, variability, metadata and contradictory carrier changes.",
+    "limits": "The positive and intrinsic-negative prototype partitions pass, but production source is unchanged. Five after-publication mutation cases still stop at WorkLimit. Prepared/serialized replay, complete source review and final-source qualification remain required.",
+    "initialFixtureCorrection": "The first diagnostic expected the complete feature list to contain only the return, which wrongly excluded legitimate inherited library features. The corrected assertion checks owned feature memberships exactly while preserving inherited features and the distinct foreign member.",
+    "productionPrerequisites": [
+      "Review prepared-library replay and public API result identity",
+      "Keep complete selected-result identity separate from Feature.type and connector validity",
+      "Run source-matched qualification after any production change"
+    ],
+    "prepublicationNegativeEvidence": {
+      "status": "pass",
+      "tests": 1,
+      "cases": 6,
+      "log": "target/trigger-validation/foreign-step-membership-fresh-prototype.log",
+      "sha256": "3fb575b7254bd4f1c79faf2b30d615f2a3bfc36f74a77a3a5427edc03ae211b9",
+      "results": [
+        {
+          "mutation": "missing owning relationship",
+          "result": "IncompleteProvider",
+          "steps": 25374
+        },
+        {
+          "mutation": "input direction",
+          "result": "UnsupportedConfiguration",
+          "steps": 1379586
+        },
+        {
+          "mutation": "composite flag",
+          "result": "UnsupportedConfiguration",
+          "steps": 1379586
+        },
+        {
+          "mutation": "variable flag",
+          "result": "UnsupportedConfiguration",
+          "steps": 1379586
+        },
+        {
+          "mutation": "incomplete metadata",
+          "result": "IncompleteProvider",
+          "steps": 3
+        },
+        {
+          "mutation": "contradictory owning carrier",
+          "result": "IncompleteProvider",
+          "steps": 26
+        }
+      ],
+      "boundary": "Mutations precede initial implied construction. Each query must fail before WorkLimit, distinguishing intrinsic evidence refusal from post-edit rebuilding cost. The five previously exhausted edited-graph cases remain a separate performance limitation."
+    }
+  },
+  "foreignStepProductionReview": {
+    "reviewedAt": "2026-10-18T13:18:20.058540+00:00",
+    "status": "Production repair qualified by the full macOS arm64 native/WASM, model, public, conformance and requirements suites. No complete obligation or package closes.",
+    "sourceAnchors": [
+      {
+        "sourceId": "Kernel-Expressions-FeatureReferenceExpression-referent",
+        "bodies": [
+          "<p>The <code>Feature</code> that is referenced by this <code>FeatureReferenceExpression</code>, which is its first non-<code>parameter</code> <code>member</code>.<p>"
+        ],
+        "typeReferences": [
+          "Core-Features-Feature"
+        ]
+      },
+      {
+        "sourceId": "Kernel-Expressions-FeatureReferenceExpression-deriveFeatureReferenceExpressionReferent",
+        "bodies": [
+          "<p>The <code>referent</code> of a <code>FeatureReferenceExpression</code> is the <code>memberElement</code> of its first <code>ownedMembership</code> that is not a <code>ParameterMembership</code>.</p>",
+          "referent =     let nonParameterMemberships : Sequence(Membership) = ownedMembership->         reject(oclIsKindOf(ParameterMembership)) in     if nonParameterMemberships->isEmpty() or        not nonParameterMemberships->first().memberElement.oclIsKindOf(Feature)     then null     else nonParameterMemberships->first().memberElement.oclAsType(Feature)     endif"
+        ],
+        "typeReferences": []
+      },
+      {
+        "sourceId": "Root-Namespaces-Namespace-deriveNamespaceOwnedMember",
+        "bodies": [
+          "<p>The <code>ownedMembers</code> of a <code>Namespace</code> are the <code>ownedMemberElements</code> of all its <code>ownedMemberships</code> that are <code>OwningMemberships</code>.",
+          "ownedMember = ownedMembership->selectByKind(OwningMembership).ownedMemberElement"
+        ],
+        "typeReferences": []
+      },
+      {
+        "sourceId": "Core-Features-Feature-owningType",
+        "bodies": [
+          "<p>The <code>Type</code> that is the <code>owningType</code> of the <code>owningFeatureMembership</code> of this <code>Feature</code>.</p>"
+        ],
+        "typeReferences": [
+          "Core-Types-Type"
+        ]
+      },
+      {
+        "sourceId": "Core-Types-Type-deriveTypeFeature",
+        "bodies": [
+          "<p>The <code>features</code> of a <code>Type</code> are the <code>ownedMemberFeatures</code> of its <code>featureMemberships</code>.",
+          "feature = featureMembership.ownedMemberFeature"
+        ],
+        "typeReferences": []
+      },
+      {
+        "sourceId": "Core-Types-Type-deriveTypeOwnedFeatureMembership",
+        "bodies": [
+          "<p>The <code>ownedFeatureMemberships</code> of a <code>Type</code> are its <code>ownedMemberships</code> that are <code>FeatureMemberships</code>.</p>",
+          "ownedFeatureMembership = ownedRelationship->selectByKind(FeatureMembership)"
+        ],
+        "typeReferences": []
+      },
+      {
+        "sourceId": "Core-Types-Type-deriveTypeFeatureMembership",
+        "bodies": [
+          "<p>The <code>featureMemberships</code> of a <code>Type</code> is the union of the <code>ownedFeatureMemberships</code> and those <code>inheritedMemberships</code> that are <code>FeatureMemberships</code>.</p>",
+          "featureMembership = ownedFeatureMembership->union( inheritedMembership->selectByKind(FeatureMembership))"
+        ],
+        "typeReferences": []
+      },
+      {
+        "sourceId": "Kernel-Functions-Expression-deriveExpressionResult",
+        "bodies": [
+          "<p>The <code>result</code> parameter of an <code>Expression</code> is its <code>parameter</code> owned (possibly in a supertype) via a <code>ReturnParameterMembership</code> (if any).</p>",
+          "result =     let resultParams : Sequence(Feature) =         featureMemberships->             selectByKind(ReturnParameterMembership).             ownedMemberParameter in     if resultParams->notEmpty() then resultParams->first()     else null     endif "
+        ],
+        "typeReferences": []
+      }
+    ],
+    "interpretation": [
+      "The FeatureReferenceExpression referent is a Feature; Step and Expression subclasses are not excluded by that property.",
+      "An OwningMembership gives a namespace an owned member. It does not itself create the FeatureMembership required for Type.feature or Feature.owningType.",
+      "The existing common membership provider can therefore admit namespace-owned foreign Step-family members under its exact reciprocal ownership, direction, flag, metadata and redefinition requirements.",
+      "The receiver keeps the foreign referent in members, excludes it from features and retains its generated owned result plus inherited library features. The result selector still consumes the complete ordered feature-membership reduction."
+    ],
+    "implementation": "type_inputs.rs reuses step_context::supports_membership_domain in the existing namespace-owned foreign Feature branch. No library name exception, foreign supertype, new ownership edge or query-time row publication is introduced.",
+    "acceptance": [
+      "Step, Expression, BooleanExpression and Feature control: exact result report/property, owned return membership, foreign member/feature separation and unchanged row count.",
+      "Unadmitted ActionUsage and six fresh ownership/flag/metadata damages fail before WorkLimit.",
+      "The same six edits after a completed query must not reuse stale success; this does not resolve full-library rebuilding work-limit exhaustion.",
+      "Raw, prepared and serialized prepared-library paths preserve referent, source, result and membership UUIDs and ordered member/feature UUID vectors.",
+      "All 51 selected defaults across omitted/supplied calls and after/at/when triggers have checked result identities through the report and property."
+    ],
+    "initialTestCorrection": "The first private and native tests omitted the explicit Closure(include_implied=true) policy required by the checked result property. Report queries succeeded, but the property correctly returned Approximate. The fixtures now request closure explicitly; production property policy is unchanged.",
+    "remaining": [
+      "Complete default-binding value/result chain and featuring semantics",
+      "Directed and explicitly specialized valued-feature type applicability",
+      "Broader Step contexts and unsupported families",
+      "Post-edit full-library rebuilding work limits",
+      "Complete validation and public facade coverage"
+    ],
+    "evidence": "foreign-step-membership-progress-macos-arm64.json"
+  },
+  "valuationApplicabilityBaseline": {
+    "recordedAt": "2026-10-18T13:21:14.638049+00:00",
+    "kernelInputSha256": "7302a833bbe787c306b3f1c20e816e2b9d110974659821e356cd1afbe81f9d1b",
+    "status": "Executed diagnostic on unchanged production source. No valuation admission repair implemented.",
+    "inputs": {
+      "target/trigger-validation/valuation-type-applicability-probe.rs": "1d24b25477d655ccb056715deb11242ef0fa729fcd8c386a7721b09a49ee89eb",
+      "target/trigger-validation/valuation-type-applicability-probe": "77f18ea49d945a4bd7763e9e2d0552508958d30f1b2e887cedbee5573d9a409a",
+      "target/trigger-validation/valuation-type-applicability-probe.log": "b13da81062a0badb6eaf4700227b74c779ec1934c157431cde26cd9c1b28e9d0",
+      "target/release/deps/libsysmlv2_model-efca4c1af2efa1a8.rlib": "0527455796cbcb137050ad7178b36d8dd1f5e1cc24863b1a568a2a50ceac72ba",
+      "target/standards/kerml.xmi": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+      "target/standards/kerml.txt": "c838e109913913769c4949ed3cd151fbc2e0cd3b1b31d037844c5b6c9e6d7ae1"
+    },
+    "method": "Standalone Rust program linked to the current native model library, loading all 94 library files and one source document. Calls the public feature_type_report after implied publication. Does not mutate the abstract graph or modify source under qualification.",
+    "observed": [
+      {
+        "name": "F::control",
+        "steps": 1993079,
+        "result": "Ok([Some(\"ScalarValues::Integer\")])"
+      },
+      {
+        "name": "F::inputDefault",
+        "steps": 583666,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "F::outputDefault",
+        "steps": 583666,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "F::inoutDefault",
+        "steps": 583666,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "F::inputValue",
+        "steps": 583666,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "F::result",
+        "steps": 636328,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "typedControl",
+        "steps": 583689,
+        "result": "Ok([Some(\"D\")])"
+      },
+      {
+        "name": "typedDefault",
+        "steps": 583661,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "typedValue",
+        "steps": 583661,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "subsetControl",
+        "steps": 583726,
+        "result": "Ok([Some(\"D\")])"
+      },
+      {
+        "name": "subsetDefault",
+        "steps": 583687,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "subsetValue",
+        "steps": 583687,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "inferredDefault",
+        "steps": 565402,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "inferredValue",
+        "steps": 565402,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "B::renamed",
+        "steps": 583687,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "Parent::x",
+        "steps": 639855,
+        "result": "Ok([Some(\"D\")])"
+      },
+      {
+        "name": "Child::x",
+        "steps": 641836,
+        "result": "Err(MissingRequiredFamilies)"
+      }
+    ],
+    "finding": "Four unvalued controls return the exact declared type. All thirteen valued features return MissingRequiredFamilies, below the unchanged work limit. The matrix covers in/out/inout and return parameters, explicit typing/subsetting/redefinition, inherited redefinition, and two implicit-only undirected controls.",
+    "interpretation": "KerML 8.4.4.11 (printed page 274) separates declared static typing from value-result type validation when the feature is directed or has explicit owned specializations. checkFeatureValuationSpecialization only requires the extra result specialization when direction is null and every owned specialization is implied. Both false-antecedent partitions need admission review, not only ordinary directed parameters.",
+    "requiredRepairEvidence": [
+      "Read effective direction through the shared reciprocal membership/default-direction reader; malformed direction must not stand in for a non-null direction.",
+      "Prove an actual owned non-implied specialization using complete ownership, endpoint and Boolean isImplied evidence. A row position, a name or a target type alone does not establish the antecedent.",
+      "Validate FeatureValue ownership, unique membership, Expression target and Boolean flags through the shared valuation reader before using absence of the extra typing obligation.",
+      "Preserve all existing required library bases, complete inherited typing reduction, metadata and unsupported-context checks.",
+      "For the two undirected implicit-only cases, retain explicit incompleteness until checked value-result specialization and its context are constructed; do not treat a false-antecedent repair as coverage of those cases.",
+      "Check default and nondefault values separately from whole-model validity and connector semantics; a mismatched value type must not rewrite the independently declared feature type.",
+      "Exercise missing/ambiguous type targets, inherited/redefined signatures, malformed valuation and specialization evidence, edits, replay and cumulative work limits."
+    ],
+    "boundary": "This diagnostic identifies a query refusal and its normative applicability partitions. It does not prove complete valuation semantics, nondefault bindings, initial-value contexts or whole-model validity."
+  },
+  "valuationApplicabilityPrototype": {
+    "recordedAt": "2026-10-18T13:34:10.659385+00:00",
+    "status": "Diagnostic only, in a disposable copy. Production source is unchanged.",
+    "baselineKernelInputSha256": "7302a833bbe787c306b3f1c20e816e2b9d110974659821e356cd1afbe81f9d1b",
+    "change": "Replace unconditional FeatureValue refusal with shared structural valuation validation and an applicability proof: valid effective non-null direction or a complete nonempty explicit stored-specialization projection. Keep all other feature requirement checks and retain refusal for the implicit-only undirected cases.",
+    "observed": [
+      {
+        "name": "F::control",
+        "steps": 1993079,
+        "result": "Ok([Some(\"ScalarValues::Integer\")])"
+      },
+      {
+        "name": "F::inputDefault",
+        "steps": 638155,
+        "result": "Ok([Some(\"ScalarValues::Integer\")])"
+      },
+      {
+        "name": "F::outputDefault",
+        "steps": 638155,
+        "result": "Ok([Some(\"ScalarValues::Integer\")])"
+      },
+      {
+        "name": "F::inoutDefault",
+        "steps": 638155,
+        "result": "Ok([Some(\"ScalarValues::Integer\")])"
+      },
+      {
+        "name": "F::inputValue",
+        "steps": 638155,
+        "result": "Ok([Some(\"ScalarValues::Integer\")])"
+      },
+      {
+        "name": "F::result",
+        "steps": 690839,
+        "result": "Ok([Some(\"ScalarValues::Integer\")])"
+      },
+      {
+        "name": "typedControl",
+        "steps": 583689,
+        "result": "Ok([Some(\"D\")])"
+      },
+      {
+        "name": "typedDefault",
+        "steps": 583719,
+        "result": "Ok([Some(\"D\")])"
+      },
+      {
+        "name": "typedValue",
+        "steps": 583719,
+        "result": "Ok([Some(\"D\")])"
+      },
+      {
+        "name": "subsetControl",
+        "steps": 583726,
+        "result": "Ok([Some(\"D\")])"
+      },
+      {
+        "name": "subsetDefault",
+        "steps": 583751,
+        "result": "Ok([Some(\"D\")])"
+      },
+      {
+        "name": "subsetValue",
+        "steps": 583751,
+        "result": "Ok([Some(\"D\")])"
+      },
+      {
+        "name": "inferredDefault",
+        "steps": 565422,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "inferredValue",
+        "steps": 565422,
+        "result": "Err(MissingRequiredFamilies)"
+      },
+      {
+        "name": "B::renamed",
+        "steps": 583755,
+        "result": "Ok([Some(\"D\")])"
+      },
+      {
+        "name": "Parent::x",
+        "steps": 639855,
+        "result": "Ok([Some(\"D\")])"
+      },
+      {
+        "name": "Child::x",
+        "steps": 699477,
+        "result": "Ok([Some(\"D\")])"
+      }
+    ],
+    "finding": "All four controls and eleven previously refused directed or explicitly specialized valuations return their exact expected type. Both implicit-only undirected cases remain MissingRequiredFamilies. All queries stay below the unchanged cumulative limit.",
+    "inputs": {
+      "target/trigger-validation/test-valuation-applicability-prototype.mjs": "b8a85b876fe0589a639f8251ca984037c6163bfef0c99f7c88c35cccf4ce72c5",
+      "target/trigger-validation/valuation-type-applicability-private-probe.rs": "f050d5b0f4d96d295b07c85af4b32c240182601f0ae4f2fefa50a5bbd8b87ab0",
+      "target/trigger-validation/valuation-applicability-prototype.log": "484ba3cecaacc2c38067fe15a97844624b1f2fae73f16966d4142d77a38ef760",
+      "target/trigger-validation/valuation-applicability-prototype-2.log": "d4b296826f9d661015991568f8957dd372138fbce15acde85d2f21b111afbbc8"
+    },
+    "initialFailure": "The first disposable test looked for vendor/sysml-library/sources relative to the crate test working directory and failed before running the query matrix. The corrected fixture uses CARGO_MANIFEST_DIR and the copied spec-refs library.",
+    "requiredBeforeProduction": [
+      "Fresh malformed-ownership/flag/specialization cases must refuse intrinsically, not only at WorkLimit.",
+      "Post-query edits must revoke prior successful projections.",
+      "Mismatched, unresolved and cyclic values must not replace independent declared type evidence.",
+      "Prepared/serialized replay must preserve identities.",
+      "Refactor the applicability proof into a shared, reviewed helper; run final-source qualification and update any prior negative tests whose premise legitimately changes."
+    ],
+    "acceptanceExperiment": {
+      "status": "pass",
+      "runner": "target/trigger-validation/test-valuation-applicability-acceptance-prototype.mjs",
+      "source": "target/trigger-validation/valuation-applicability-acceptance-probe.rs",
+      "log": "target/trigger-validation/valuation-applicability-acceptance-prototype-2.log",
+      "initialFailure": "The first acceptance draft failed compilation due to nested mutable/immutable borrows in its mutation helper. The helper now resolves the control before reading its identity.",
+      "tests": 5,
+      "completedAt": "2026-10-18T13:36:58.378304+00:00",
+      "inputs": {
+        "target/trigger-validation/test-valuation-applicability-acceptance-prototype.mjs": "0184ab81b6de22f5180da6c139c2b3a4116e83a0eb97c1fb4ab871d7f09fa1d7",
+        "target/trigger-validation/valuation-applicability-acceptance-probe.rs": "972a4870049b652c2767f3feb5ca550c29819842ddd1db1ca0eab8a8be7d0267",
+        "target/trigger-validation/valuation-applicability-acceptance-prototype-2.log": "89b28baf5d6d56e72e1c5854e9ca88aaed80dd5fcd6b0088ee884646956d0653",
+        "target/trigger-validation/valuation-applicability-acceptance-prototype.log": "fb84683134037664b83c712b6afdbe2257e2f7d4f3bf014c03aed70be8b9adb4"
+      },
+      "results": [
+        "The 17-query applicability matrix passes: 15 exact declared types, including eleven previously refused valuations; two implicit-only undirected cases remain incomplete.",
+        "Twelve fresh malformed ownership, valuation, direction, specialization and metadata cases refuse below WorkLimit.",
+        "All twelve post-query edits refuse to reuse success; this test does not require every post-edit refusal to precede WorkLimit.",
+        "Mismatched, unresolved and cyclic values preserve the independently declared Integer type in five additional queries.",
+        "Prepared and serialized prepared libraries preserve the selected feature identity and exact Integer type."
+      ],
+      "remaining": [
+        "Raw-versus-prepared identity comparison for the same fixture, explicit exhausted-budget retry, broader owned specialization/owner contexts, production helper review and final-source qualification.",
+        "Complete valuation inference and default-binding result-chain/featuring semantics remain separate open work."
+      ]
+    },
+    "stagedRefactor": {
+      "status": "pass",
+      "tests": 8,
+      "log": "target/trigger-validation/valuation-typing-stage.log",
+      "logSha256": "df7f590b17ec7c64a57ed3fc5fd72279e642d6884359baf0dcb7282de6ea6d92",
+      "baselineKernelInputSha256": "7302a833bbe787c306b3f1c20e816e2b9d110974659821e356cd1afbe81f9d1b",
+      "description": "Shared TypeRelations child helper, raw/prepared/serialized replay, cumulative work retry, parameter-membership direction defaults and additional Behavior/Predicate/Step/Expression owner cases. Production files not yet changed."
+    }
+  },
+  "valuationTypingDependencyResults": {
+    "recordedAt": "2026-10-18T14:03:41.941294+00:00",
+    "kernelInputSha256": "4b7f6d7435e1e283f295bc6a3e8186034f7c588359ad27fcd91bd4bedb1009b4",
+    "productionReview": "valuation-typing-progress-macos-arm64.json",
+    "status": "Public probes executed against a preserved library from the current native build. Full qualification is running. These results identify dependencies; they do not qualify default binding semantics.",
+    "defaultResultSelections": {
+      "complete": 10,
+      "total": 10
+    },
+    "valuedFeatureTypes": {
+      "complete": 6,
+      "total": 10
+    },
+    "selectedResultTypes": {
+      "complete": 3,
+      "total": 10
+    },
+    "queries": [
+      {
+        "feature": "Some(\"F::x\")",
+        "role": "feature",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 637895
+      },
+      {
+        "feature": "Some(\"F::x\")",
+        "role": "result",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 750121
+      },
+      {
+        "feature": "Some(\"Performances::Performance::isDispatch\")",
+        "role": "feature",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 572512
+      },
+      {
+        "feature": "Some(\"Performances::Performance::isDispatch\")",
+        "role": "result",
+        "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+        "steps": 800103
+      },
+      {
+        "feature": "Some(\"Performances::Performance::dispatchScope\")",
+        "role": "feature",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569495
+      },
+      {
+        "feature": "Some(\"Performances::Performance::dispatchScope\")",
+        "role": "result",
+        "result": "Err(UnsupportedProjection)",
+        "steps": 697343
+      },
+      {
+        "feature": "Some(\"Performances::Performance::thisPerformance\")",
+        "role": "feature",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 571503
+      },
+      {
+        "feature": "Some(\"Performances::Performance::thisPerformance\")",
+        "role": "result",
+        "result": "Err(UnsupportedProjection)",
+        "steps": 698016
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::portionOfLife\")",
+        "role": "feature",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 571529
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::portionOfLife\")",
+        "role": "result",
+        "result": "Err(UnsupportedProjection)",
+        "steps": 695908
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::this\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+        "steps": 569513
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::this\")",
+        "role": "result",
+        "result": "Err(UnsupportedProjection)",
+        "steps": 695908
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::localClock\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Clocks::Clock\")])",
+        "steps": 573691
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::localClock\")",
+        "role": "result",
+        "result": "Err(UnsupportedProjection)",
+        "steps": 701598
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::isRunToCompletion\")",
+        "role": "feature",
+        "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+        "steps": 572521
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::isRunToCompletion\")",
+        "role": "result",
+        "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+        "steps": 800103
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::runToCompletionScope\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+        "steps": 569504
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::runToCompletionScope\")",
+        "role": "result",
+        "result": "Err(UnsupportedProjection)",
+        "steps": 695908
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::incomingTransferSort\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Occurrences::IncomingTransferSort\")])",
+        "steps": 577873
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::incomingTransferSort\")",
+        "role": "result",
+        "result": "Err(UnsupportedProjection)",
+        "steps": 703909
+      }
+    ],
+    "endpointFinding": {
+      "featureWithValue": "e03aa86a-ebbb-5f79-b0f3-ad6845875d99",
+      "valueExpression": "f34b05b8-d9b6-53e3-8783-99fa06f33650",
+      "selectedResult": "3caafe7c-76f1-5067-94c3-e2b0eb59f8ce",
+      "rawBinding": "8f0ac446-e236-5601-b49a-c894f27a0574",
+      "finding": "F::x and the selected result both have the checked Integer type. The raw binding still ends at the LiteralInteger expression, whose checked type is LiteralIntegerEvaluation. These identities differ. Reconcile the recorded normative formulations and contextual value-result chaining before adopting an endpoint recipe."
+    },
+    "inputs": {
+      "target/trigger-validation/default-type-dependencies-public-probe.rs": "0efca01c670481b11bcdb4746f67316767b775a82cf8a0fe3a7ec493ab1b55e5",
+      "target/trigger-validation/default-type-dependencies-public-probe": "a386b36cfca90b180b23879e6797caa4e96daf073dc4ec3374fad65a9402c9f5",
+      "target/trigger-validation/default-type-dependencies-after-typing.log": "6860e72b5bf35628e456358b50e7497fc58ac158c8714d2dc96af17e92103738",
+      "target/trigger-validation/default-endpoint-public-probe.rs": "c1444c84555f8e883e15d28db07b97ea3deb6d52027158fc61068314e9af2b05",
+      "target/trigger-validation/default-endpoint-public-probe": "ee7f16100c6140b73b58bef94a626ca5386b61c63bb95049289e655dbbff9503",
+      "target/trigger-validation/default-endpoint-after-typing.log": "382d946e2d8bd3067bdae539d0738b141ea5ea72252f3dfb6026f587e992ee80",
+      "target/trigger-validation/libsysmlv2_model_for_valuation_probe.rlib": "d610d2a10eede9a12d1f36ea3b0ab42c2f01160cc1cbc2559c0013fc6aed4334"
+    },
+    "next": [
+      "Trace the remaining four valued-feature type refusals through the shared applicability provider.",
+      "Trace seven generated reference results through current source certificates and the shared semantic positional reducer.",
+      "Qualify full default binding construction only after its inherited type and ownership dependencies and recorded source discrepancies have been resolved."
+    ]
+  },
+  "contextualEndpointFollowup": "docs/evidence/default-endpoint-context-review.json"
+}

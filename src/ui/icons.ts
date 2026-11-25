@@ -20,6 +20,9 @@ const paths: Record<string, string> = {
   fit: 'M3 9V3h6m6 0h6v6m0 6v6h-6m-6 0H3v-6',
   sun: 'M12 1v3m0 16v3M1 12h3m16 0h3M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2M17 12a5 5 0 1 1-10 0 5 5 0 0 1 10 0Z',
   close: 'm5 5 14 14M5 19 19 5',
+  back: 'M19 12H5m6-6-6 6 6 6',
+  target: 'M12 2v4m0 12v4M2 12h4m12 0h4M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z',
+  down: 'm6 9 6 6 6-6',
 };
 export function icon(name: string, cls = '') {
   return `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[name] ?? paths.cube}"/></svg>`;

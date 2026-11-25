@@ -1,0 +1,309 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/chaining_types_tests.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/chaining_types_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/chaining_types_tests.rs
+@@ -0,0 +1,304 @@
++use crate::{
++    json::{
++        ClosurePolicy, ElementRef, FeatureTypeIssue, ResolvedModel,
++        type_relations::{RelationFact, TypeRelations},
++    },
++    model::{GraphFormat, Model},
++    prepared::PreparedLibrary,
++};
++use serde_json::json;
++use std::sync::{Arc, OnceLock};
++
++fn raw_library() -> Model {
++    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
++        .join("../../spec-refs/SysML-v2-Release/sysml.library");
++    let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++    assert_eq!(m.load_library_dir(&path).unwrap(), 94);
++    m
++}
++fn library() -> Arc<PreparedLibrary> {
++    static LIBRARY: OnceLock<Arc<PreparedLibrary>> = OnceLock::new();
++    Arc::clone(LIBRARY.get_or_init(|| raw_library().prepare_library().unwrap()))
++}
++fn resolved(mut model: Model, source: &str) -> ResolvedModel {
++    let p = model.add_source("chaining-types.kerml", source);
++    assert!(p.diagnostics.is_empty(), "{:?}", p.diagnostics);
++    ResolvedModel::build(&model)
++}
++fn fixture(source: &str) -> ResolvedModel {
++    let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++    library().install(&mut m).unwrap();
++    resolved(m, source)
++}
++fn ready(r: &mut ResolvedModel) {
++    r.ensure_implied();
++    r.set_closure_policy(ClosurePolicy::Closure {
++        include_implied: true,
++    });
++}
++fn exact(r: &mut ResolvedModel, name: &str, ty: &str) -> uuid::Uuid {
++    let f = r.resolve_qualified(name).unwrap();
++    let t = r.resolve_qualified(ty).unwrap();
++    let rows = r.b.elements.len();
++    let report = r.feature_type_report(f);
++    assert_eq!(report.types, Ok(vec![t]), "{name}: {report:?}");
++    assert_eq!(
++        r.property(f, "type").unwrap(),
++        json!([{"@id":r.element_id(t)}])
++    );
++    assert_eq!(r.b.elements.len(), rows);
++    r.element_id(f)
++}
++const SOURCE: &str = r#"
++ datatype Small specializes ScalarValues::Integer;
++ classifier Nested {feature leaf:Small;}
++ classifier Holder {feature next:ScalarValues::Integer;feature flag:ScalarValues::Boolean;feature nested:Nested;feature compound chains nested.leaf;}
++ feature root:Holder;
++ feature simple chains root.next;
++ feature deep chains root.nested.leaf;
++ feature narrow:Small chains root.next;
++ feature inherited subsets simple;
++ feature nestedChain chains root.compound;
++ behavior BehaviorOwner {feature scoped chains root.next;}
++ class Parent {feature original chains root.next;}
++ class Child specializes Parent {feature replaced redefines Parent::original;}
++ classifier Node {feature link:Node;feature leaf:Small;}
++ feature node:Node;
++ feature repeated chains node.link.link.leaf;
++ feature queried=simple;
++"#;
++#[test]
++fn chained_types_use_the_last_link_with_inheritance_and_redundancy_pruning() {
++    let mut r = fixture(SOURCE);
++    ready(&mut r);
++    for (name, ty) in [
++        ("simple", "ScalarValues::Integer"),
++        ("deep", "Small"),
++        ("narrow", "Small"),
++        ("inherited", "ScalarValues::Integer"),
++        ("nestedChain", "Small"),
++        ("BehaviorOwner::scoped", "ScalarValues::Integer"),
++        ("Parent::original", "ScalarValues::Integer"),
++        ("Child::replaced", "ScalarValues::Integer"),
++        ("repeated", "Small"),
++        ("Base::Anything::self", "Base::Anything"),
++    ] {
++        exact(&mut r, name, ty);
++    }
++    let chain = r.resolve_qualified("simple").unwrap();
++    let last = r.resolve_qualified("Holder::next").unwrap();
++    let unrelated = r.resolve_qualified("ScalarValues::Boolean").unwrap();
++    let mut relations = TypeRelations::default();
++    assert_eq!(
++        relations.specializes(&mut r.b, chain.0, last.0, &mut 0),
++        RelationFact::Yes
++    );
++    assert_eq!(
++        relations.specializes(&mut r.b, chain.0, unrelated.0, &mut 0),
++        RelationFact::No
++    );
++    let source = r
++        .user_elements()
++        .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
++        .unwrap();
++    let result = r.expression_result_report(source).result.unwrap().unwrap();
++    let expected = r.resolve_qualified("ScalarValues::Integer").unwrap();
++    assert_eq!(r.feature_type_report(result).types, Ok(vec![expected]));
++    assert_eq!(
++        r.property(result, "type").unwrap(),
++        json!([{"@id":r.element_id(expected)}])
++    );
++}
++fn links(r: &ResolvedModel, feature: ElementRef) -> Vec<usize> {
++    r.owned_relationships(feature)
++        .into_iter()
++        .filter(|&e| r.element_type(e) == "FeatureChaining")
++        .map(|e| e.0)
++        .collect()
++}
++#[derive(Debug, Clone, Copy)]
++enum Damage {
++    FirstNull,
++    MiddleMissing,
++    LastWrongKind,
++    Source,
++    Carrier,
++    DuplicateCarrier,
++    SourceArray,
++    TargetArray,
++    RelatedOrder,
++    OwnedChild,
++    DuplicateOwned,
++    Orphan,
++}
++const DAMAGES: [Damage; 12] = [
++    Damage::FirstNull,
++    Damage::MiddleMissing,
++    Damage::LastWrongKind,
++    Damage::Source,
++    Damage::Carrier,
++    Damage::DuplicateCarrier,
++    Damage::SourceArray,
++    Damage::TargetArray,
++    Damage::RelatedOrder,
++    Damage::OwnedChild,
++    Damage::DuplicateOwned,
++    Damage::Orphan,
++];
++fn damage(r: &mut ResolvedModel, feature: ElementRef, change: Damage) {
++    let rows = links(r, feature);
++    assert_eq!(rows.len(), 3);
++    let relation = rows[1];
++    let root = r.resolve_qualified("root").unwrap();
++    let root_id = r.element_id(root);
++    let feature_id = r.element_id(feature);
++    let class = r.resolve_qualified("Nested").unwrap();
++    let class_id = r.element_id(class);
++    match change {
++        Damage::FirstNull => r.b.set(rows[0], "chainingFeature", json!(null)),
++        Damage::MiddleMissing => r.b.set(
++            rows[1],
++            "chainingFeature",
++            json!({"@id":"00000000-0000-0000-0000-000000000000"}),
++        ),
++        Damage::LastWrongKind => r.b.set(rows[2], "chainingFeature", json!({"@id":class_id})),
++        Damage::Source => r.b.set(relation, "featureChained", json!({"@id":root_id})),
++        Damage::Carrier => {
++            r.b.set(relation, "owningRelatedElement", json!({"@id":root_id}))
++        }
++        Damage::DuplicateCarrier => r.b.elements[root.0].owned_relationships.push(relation),
++        Damage::SourceArray => r.b.set(relation, "source", json!([{"@id":root_id}])),
++        Damage::TargetArray => r.b.set(relation, "target", json!([{"@id":feature_id}])),
++        Damage::RelatedOrder => r.b.set(
++            relation,
++            "relatedElement",
++            json!([{"@id":root_id},{"@id":feature_id}]),
++        ),
++        Damage::OwnedChild => {
++            r.b.set(relation, "ownedRelatedElement", json!([{"@id":root_id}]))
++        }
++        Damage::DuplicateOwned => r.b.elements[feature.0].owned_relationships.push(relation),
++        Damage::Orphan => {
++            r.b.set(relation, "featureChained", json!({"@id":feature_id}));
++            r.b.elements[feature.0]
++                .owned_relationships
++                .make_mut()
++                .retain(|&e| e != relation);
++        }
++    }
++}
++#[test]
++fn every_chain_link_and_its_ownership_are_required_before_a_type_or_negative_fact() {
++    for change in DAMAGES {
++        let mut r = fixture(SOURCE);
++        let f = r.resolve_qualified("deep").unwrap();
++        damage(&mut r, f, change);
++        ready(&mut r);
++        let report = r.feature_type_report(f);
++        assert!(report.types.is_err(), "{change:?}: {report:?}");
++        assert_ne!(report.types, Err(FeatureTypeIssue::WorkLimit), "{change:?}");
++        let unrelated = r.resolve_qualified("ScalarValues::Boolean").unwrap();
++        let mut steps = 0;
++        assert_eq!(
++            TypeRelations::default().specializes(&mut r.b, f.0, unrelated.0, &mut steps),
++            RelationFact::Unknown,
++            "{change:?}"
++        );
++        assert!(steps <= crate::eval::MAX_STEPS, "{change:?}: {steps}");
++    }
++}
++#[test]
++fn chain_edits_revoke_previous_complete_types() {
++    for change in DAMAGES {
++        let mut r = fixture(SOURCE);
++        ready(&mut r);
++        exact(&mut r, "deep", "Small");
++        let f = r.resolve_qualified("deep").unwrap();
++        damage(&mut r, f, change);
++        assert!(r.feature_type_report(f).types.is_err(), "{change:?}");
++    }
++}
++#[test]
++fn changed_last_link_uses_the_current_target() {
++    let mut r = fixture(SOURCE);
++    let f = r.resolve_qualified("simple").unwrap();
++    let last = *links(&r, f).last().unwrap();
++    let flag = r.resolve_qualified("Holder::flag").unwrap();
++    let id = r.element_id(flag);
++    r.b.set(last, "chainingFeature", json!({"@id":id}));
++    ready(&mut r);
++    exact(&mut r, "simple", "ScalarValues::Boolean");
++}
++#[test]
++fn closed_circular_typing_is_distinct_from_unresolved_chain_evidence() {
++    let mut r = fixture(SOURCE);
++    let simple = r.resolve_qualified("simple").unwrap();
++    let narrow = r.resolve_qualified("narrow").unwrap();
++    let simple_last = *links(&r, simple).last().unwrap();
++    let narrow_last = *links(&r, narrow).last().unwrap();
++    let simple_id = r.element_id(simple);
++    let narrow_id = r.element_id(narrow);
++    r.b.set(simple_last, "chainingFeature", json!({"@id":narrow_id}));
++    r.b.set(narrow_last, "chainingFeature", json!({"@id":simple_id}));
++    ready(&mut r);
++    exact(&mut r, "simple", "Small");
++    exact(&mut r, "narrow", "Small");
++
++    let mut r = fixture(SOURCE);
++    let f = r.resolve_qualified("narrow").unwrap();
++    let last = *links(&r, f).last().unwrap();
++    let id = r.element_id(f);
++    r.b.set(last, "chainingFeature", json!({"@id":id}));
++    ready(&mut r);
++    // A self-containing chain violates a separate validation rule, but its static
++    // type closure is still defined. This test does not claim whole-model validity.
++    exact(&mut r, "narrow", "Small");
++    let mut r = fixture(
++        "classifier Holder {feature next:Missing;} feature root:Holder;feature chain chains root.next;",
++    );
++    ready(&mut r);
++    let f = r.resolve_qualified("chain").unwrap();
++    let report = r.feature_type_report(f);
++    assert!(report.types.is_err());
++    assert_ne!(report.types, Err(FeatureTypeIssue::WorkLimit));
++}
++#[test]
++fn checked_chain_types_preserve_budgets_and_raw_prepared_serialized_identity() {
++    let prepared = library();
++    let decoded =
++        Arc::new(PreparedLibrary::from_bytes(&prepared.to_bytes(149).unwrap(), 149).unwrap());
++    let mut ids = None;
++    for replay in [None, Some(prepared), Some(decoded)] {
++        let model = if let Some(replay) = replay {
++            let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++            replay.install(&mut m).unwrap();
++            m
++        } else {
++            raw_library()
++        };
++        let mut r = resolved(model, SOURCE);
++        ready(&mut r);
++        let actual = [
++            exact(&mut r, "deep", "Small"),
++            exact(&mut r, "repeated", "Small"),
++            exact(&mut r, "Base::Anything::self", "Base::Anything"),
++        ];
++        if let Some(ids) = ids {
++            assert_eq!(actual, ids)
++        } else {
++            ids = Some(actual)
++        }
++        let f = r.resolve_qualified("deep").unwrap();
++        assert_eq!(
++            r.feature_type_report_with_budget(f, crate::eval::MAX_STEPS)
++                .types,
++            Err(FeatureTypeIssue::WorkLimit)
++        );
++        let expected = r.resolve_qualified("Small").unwrap();
++        let rows = r.b.elements.len();
++        let report = r.feature_type_report_with_budget(f, 100);
++        assert_eq!(report.types, Ok(vec![expected]));
++        assert!(report.steps > 100);
++        assert_eq!(r.b.elements.len(), rows);
++    }
++}

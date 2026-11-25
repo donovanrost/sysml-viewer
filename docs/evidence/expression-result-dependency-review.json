@@ -1,0 +1,103 @@
+{
+  "reviewedAt": "2026-10-18T06:34:10.100656+00:00",
+  "status": "dependency and acceptance review; no new Expression.result conformance claim",
+  "scope": "Checked result selection needed by trigger argument validation; preserve the complete language goal and existing bounded Constructor behavior.",
+  "inputs": {
+    "target/standards/kerml.xmi": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic/certified_types.rs": "a903ff0fb7e92d5cd40e5f8a5d4ef21659f994744cacb7a7e9deb6d98fd4d9f5",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "6090b6f27e42381c9ec64fd69a6aa9613ca376971af37ffc81b672c3800aacb7",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_features.rs": "b65902d94280aa0b5d952e2ebc80150b7d932e76697c898acd9de8053bf87318",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs": "9f724257d0b466612447e7b057b9bb543e47c316e9a763468b51d13ee829fa0a",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs": "6fa0fb8af33417e56b0450e8240df57862373fa1e1050be84cd130adfde90ab6"
+  },
+  "sourceAnchors": [
+    {
+      "owner": "FeatureReferenceExpression",
+      "name": "checkFeatureReferenceExpressionResultSpecialization",
+      "expressions": [
+        "result.owningType() = self and result.specializes(referent)"
+      ]
+    },
+    {
+      "owner": "FeatureReferenceExpression",
+      "name": "deriveFeatureReferenceExpressionReferent",
+      "expressions": [
+        "referent =     let nonParameterMemberships : Sequence(Membership) = ownedMembership->         reject(oclIsKindOf(ParameterMembership)) in     if nonParameterMemberships->isEmpty() or        not nonParameterMemberships->first().memberElement.oclIsKindOf(Feature)     then null     else nonParameterMemberships->first().memberElement.oclAsType(Feature)     endif"
+      ]
+    },
+    {
+      "owner": "FeatureReferenceExpression",
+      "name": "validateFeatureReferenceExpressionResult",
+      "expressions": [
+        "result.owningType = self"
+      ]
+    },
+    {
+      "owner": "Expression",
+      "name": "validateExpressionResultParameterMembership",
+      "expressions": [
+        "featureMembership-> selectByKind(ReturnParameterMembership)-> size() = 1"
+      ]
+    },
+    {
+      "owner": "Expression",
+      "name": "deriveExpressionResult",
+      "expressions": [
+        "result =     let resultParams : Sequence(Feature) =         featureMemberships->             selectByKind(ReturnParameterMembership).             ownedMemberParameter in     if resultParams->notEmpty() then resultParams->first()     else null     endif "
+      ]
+    },
+    {
+      "owner": "Expression",
+      "name": "checkExpressionResultBindingConnector",
+      "expressions": [
+        "ownedMembership.selectByKind(ResultExpressionMembership)->     forAll(mem | ownedFeature.selectByKind(BindingConnector)->         exists(binding |             binding.relatedFeature->includes(result) and             binding.relatedFeature->includes(mem.ownedResultExpression.result)))"
+      ]
+    },
+    {
+      "owner": "Expression",
+      "name": "validateExpressionResultExpressionMembership",
+      "expressions": [
+        "membership->selectByKind(ResultExpressionMembership)->size() <= 1"
+      ]
+    }
+  ],
+  "findings": [
+    "Expression.result is the first ReturnParameterMembership-owned parameter in the effective featureMemberships sequence, or null when that complete sequence has no return. The separate exactly-one validation must not be silently substituted for the derivation.",
+    "The checked property dispatcher currently admits Expression.result only for canonical ConstructorExpression via constructor_selection_report. General reference, literal and invocation candidates located by derived reads are compatibility evidence.",
+    "The generated FeatureReferenceExpression result domain can be checked separately from selecting that result. Type.feature on the result does not prove the source Expression.result derivation.",
+    "The central membership reducer and Function/Predicate result proof already preserve inherited order and redefinition identities. A new expression selector must reuse that proof or an explicitly reviewed complete selector projection; a first owned return or function-result fallback alone is insufficient.",
+    "The semantic ownership provider still explicitly refuses whole owned-feature completeness for FeatureReferenceExpression. Its required result/binding construction and all other applicable member-producing obligations need a complete applicability review before widening that gate."
+  ],
+  "acceptancePartitions": [
+    {
+      "case": "owned return with inherited returns",
+      "criterion": "Return the first effective return membership after exact redefinition and inheritance reduction; retain membership and parameter identities."
+    },
+    {
+      "case": "no return or multiple effective returns",
+      "criterion": "Derive null or the first return only from a complete sequence; separately test the exactly-one validation. An incomplete or cyclic provider never means null."
+    },
+    {
+      "case": "diamond inheritance, aliases, visibility and reordered source memberships",
+      "criterion": "Use the existing complete ordered membership semantics and prove the selected identity rather than relying on a graph scan or arbitrary first match."
+    },
+    {
+      "case": "generated reference-expression result",
+      "criterion": "Require the current construction recipe, reciprocal return ownership, source required bases including applicable Step context, canonical return redefinitions and a complete source return-membership domain."
+    },
+    {
+      "case": "literal, operator, ordinary invocation and constructor expressions",
+      "criterion": "Review their distinct function/instantiated-type and implied-result obligations. Preserve Constructor evidence while adding other families; do not infer Expression.function from instantiatedType."
+    },
+    {
+      "case": "malformed, stale or unavailable evidence",
+      "criterion": "Refuse conflicting membership aliases, identity collisions, unsupported context/metadata, missing library bases, damaged publication and incomplete redefinition domains. Keep cumulative work limits and retries."
+    },
+    {
+      "case": "public checked property and trigger consumers",
+      "criterion": "Compare checked report and property identities under the required closure policy. Trigger validators consume checked selection; compatibility derived selection cannot establish an affirmative rule verdict."
+    }
+  ],
+  "nextImplementationBoundary": "Audit the generated reference source membership domain and literal inherited-return selection, then expose a checked Expression.result report/property through the shared reducer. Keep all other expression families in the full-coverage queue and retain explicit unknown results until their dependencies are proved.",
+  "remainingConstructionDependency": "Composite Step ownership based on effective Feature.type still requires staged construction and complete projection dependency evidence. Static owner-metaclass construction does not close that case."
+}

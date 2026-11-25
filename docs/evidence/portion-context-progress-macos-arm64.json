@@ -1,0 +1,267 @@
+{
+  "recordedAt": "2026-10-18T16:41:29.573417+00:00",
+  "status": "All 992 vendor model tests, 104 native workspace tests, 39 public Node tests and 16 provenance/evidence tests pass. Clippy, native/WASM builds, contract, 133 conformance cases and matching requirements execution evidence pass on macOS arm64. No package or complete semantic obligation closes.",
+  "kernelInputSha256": "73b44bcd0d7606066d5fc8f3187ed5b6fe131d348d572c4bebb190b10cbc6819",
+  "previousQualifiedKernelInputSha256": "f4c0619cc8a3437ecf66adb27ef2523a7344f336932601a058b7f41fd8ab0543",
+  "files": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs": "f57453b4cf97533cafe784d6dc36244e2acdf073c37dd3b8228845e0f3521306",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/repository_tests.rs": "2466e1c8eb5a567b2eb4757baa9db2622da23bc67778ada3c1b29d4227ec3f85",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/semantic_positional_tests.rs": "1c0004d3df2ff04980d3ef927470eadd2b0aa99dc42ef5d04c8c7e24b8404791",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/recursive_features.rs": "b0bcbb1aa4cfa4e44609561aaf87b756bd986a1b96b98cf9a1922b5ae6ae51ba",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/portion_context/acceptance.rs": "405cae08a650f5a306e9b4249e889b1396f490bfcaadd83df6d8b25b76f0e62a",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/portion_context.rs": "3bcc0c9ae46a358ad42276c079e56a18d4cb06197529a6dcad637019d4f41836",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs": "8b3ac033aaef74baaece8f7be2eac7a78a53a69d3425510f18a76c6e7fd12058",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/ordinary_features_tests.rs": "d021098386fb3810640650e66d6933f68425984ab5d110e66062e10ad9e00615",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "6540aa4caca201f3565e59a572661e4ae2f2631c802f18b45290da28a5846f79",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+    "crates/sysml-kernel/tests/portion_feature_types.rs": "3eca0d3882b4df09f00ea09e1a34320e213e06097222843cc59377399a626f14",
+    "patches/manifest.json": "d3af1019973f813bc499043f86daeadb742246d58c048178481297c6550a9176"
+  },
+  "acceptance": {
+    "private": {
+      "status": "pass",
+      "log": "target/trigger-validation/portion-preflight-acceptance.log",
+      "implementation": "For a nonreflexive, nonconjugated receiver, use the same stored source/carrier/endpoint certificate before semantic-plan refresh. Contradictions become Unknown immediately. The normal conjugated-receiver and reflexivity rules remain separate. Add exact positive/negative portion-path assertions for direct/inherited/narrowed/non-Class/closed-cycle owner cases.",
+      "logSha256": "8d8f125181afd01b10876f9521ac4053069cd9ce0112ab80d101dd5a09595edf",
+      "result": {
+        "portionAcceptance": 13,
+        "structuralIndex": 36,
+        "typeRelations": 64,
+        "featureTypeProjection": 35,
+        "recursiveVisibility": 8
+      },
+      "archivedInputs": {
+        "target/trigger-validation/portion-preflight-acceptance-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/portion_context.rs": "6c0a57eb75ea7858f10a94b35f41228136afc32e40a11c7eb7f9ccb85c4db6c5",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/feature_type_projection.rs": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/structural_index.rs": "8b3ac033aaef74baaece8f7be2eac7a78a53a69d3425510f18a76c6e7fd12058",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/type_relations.rs": "6540aa4caca201f3565e59a572661e4ae2f2631c802f18b45290da28a5846f79",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/portion_context/acceptance.rs": "405cae08a650f5a306e9b4249e889b1396f490bfcaadd83df6d8b25b76f0e62a",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/portion_context/tests.rs": "08d31586cc6ece07a94146bf54dafb760368245bc6d1b9563260f36994825e20",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/feature_type_projection/adapter.rs": "f57453b4cf97533cafe784d6dc36244e2acdf073c37dd3b8228845e0f3521306",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/feature_type_projection/repository_tests.rs": "2466e1c8eb5a567b2eb4757baa9db2622da23bc67778ada3c1b29d4227ec3f85",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/feature_type_projection/semantic_positional_tests.rs": "1c0004d3df2ff04980d3ef927470eadd2b0aa99dc42ef5d04c8c7e24b8404791",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/operations/namespaces/recursive_features.rs": "b0bcbb1aa4cfa4e44609561aaf87b756bd986a1b96b98cf9a1922b5ae6ae51ba",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/type_relations/ordinary_features_tests.rs": "d021098386fb3810640650e66d6933f68425984ab5d110e66062e10ad9e00615"
+      }
+    },
+    "public": {
+      "status": "pass",
+      "source": "target/trigger-validation/portion-public.rs",
+      "sourceSha256": "3eca0d3882b4df09f00ea09e1a34320e213e06097222843cc59377399a626f14",
+      "log": "target/trigger-validation/portion-public-corrected.log",
+      "candidateInputs": "standaloneSpecializationReview.preflight.archivedInputs",
+      "runner": "target/trigger-validation/test-portion-public.mjs",
+      "initialFailure": {
+        "log": "target/trigger-validation/portion-public-acceptance.log",
+        "logSha256": "e58f1263cfac4605c8e78cbb601940550bad50cbc53173e52d224e67aabab757",
+        "source": "target/trigger-validation/portion-public-invalid-name.rs",
+        "sourceSha256": "da7c490c26a40489c30fa1722771815e186dd0e7a735e7ff75cc84702e96a6d2",
+        "finding": "The test used reserved member as an unquoted Feature name. The parser correctly rejects it; rename the fixture identifier to slot without changing behavior or acceptance."
+      },
+      "logSha256": "8159cc69b100a10236fa5159c9d40b72d4fbd157969ea40711b95a46876ed96b",
+      "result": "One public integration test passes: eight exact portion types, ten exact selected default-result types, separate portionOfLife Feature type, and missing-owner refusal."
+    }
+  },
+  "fullQualification": {
+    "status": "pass",
+    "kernelInputSha256": "73b44bcd0d7606066d5fc8f3187ed5b6fe131d348d572c4bebb190b10cbc6819",
+    "startedAt": "2026-10-18T16:42:28.499315+00:00",
+    "sessions": {
+      "pipeline": 84155
+    },
+    "pipelineState": "target/trigger-validation/portion-context-qualification.json",
+    "vendorLog": "target/trigger-validation/portion-context-full-model.log",
+    "provenance": {
+      "status": "pass",
+      "tests": 16,
+      "log": "target/trigger-validation/portion-context-provenance.log",
+      "logSha256": "6b8a35c01ca566be89130d92ed933c44d069629b7ad88bf0dace3f51a3b3c6b4"
+    },
+    "contract": {
+      "status": "pass",
+      "command": [
+        "node",
+        "tools/generate-contract.mjs",
+        "--check"
+      ],
+      "session": 42715,
+      "exitCode": 0,
+      "recordedAt": "2026-10-18T16:42:53.233719+00:00"
+    },
+    "vendor": {
+      "status": "pass",
+      "tests": 992,
+      "log": "target/trigger-validation/portion-context-full-model.log",
+      "logSha256": "a8c138741381ec6825c69645ea33ed81e60b266e86992573fa49a03119f9100f",
+      "exitCode": 0,
+      "libraryFiles": 94,
+      "corpusFiles": 251
+    },
+    "pipeline": {
+      "kernelInputSha256": "73b44bcd0d7606066d5fc8f3187ed5b6fe131d348d572c4bebb190b10cbc6819",
+      "startedAt": "2026-10-18T16:41:42.245Z",
+      "status": "passed",
+      "phases": [
+        {
+          "name": "workspace",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--workspace"
+          ],
+          "startedAt": "2026-10-18T16:41:42.246Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T16:52:33.023Z"
+        },
+        {
+          "name": "clippy",
+          "args": [
+            "tools/rust.mjs",
+            "clippy",
+            "--locked",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "startedAt": "2026-10-18T16:52:33.025Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T16:52:42.294Z"
+        },
+        {
+          "name": "wasm",
+          "args": [
+            "tools/build-kernel.mjs"
+          ],
+          "startedAt": "2026-10-18T16:52:42.295Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T16:53:24.410Z"
+        },
+        {
+          "name": "cli",
+          "args": [
+            "tools/rust.mjs",
+            "build",
+            "--locked",
+            "--release",
+            "-p",
+            "sysml-cli"
+          ],
+          "startedAt": "2026-10-18T16:53:24.410Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T16:54:05.135Z"
+        },
+        {
+          "name": "public",
+          "args": [
+            "--experimental-strip-types",
+            "--test",
+            "--test-concurrency=1",
+            "tests/accept-actions.test.ts",
+            "tests/families.test.ts",
+            "tests/kernel.test.ts",
+            "tests/state-subactions.test.ts",
+            "tests/kernel-client.test.ts",
+            "tests/conformance-runner.test.mjs"
+          ],
+          "startedAt": "2026-10-18T16:54:05.136Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T16:57:10.226Z"
+        },
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-18T16:57:10.226Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T17:08:12.103Z"
+        },
+        {
+          "name": "requirements",
+          "args": [
+            "tools/requirements.mjs",
+            "--conformance",
+            "target/conformance/report.json"
+          ],
+          "startedAt": "2026-10-18T17:08:12.107Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T17:08:15.936Z"
+        }
+      ],
+      "finishedAt": "2026-10-18T17:08:19.033Z"
+    },
+    "workspace": {
+      "status": "pass",
+      "log": "target/trigger-validation/portion-context-qualification-workspace.log",
+      "logSha256": "ef5a081f8f7399766cfab043dd90e6d00f96a60836287df4766656a798d92242",
+      "tests": 104
+    },
+    "clippy": {
+      "status": "pass",
+      "log": "target/trigger-validation/portion-context-qualification-clippy.log",
+      "logSha256": "e1645283d5512fb7b05da9c2533f2e9ac7a54c64e32384cd96c46cb33c479ad7"
+    },
+    "wasm": {
+      "status": "pass",
+      "log": "target/trigger-validation/portion-context-qualification-wasm.log",
+      "logSha256": "b956d0110a679122f1af174481cedaca4c26cefb4c5a82787751e479a702915b"
+    },
+    "cli": {
+      "status": "pass",
+      "log": "target/trigger-validation/portion-context-qualification-cli.log",
+      "logSha256": "7284a65d808289026553d03eda5c44531dc27ea7cbb77768710006cc601adc0e"
+    },
+    "public": {
+      "status": "pass",
+      "log": "target/trigger-validation/portion-context-qualification-public.log",
+      "logSha256": "7c10e057f12aac81f3bac85ca21d221c73715c1b92587606dc49043051c1dc17",
+      "tests": 39
+    },
+    "conformance": {
+      "status": "pass",
+      "log": "target/trigger-validation/portion-context-qualification-conformance.log",
+      "logSha256": "5e5827d7b58ac7b9b6b0e0d4815be4158eacc5882e25c49e922383ddccce026d",
+      "report": "docs/evidence/portion-context-conformance-macos-arm64.json",
+      "reportSha256": "cca1bd41828616b632bf385e148c1e7711887a58a054b892225770e7122df095",
+      "kernelInputSha256": "73b44bcd0d7606066d5fc8f3187ed5b6fe131d348d572c4bebb190b10cbc6819",
+      "binarySha256": "d96450083e8b70b508be69a2633d539c9c2745fe4a9a901e42daf6418226cf55"
+    },
+    "requirements": {
+      "status": "pass",
+      "log": "target/trigger-validation/portion-context-qualification-requirements.log",
+      "logSha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76",
+      "report": "docs/evidence/portion-context-requirements-macos-arm64.json",
+      "reportSha256": "5d13e16fd296ce9d75d0367ce0d7b1cc1df2a009ca25911d087b56c2e8a591c4",
+      "kernelInputSha256": "73b44bcd0d7606066d5fc8f3187ed5b6fe131d348d572c4bebb190b10cbc6819",
+      "binarySha256": "d96450083e8b70b508be69a2633d539c9c2745fe4a9a901e42daf6418226cf55"
+    }
+  },
+  "limits": [
+    "Mutually dependent conditional construction predicates remain incomplete until a separate stable-graph proof is available.",
+    "SysML non-null portionKind, related portion validations and the recorded normative discrepancies remain separate open obligations.",
+    "Legacy implicit owner-typing base generation remains qualified; exact explicit-path positives and missing-base negatives are covered.",
+    "No release, installation, engine version or public schema changes."
+  ],
+  "updatedAt": "2026-10-18T16:58:12.752615+00:00",
+  "qualifiedAt": "2026-10-18T17:08:19.033Z",
+  "next": "Complete namespace-member/default-binding contexts, mutually stable conditional construction, adjacent named validation review and remaining full-language obligations."
+}

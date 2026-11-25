@@ -172,6 +172,22 @@ pub(super) struct ImpliedTable {
     static_owners: HashSet<usize>,
 }
 
+/// The first present source alias is authoritative, including a malformed one.
+fn specialization_source(relation: &Elem) -> Option<Option<Uuid>> {
+    [
+        "specific",
+        "subclassifier",
+        "typedFeature",
+        "subsettingFeature",
+        "redefiningFeature",
+        "referencingFeature",
+        "crossingFeature",
+    ]
+    .iter()
+    .find_map(|key| relation.props.get(key))
+    .map(|value| value.as_reference())
+}
+
 pub(super) fn specialization_target(relation: &Elem) -> Option<Uuid> {
     [
         "general",
@@ -304,7 +320,10 @@ fn expression_role_kind(name: &str) -> &'static str {
     }
     match name {
         CHAIN_FUNCTION => "Function",
-        STEP_BASE => "Step",
+        STEP_BASE
+        | super::step_context::ENCLOSED
+        | super::step_context::SUBPERFORMANCES
+        | super::step_context::OWNED => "Step",
         "Items::Item::subitems" => "ItemUsage",
         "Items::Item::subparts" => "PartUsage",
         "Objects::Object::subobjects"
@@ -312,7 +331,8 @@ fn expression_role_kind(name: &str) -> &'static str {
         | FEATURE_BASE
         | "Objects::objects"
         | "Occurrences::occurrences"
-        | "Base::dataValues" => "Feature",
+        | "Base::dataValues"
+        | super::portion_context::PORTIONS => "Feature",
         "Constraints::assertedConstraintChecks" | "Constraints::negatedConstraintChecks" => {
             "ConstraintUsage"
         }
@@ -428,7 +448,75 @@ impl SupportedImpliedSpecializations {
     }
 }
 
+/// An immutable spelling-to-identity index; all semantic role checks remain
+/// with the caller. Row edits may reuse spellings, but name-table edits cannot.
+#[derive(Clone)]
+pub(super) struct PlanningNames {
+    source_names: crate::layered::Revision,
+    names: Arc<HashMap<String, Uuid>>,
+}
+
 impl Builder {
+    /// Materialize planning names once per exact loaded-name snapshot. External
+    /// overrides are mutable caller inputs and always take the uncached path.
+    /// A failed rebuild never publishes a partial map or refreshes its revision.
+    pub(super) fn planning_names(
+        &mut self,
+        mut steps: Option<&mut usize>,
+    ) -> Option<Arc<HashMap<String, Uuid>>> {
+        planning_charge(&mut steps, 1)?;
+        let local = self.external_implied_names.is_empty();
+        let revision = self.lib_qnames.observe_revision();
+        if local {
+            if let Some(cached) = &self.planning_names {
+                if cached.source_names.same_as(&revision) {
+                    return Some(Arc::clone(&cached.names));
+                }
+            }
+        }
+        planning_charge(
+            &mut steps,
+            self.lib_qnames
+                .len()
+                .saturating_add(self.external_implied_names.capacity()),
+        )?;
+        for (_, parts) in &self.lib_qnames {
+            planning_charge(&mut steps, parts.len().saturating_mul(3))?;
+            for part in parts {
+                planning_charge(&mut steps, part.len())?;
+            }
+        }
+        for name in self.external_implied_names.keys() {
+            planning_charge(&mut steps, name.len())?;
+        }
+        if local {
+            if let Some(cached) = &self.planning_names {
+                // Another reader may release its snapshot before replacement.
+                // Conservatively charge retirement without relying on a sampled
+                // reference count to decide whether this is the final owner.
+                planning_charge(&mut steps, cached.names.capacity())?;
+            }
+        }
+        let names = Arc::new(
+            self.lib_qnames
+                .iter()
+                .map(|(id, parts)| (parts.join("::"), *id))
+                .chain(
+                    self.external_implied_names
+                        .iter()
+                        .map(|(name, id)| (name.clone(), *id)),
+                )
+                .collect(),
+        );
+        if local {
+            self.planning_names = Some(PlanningNames {
+                source_names: revision,
+                names: Arc::clone(&names),
+            });
+        }
+        Some(names)
+    }
+
     /// Every retained-plan consumer refreshes these common source facts before
     /// reusing the graph. Refusal never advances the memo or poisons a retry.
     pub(super) fn refresh_supported_chain_evidence(
@@ -511,40 +599,45 @@ impl Builder {
             return Some(false);
         }
         let boundary = self.implied.as_ref()?.owned_results_from;
-        planning_charge(
-            &mut Some(&mut *steps),
-            self.lib_qnames
-                .len()
-                .saturating_add(self.external_implied_names.len()),
-        )?;
-        for (_, parts) in &self.lib_qnames {
-            planning_charge(&mut Some(&mut *steps), parts.len())?;
-            for part in parts {
-                planning_charge(&mut Some(&mut *steps), part.len())?;
-            }
-        }
-        for name in self.external_implied_names.keys() {
-            planning_charge(&mut Some(&mut *steps), name.len())?;
-        }
-        let names = self
-            .lib_qnames
-            .iter()
-            .map(|(id, parts)| (parts.join("::"), *id))
-            .chain(
-                self.external_implied_names
-                    .iter()
-                    .map(|(name, id)| (name.clone(), *id)),
-            )
-            .collect();
+        let names = self.planning_names(Some(&mut *steps))?;
         let prefix = self.static_specialization_prefix(
             &names,
             self.external_implied_names.is_empty(),
             Some(&mut *steps),
         )?;
+        // This table was computed above from the current static source. Keep
+        // its authority before capture; arbitrary supplied prefixes cannot
+        // install a positional cache through the generic capture API.
+        let authority = self.supported_implied.clone()?;
         let captured =
             super::dynamic_invocations::capture_static_prefix(self, prefix, Some(boundary), steps);
         planning_charge(&mut Some(&mut *steps), 0)?;
-        Some(captured.is_ok())
+        let Ok(prefix) = captured else {
+            return Some(false);
+        };
+        if !self.physical_static_authority_current()
+            || !self
+                .supported_implied
+                .as_ref()
+                .is_some_and(|current| Arc::ptr_eq(current, &authority))
+        {
+            return Some(false);
+        }
+        // A complete freshly validated static table is reusable for this same
+        // source/configuration. Never reuse a dynamic table or an earlier epoch.
+        planning_charge(
+            &mut Some(&mut *steps),
+            prefix
+                .positional
+                .targets
+                .capacity()
+                .saturating_add(prefix.positional.incomplete.capacity()),
+        )?;
+        for targets in prefix.positional.targets.values() {
+            planning_charge(&mut Some(&mut *steps), targets.len())?;
+        }
+        self.positional_redefinitions = Some((*prefix.positional).clone());
+        Some(true)
     }
     pub(super) fn static_chain_row_current(&self, relationship: usize) -> bool {
         self.implied.as_ref().is_none_or(|table| {
@@ -564,19 +657,7 @@ impl Builder {
             return Some(());
         }
         let plan = self.supported_implied.clone()?;
-        planning_charge(&mut Some(&mut *steps), self.elements.len())?;
-        for element in &self.elements {
-            planning_charge(&mut Some(&mut *steps), element.owned_relationships.len())?;
-        }
-        let owners = self.semantic_relationship_owners();
-        let (_, graph) = self.required_specialization_edges_with_chain_bases(
-            &[],
-            0,
-            self.elements.len(),
-            &owners,
-            &plan.chain_bases,
-            Some(&mut *steps),
-        )?;
+        let graph = self.current_specialization_graph(&plan.chain_bases, steps)?;
         // Retire the old compatibility graph only after charged reconstruction.
         planning_charge(
             &mut Some(&mut *steps),
@@ -589,6 +670,74 @@ impl Builder {
             table.specializations = graph;
         }
         Some(())
+    }
+
+    /// A current topology snapshot contains every specialization row in order.
+    /// Without that exact row/provenance revision, scan the requested prefix.
+    /// Endpoints and ownership remain the caller's responsibility.
+    fn stored_specialization_rows(&self, end: usize) -> impl Iterator<Item = usize> + '_ {
+        let end = end.min(self.elements.len());
+        let indexed = self
+            .stored_structure
+            .as_ref()
+            .filter(|raw| raw.is_current(self))
+            .map(|raw| raw.specialization_rows.as_slice());
+        let len = indexed.map_or(end, |rows| rows.len());
+        (0..len)
+            .map(move |index| indexed.map_or(index, |rows| rows[index]))
+            .take_while(move |&row| row < end)
+    }
+
+    /// Rebuild current physical reachability in row order, followed by virtual
+    /// chain edges. No candidate reduction is needed when every row is retained.
+    /// Source aliases usually make owner discovery unnecessary; absent aliases
+    /// use exactly the existing stored-plus-semantic owner precedence.
+    fn current_specialization_graph(
+        &self,
+        chains: &super::type_relations::FeatureChainBases,
+        steps: &mut usize,
+    ) -> Option<SpecializationGraph> {
+        let mut graph = HashMap::<Uuid, Vec<Uuid>>::new();
+        let mut distinct = HashSet::new();
+        let mut owners = None;
+        for index in self.stored_specialization_rows(self.elements.len()) {
+            let relation = &self.elements[index];
+            planning_charge(&mut Some(&mut *steps), 1)?;
+            if !conforms(relation.ty, "Specialization") {
+                continue;
+            }
+            let source = match specialization_source(relation) {
+                Some(source) => source,
+                None => {
+                    if owners.is_none() {
+                        // Include allocation and semantic overlay iteration.
+                        planning_charge(
+                            &mut Some(&mut *steps),
+                            self.elements.len().saturating_mul(2),
+                        )?;
+                        for row in &self.elements {
+                            planning_charge(&mut Some(&mut *steps), row.owned_relationships.len())?;
+                        }
+                        owners = Some(self.semantic_relationship_owners());
+                    }
+                    owners.as_ref().unwrap()[index].map(|owner| self.elements[owner].id)
+                }
+            };
+            if let (Some(source), Some(target)) = (source, specialization_target(relation)) {
+                planning_charge(&mut Some(&mut *steps), 1)?;
+                if distinct.insert((source, target)) {
+                    graph.entry(source).or_default().push(target);
+                }
+            }
+        }
+        for (&source, &target) in &chains.targets {
+            planning_charge(&mut Some(&mut *steps), 2)?;
+            let pair = (self.elements[source].id, self.elements[target].id);
+            if distinct.insert(pair) {
+                graph.entry(pair.0).or_default().push(pair.1);
+            }
+        }
+        Some(graph)
     }
 
     /// Structural owners, including memberships without a name or body scope.
@@ -614,8 +763,13 @@ impl Builder {
         mut steps: Option<&mut usize>,
     ) -> Option<Vec<(usize, PlannedEdge)>> {
         let mut candidates = Vec::new();
+        let contextual_steps = super::step_context::ROLES
+            .iter()
+            .any(|role| expression_targets.contains_key(role));
         planning_charge(&mut steps, super::type_relations::COMPOSITE_ROLES.len())?;
         let typing_structure = if self.graph_format == crate::model::GraphFormat::CanonicalV3
+            || contextual_steps
+            || expression_targets.contains_key(super::portion_context::PORTIONS)
             || super::type_relations::COMPOSITE_ROLES
                 .iter()
                 .any(|role| expression_targets.contains_key(role))
@@ -634,11 +788,63 @@ impl Builder {
         } else {
             None
         };
+        // Contextual ownership reads the same immutable index as the existing
+        // typed requirements. Starting a second structural acquisition here
+        // would charge the legacy full-scan budget despite sharing every row.
+        let mut context_relations = typing_structure
+            .as_ref()
+            .map_or_else(super::type_relations::TypeRelations::default, |(raw, _)| {
+                super::type_relations::TypeRelations::with_structure(Arc::clone(raw))
+            });
         if !names.is_empty() {
             for i in requirement_candidates {
                 planning_charge(&mut steps, 1 + self.elements[i].owned_relationships.len())?;
                 let mut required = self.required_implied_plan(i, names, expression_targets, owners);
                 if let Some((raw, typing)) = &typing_structure {
+                    if super::portion_context::candidate(&self.elements[i]) {
+                        let mut local = 0;
+                        let condition = super::portion_context::antecedent(
+                            self,
+                            i,
+                            raw,
+                            &mut context_relations,
+                            steps.as_deref_mut().unwrap_or(&mut local),
+                        );
+                        planning_charge(&mut steps, 0)?;
+                        if condition == Some(super::portion_context::Antecedent::Applies) {
+                            if let Some(&target) =
+                                expression_targets.get(super::portion_context::PORTIONS)
+                            {
+                                required.push((
+                                    "Subsetting",
+                                    "subsettingFeature",
+                                    "subsettedFeature",
+                                    target,
+                                ));
+                            }
+                        }
+                    }
+                    if contextual_steps && conforms(self.elements[i].ty, "Step") {
+                        let mut local = 0;
+                        let roles = super::step_context::metaclass_requirements(
+                            self,
+                            i,
+                            raw,
+                            &mut context_relations,
+                            steps.as_deref_mut().unwrap_or(&mut local),
+                        );
+                        planning_charge(&mut steps, 0)?;
+                        for role in roles.into_iter().flatten() {
+                            if let Some(&target) = expression_targets.get(role) {
+                                required.push((
+                                    "Subsetting",
+                                    "subsettingFeature",
+                                    "subsettedFeature",
+                                    target,
+                                ));
+                            }
+                        }
+                    }
                     if conforms(self.elements[i].ty, "Feature")
                         && (self.graph_format == crate::model::GraphFormat::CanonicalV3
                             || self.elements[i]
@@ -1211,20 +1417,7 @@ impl Builder {
         {
             Some(plan) => Arc::clone(plan),
             None => {
-                planning_charge(
-                    &mut Some(&mut *steps),
-                    self.lib_qnames.len() + self.external_implied_names.len(),
-                )?;
-                let names = self
-                    .lib_qnames
-                    .iter()
-                    .map(|(id, segments)| (segments.join("::"), *id))
-                    .chain(
-                        self.external_implied_names
-                            .iter()
-                            .map(|(name, id)| (name.clone(), *id)),
-                    )
-                    .collect();
+                let names = self.planning_names(Some(&mut *steps))?;
                 self.supported_implied_specializations_with_budget(
                     &names,
                     library_configuration,
@@ -1380,20 +1573,7 @@ impl Builder {
         {
             Some(plan) => Arc::clone(plan),
             None => {
-                planning_charge(
-                    &mut budget,
-                    self.lib_qnames.len() + self.external_implied_names.len(),
-                )?;
-                let names = self
-                    .lib_qnames
-                    .iter()
-                    .map(|(id, segments)| (segments.join("::"), *id))
-                    .chain(
-                        self.external_implied_names
-                            .iter()
-                            .map(|(name, id)| (name.clone(), *id)),
-                    )
-                    .collect();
+                let names = self.planning_names(budget.as_deref_mut())?;
                 self.supported_implied_specializations_with_budget(
                     &names,
                     library_configuration,
@@ -1457,8 +1637,24 @@ impl Builder {
         let mut loaded: HashMap<&'static str, Option<Uuid>> = HashMap::new();
         for (id, segments) in &self.lib_qnames {
             let composite = match segments.as_slice() {
+                [p, t, n]
+                    if p == "Performances" && t == "Performance" && n == "enclosedPerformances" =>
+                {
+                    Some(super::step_context::ENCLOSED)
+                }
+                [p, t, n]
+                    if p == "Performances" && t == "Performance" && n == "subperformances" =>
+                {
+                    Some(super::step_context::SUBPERFORMANCES)
+                }
+                [p, t, n] if p == "Objects" && t == "Object" && n == "ownedPerformances" => {
+                    Some(super::step_context::OWNED)
+                }
                 [p, t, n] if p == "Occurrences" && t == "Occurrence" && n == "suboccurrences" => {
                     Some("Occurrences::Occurrence::suboccurrences")
+                }
+                [p, t, n] if p == "Occurrences" && t == "Occurrence" && n == "portions" => {
+                    Some(super::portion_context::PORTIONS)
                 }
                 [p, t, n] if p == "Objects" && t == "Object" && n == "subobjects" => {
                     Some("Objects::Object::subobjects")
@@ -1576,6 +1772,8 @@ impl Builder {
                 "Occurrences::occurrences",
             ])
             .chain(super::type_relations::COMPOSITE_ROLES)
+            .chain(super::step_context::ROLES)
+            .chain([super::portion_context::PORTIONS])
             .chain(BINARY_ROLES.map(|(role, _)| role))
         {
             if loaded.get(name) == Some(&None) {
@@ -1590,7 +1788,9 @@ impl Builder {
             if (matches!(name, CHAIN_FUNCTION | FEATURE_BASE | STEP_BASE)
                 || BINARY_ROLES.iter().any(|(role, _)| *role == name)
                 || TYPED_FEATURE_BASES.iter().any(|(_, role)| *role == name)
-                || super::type_relations::COMPOSITE_ROLES.contains(&name))
+                || super::type_relations::COMPOSITE_ROLES.contains(&name)
+                || super::step_context::ROLES.contains(&name)
+                || name == super::portion_context::PORTIONS)
                 && element.is_none()
             {
                 continue;
@@ -1601,6 +1801,12 @@ impl Builder {
                 if element >= self.lib_boundary
                     || loaded.get(name) != Some(&Some(id))
                     || !conforms(self.elements[element].ty, expression_role_kind(name))
+                    || (name == super::portion_context::PORTIONS
+                        && self.elements[element]
+                            .props
+                            .get("declaredName")
+                            .and_then(|v| v.as_str())
+                            != Some("portions"))
                 {
                     continue;
                 }
@@ -1675,31 +1881,7 @@ impl Builder {
                 return self.positional_direct_bases_from_plan(&plan, steps);
             }
         }
-        planning_charge(
-            &mut steps,
-            self.lib_qnames
-                .len()
-                .saturating_add(self.external_implied_names.capacity()),
-        )?;
-        for (_, segments) in &self.lib_qnames {
-            planning_charge(&mut steps, segments.len())?;
-            for segment in segments {
-                planning_charge(&mut steps, segment.len())?;
-            }
-        }
-        for name in self.external_implied_names.keys() {
-            planning_charge(&mut steps, name.len())?;
-        }
-        let names = self
-            .lib_qnames
-            .iter()
-            .map(|(id, segments)| (segments.join("::"), *id))
-            .chain(
-                self.external_implied_names
-                    .iter()
-                    .map(|(name, id)| (name.clone(), *id)),
-            )
-            .collect();
+        let names = self.planning_names(steps.as_deref_mut())?;
         let plan = self.supported_implied_specializations_with_budget(
             &names,
             self.external_implied_names.is_empty(),
@@ -4228,16 +4410,7 @@ impl Builder {
         }
         let owners = self.semantic_relationship_owners();
         let from = self.elements.len();
-        let lib_by_name: HashMap<String, Uuid> = self
-            .lib_qnames
-            .iter()
-            .map(|(id, segments)| (segments.join("::"), *id))
-            .chain(
-                self.external_implied_names
-                    .iter()
-                    .map(|(name, id)| (name.clone(), *id)),
-            )
-            .collect();
+        let lib_by_name = self.planning_names(None).expect("unbounded raw names");
         let mut ownership = super::semantic_ownership::SemanticOwnership::new(from);
         // Capture a newly computed positional authority together with the
         // recipes below, rather than certifying an older compatibility cache.
@@ -4432,7 +4605,7 @@ impl Builder {
         }
         for plan in default_plans {
             let start = self.elements.len() + rows.len();
-            let (edges, roles) = super::owned_results::stage_constructor_default(
+            let (edges, roles) = super::owned_results::stage_default_binding(
                 self,
                 ownership.as_mut().unwrap(),
                 plan,
@@ -4583,6 +4756,69 @@ impl Builder {
         }
         self.dynamic_graph = Some(accepted);
         self.publication.install(epoch);
+        self.materialize_invocation_defaults();
+    }
+
+    /// This second transaction runs under the same exclusive publication guard.
+    /// Argument/default selection observes the actual accepted positional graph.
+    /// The append is restricted to anonymous owned binding subtrees: it adds no
+    /// FeatureMembership to an existing Type and no specialization whose source
+    /// already exists. Thus existing callee features, positional targets, lookup
+    /// names and result recipes are unchanged. All query caches are invalidated;
+    /// only the unchanged construction recipes retain authority at the new epoch.
+    fn materialize_invocation_defaults(&mut self) {
+        let mut steps = 0;
+        let Ok(Some(append)) = super::invocation_defaults::prepare_append(self, &mut steps) else {
+            return;
+        };
+        let before = self.elements.observe_revision();
+        let epoch = super::publication::Revision::next();
+        let after = crate::layered::Revision::default();
+        let Some(previous) = self.dynamic_graph.as_ref() else {
+            return;
+        };
+        let Some(snapshot) = previous.after_invocation_default_append(
+            self,
+            epoch.clone(),
+            after.clone(),
+            &append,
+            &mut steps,
+        ) else {
+            return;
+        };
+        let table = self.implied.as_ref().unwrap();
+        steps = steps.saturating_add(table.specializations.capacity());
+        for targets in table.specializations.values() {
+            steps = steps.saturating_add(targets.len());
+        }
+        if steps > crate::eval::MAX_STEPS {
+            return;
+        }
+        let mut graph = table.specializations.clone();
+        for (source, target) in append.edges {
+            graph.entry(source).or_default().push(target);
+        }
+        let static_plan = self
+            .supported_implied
+            .clone()
+            .filter(|_| self.supported_chain_evidence_current());
+        let physical_was_current = self.physical_static_authority_current();
+        self.elements
+            .append_staged(append.rows, &before, after.clone());
+        if physical_was_current {
+            let table = self.implied.as_mut().unwrap();
+            table.static_rows = after.clone();
+            *table.static_authority.source_rows.lock().unwrap() = after.clone();
+        }
+        if let Some(plan) = &static_plan {
+            *plan.source_rows.lock().unwrap() = after;
+        }
+        self.semantic_ownership = Some(Arc::new(append.ownership));
+        self.implied.as_mut().unwrap().specializations = graph;
+        self.invalidate_semantic_indexes();
+        self.supported_implied = static_plan;
+        self.dynamic_graph = Some(Arc::new(snapshot));
+        self.publication.install(epoch);
     }
 
     fn discard_semantic_result_tail(&mut self) {
@@ -4625,7 +4861,11 @@ impl Builder {
         names: &HashMap<String, Uuid>,
         owners: &[Option<usize>],
     ) -> Vec<PlannedEdge> {
-        self.legacy_implied_plan_with_budget(i, names, owners, None)
+        let variation_owner = self.elements[i]
+            .owning_relationship
+            .filter(|&rel| self.elements[rel].ty == "VariantMembership")
+            .and_then(|rel| owners[rel]);
+        self.legacy_implied_plan_with_budget(i, names, variation_owner, None)
             .expect("unbounded legacy recipe cannot exhaust budget")
     }
 }
@@ -4811,24 +5051,14 @@ impl Builder {
             return None;
         }
         let mut graph: HashMap<Uuid, Vec<(Uuid, Option<usize>)>> = HashMap::new();
-        for (r, relation) in self.elements.iter().take(explicit_len).enumerate() {
+        for r in self.stored_specialization_rows(explicit_len) {
+            let relation = &self.elements[r];
             planning_charge(&mut steps, 1)?;
             if !conforms(relation.ty, "Specialization") {
                 continue;
             }
-            let source = [
-                "specific",
-                "subclassifier",
-                "typedFeature",
-                "subsettingFeature",
-                "redefiningFeature",
-                "referencingFeature",
-                "crossingFeature",
-            ]
-            .iter()
-            .find_map(|key| relation.props.get(key));
-            let source = match source {
-                Some(value) => value.as_reference(),
+            let source = match specialization_source(relation) {
+                Some(source) => source,
                 None => rel_owner[r].map(|owner| self.elements[owner].id),
             };
             let target = specialization_target(relation);
@@ -4860,33 +5090,28 @@ impl Builder {
         for &(owner, _) in candidates {
             planning_charge(&mut steps, 1)?;
             let source = self.elements[owner].id;
-            // Each prior DFS drains before the next candidate. An already
-            // visited source therefore has a complete postorder, including
-            // cyclic graphs. Repeated candidates need no new traversal stack.
-            if visited.contains(&source) {
+            if !visited.insert(source) {
                 continue;
             }
-            todo.push((source, false));
-            while let Some((at, exiting)) = todo.pop() {
+            todo.push((source, graph.get(&source).map_or(0, Vec::len)));
+            while let Some((at, next)) = todo.last_mut() {
                 planning_charge(&mut steps, 1)?;
-                if exiting {
-                    postorder.push(at);
-                } else if visited.insert(at) {
-                    todo.push((at, true));
-                    planning_charge(&mut steps, graph.get(&at).map_or(0, Vec::len))?;
-                    todo.extend(
-                        graph
-                            .get(&at)
-                            .into_iter()
-                            .flatten()
-                            .map(|&(next, _)| (next, false)),
-                    );
+                if *next == 0 {
+                    postorder.push(*at);
+                    todo.pop();
+                } else {
+                    *next -= 1;
+                    let target = graph[at][*next].0;
+                    if visited.insert(target) {
+                        todo.push((target, graph.get(&target).map_or(0, Vec::len)));
+                    }
                 }
             }
         }
         planning_charge(&mut steps, postorder.len())?;
         let rank: HashMap<_, _> = postorder
-            .into_iter()
+            .iter()
+            .copied()
             .enumerate()
             .map(|(rank, id)| (id, rank))
             .collect();
@@ -4902,44 +5127,110 @@ impl Builder {
         )?;
         planning_charge(&mut steps, candidates.len())?;
         let mut retained = vec![true; candidates.len()];
-        let mut seen = HashSet::new();
+        // Removing a redundant edge preserves full-graph reachability and
+        // therefore its strongly connected components. Across components, a
+        // neighbour cannot return to this source: its full closure is a sound
+        // alternate-path witness even while the tested edge is disabled.
+        // Within a component the source-excluding walk remains necessary.
+        let mut reverse: HashMap<Uuid, Vec<Uuid>> = HashMap::new();
+        for &source in &postorder {
+            planning_charge(&mut steps, 1)?;
+            for &(target, _) in graph.get(&source).into_iter().flatten() {
+                planning_charge(&mut steps, 1)?;
+                reverse.entry(target).or_default().push(source);
+            }
+        }
+        let mut components = HashMap::new();
         let mut stack = Vec::new();
+        for &source in postorder.iter().rev() {
+            planning_charge(&mut steps, 1)?;
+            if components.contains_key(&source) {
+                continue;
+            }
+            components.insert(source, source);
+            stack.push(source);
+            while let Some(at) = stack.pop() {
+                planning_charge(&mut steps, 1)?;
+                for &ancestor in reverse.get(&at).into_iter().flatten() {
+                    planning_charge(&mut steps, 1)?;
+                    if let std::collections::hash_map::Entry::Vacant(entry) =
+                        components.entry(ancestor)
+                    {
+                        // Mark on discovery: each node needs one frame even
+                        // when many already-seen reverse edges lead to it.
+                        entry.insert(source);
+                        stack.push(ancestor);
+                    }
+                }
+            }
+        }
+        type Paths = HashMap<Uuid, (HashSet<Uuid>, Vec<Uuid>)>;
+        let mut independent: Paths = HashMap::new();
+        let mut local: Paths = HashMap::new();
+        let mut active_source = None;
         for index in order {
             planning_charge(&mut steps, 1)?;
             let (owner, edge) = candidates[index];
-            // A ReferenceSubsetting identifies an end, not merely a reachable
-            // superfeature. Keep the required relationship itself.
+            // ReferenceSubsetting identifies the end itself, beyond reachability.
             if edge.0 == "ReferenceSubsetting" {
                 continue;
             }
+            let source = self.elements[owner].id;
+            if active_source != Some(source) {
+                planning_charge(&mut steps, local.capacity())?;
+                local.clear();
+                active_source = Some(source);
+            }
             retained[index] = false;
-            seen.clear();
-            stack.clear();
-            stack.push(self.elements[owner].id);
-            let mut reaches = false;
-            while let Some(at) = stack.pop() {
+            let mut reaches = source == edge.3;
+            for &(next, candidate) in graph.get(&source).into_iter().flatten() {
                 planning_charge(&mut steps, 1)?;
-                if at == edge.3 {
+                if candidate.is_none_or(|index| retained[index]) && next == edge.3 {
                     reaches = true;
                     break;
                 }
-                if !seen.insert(at) {
-                    continue;
-                }
-                for &(next, candidate) in graph.get(&at).into_iter().flatten() {
+            }
+            if !reaches {
+                for &(next, candidate) in graph.get(&source).into_iter().flatten().rev() {
                     planning_charge(&mut steps, 1)?;
-                    if candidate.is_none_or(|candidate| retained[candidate]) {
-                        // Reachability consumes a Boolean, not a traversal
-                        // sequence. A witnessed edge can decide immediately.
-                        if next == edge.3 {
+                    if next == source || candidate.is_some_and(|index| !retained[index]) {
+                        continue;
+                    }
+                    let separate = components[&source] != components[&next];
+                    let paths = if separate {
+                        &mut independent
+                    } else {
+                        &mut local
+                    };
+                    planning_charge(&mut steps, 1)?;
+                    let (seen, todo) = paths
+                        .entry(next)
+                        .or_insert_with(|| (HashSet::from([next]), vec![next]));
+                    if seen.contains(&edge.3) {
+                        reaches = true;
+                        break;
+                    }
+                    while let Some(at) = todo.pop() {
+                        planning_charge(&mut steps, 1)?;
+                        for &(target, candidate) in graph.get(&at).into_iter().flatten() {
+                            planning_charge(&mut steps, 1)?;
+                            if (separate
+                                || (target != source
+                                    && candidate.is_none_or(|index| retained[index])))
+                                && seen.insert(target)
+                            {
+                                todo.push(target);
+                            }
+                        }
+                        // Finish each row before suspending the frontier.
+                        if seen.contains(&edge.3) {
                             reaches = true;
                             break;
                         }
-                        stack.push(next);
                     }
-                }
-                if reaches {
-                    break;
+                    if reaches {
+                        break;
+                    }
                 }
             }
             retained[index] = !reaches;
@@ -4948,12 +5239,14 @@ impl Builder {
         for (source, edges) in graph {
             planning_charge(&mut steps, 1)?;
             let mut targets = Vec::new();
+            let mut unique = HashSet::new();
             for (target, candidate) in edges {
-                planning_charge(&mut steps, 1 + targets.len())?;
-                if candidate.is_none_or(|candidate| retained[candidate])
-                    && !targets.contains(&target)
-                {
-                    targets.push(target);
+                planning_charge(&mut steps, 1)?;
+                if candidate.is_none_or(|candidate| retained[candidate]) {
+                    planning_charge(&mut steps, 1)?;
+                    if unique.insert(target) {
+                        targets.push(target);
+                    }
                 }
             }
             final_graph.insert(source, targets);
@@ -4984,6 +5277,7 @@ impl Builder {
         mut steps: Option<&mut usize>,
         workspace: &mut super::positional::PositionalWorkspace,
     ) -> Option<Arc<super::semantic_batch::StaticPrefix>> {
+        let previous_authority = self.supported_implied.clone();
         let required = self.supported_implied_specializations_with_budget(
             names,
             library_configuration,
@@ -4991,17 +5285,38 @@ impl Builder {
         )?;
         let (direct_bases, incomplete_bases) =
             self.positional_direct_bases_from_static_plan(&required, steps.as_deref_mut())?;
-        let positional = self.plan_positional_redefinitions_with_workspace(
-            &direct_bases,
-            &incomplete_bases,
-            steps.as_deref_mut(),
-            workspace,
-        )?;
-        planning_charge(&mut steps, self.elements.len())?;
-        for element in &self.elements {
-            planning_charge(&mut steps, element.owned_relationships.len())?;
-        }
-        let owners = self.specialization_relation_owners();
+        // Checked readers may have just computed this exact static table before
+        // asking us to recertify the physical prefix. Reuse only that completed
+        // table under the same source/configuration authority; never substitute
+        // a dynamic table, an in-progress sentinel or a previous generation.
+        let cached = (!self.positional_planning
+            && self.supported_chain_evidence_current()
+            && previous_authority
+                .as_ref()
+                .is_some_and(|plan| Arc::ptr_eq(plan, &required)))
+        .then_some(self.positional_redefinitions.as_ref())
+        .flatten();
+        let positional = if let Some(cached) = cached {
+            planning_charge(
+                &mut steps,
+                cached
+                    .targets
+                    .capacity()
+                    .saturating_add(cached.incomplete.capacity()),
+            )?;
+            for targets in cached.targets.values() {
+                planning_charge(&mut steps, targets.len())?;
+            }
+            cached.clone()
+        } else {
+            self.plan_positional_redefinitions_with_workspace(
+                &direct_bases,
+                &incomplete_bases,
+                steps.as_deref_mut(),
+                workspace,
+            )?
+        };
+        let mut owners = None;
         let mut rows = Vec::new();
         for (&(owner, edge), retained) in required.candidates.iter() {
             planning_charge(&mut steps, 1)?;
@@ -5009,9 +5324,30 @@ impl Builder {
                 continue;
             }
             let legacy_slot = if owner >= self.lib_boundary {
-                self.legacy_implied_plan_with_budget(owner, names, &owners, steps.as_deref_mut())?
-                    .iter()
-                    .position(|old| *old == edge)
+                planning_charge(&mut steps, 1)?;
+                let variation_owner = if let Some(rel) = self.elements[owner]
+                    .owning_relationship
+                    .filter(|&rel| self.elements[rel].ty == "VariantMembership")
+                {
+                    if owners.is_none() {
+                        planning_charge(&mut steps, self.elements.len())?;
+                        for element in &self.elements {
+                            planning_charge(&mut steps, element.owned_relationships.len())?;
+                        }
+                        owners = Some(self.specialization_relation_owners());
+                    }
+                    owners.as_ref().unwrap()[rel]
+                } else {
+                    None
+                };
+                self.legacy_implied_plan_with_budget(
+                    owner,
+                    names,
+                    variation_owner,
+                    steps.as_deref_mut(),
+                )?
+                .iter()
+                .position(|old| *old == edge)
             } else {
                 None
             };
@@ -5022,6 +5358,7 @@ impl Builder {
                 legacy_slot,
             ));
         }
+        let required_rows = rows.len();
         planning_charge(
             &mut steps,
             positional.targets.len().saturating_mul(
@@ -5052,7 +5389,9 @@ impl Builder {
             planning_charge(&mut steps, targets.len().saturating_add(1))?;
             specializations.insert(source, targets.clone());
         }
-        for row in &rows {
+        // The retained requirement edges are already in required.graph.
+        // Only positional rows can add targets to that exact graph.
+        for row in &rows[required_rows..] {
             planning_charge(&mut steps, 1)?;
             let targets = specializations.entry(row.owner_id).or_insert_with(Vec::new);
             planning_charge(&mut steps, targets.len().saturating_add(1))?;
@@ -5069,6 +5408,188 @@ impl Builder {
             chain_bases: Arc::clone(&required.chain_bases),
             specializations,
         }))
+    }
+}
+
+#[cfg(test)]
+mod static_positional_reuse_tests {
+    use super::*;
+
+    #[test]
+    fn cached_and_fresh_prefixes_agree_including_incomplete_and_changed_sources() {
+        let mut model =
+            crate::model::Model::with_graph_format(crate::model::GraphFormat::CanonicalV3);
+        assert!(model.add_source("prefix.kerml", "function Parent {in a;return b;} function Child specializes Parent {in x;return y;} function Unknown specializes Missing {in z;} feature call=Child(1);").diagnostics.is_empty());
+        let r = ResolvedModel::build(&model);
+        for changed in [false, true] {
+            let mut cached = r.b.clone();
+            assert!(cached.ensure_positional_redefinitions_with_budget(&mut 0));
+            if changed {
+                let member = cached
+                    .elements
+                    .iter()
+                    .position(|e| e.props.get("declaredName").and_then(|v| v.as_str()) == Some("x"))
+                    .unwrap();
+                cached.elements[member]
+                    .props
+                    .insert("direction", json!("out"));
+            }
+            let mut fresh = cached.clone();
+            fresh.positional_redefinitions = None;
+            let mut cached_steps = 0;
+            let mut fresh_steps = 0;
+            let actual = cached
+                .static_specialization_prefix(&HashMap::new(), true, Some(&mut cached_steps))
+                .unwrap();
+            let expected = fresh
+                .static_specialization_prefix(&HashMap::new(), true, Some(&mut fresh_steps))
+                .unwrap();
+            assert!(!expected.positional.targets.is_empty());
+            assert!(!expected.positional.incomplete.is_empty());
+            assert_eq!(actual.rows, expected.rows);
+            assert_eq!(actual.positional.targets, expected.positional.targets);
+            assert_eq!(actual.positional.incomplete, expected.positional.incomplete);
+            assert_eq!(actual.planner_bases, expected.planner_bases);
+            assert_eq!(actual.planner_incomplete, expected.planner_incomplete);
+            assert_eq!(actual.specializations, expected.specializations);
+            if !changed {
+                assert!(
+                    cached_steps < fresh_steps,
+                    "{cached_steps} >= {fresh_steps}"
+                );
+            } else {
+                assert!(
+                    cached.positional_redefinitions.is_none(),
+                    "source mutation must discard old cached positions"
+                );
+            }
+        }
+    }
+
+    fn materialized_positions(format: crate::model::GraphFormat) -> ResolvedModel {
+        let mut model = crate::model::Model::with_graph_format(format);
+        assert!(model.add_source("recertify.kerml", "function Parent {in a;return b;} function Child specializes Parent {in x;return y;} feature unrelated;").diagnostics.is_empty());
+        let mut r = ResolvedModel::build(&model);
+        r.ensure_implied();
+        r
+    }
+
+    #[test]
+    fn freshly_recertified_positions_match_fresh_plan_and_survive_budget_retry() {
+        for format in [
+            crate::model::GraphFormat::LegacyV2,
+            crate::model::GraphFormat::CanonicalV3,
+        ] {
+            let mut r = materialized_positions(format);
+            let x = r.resolve_qualified("Child::x").unwrap();
+            let a = r.resolve_qualified("Parent::a").unwrap();
+            let unrelated = r.resolve_qualified("unrelated").unwrap();
+            let identities: Vec<_> = r.b.elements.iter().map(|row| row.id).collect();
+            r.b.set(unrelated.0, "declaredName", json!("renamed"));
+            r.b.refresh_supported_chain_evidence(Some(&mut 0)).unwrap();
+            assert!(r.b.positional_redefinitions.is_none());
+            let mut fresh = r.b.clone();
+            let expected = fresh
+                .static_specialization_prefix(&HashMap::new(), true, Some(&mut 0))
+                .unwrap();
+            assert_eq!(expected.positional.targets[&x.0], [a.0]);
+            let mut exhausted = crate::eval::MAX_STEPS;
+            assert!(
+                r.b.certify_materialized_static_prefix(&mut exhausted)
+                    .is_none()
+            );
+            assert!(r.b.positional_redefinitions.is_none());
+            assert_eq!(r.b.certify_materialized_static_prefix(&mut 0), Some(true));
+            let actual = r.b.positional_redefinitions.as_ref().unwrap();
+            assert_eq!(actual.targets, expected.positional.targets);
+            assert_eq!(actual.incomplete, expected.positional.incomplete);
+            assert_eq!(
+                r.b.elements.iter().map(|row| row.id).collect::<Vec<_>>(),
+                identities
+            );
+            assert!(r.b.physical_static_authority_current());
+        }
+    }
+
+    #[test]
+    fn changed_parameter_role_cannot_install_a_recertified_positional_cache() {
+        let mut r = materialized_positions(crate::model::GraphFormat::CanonicalV3);
+        let x = r.resolve_qualified("Child::x").unwrap();
+        let relation = r.b.elements[x.0].owning_relationship.unwrap();
+        let identities: Vec<_> = r.b.elements.iter().map(|row| row.id).collect();
+        r.b.elements[relation].ty = "OwningMembership";
+        r.b.refresh_supported_chain_evidence(Some(&mut 0)).unwrap();
+        assert_eq!(r.b.certify_materialized_static_prefix(&mut 0), Some(false));
+        assert!(r.b.positional_redefinitions.is_none());
+        assert!(!r.b.physical_static_authority_current());
+        assert_eq!(
+            r.b.elements.iter().map(|row| row.id).collect::<Vec<_>>(),
+            identities
+        );
+    }
+
+    #[test]
+    fn generic_prefix_capture_does_not_publish_supplied_positional_metadata() {
+        let mut r = materialized_positions(crate::model::GraphFormat::CanonicalV3);
+        let unrelated = r.resolve_qualified("unrelated").unwrap();
+        r.b.set(unrelated.0, "declaredName", json!("renamed"));
+        r.b.refresh_supported_chain_evidence(Some(&mut 0)).unwrap();
+        let mut prefix =
+            r.b.static_specialization_prefix(&HashMap::new(), true, Some(&mut 0))
+                .unwrap();
+        let prefix_mut = Arc::get_mut(&mut prefix).unwrap();
+        Arc::get_mut(&mut prefix_mut.positional)
+            .unwrap()
+            .targets
+            .clear();
+        let boundary = r.b.implied.as_ref().unwrap().owned_results_from;
+        // Generic capture verifies physical recipes; arbitrary auxiliary
+        // metadata must not be promoted to the checked positional cache.
+        let _ = super::super::dynamic_invocations::capture_static_prefix(
+            &mut r.b,
+            prefix,
+            Some(boundary),
+            &mut 0,
+        );
+        assert!(r.b.positional_redefinitions.is_none());
+    }
+
+    #[test]
+    fn rebuilding_external_authority_does_not_reuse_previous_positions() {
+        let mut model = crate::model::Model::new();
+        assert!(model.add_source("external.kerml", "function Parent {in a;return b;} function Child specializes Parent {in x;return y;}").diagnostics.is_empty());
+        let r = ResolvedModel::build(&model);
+        let mut cached = r.b.clone();
+        // An external-name configuration always rebuilds its required-base
+        // authority, even if this particular configuration produces equal rows.
+        cached
+            .external_implied_names
+            .insert("Example".into(), cached.elements[0].id);
+        assert!(cached.ensure_positional_redefinitions_with_budget(&mut 0));
+        assert!(cached.supported_chain_evidence_current());
+        let old = cached.supported_implied.clone().unwrap();
+        let names = cached.external_implied_names.clone();
+        let mut fresh = cached.clone();
+        fresh.positional_redefinitions = None;
+        let mut cached_steps = 0;
+        let mut fresh_steps = 0;
+        let actual = cached
+            .static_specialization_prefix(&names, false, Some(&mut cached_steps))
+            .unwrap();
+        let expected = fresh
+            .static_specialization_prefix(&names, false, Some(&mut fresh_steps))
+            .unwrap();
+        assert!(!Arc::ptr_eq(
+            &old,
+            cached.supported_implied.as_ref().unwrap()
+        ));
+        assert_eq!(actual.rows, expected.rows);
+        assert_eq!(actual.positional.targets, expected.positional.targets);
+        assert_eq!(actual.positional.incomplete, expected.positional.incomplete);
+        assert_eq!(
+            cached_steps, fresh_steps,
+            "a new authority requires fresh positional planning"
+        );
     }
 }
 
@@ -5099,7 +5620,7 @@ impl Builder {
         &self,
         i: usize,
         lib_by_name: &HashMap<String, Uuid>,
-        rel_owner: &[Option<usize>],
+        variation_owner: Option<usize>,
         mut steps: Option<&mut usize>,
     ) -> Option<Vec<(&'static str, &'static str, &'static str, Uuid)>> {
         planning_charge(
@@ -5158,7 +5679,7 @@ impl Builder {
         // approximation as the covering rule above.
         if let Some(rel) = self.elements[i].owning_relationship {
             if self.elements[rel].ty == "VariantMembership" {
-                if let Some(variation) = rel_owner[rel] {
+                if let Some(variation) = variation_owner {
                     let variation_id = self.elements[variation].id;
                     let targets = |kinds: &[&str], key: &str| -> bool {
                         explicit.iter().any(|&r| {
@@ -6704,3 +7225,14 @@ mod binary_role_tests {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "implied/minimizer_differential_tests.rs"]
+mod minimizer_differential_tests;
+
+#[cfg(test)]
+#[path = "implied/current_graph_tests.rs"]
+mod current_graph_tests;
+
+#[cfg(test)]
+mod planning_names_tests;

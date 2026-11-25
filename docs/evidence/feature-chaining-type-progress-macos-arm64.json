@@ -1,0 +1,235 @@
+{
+  "recordedAt": "2026-10-18T15:32:13.815913+00:00",
+  "status": "All 978 vendor model tests, 103 native workspace tests, 39 public Node tests and 16 provenance/evidence tests pass. Clippy, native/WASM builds, contract, 133 conformance cases and matching requirements execution evidence pass on macOS arm64. No package or complete semantic obligation closes.",
+  "kernelInputSha256": "f4c0619cc8a3437ecf66adb27ef2523a7344f336932601a058b7f41fd8ab0543",
+  "previousQualifiedKernelInputSha256": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028",
+  "implementation": "FeatureRequirements returns the final Feature from the common checked one-hop chain reader. Type projection consumes the same certificate as a typing dependency and required path, preserving complete ordered closure and redundancy pruning. No new specialization rows or competing graph are introduced.",
+  "files": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "f07b8f5c4ae239d4825ec3048e0e9c80973c0c0b3b61525284e55271875853c1",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs": "b0f4cdaa906e79bd21e6ac611949f84c8c47ae175de96fc5d5230b430e6909ee",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/chaining_types_tests.rs": "ed2e58c08de989291bdb145febb535ef4bf76b799c85c567feed9692642a8494",
+    "crates/sysml-kernel/tests/chained_feature_types.rs": "9079ef05ec1c0af4f5ffa81256578e8702ad18c23dd44972b3eab1901789b53f",
+    "patches/manifest.json": "00f29caf4ec4c08251a293a47fb56204d6ba183790dafa5dec016da49eed6846"
+  },
+  "acceptance": {
+    "status": "Expanded disposable public integration and all three selected existing module suites pass.",
+    "preparedAt": "2026-10-18T15:11:14.935507+00:00",
+    "acceptance": [
+      "Canonical public integration checks ten exact report/property pairs from unmodified source. Legacy checks incomplete direct/chain reports, exact Base self, and ten exact pairs with explicitly authored required data-value paths. Cumulative work checks remain private.",
+      "The private closure test adds a two-Feature chain cycle without direct self links, alongside the separately invalid direct-self case.",
+      "Run the complete existing typing/specialization modules against the candidate to challenge interactions and old refusal expectations."
+    ],
+    "compileFailure": {
+      "log": "target/trigger-validation/feature-chaining-type-extended-compile-failure.log",
+      "logSha256": "009bf2a6615734aa7b85ef047dbb592efc3f246ba7925a08fcd5afab53a97dc7"
+    },
+    "updatedAt": "2026-10-18T15:27:11.331883+00:00",
+    "legacyFinding": {
+      "log": "target/trigger-validation/feature-chaining-legacy-probe.log",
+      "logSha256": "be82745f73319c872d4ce30d617c74059d28a35d32de5157206a36a91ce23a9a",
+      "failedIntegrationLog": "target/trigger-validation/feature-chaining-type-extended-legacy-failure.log",
+      "finding": "LegacyV2 fails even Holder::next and Nested::leaf before following any chain. Its owned_typing_requirements deliberately omits unconditional data-value/occurrence/object bases, while CanonicalV3 constructs them. Base::Anything::self has complete authored paths and succeeds in LegacyV2. The new common chain reader does not invent missing prerequisites.",
+      "review": "The application builds CanonicalV3. Keep its unmodified source acceptance. Legacy acceptance separately asserts incomplete direct/chain reports, then supplies explicit Base::dataValues paths to test complete chain behavior. This preserves documented legacy construction boundaries; no full legacy semantic-generation claim."
+    },
+    "completedAt": "2026-10-18T15:32:12.272617+00:00",
+    "log": "target/trigger-validation/feature-chaining-type-extended.log",
+    "logSha256": "65b76da38a8448dfd0048252356f6009065a3e1c69d0559b6e2561b797e6e542",
+    "testedFiles": {
+      "target/trigger-validation/feature-chaining-type-stage/type_relations.rs": "f1d916a671e2580d095ed340a84235806d31ae35b247b6400a528aa27a8c9774",
+      "target/trigger-validation/feature-chaining-type-stage/adapter.rs": "b0f4cdaa906e79bd21e6ac611949f84c8c47ae175de96fc5d5230b430e6909ee",
+      "target/trigger-validation/feature-chaining-type-stage/chaining_types_tests.rs": "ed2e58c08de989291bdb145febb535ef4bf76b799c85c567feed9692642a8494",
+      "target/trigger-validation/feature-chaining-type-stage/chained_feature_types.rs": "9079ef05ec1c0af4f5ffa81256578e8702ad18c23dd44972b3eab1901789b53f",
+      "target/trigger-validation/feature-chaining-type-stage/chaining_type_probe.rs": "248a8ae50446a96a9025d8deff83bafa1446539fdb63e7d3dc890a48171931ce"
+    },
+    "suiteTests": {
+      "publicIntegration": 1,
+      "typeRelationsIncludingDiagnostic": 64,
+      "featureTypeProjection": 35,
+      "namedCalleeChainGuards": 3
+    }
+  },
+  "fullQualification": {
+    "status": "pass",
+    "pipeline": {
+      "kernelInputSha256": "f4c0619cc8a3437ecf66adb27ef2523a7344f336932601a058b7f41fd8ab0543",
+      "startedAt": "2026-10-18T15:32:27.090Z",
+      "status": "passed",
+      "phases": [
+        {
+          "name": "workspace",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--workspace"
+          ],
+          "startedAt": "2026-10-18T15:32:27.093Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:42:22.926Z"
+        },
+        {
+          "name": "clippy",
+          "args": [
+            "tools/rust.mjs",
+            "clippy",
+            "--locked",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "startedAt": "2026-10-18T15:42:22.928Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:42:26.522Z"
+        },
+        {
+          "name": "wasm",
+          "args": [
+            "tools/build-kernel.mjs"
+          ],
+          "startedAt": "2026-10-18T15:42:26.522Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:43:06.876Z"
+        },
+        {
+          "name": "cli",
+          "args": [
+            "tools/rust.mjs",
+            "build",
+            "--locked",
+            "--release",
+            "-p",
+            "sysml-cli"
+          ],
+          "startedAt": "2026-10-18T15:43:06.877Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:43:47.327Z"
+        },
+        {
+          "name": "public",
+          "args": [
+            "--experimental-strip-types",
+            "--test",
+            "--test-concurrency=1",
+            "tests/accept-actions.test.ts",
+            "tests/families.test.ts",
+            "tests/kernel.test.ts",
+            "tests/state-subactions.test.ts",
+            "tests/kernel-client.test.ts",
+            "tests/conformance-runner.test.mjs"
+          ],
+          "startedAt": "2026-10-18T15:43:47.328Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:47:14.392Z"
+        },
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-18T15:47:14.393Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:57:33.312Z"
+        },
+        {
+          "name": "requirements",
+          "args": [
+            "tools/requirements.mjs",
+            "--conformance",
+            "target/conformance/report.json"
+          ],
+          "startedAt": "2026-10-18T15:57:33.313Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T15:57:34.396Z"
+        }
+      ],
+      "finishedAt": "2026-10-18T15:57:35.299Z"
+    },
+    "vendor": {
+      "status": "pass",
+      "session": 8019,
+      "log": "target/trigger-validation/feature-chaining-type-full-model.log",
+      "kernelInputSha256": "f4c0619cc8a3437ecf66adb27ef2523a7344f336932601a058b7f41fd8ab0543",
+      "tests": 978,
+      "logSha256": "42285073cdd6bfbf243bd73f61cc0665d9513bbf75eb60b14e0d0fb81d4c8b8c"
+    },
+    "provenance": {
+      "status": "pass",
+      "session": 64033,
+      "log": "target/trigger-validation/feature-chaining-type-provenance.log",
+      "kernelInputSha256": "f4c0619cc8a3437ecf66adb27ef2523a7344f336932601a058b7f41fd8ab0543",
+      "logSha256": "2b590450892075a7145a86a6c0eae31e2b239985e71f38991fd0a1e5004b3ece",
+      "tests": 16
+    },
+    "contract": {
+      "status": "pass",
+      "session": 96009,
+      "log": "target/trigger-validation/feature-chaining-type-contract.log",
+      "kernelInputSha256": "f4c0619cc8a3437ecf66adb27ef2523a7344f336932601a058b7f41fd8ab0543",
+      "logSha256": "ddcd1affb90428ea134806f065697dbbc9e28aefcd2e0aa2106d76ce1432daa6"
+    },
+    "diffCheck": "pass",
+    "workspace": {
+      "status": "pass",
+      "log": "target/trigger-validation/feature-chaining-type-qualification-workspace.log",
+      "logSha256": "aebed8c5b76f0d7fb04ff9aeb73f8b98359aa7c385fb97e772050fe2108da3a0",
+      "tests": 103
+    },
+    "clippy": {
+      "status": "pass",
+      "log": "target/trigger-validation/feature-chaining-type-qualification-clippy.log",
+      "logSha256": "79c37f15348efea3c518e68c9584b824541a15e3e2f7646a203df3ec39004a06"
+    },
+    "wasm": {
+      "status": "pass",
+      "log": "target/trigger-validation/feature-chaining-type-qualification-wasm.log",
+      "logSha256": "ab990eb69f3bc3fa521ee78e443aac2cecda0e8d1bd7aad93472254262832a4d"
+    },
+    "cli": {
+      "status": "pass",
+      "log": "target/trigger-validation/feature-chaining-type-qualification-cli.log",
+      "logSha256": "3287d8c8abcb8f0de32877796134c88a7fcd8f6609b1b9dbe7b17895df6e8e92"
+    },
+    "public": {
+      "status": "pass",
+      "log": "target/trigger-validation/feature-chaining-type-qualification-public.log",
+      "logSha256": "08d61194b08f03a8527123915c5ebd4cdc23ad2a5ef71cdb8c51b917dfc4cb76",
+      "tests": 39
+    },
+    "conformance": {
+      "status": "pass",
+      "log": "target/trigger-validation/feature-chaining-type-qualification-conformance.log",
+      "logSha256": "7acdaede96a5af8d9db79e0cff8517ed642f9ae5e638cda0e98b585541cf55d3",
+      "report": "docs/evidence/feature-chaining-type-conformance-macos-arm64.json",
+      "reportSha256": "c324b466a3c24cb5ab2be5352d259c3f3e861c7e29db94eb22d4d5f292c1767c",
+      "kernelInputSha256": "f4c0619cc8a3437ecf66adb27ef2523a7344f336932601a058b7f41fd8ab0543",
+      "binarySha256": "4a04970452656bf63d4742acf5cca1d2e8e50f563780efbd2ce42d9e86061c5b"
+    },
+    "requirements": {
+      "status": "pass",
+      "log": "target/trigger-validation/feature-chaining-type-qualification-requirements.log",
+      "logSha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76",
+      "report": "docs/evidence/feature-chaining-type-requirements-macos-arm64.json",
+      "reportSha256": "0c586932220eb4abf45b945a3f427985e65bed4ca6cf334bdd2c13907dedf4e5",
+      "kernelInputSha256": "f4c0619cc8a3437ecf66adb27ef2523a7344f336932601a058b7f41fd8ab0543",
+      "binarySha256": "4a04970452656bf63d4742acf5cca1d2e8e50f563780efbd2ce42d9e86061c5b"
+    }
+  },
+  "limits": [
+    "Named chaining validation cardinality, self exclusion and adjacent featuring obligations remain open. Static types do not certify whole-model validity.",
+    "Legacy implicit owned-typing bases remain a documented construction limitation; its incomplete query and explicit-path positive cases are both covered.",
+    "Portion dependencies still block five of the seventeen initial diagnostic queries and several selected default result types.",
+    "No release, installed application, engine version or public snapshot schema changes."
+  ],
+  "next": "Complete conditional portion applicability, named chaining validation review and remaining contextual invocation-default dependencies.",
+  "qualifiedAt": "2026-10-18T15:57:35.299Z"
+}

@@ -1,0 +1,151 @@
+use super::*;
+
+fn names() -> Builder {
+    let mut b = Builder::default();
+    b.lib_qnames
+        .push((Uuid::from_u128(1), vec!["Pkg".into(), "Type".into()]));
+    b.lib_qnames
+        .push((Uuid::from_u128(2), vec!["量".into(), "速度".into()]));
+    b
+}
+
+#[test]
+fn raw_names_share_immutable_snapshots_and_follow_same_length_edits() {
+    let mut b = names();
+    let mut cold = 0;
+    let original = b.planning_names(Some(&mut cold)).unwrap();
+    assert_eq!(
+        &*original,
+        &HashMap::from([
+            ("Pkg::Type".into(), Uuid::from_u128(1)),
+            ("量::速度".into(), Uuid::from_u128(2)),
+        ])
+    );
+    let mut warm = 0;
+    assert!(Arc::ptr_eq(
+        &original,
+        &b.planning_names(Some(&mut warm)).unwrap()
+    ));
+    assert!(warm < cold);
+    let mut clone = b.clone();
+    clone.lib_qnames[0].1[1] = "Kind".into();
+    let changed = clone.planning_names(Some(&mut 0)).unwrap();
+    assert_eq!(changed.get("Pkg::Kind"), Some(&Uuid::from_u128(1)));
+    assert!(!changed.contains_key("Pkg::Type"));
+    assert_eq!(original.get("Pkg::Type"), Some(&Uuid::from_u128(1)));
+    assert!(Arc::ptr_eq(
+        &original,
+        &b.planning_names(Some(&mut 0)).unwrap()
+    ));
+    clone.lib_qnames[0].0 = Uuid::from_u128(3);
+    assert_eq!(
+        clone.planning_names(Some(&mut 0)).unwrap().get("Pkg::Kind"),
+        Some(&Uuid::from_u128(3))
+    );
+    // An earlier caller's immutable map retains its own identity mapping.
+    assert_eq!(changed.get("Pkg::Kind"), Some(&Uuid::from_u128(1)));
+}
+
+#[test]
+fn external_overrides_never_reuse_a_previous_overlay() {
+    let mut b = names();
+    let loaded = b.planning_names(Some(&mut 0)).unwrap();
+    b.external_implied_names
+        .insert("Pkg::Type".into(), Uuid::from_u128(3));
+    b.external_implied_names
+        .insert("External::Only".into(), Uuid::from_u128(4));
+    let first = b.planning_names(Some(&mut 0)).unwrap();
+    assert_eq!(first.get("Pkg::Type"), Some(&Uuid::from_u128(3)));
+    assert_eq!(first.get("External::Only"), Some(&Uuid::from_u128(4)));
+    assert_eq!(first.get("量::速度"), Some(&Uuid::from_u128(2)));
+    b.external_implied_names
+        .insert("Pkg::Type".into(), Uuid::from_u128(5));
+    assert_eq!(
+        b.planning_names(Some(&mut 0)).unwrap().get("Pkg::Type"),
+        Some(&Uuid::from_u128(5))
+    );
+    assert_eq!(first.get("Pkg::Type"), Some(&Uuid::from_u128(3)));
+    b.external_implied_names.clear();
+    assert!(Arc::ptr_eq(
+        &loaded,
+        &b.planning_names(Some(&mut 0)).unwrap()
+    ));
+    b.external_implied_names
+        .insert("Pkg::Type".into(), Uuid::from_u128(3));
+    let mut exhausted = crate::eval::MAX_STEPS - 2;
+    assert!(b.planning_names(Some(&mut exhausted)).is_none());
+    b.lib_qnames[0].1[1] = "Renamed".into();
+    let overlay = b.planning_names(Some(&mut 0)).unwrap();
+    assert_eq!(overlay.get("Pkg::Renamed"), Some(&Uuid::from_u128(1)));
+    assert_eq!(overlay.get("Pkg::Type"), Some(&Uuid::from_u128(3)));
+    b.external_implied_names.clear();
+    let renamed = b.planning_names(Some(&mut 0)).unwrap();
+    assert_eq!(renamed.get("Pkg::Renamed"), Some(&Uuid::from_u128(1)));
+    assert!(!renamed.contains_key("Pkg::Type"));
+    assert_eq!(loaded.get("Pkg::Type"), Some(&Uuid::from_u128(1)));
+}
+
+#[test]
+fn incomplete_name_materialization_is_unpublished_and_retryable() {
+    let mut b = names();
+    let mut exhausted = crate::eval::MAX_STEPS - 2;
+    assert!(b.planning_names(Some(&mut exhausted)).is_none());
+    assert!(b.planning_names.is_none());
+    let original = b.planning_names(Some(&mut 0)).unwrap();
+    b.lib_qnames[0].1[1] = "Changed".into();
+    let mut exhausted = crate::eval::MAX_STEPS - 2;
+    assert!(b.planning_names(Some(&mut exhausted)).is_none());
+    assert!(Arc::ptr_eq(
+        &original,
+        &b.planning_names.as_ref().unwrap().names
+    ));
+    let changed = b.planning_names(Some(&mut 0)).unwrap();
+    assert_eq!(changed.get("Pkg::Changed"), Some(&Uuid::from_u128(1)));
+    assert!(!changed.contains_key("Pkg::Type"));
+    let mut exhausted = crate::eval::MAX_STEPS;
+    assert!(b.planning_names(Some(&mut exhausted)).is_none());
+    assert!(Arc::ptr_eq(
+        &changed,
+        &b.planning_names(Some(&mut 0)).unwrap()
+    ));
+}
+
+#[test]
+fn stale_snapshot_retirement_has_the_same_budget_with_or_without_readers() {
+    let mut measured = Vec::new();
+    for retain_reader in [false, true] {
+        let mut b = names();
+        let old = b.planning_names(Some(&mut 0)).unwrap();
+        let reader = retain_reader.then_some(old);
+        b.lib_qnames[0].1[1] = "Kind".into();
+        let mut work = 0;
+        let current = b.planning_names(Some(&mut work)).unwrap();
+        assert_eq!(current.get("Pkg::Kind"), Some(&Uuid::from_u128(1)));
+        assert!(!current.contains_key("Pkg::Type"));
+        if let Some(reader) = reader {
+            assert_eq!(reader.get("Pkg::Type"), Some(&Uuid::from_u128(1)));
+        }
+        measured.push(work);
+    }
+    assert_eq!(measured[0], measured[1]);
+
+    // With one step less than the complete rebuild requires, either reader
+    // lifetime must refuse before replacing the old published snapshot.
+    for retain_reader in [false, true] {
+        let mut b = names();
+        let old = b.planning_names(Some(&mut 0)).unwrap();
+        let pointer = Arc::as_ptr(&old);
+        let reader = retain_reader.then_some(old);
+        b.lib_qnames[0].1[1] = "Kind".into();
+        let mut budget = crate::eval::MAX_STEPS - measured[0] + 1;
+        assert!(b.planning_names(Some(&mut budget)).is_none());
+        assert_eq!(
+            Arc::as_ptr(&b.planning_names.as_ref().unwrap().names),
+            pointer
+        );
+        let retried = b.planning_names(Some(&mut 0)).unwrap();
+        assert_eq!(retried.get("Pkg::Kind"), Some(&Uuid::from_u128(1)));
+        assert!(!retried.contains_key("Pkg::Type"));
+        drop(reader);
+    }
+}

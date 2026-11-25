@@ -1,0 +1,327 @@
+//! Result selection over the shared complete ordered feature-membership proof.
+use super::{
+    Builder, ElementRef, ResolvedModel, TypeFeatures, TypeInputIssue, membership_evidence,
+    semantic_ownership, structural_index::StoredStructure,
+};
+use crate::metaclass::conforms;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[non_exhaustive]
+pub struct ExpressionResultReport {
+    /// The first effective return parameter. Complete absence is distinct from
+    /// an unavailable provider; exactly-one validity is a separate constraint.
+    pub result: Result<Option<ElementRef>, TypeInputIssue>,
+    pub steps: usize,
+}
+
+impl Builder {
+    pub(super) fn select_return_parameter(
+        &mut self,
+        sequence: &TypeFeatures,
+        steps: &mut usize,
+    ) -> Result<Option<ElementRef>, TypeInputIssue> {
+        let raw =
+            StoredStructure::for_query(self, steps).ok_or(TypeInputIssue::IncompleteProvider)?;
+        for &membership in &sequence.feature_memberships {
+            *steps = steps.saturating_add(1);
+            if *steps > crate::eval::MAX_STEPS {
+                return Err(TypeInputIssue::WorkLimit);
+            }
+            if !conforms(self.elements[membership.0].ty, "ReturnParameterMembership") {
+                continue;
+            }
+            let owner =
+                semantic_ownership::checked_relationship_carrier(self, &raw, membership.0, steps)
+                    .flatten()
+                    .ok_or(TypeInputIssue::InvalidRelationship)?;
+            let result = membership_evidence::member(self, &raw, owner, membership.0, steps)
+                .ok_or(TypeInputIssue::InvalidRelationship)?;
+            return Ok(Some(ElementRef(result)));
+        }
+        Ok(None)
+    }
+}
+
+impl ResolvedModel {
+    /// Read the first effective return membership of supported ordinary, literal
+    /// and generated-reference Expressions. Uses the same membership reduction as
+    /// Type.feature; neither publishes rows nor executes the expression.
+    pub fn expression_result_report(&mut self, receiver: ElementRef) -> ExpressionResultReport {
+        self.expression_result_report_with_budget(receiver, 0)
+    }
+    pub(in crate::json) fn expression_result_report_with_budget(
+        &mut self,
+        receiver: ElementRef,
+        initial: usize,
+    ) -> ExpressionResultReport {
+        let mut steps = initial;
+        let result = match self.b.elements.get(receiver.0) {
+            None => Err(TypeInputIssue::InvalidElement),
+            Some(row)
+                if !conforms(row.ty, "Expression")
+                    || !super::step_context::supports_membership_domain(row.ty) =>
+            {
+                Err(TypeInputIssue::UnsupportedConfiguration)
+            }
+            Some(_) => self
+                .b
+                .checked_type_features(receiver.0, &mut steps)
+                .and_then(|features| self.b.select_return_parameter(&features, &mut steps)),
+        };
+        ExpressionResultReport {
+            result: if steps > crate::eval::MAX_STEPS {
+                Err(TypeInputIssue::WorkLimit)
+            } else {
+                result
+            },
+            steps,
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        json::{ClosurePolicy, PropertyError},
+        model::{GraphFormat, Model},
+    };
+    use serde_json::json;
+    const LIB: &str = "standard library package Base {classifier Anything; feature things:Anything;}
+standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;}
+standard library package Performances {
+ behavior Performance specializes Occurrences::Occurrence {step enclosedPerformances:Performance subsets performances;}
+ step performances:Performance subsets Occurrences::occurrences;
+ function Evaluation specializes Performance {return result;}
+ expr evaluations:Evaluation subsets performances;
+}";
+    fn fixture(source: &str, library: &str, format: GraphFormat) -> ResolvedModel {
+        let mut model = Model::with_graph_format(format);
+        assert!(
+            model
+                .add_library_source("result-library.kerml", library)
+                .diagnostics
+                .is_empty()
+        );
+        let parsed = model.add_source("expression-results.kerml", source);
+        assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
+        ResolvedModel::build(&model)
+    }
+
+    #[test]
+    fn expression_result_preserves_effective_order_redefinition_and_membership_identity() {
+        for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
+            let mut r = fixture(
+                "function A {return a;} function B {return b;}
+                function Left specializes A; function Right specializes A;
+                expr both:A,B; expr swapped:B,A; expr diamond:Left,Right;
+                expr replaced:A {return local redefines A::a;} behavior Owner {expr nested:A;}",
+                LIB,
+                format,
+            );
+            for (source, expected) in [
+                ("both", "A::a"),
+                ("swapped", "B::b"),
+                ("diamond", "A::a"),
+                ("replaced", "replaced::local"),
+                ("Owner::nested", "A::a"),
+            ] {
+                let source = r.resolve_qualified(source).unwrap();
+                let expected = r.resolve_qualified(expected).unwrap();
+                let count = r.b.elements.len();
+                assert_eq!(
+                    r.expression_result_report(source).result,
+                    Ok(Some(expected)),
+                    "{format:?}: {source:?}"
+                );
+                assert_eq!(r.b.elements.len(), count);
+                r.set_closure_policy(ClosurePolicy::Passthrough);
+                assert_eq!(
+                    r.property(source, "result"),
+                    Err(PropertyError::Approximate)
+                );
+                r.set_closure_policy(ClosurePolicy::Closure {
+                    include_implied: true,
+                });
+                assert_eq!(
+                    r.property(source, "result"),
+                    Ok(json!({"@id":r.element_id(expected)}))
+                );
+                let mut exhausted = crate::eval::MAX_STEPS;
+                assert_eq!(
+                    r.expression_result_report_with_budget(source, exhausted)
+                        .result,
+                    Err(TypeInputIssue::WorkLimit)
+                );
+                exhausted = 0;
+                assert_eq!(
+                    r.expression_result_report_with_budget(source, exhausted)
+                        .result,
+                    Ok(Some(expected))
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn expression_results_replay_prepared_and_serialized_libraries() {
+        use crate::prepared::PreparedLibrary;
+        use std::sync::Arc;
+        let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
+        model.add_library_source("result-library.kerml", LIB);
+        let prepared = model.prepare_library().unwrap();
+        let decoded =
+            Arc::new(PreparedLibrary::from_bytes(&prepared.to_bytes(85).unwrap(), 85).unwrap());
+        let mut expected = None;
+        for prepared in [prepared, decoded] {
+            let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
+            prepared.install(&mut model).unwrap();
+            model.add_source("replay.kerml", "function F {return answer;} expr e:F;");
+            let mut r = ResolvedModel::build(&model);
+            let source = r.resolve_qualified("e").unwrap();
+            let answer = r.resolve_qualified("F::answer").unwrap();
+            assert_eq!(r.expression_result_report(source).result, Ok(Some(answer)));
+            let id = r.element_id(answer);
+            if let Some(expected) = expected {
+                assert_eq!(id, expected);
+            }
+            expected = Some(id);
+        }
+    }
+
+    #[test]
+    fn complete_result_absence_is_distinct_from_missing_or_cyclic_evidence() {
+        let mut r = fixture(
+            "expr e;",
+            &LIB.replace("return result;", ""),
+            GraphFormat::CanonicalV3,
+        );
+        let source = r.resolve_qualified("e").unwrap();
+        assert_eq!(r.expression_result_report(source).result, Ok(None));
+        r.set_closure_policy(ClosurePolicy::Closure {
+            include_implied: true,
+        });
+        assert_eq!(
+            r.property(source, "result"),
+            Err(PropertyError::MissingRequiredValue)
+        );
+        for source in [
+            "expr e:Missing;",
+            "expr e subsets peer; expr peer subsets e;",
+        ] {
+            let mut r = fixture(source, LIB, GraphFormat::CanonicalV3);
+            let e = r.resolve_qualified("e").unwrap();
+            assert!(r.expression_result_report(e).result.is_err());
+        }
+        let mut r = fixture("expr e;", "", GraphFormat::CanonicalV3);
+        let e = r.resolve_qualified("e").unwrap();
+        assert!(r.expression_result_report(e).result.is_err());
+    }
+
+    #[test]
+    fn expression_result_rechecks_mutated_memberships_roles_flags_and_metadata() {
+        for change in 0..7 {
+            let mut r = fixture(
+                "function A {return a;} expr e:A {return local redefines A::a;}",
+                LIB,
+                GraphFormat::CanonicalV3,
+            );
+            let e = r.resolve_qualified("e").unwrap();
+            let result = r.resolve_qualified("e::local").unwrap();
+            assert_eq!(r.expression_result_report(e).result, Ok(Some(result)));
+            let membership = r.b.elements[result.0].owning_relationship.unwrap();
+            match change {
+                0 => r.b.set(membership, "ownedMemberParameter", json!(null)),
+                1 => {
+                    // Selection is by ReturnParameterMembership, not by the
+                    // separate requirement that a valid return be an output.
+                    r.b.set(result.0, "direction", json!("in"));
+                    assert_eq!(r.expression_result_report(e).result, Ok(Some(result)));
+                    r.b.set(result.0, "direction", json!("invalid"));
+                }
+                2 => r.b.set(e.0, "isComposite", json!(true)),
+                3 => {
+                    r.b.elements[e.0].owned_relationships = r.b.elements[e.0]
+                        .owned_relationships
+                        .iter()
+                        .copied()
+                        .filter(|&m| m != membership)
+                        .collect::<Vec<_>>()
+                        .into()
+                }
+                4 => {
+                    r.b.lib_qnames.push((
+                        r.element_id(e),
+                        vec!["Performances".into(), "evaluations".into()],
+                    ));
+                }
+                5 => r.b.metadata_associations_incomplete = true,
+                6 => r.b.elements[membership].ty = "ResultExpressionMembership",
+                _ => unreachable!(),
+            }
+            assert!(
+                r.expression_result_report(e).result.is_err(),
+                "change {change}"
+            );
+            r.set_closure_policy(ClosurePolicy::Closure {
+                include_implied: true,
+            });
+            assert!(r.property(e, "result").is_err(), "change {change}");
+        }
+    }
+
+    #[test]
+    fn actual_library_expression_membership_and_literal_returns_are_checked() {
+        let library = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../spec-refs/SysML-v2-Release/sysml.library");
+        assert!(
+            library.exists(),
+            "qualification requires the bundled library"
+        );
+        for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
+            let mut model = Model::with_graph_format(format);
+            model.load_library_dir(&library).unwrap();
+            assert!(model.add_source("results.kerml", "function F {return result;} expr e:F; feature b=true; feature i=1; feature inf=*; feature r=1.5; feature s=\"hello\"; feature n=null;").diagnostics.is_empty());
+            let mut r = ResolvedModel::build(&model);
+            let expression = r.resolve_qualified("e").unwrap();
+            let result = r.resolve_qualified("F::result").unwrap();
+            r.implied_relationships(expression);
+            assert_eq!(
+                r.expression_result_report(expression).result,
+                Ok(Some(result)),
+                "{format:?}"
+            );
+            r.set_closure_policy(ClosurePolicy::Closure {
+                include_implied: true,
+            });
+            for (kind, callee) in [
+                ("LiteralBoolean", "LiteralBooleanEvaluation"),
+                ("LiteralInteger", "LiteralIntegerEvaluation"),
+                ("LiteralInfinity", "LiteralIntegerEvaluation"),
+                ("LiteralRational", "LiteralRationalEvaluation"),
+                ("LiteralString", "LiteralStringEvaluation"),
+                ("NullExpression", "NullEvaluation"),
+            ] {
+                let source = r
+                    .user_elements()
+                    .find(|&e| r.element_type(e) == kind)
+                    .unwrap();
+                let function = r
+                    .resolve_qualified(&format!("Performances::{callee}"))
+                    .unwrap();
+                let expected = r.function_result_report(function).result.unwrap().unwrap();
+                let report = r.expression_result_report(source);
+                assert_eq!(
+                    report.result,
+                    Ok(Some(expected)),
+                    "{format:?}: {kind}, {} steps",
+                    report.steps
+                );
+                assert_eq!(
+                    r.property(source, "result"),
+                    Ok(json!({"@id":r.element_id(expected)}))
+                );
+            }
+        }
+    }
+}

@@ -45,7 +45,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn effective_features(",
       "role": "candidate upstream graph and resolution implementation; presence does not prove every rule",
-      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
+      "sha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
     },
     "typing": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/typing.rs",
@@ -81,13 +81,13 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn resolve_in(",
       "role": "candidate upstream scoped-name resolution",
-      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
+      "sha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
     },
     "connector-ends": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn connector_end_targets(",
       "role": "candidate upstream connector-chain query",
-      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
+      "sha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
     },
     "diagram": {
       "path": "src/viewer/diagram.ts",
@@ -123,25 +123,25 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
       "symbol": "pub(super) fn audited_featuring_domain(",
       "role": "Audited package AttributeUsage domain; checked ownership and featuring relationships, with variable/variation and malformed-evidence exclusions.",
-      "sha256": "581edf552f7a33497a0deea3268c912c3b91f255c7f6d3a3624aa5a02ce90925"
+      "sha256": "ad5eb7ba7041e0648e641709509fdeaa79ce4eaedc888682536013b6064f7662"
     },
     "checked-model-level": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
       "symbol": "pub fn model_level_evaluability(",
       "role": "Bounded eligibility proof; package attribute support does not qualify every expression family.",
-      "sha256": "08f521867657bed8204154c271036b5fdf12db1ea4f71f31e6e256a3dd77f3f3"
+      "sha256": "ae2f7350291639170ca2f70e1f537571fc1f8e90b37a4248b8910e1467775caa"
     },
     "checked-invocation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs",
       "symbol": "pub fn invocation_binding_report(",
       "role": "Checked canonical callee/input/argument identity mapping; requires current shared publication and retains incomplete-provider failures.",
-      "sha256": "8329c60723149b689537a7f5afcf251396c196c71742102703cf20ab492dd015"
+      "sha256": "0fad34f0b57d139f495b01ab0b2b836a90886b2ca301d1ce29fcf0c44994af62"
     },
     "checked-bound-expressions": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/cardinality.rs",
       "symbol": "fn certified_operators(",
       "role": "Checked operand/wrapper certification, Boolean branch selection and retained unknown boundaries; includes private conditional proof regressions.",
-      "sha256": "55904e99c8f1a10492d76ae6098135aa883759a5df47feee6e8858dfc1910e8a"
+      "sha256": "f05f8577d58d5be76882c041733aa81395fe34d166ff4b0a69fa17c54f435ef6"
     },
     "checked-bound-execution": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/eval.rs",
@@ -171,7 +171,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
       "symbol": "fn consistent_unresolved_source(",
       "role": "Checked localization of canonical unresolved classifier specializations; preserves dependent qualifications, identity, ownership, revision and work guards.",
-      "sha256": "4e02c3ee3a88c75d1b398a91e91fe8bbbf0c71359161a3955171d998db815d96"
+      "sha256": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e"
     },
     "isolation-tests": {
       "path": "crates/sysml-kernel/tests/isolation.rs",
@@ -183,7 +183,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
       "symbol": "pub(in crate::json) struct EligibilityBatch",
       "role": "Query-local reuse of checked topology, TypeRelations and callee signatures, with fresh path-sensitive eligibility and supplied-binding proofs, semantic stamps, cumulative work and partial-certificate guards.",
-      "sha256": "08f521867657bed8204154c271036b5fdf12db1ea4f71f31e6e256a3dd77f3f3"
+      "sha256": "ae2f7350291639170ca2f70e1f537571fc1f8e90b37a4248b8910e1467775caa"
     },
     "cold-query-tests": {
       "path": "crates/sysml-kernel/tests/cold_queries.rs",
@@ -213,7 +213,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
       "symbol": "pub(super) fn prepare_dynamic_graph(",
       "role": "same-transaction static prefix avoids unused name materialization; physical authority and complete recipe checks remain required",
-      "sha256": "01c9aa635ad9d9fb3a7fdaf5d34071b626494a37da1db52eebf020e425ff2478"
+      "sha256": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e"
     },
     "empty-comparison-tests": {
       "path": "crates/sysml-kernel/tests/foundation.rs",
@@ -225,13 +225,13 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs",
       "symbol": "pub(super) fn stage_dynamic_rows(",
       "role": "Complete row preparation before atomic ownership append; late failure preserves independently staged result-family ownership.",
-      "sha256": "01c9aa635ad9d9fb3a7fdaf5d34071b626494a37da1db52eebf020e425ff2478"
+      "sha256": "881c2f947d293cd6601dc5ebf8b61e06559096e5fb9f6c3db9a498fd4f04453e"
     },
     "atomic-ownership-batch": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/semantic_ownership.rs",
       "symbol": "pub(super) fn register_relationship_batch(",
       "role": "Bounded all-or-nothing registration, with prior-view preservation and equivalence to individual registration tests.",
-      "sha256": "9f724257d0b466612447e7b057b9bb543e47c316e9a763468b51d13ee829fa0a"
+      "sha256": "e7263e28777f0386588ac9265e004096426fde510801e9d1cef59145e0afac1e"
     },
     "string-tests": {
       "path": "crates/sysml-kernel/tests/foundation.rs",
@@ -243,7 +243,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs",
       "symbol": "pub(super) fn capture_and_prepare_with_workspace(",
       "role": "Capture and detached planning share an exclusive borrow, avoiding a duplicate prefix audit; warm collisions use the complete checked raw identity index. Cold/warm equivalence and corruption/refusal regressions are retained.",
-      "sha256": "4e02c3ee3a88c75d1b398a91e91fe8bbbf0c71359161a3955171d998db815d96"
+      "sha256": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e"
     },
     "checked-lexer": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/lexer.rs",
@@ -303,7 +303,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check.rs",
       "symbol": "pub fn validate_semantics_with(",
       "role": "Runs semantic validators including metadata type checks",
-      "sha256": "0d6adf4c0ba1cf041edb3e46aa51b77b743f7c7b12768d6aec3e2f081098efd7"
+      "sha256": "b0302f04a707143e9f2c80af90ad2ce798973619952537aa595ae220e5d9c163"
     },
     "family-tests": {
       "path": "crates/sysml-kernel/tests/families.rs",
@@ -327,13 +327,13 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "fn validate_parallel_states(",
       "role": "Checked source/target incidence of transitions on directly owned parallel-state actions, with independent unresolved endpoint guards",
-      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
+      "sha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
     },
     "transition-target-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "fn target_feature(",
       "role": "Bounded written transition target Feature.featureTarget identity proof before ActionUsage kind validation",
-      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
+      "sha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
     },
     "state-query": {
       "path": "crates/sysml-kernel/src/states.rs",
@@ -351,19 +351,19 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "pub fn state_subactions(",
       "role": "Shared semantic library query for written state subaction kinds and action elements",
-      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
+      "sha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
     },
     "trigger-source-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "pub(super) fn validate(",
       "role": "Trigger-source constraint uses shared triggerAction and checked source identity",
-      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
+      "sha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
     },
     "transition-construction": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "\"sourceparam\"",
       "role": "Textual transition source/payload parameter construction",
-      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
+      "sha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
     },
     "transition-construction-tests": {
       "path": "crates/sysml-kernel/tests/transition_construction.rs",
@@ -375,7 +375,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "\"validateTransitionUsageParameters\"",
       "role": "Owned input, state/transition owner and trigger/effect kind checks with private malformed-graph regressions",
-      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
+      "sha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
     },
     "transition-parameter-ast": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/ast.rs",
@@ -393,13 +393,13 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
       "symbol": "let payload_element = self.emit_payload",
       "role": "Accept payload/receiver construction and payload-owned trigger argument wrappers",
-      "sha256": "6ef7bfd7dfeed6524e2f6e04f8f5bfd47ba8811c79c364e2f7a330d0e40c29b4"
+      "sha256": "31b26b3fddbee7e9c06f22834d789c80c0ca4230734379d5b9c9be82afadfb1d"
     },
     "accept-validation": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/actions.rs",
       "symbol": "\"validateAcceptActionUsageParameters\"",
       "role": "Owned input count with private malformed-direction and inherited-input regressions",
-      "sha256": "3e97f66b04024e154d15681ff81975f81ede73ad9be8888b86813dfd12ae379a"
+      "sha256": "f72260188d1c7eb4e79bac310613a68b28fd9320f29be2a03e91e0937a719c8f"
     },
     "accept-lifting": {
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/lift.rs",
@@ -423,7 +423,7 @@
       "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/accept_bindings.rs",
       "symbol": "pub(super) fn plan",
       "role": "Checked local accept receiver-binding construction and private adversarial/replay tests",
-      "sha256": "093342367127d0c41ee76ee0adb841ab0484b79f1748db8f8da2b03e3e46db19"
+      "sha256": "09b43994e93d277d4e5f1942dec05e89860169ee5c975ca6a10269be29a7697d"
     },
     "accept-binding-tests": {
       "path": "crates/sysml-kernel/tests/accept_receiver_bindings.rs",
@@ -4303,7 +4303,7 @@
           ]
         }
       ],
-      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001\u2013006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
+      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001–006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
     },
     {
       "id": "VIEW-USAGE-RENDERINGS",
@@ -4390,7 +4390,7 @@
           ]
         }
       ],
-      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001\u2013006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
+      "limits": "KERNEL-018 includes inherited ViewRenderingMemberships after shared visibility, membership identity and actual/transitive redefinition reduction. VIEW-001–006 exercise owned/inherited duplicates on definitions and usages, same-name renderings without redefinition, diamonds, private/protected memberships, public re-export, root imports and ordinary renderings, missing bases/redefinitions/imports, cycles and complete peers. Two owned memberships remain a definite violation despite incomplete heritage. The dependency preflight follows base and import namespaces, owned features and explicit redefinition targets; it conservatively audits private import dependencies because import-all may admit them. Syntax recovery in a contributing user document prevents an inherited-count verdict. General metadata-driven membership construction, all filter/import-all interactions, malformed raw graph injection and full view semantics remain unqualified. An absent diagnostic is not a validity certificate. Native/WASM mixed-corpus and both file orders retain earlier assertions; the public snapshot shape is unchanged."
     },
     {
       "id": "STATE-DEFINITION-PARALLEL",

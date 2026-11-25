@@ -13,6 +13,8 @@ use super::{
 use crate::metaclass::conforms;
 use std::collections::{HashMap, HashSet};
 
+mod checked;
+
 #[derive(Clone, Default)]
 pub(super) struct PositionalRedefinitions {
     pub targets: HashMap<usize, Vec<usize>>,
@@ -158,6 +160,17 @@ struct ImportSourceContext<'a> {
     incomplete: &'a HashSet<usize>,
     ordinary_only: bool,
     allow_prerequisites: bool,
+}
+
+/// Fully gathered inputs to the single positional reduction algorithm. The
+/// construction adapter supplies stored rows; checked readers supply their
+/// current semantic membership proof and exact authored redefinition closure.
+struct ReductionInputs {
+    order: Vec<usize>,
+    nodes: HashMap<usize, Node>,
+    prerequisites: HashMap<usize, Vec<usize>>,
+    incomplete: HashSet<usize>,
+    redefinitions: HashMap<usize, Vec<usize>>,
 }
 
 struct CompleteReduction {
@@ -543,83 +556,6 @@ impl Builder {
         )
     }
 
-    /// Reuse the positional algorithm only when its stored selectors agree with
-    /// the caller's complete ordered Membership evidence. No plan is published.
-    pub(super) fn plan_checked_positional(
-        &mut self,
-        nodes: &HashMap<usize, Node>,
-        bases: &dyn DirectBases,
-        import_owners: &HashSet<usize>,
-        steps: &mut usize,
-    ) -> Option<PositionalRedefinitions> {
-        let mut budget = Some(steps);
-        charge(&mut budget, nodes.len())?;
-        let roots: Vec<_> = nodes.keys().copied().collect();
-        for (&owner, node) in nodes {
-            self.positional_charge_members(owner, &mut budget)?;
-            charge(&mut budget, node.owned.len() + node.owned_memberships.len())?;
-            if self.owned_member_elems(owner, true) != node.owned {
-                return None;
-            }
-            let memberships = self.positional_owned_memberships(owner, &mut budget)?;
-            if memberships.len() != node.owned_memberships.len()
-                || memberships
-                    .iter()
-                    .zip(&node.owned_memberships)
-                    .any(|(a, b)| a.relationship != b.relationship || a.member != b.member)
-            {
-                return None;
-            }
-        }
-        // The central planner must consume the exact visibility-specific import
-        // selectors proved by the checked provider. CanonicalV3 may use the same
-        // bounded Package traversal for selectors outside the legacy leaf domain.
-        if !import_owners.is_empty() {
-            let mut import_proof = ImportProof::default();
-            let mut prerequisites = HashMap::new();
-            charge(&mut budget, import_owners.len())?;
-            for &owner in import_owners {
-                let (mut public, mut protected) = self.positional_imports(
-                    owner,
-                    bases,
-                    &HashSet::new(),
-                    &mut budget,
-                    &mut import_proof,
-                    &mut prerequisites,
-                )?;
-                if let Some(required) = prerequisites.get(&owner) {
-                    charge(&mut budget, required.len())?;
-                    if required
-                        .iter()
-                        .any(|dependency| !nodes.contains_key(dependency))
-                    {
-                        return None;
-                    }
-                }
-                let node = nodes.get(&owner)?;
-                for (actual, expected) in [
-                    (&mut public, &node.public_imports),
-                    (&mut protected, &node.protected_imports),
-                ] {
-                    charge(&mut budget, actual.len().saturating_add(expected.len()))?;
-                    let mut seen = HashSet::new();
-                    actual.retain(|m| seen.insert(m.relationship));
-                    if actual != expected {
-                        return None;
-                    }
-                }
-            }
-        }
-        self.plan_positional_with_result_query(
-            bases,
-            &HashSet::new(),
-            budget,
-            Some(&roots),
-            None,
-            &mut PositionalWorkspace::one_shot(),
-        )
-    }
-
     /// Bootstrap targets are compatibility inputs, never current-row authority.
     /// A checked consumer must prove equality for its entire closure before
     /// using the positional algorithm's reachability-based edge omissions.
@@ -683,7 +619,7 @@ impl Builder {
         incomplete: &HashSet<usize>,
         mut steps: Option<&mut usize>,
         selected_roots: Option<&[usize]>,
-        mut result_candidates: Option<&mut HashMap<usize, usize>>,
+        result_candidates: Option<&mut HashMap<usize, usize>>,
         workspace: &mut PositionalWorkspace,
     ) -> Option<PositionalRedefinitions> {
         charge(&mut steps, 1)?;
@@ -744,8 +680,6 @@ impl Builder {
         // library's planning derived for every type that planning reached.
         let library = workspace.library.clone();
         let seeded = |e: &usize| library.as_ref().is_some_and(|l| l.reached.contains(e));
-        let empty = PlannedTypes::default();
-        let planned = library.as_ref().map_or(&empty, |l| &l.planned);
         while let Some(e) = todo.pop() {
             charge(&mut steps, 1)?;
             if nodes.contains_key(&e) || seeded(&e) {
@@ -765,10 +699,6 @@ impl Builder {
                 &mut import_proof,
                 &mut prerequisites,
             );
-            if let Some(required) = prerequisites.get(&e) {
-                charge(&mut steps, required.len())?;
-                todo.extend(required.iter().copied());
-            }
             let (owned, owned_memberships) = if workspace.one_shot {
                 let owned_memberships = self.positional_owned_memberships(e, &mut steps);
                 charge(&mut steps, 0)?;
@@ -790,7 +720,33 @@ impl Builder {
                 )?;
                 (owned.clone(), memberships.clone())
             };
-            let memberships_complete = imports.is_some() && owned_memberships.is_some();
+            // Local aliases can export a foreign positional redefinition just
+            // like imports. Use the same dependency proof as checked queries;
+            // the declaring Type must be reduced first, never added as a base.
+            let borrowed = owned_memberships.as_ref().and_then(|memberships| {
+                self.positional_borrowed_dependencies(
+                    memberships,
+                    ImportSourceContext {
+                        owner: e,
+                        bases: direct_bases,
+                        incomplete,
+                        ordinary_only: false,
+                        allow_prerequisites: true,
+                    },
+                    &mut steps,
+                    &mut import_proof,
+                )
+            });
+            let borrowed_complete = borrowed.is_some();
+            if let Some(required) = borrowed.filter(|required| !required.is_empty()) {
+                prerequisites.entry(e).or_default().extend(required);
+            }
+            if let Some(required) = prerequisites.get(&e) {
+                charge(&mut steps, required.len())?;
+                todo.extend(required.iter().copied());
+            }
+            let memberships_complete =
+                imports.is_some() && owned_memberships.is_some() && borrowed_complete;
             let (public_imports, protected_imports) = imports.unwrap_or_default();
             nodes.insert(
                 e,
@@ -810,8 +766,6 @@ impl Builder {
         }
         // Iterative postorder avoids a native-stack dependency on model depth.
         // Cyclic bases have no well-founded positional ordering; do not guess.
-        let mut state = HashMap::new();
-        let mut order = Vec::new();
         charge(&mut steps, incomplete.len())?;
         let mut plan = PositionalRedefinitions {
             targets: HashMap::new(),
@@ -882,37 +836,14 @@ impl Builder {
                 plan.incomplete.insert(e);
             }
         }
-        for root in roots {
-            let mut stack = vec![(root, false)];
-            while let Some((e, exiting)) = stack.pop() {
-                charge(&mut steps, 1)?;
-                if exiting {
-                    state.insert(e, 2);
-                    order.push(e);
-                } else {
-                    // planned by the library: complete or not, it is done
-                    if seeded(&e) {
-                        continue;
-                    }
-                    match state.get(&e) {
-                        Some(1) => {
-                            plan.incomplete.insert(e);
-                            continue;
-                        }
-                        Some(2) => continue,
-                        _ => {}
-                    }
-                    state.insert(e, 1);
-                    stack.push((e, true));
-                    charge(&mut steps, nodes[&e].bases.len())?;
-                    stack.extend(nodes[&e].bases.iter().rev().map(|&b| (b, false)));
-                    if let Some(required) = prerequisites.get(&e) {
-                        charge(&mut steps, required.len())?;
-                        stack.extend(required.iter().rev().map(|&dependency| (dependency, false)));
-                    }
-                }
-            }
-        }
+        let order = positional_order(
+            &roots,
+            &nodes,
+            &prerequisites,
+            library.as_deref(),
+            &mut plan.incomplete,
+            &mut steps,
+        )?;
 
         // The library's rows' redefinitions, the positional ones its planning
         // added included, are in its final graph (`planned.redefinitions`).
@@ -927,12 +858,50 @@ impl Builder {
                 }
             }
         }
-        // The reduction reads only these fully gathered inputs and stored
-        // rows. Re-gather imports and candidate bases first, then reuse a prior
-        // complete result only when the entire consumed input is identical.
-        // This is equality memoization, not an incremental dependency guess.
         let memoize =
             !workspace.one_shot && selected_roots.is_none() && result_candidates.is_none();
+        self.reduce_positional_inputs(
+            ReductionInputs {
+                order,
+                nodes,
+                prerequisites,
+                incomplete: plan.incomplete,
+                redefinitions,
+            },
+            steps,
+            result_candidates,
+            workspace,
+            memoize,
+            selected_roots.is_some(),
+        )
+    }
+
+    /// Both construction and checked readers enter the same ordered reduction.
+    /// This phase performs no source-membership lookup or graph publication.
+    fn reduce_positional_inputs(
+        &mut self,
+        input: ReductionInputs,
+        mut steps: Option<&mut usize>,
+        mut result_candidates: Option<&mut HashMap<usize, usize>>,
+        workspace: &mut PositionalWorkspace,
+        memoize: bool,
+        sparse: bool,
+    ) -> Option<PositionalRedefinitions> {
+        let ReductionInputs {
+            order,
+            nodes,
+            prerequisites,
+            incomplete,
+            mut redefinitions,
+        } = input;
+        let mut plan = PositionalRedefinitions {
+            targets: HashMap::new(),
+            incomplete,
+        };
+        let library = workspace.library.clone();
+        let empty = PlannedTypes::default();
+        let planned = library.as_ref().map_or(&empty, |l| &l.planned);
+        // Reuse requires equality of every consumed input, never graph proximity.
         if memoize {
             if let Some(cached) = &workspace.reduction {
                 cached.charge_inputs(&mut steps)?;
@@ -962,7 +931,7 @@ impl Builder {
         let mut effective: HashMap<usize, Vec<usize>> = HashMap::new();
         let mut roles: HashMap<usize, Roles> = HashMap::new();
         let mut exported: HashMap<usize, Vec<PositionalMembership>> = HashMap::new();
-        let mut traversal = if selected_roots.is_some() {
+        let mut traversal = if sparse {
             Reachability::sparse()
         } else {
             charge(&mut steps, self.explicit_len())?;
@@ -1404,9 +1373,43 @@ impl Builder {
         Some(imports)
     }
 
+    /// Select nonowning local feature members and prove their dependencies.
+    /// Both graph formats use the same rule: an alias contributes membership
+    /// identity, while its foreign positional owner is only a prerequisite.
+    fn positional_borrowed_dependencies(
+        &mut self,
+        memberships: &[PositionalMembership],
+        context: ImportSourceContext<'_>,
+        steps: &mut Option<&mut usize>,
+        proof: &mut ImportProof,
+    ) -> Option<Vec<usize>> {
+        charge(steps, memberships.len())?;
+        let borrowed: Vec<_> = memberships
+            .iter()
+            .copied()
+            .filter(|m| {
+                self.elements[m.relationship].ty == "Membership"
+                    && conforms(self.elements[m.member].ty, "Feature")
+            })
+            .collect();
+        if borrowed.is_empty() {
+            return Some(Vec::new());
+        }
+        let mut local_steps = 0;
+        let steps = steps.as_deref_mut().unwrap_or(&mut local_steps);
+        let raw = super::structural_index::StoredStructure::for_query(self, steps)?;
+        self.positional_import_source_dependencies(
+            &raw,
+            &(borrowed, Vec::new()),
+            context,
+            steps,
+            proof,
+        )
+    }
+
     /// Prove imported Redefinition sources and their planning dependencies.
     /// Existing ancestry remains sufficient. Foreign positional roles need a
-    /// complete ordinary owner domain, never an inheritance contribution.
+    /// complete positional owner domain, never an inheritance contribution.
     /// Authored role sources must target strict actual ancestors; cycles and
     /// arbitrary cross-owner positional dependencies remain qualified.
     fn positional_import_source_dependencies(
@@ -1452,6 +1455,13 @@ impl Builder {
             if !seen.insert(feature) {
                 continue;
             }
+            if raw.bad_bases.contains(&feature)
+                && !super::type_relations::nonowned_specializations_complete(
+                    self, raw, feature, steps,
+                )
+            {
+                return None;
+            }
             let row = self.elements.get(feature)?;
             if (context.ordinary_only && row.ty != "Feature")
                 || row
@@ -1461,7 +1471,6 @@ impl Builder {
                 || row.props.get("direction").is_some_and(|v| {
                     !v.is_null() && !matches!(v.as_str(), Some("in" | "out" | "inout"))
                 })
-                || raw.bad_bases.contains(&feature)
                 || raw.metadata_annotation_targets.contains(&feature)
                 || self
                     .metadata_of
@@ -1471,10 +1480,10 @@ impl Builder {
                 return None;
             }
             // An absent direction does not make a Return/Subject/Parameter
-            // membership nonpositional. Admit only these exact ordinary kinds.
+            // membership nonpositional. Validate each membership role explicitly.
             let membership = row.owning_relationship?;
             let kind = self.elements[membership].ty;
-            if kind == "EndFeatureMembership" && !self.positional_is_end(feature) {
+            if conforms(kind, "EndFeatureMembership") && !self.positional_is_end(feature) {
                 return None;
             }
             if if context.ordinary_only {
@@ -1513,35 +1522,33 @@ impl Builder {
                     &mut Some(&mut *steps),
                 )?;
                 if external || context.ordinary_only || !context.allow_prerequisites {
-                    let ordinary_end = row.ty == "Feature"
+                    let end_role = conforms(row.ty, "Feature")
                         && self.positional_is_end(feature)
                         && !self.is_parameter(feature)
                         && row.props.get("direction").is_none_or(|v| v.is_null())
-                        && matches!(kind, "FeatureMembership" | "EndFeatureMembership")
-                        && self.elements[owner].ty == "Class";
-                    let ordinary_parameter = if row.ty == "Feature"
+                        && conforms(kind, "FeatureMembership")
+                        && conforms(self.elements[owner].ty, "Type");
+                    let owner_kind = self.elements[owner].ty;
+                    let parameter_role = if conforms(row.ty, "Feature")
                         && !self.positional_is_end(feature)
-                        && matches!(self.elements[owner].ty, "Behavior" | "Function")
-                        && matches!(
-                            kind,
-                            "FeatureMembership"
-                                | "ParameterMembership"
-                                | "ReturnParameterMembership"
-                        ) {
+                        && (conforms(owner_kind, "Behavior") || conforms(owner_kind, "Step"))
+                        && conforms(kind, "FeatureMembership")
+                    {
                         let direction = super::membership_evidence::parameter_direction(
                             self, raw, feature, steps,
                         )??;
-                        match kind {
-                            "ParameterMembership" => direction == "in",
-                            "ReturnParameterMembership" => {
-                                self.elements[owner].ty == "Function" && direction == "out"
-                            }
-                            _ => matches!(direction, "in" | "out" | "inout"),
+                        if conforms(kind, "ReturnParameterMembership") {
+                            (conforms(owner_kind, "Function") || conforms(owner_kind, "Expression"))
+                                && direction == "out"
+                        } else if conforms(kind, "ParameterMembership") {
+                            direction == "in"
+                        } else {
+                            matches!(direction, "in" | "out" | "inout")
                         }
                     } else {
                         false
                     };
-                    if !ordinary_end && !ordinary_parameter {
+                    if !end_role && !parameter_role {
                         return None;
                     }
                 }
@@ -1680,6 +1687,10 @@ impl Builder {
     }
 
     /// Validate the complete foreign owner/base domain before scheduling it.
+    /// Positional construction is defined for Feature subtypes and Type owners;
+    /// exact Feature/Class metaclasses would reject valid library expressions.
+    /// This certifies ordering inputs only. Checked callers independently prove
+    /// the complete semantic family obligations for every scheduled owner.
     /// Shared plain-package imports and ordered authored closures are admitted
     /// only when every reachable positional owner belongs to real ancestry.
     fn positional_role_prerequisite_domain(
@@ -1692,7 +1703,7 @@ impl Builder {
         proof: &mut ImportProof,
     ) -> Option<()> {
         charge(&mut Some(&mut *steps), 1)?;
-        if !matches!(self.elements[root].ty, "Class" | "Behavior" | "Function") {
+        if !conforms(self.elements[root].ty, "Type") {
             return None;
         }
         if proof.role_domains.contains(&root) {
@@ -1707,11 +1718,12 @@ impl Builder {
             if proof.role_domains.contains(&owner) || !visited.insert(owner) {
                 continue;
             }
-            if !matches!(
-                self.elements[owner].ty,
-                "Class" | "Classifier" | "Behavior" | "Function"
-            ) || incomplete.contains(&owner)
-                || raw.bad_bases.contains(&owner)
+            if !conforms(self.elements[owner].ty, "Type")
+                || incomplete.contains(&owner)
+                || (raw.bad_bases.contains(&owner)
+                    && !super::type_relations::nonowned_specializations_complete(
+                        self, raw, owner, steps,
+                    ))
                 || !domains.owner_complete(owner)
                 || !imports.owner_complete(owner)
                 || raw.metadata_annotation_targets.contains(&owner)
@@ -2027,6 +2039,53 @@ impl Builder {
         }
         targets
     }
+}
+
+/// One prerequisite/ancestry ordering for both positional input adapters.
+fn positional_order(
+    roots: &[usize],
+    nodes: &HashMap<usize, Node>,
+    prerequisites: &HashMap<usize, Vec<usize>>,
+    library: Option<&super::LibraryPlans>,
+    incomplete: &mut HashSet<usize>,
+    steps: &mut Option<&mut usize>,
+) -> Option<Vec<usize>> {
+    let mut state = HashMap::new();
+    let mut order = Vec::new();
+    let seeded = |e: &usize| library.is_some_and(|l| l.reached.contains(e));
+    for &root in roots {
+        let mut stack = vec![(root, false)];
+        while let Some((e, exiting)) = stack.pop() {
+            charge(steps, 1)?;
+            if exiting {
+                state.insert(e, 2);
+                order.push(e);
+            } else {
+                // planned by the library: complete or not, it is done
+                if seeded(&e) {
+                    continue;
+                }
+                match state.get(&e) {
+                    Some(1) => {
+                        incomplete.insert(e);
+                        continue;
+                    }
+                    Some(2) => continue,
+                    _ => {}
+                }
+                state.insert(e, 1);
+                stack.push((e, true));
+                charge(steps, nodes.get(&e)?.bases.len())?;
+                stack.extend(nodes.get(&e)?.bases.iter().rev().map(|&b| (b, false)));
+                if let Some(required) = prerequisites.get(&e) {
+                    charge(steps, required.len())?;
+                    stack.extend(required.iter().rev().map(|&dependency| (dependency, false)));
+                }
+            }
+        }
+    }
+
+    Some(order)
 }
 
 // Structural cycle evidence for newly admitted authored/positional closures.
@@ -2572,3 +2631,6 @@ mod tests {
         assert_eq!(traversal.reachable(3, &graph), [3]);
     }
 }
+
+#[cfg(test)]
+mod borrowed_role_subtypes;

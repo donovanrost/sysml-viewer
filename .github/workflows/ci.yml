@@ -33,6 +33,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: python tools/release_version.py
       - name: Install pinned WebAssembly binding generator
         run: cargo install wasm-bindgen-cli --version 0.2.122 --locked
       - name: Linux system dependencies

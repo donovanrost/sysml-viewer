@@ -31,7 +31,7 @@ pub struct TypeInputReport {
     pub inputs: Result<Vec<ElementRef>, TypeInputIssue>,
     pub steps: usize,
 }
-/// Complete ordinary Function result selection, or an explicit qualification.
+/// Complete ordinary Function/Predicate result selection, or an explicit qualification.
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[non_exhaustive]
 pub struct FunctionResultReport {
@@ -62,9 +62,82 @@ fn relationships(
     Ok(rows)
 }
 
+fn ordinary_namespace_member_kind(b: &Builder, feature: usize) -> bool {
+    matches!(b.elements[feature].ty, "Feature" | "AttributeUsage")
+        || super::step_context::supports_membership_domain(b.elements[feature].ty)
+        || (b.elements[feature].ty == "BindingConnector" && feature < b.explicit_len())
+}
+
+fn ordinary_namespace_member_owner(
+    b: &Builder,
+    raw: &StoredStructure,
+    feature: usize,
+    steps: &mut usize,
+) -> Result<usize, TypeInputIssue> {
+    let owner = membership_evidence::ordinary_namespace_feature_owner(b, raw, feature, steps)
+        .ok_or(TypeInputIssue::IncompleteProvider)?;
+    if b.elements[feature]
+        .props
+        .get("direction")
+        .is_some_and(|v| !v.is_null())
+        || ["isEnd", "isPortion", "isComposite", "isVariable"]
+            .iter()
+            .any(|key| {
+                b.elements[feature]
+                    .props
+                    .get(key)
+                    .is_some_and(|v| v.as_bool() != Some(false))
+            })
+        || raw.metadata_annotation_targets.contains(&owner)
+        || b.metadata_of.get(&owner).is_some_and(|m| !m.is_empty())
+    {
+        return Err(TypeInputIssue::UnsupportedConfiguration);
+    }
+    Ok(owner)
+}
+
+/// Reject locally unusable membership evidence before rebuilding a positional
+/// fixed point after an edit. This repeats only necessary structural conditions
+/// from the complete reader below; success is never a completeness certificate.
+fn preflight_owned_memberships(
+    b: &mut Builder,
+    owner: usize,
+    steps: &mut usize,
+) -> Result<(), TypeInputIssue> {
+    let raw = StoredStructure::for_query(b, steps).ok_or(TypeInputIssue::IncompleteProvider)?;
+    if !raw.ids_unique
+        || !raw
+            .membership_domains(b, steps)
+            .ok_or(TypeInputIssue::IncompleteProvider)?
+            .owner_complete(owner)
+    {
+        return Err(TypeInputIssue::IncompleteProvider);
+    }
+    for relationship in relationships(b, owner, steps)? {
+        charge(steps, 1)?;
+        if semantic_ownership::checked_relationship_carrier(b, &raw, relationship, steps)
+            != Some(Some(owner))
+        {
+            return Err(TypeInputIssue::InvalidRelationship);
+        }
+        if conforms(b.elements[relationship].ty, "Membership") {
+            let feature = membership_evidence::member(b, &raw, owner, relationship, steps)
+                .ok_or(TypeInputIssue::InvalidRelationship)?;
+            if b.elements[relationship].ty == "OwningMembership"
+                && ordinary_namespace_member_kind(b, feature)
+            {
+                ordinary_namespace_member_owner(b, &raw, feature, steps)?;
+            }
+        }
+    }
+    Ok(())
+}
+
 /// A structural owner's ordinary member has no end, parameter, subject, result
 /// or state-subaction positional role. Its subclass's internal features need
 /// their own certificates, but do not change this member's redefinition list.
+/// AssertConstraintUsage adds invariant semantics and optional reference
+/// subsetting; neither introduces an outer positional/redefinition role.
 fn ordinary_usage_member(
     b: &Builder,
     raw: &StoredStructure,
@@ -78,6 +151,7 @@ fn ordinary_usage_member(
             | "ActionUsage"
             | "StateUsage"
             | "ConstraintUsage"
+            | "AssertConstraintUsage"
             | "ConnectionUsage"
             | "InterfaceUsage"
             | "AllocationUsage"
@@ -195,7 +269,7 @@ impl ResolvedModel {
     }
 
     /// Select the first effective ReturnParameterMembership of an ordinary
-    /// Function. Absence is reported only for a complete supported provider.
+    /// Function or Predicate. Absence is reported only for a complete supported provider.
     /// This does not certify uniqueness or validity of the Function as a whole.
     pub fn function_result_report(&mut self, receiver: ElementRef) -> FunctionResultReport {
         self.function_result_report_with_budget(receiver, 0)
@@ -208,19 +282,11 @@ impl ResolvedModel {
         let mut steps = initial;
         let result = if self.b.elements.get(receiver.0).is_none() {
             Err(TypeInputIssue::InvalidElement)
-        } else if self.b.elements[receiver.0].ty != "Function" {
+        } else if !matches!(self.b.elements[receiver.0].ty, "Function" | "Predicate") {
             Err(TypeInputIssue::UnsupportedConfiguration)
         } else {
             self.checked_type_features(receiver.0, &mut steps)
-                .and_then(|sequence| {
-                    let features = sequence.features;
-                    charge(&mut steps, features.len())?;
-                    Ok(features.into_iter().find(|f| {
-                        self.b.elements[f.0].owning_relationship.is_some_and(|m| {
-                            conforms(self.b.elements[m].ty, "ReturnParameterMembership")
-                        })
-                    }))
-                })
+                .and_then(|sequence| self.b.select_return_parameter(&sequence, &mut steps))
         };
         FunctionResultReport {
             result: if steps > crate::eval::MAX_STEPS {
@@ -302,8 +368,14 @@ impl super::Builder {
         if !super::type_features::supported_root(row.ty) || self.positional_planning {
             return Err(TypeInputIssue::UnsupportedConfiguration);
         }
-        if !self.ensure_positional_redefinitions_with_budget(steps) {
-            return Err(TypeInputIssue::IncompleteProvider);
+        // The accepted dynamic plan already contains the complete shared
+        // positional fixed point. Rebuilding a separate static table here
+        // wastes the cold-query allowance and changes evidence mid-batch.
+        if self.effective_positional_redefinitions().is_none() {
+            preflight_owned_memberships(self, receiver, steps)?;
+            if !self.ensure_positional_redefinitions_with_budget(steps) {
+                return Err(TypeInputIssue::IncompleteProvider);
+            }
         }
         let retained = self
             .retained_typing_edges(steps)
@@ -313,6 +385,12 @@ impl super::Builder {
         if !raw.ids_unique || raw.annotations_incomplete || self.metadata_associations_incomplete {
             return Err(TypeInputIssue::IncompleteProvider);
         }
+        // All membership and relation readers consume this same unchanged
+        // topology. Share it before the first relation read instead of acquiring
+        // and charging a second whole-workspace structural view.
+        relations
+            .share_current_structure(self, std::sync::Arc::clone(&raw), steps)
+            .ok_or(TypeInputIssue::StaleEvidence)?;
         let domains = raw
             .membership_domains(self, steps)
             .ok_or(TypeInputIssue::IncompleteProvider)?;
@@ -333,7 +411,8 @@ impl super::Builder {
         let mut owned_memberships = Vec::new();
         let mut root_import = false;
         let mut visible_import_owners = HashSet::new();
-        let mut imported_features = HashSet::new();
+        let mut foreign_features = HashSet::new();
+        let mut generated_bindings = HashMap::new();
         let mut todo = vec![receiver];
         while let Some(owner) = todo.pop() {
             charge(steps, 1)?;
@@ -344,17 +423,43 @@ impl super::Builder {
                 .elements
                 .get(owner)
                 .ok_or(TypeInputIssue::InvalidElement)?;
-            if !super::type_features::supported_root(element.ty) || owner >= b.explicit_len() {
-                return Err(TypeInputIssue::UnsupportedConfiguration);
-            }
-            if element.ty == "Feature"
-                && (element
-                    .props
-                    .get("isEnd")
-                    .is_some_and(|v| v.as_bool() != Some(false))
-                    || element.props.get("direction").is_some_and(|v| !v.is_null()))
+            let generated_result = b.is_generated_reference_result(owner);
+            if !super::type_features::supported_root(element.ty)
+                || (owner >= b.explicit_len() && !generated_result)
             {
                 return Err(TypeInputIssue::UnsupportedConfiguration);
+            }
+            if element.ty == "Feature" {
+                let end = element
+                    .props
+                    .get("isEnd")
+                    .is_some_and(|v| v.as_bool() != Some(false));
+                let directed = element.props.get("direction").is_some_and(|v| !v.is_null());
+                // Admitted Behavior/Step parameter contexts can relax the
+                // directed-root boundary. complete_direct_bases below still
+                // proves the exact role, complete owner and positional signature.
+                let parameter_context = !directed
+                    || generated_result
+                    || relations
+                        .owning_type(b, owner, steps)
+                        .flatten()
+                        .is_some_and(|context| {
+                            matches!(
+                                b.elements[context].ty,
+                                "Behavior" | "Function" | "Predicate"
+                            ) || super::step_context::supports_membership_domain(
+                                b.elements[context].ty,
+                            )
+                        });
+                if end || !parameter_context {
+                    return Err(TypeInputIssue::UnsupportedConfiguration);
+                }
+            }
+            if b.elements[owner].ty == "FeatureReferenceExpression" {
+                let certificate = b
+                    .reference_membership_domain(owner, steps)
+                    .ok_or(TypeInputIssue::IncompleteProvider)?;
+                generated_bindings.insert(certificate.binding, owner);
             }
             if !domains.owner_complete(owner)
                 || !imports.owner_complete(owner)
@@ -370,8 +475,14 @@ impl super::Builder {
             {
                 return Err(TypeInputIssue::UnsupportedConfiguration);
             }
-            let direct = relations
-                .complete_direct_bases(b, owner, steps)
+            let direct =
+                if matches!(b.elements[owner].ty, "Association" | "AssociationStructure") {
+                    // Candidate only: all conditional Association requirements are
+                    // audited below, over the unfiltered shared membership reduction.
+                    relations.association_membership_candidate_bases(b, owner, steps)
+                } else {
+                    relations.complete_direct_bases(b, owner, steps)
+                }
                 .ok_or(TypeInputIssue::IncompleteProvider)?;
             charge(steps, direct.len().saturating_mul(2))?;
             todo.extend(direct.iter().copied());
@@ -409,13 +520,13 @@ impl super::Builder {
                 }
                 let member = membership_evidence::member(b, &raw, owner, rel, steps)
                     .ok_or(TypeInputIssue::InvalidRelationship)?;
-                let visibility = match row.props.get("visibility") {
+                let visible = match row.props.get("visibility") {
                     None => "public",
                     Some(v) => v
                         .as_str()
                         .filter(|s| matches!(*s, "public" | "protected" | "private"))
                         .ok_or(TypeInputIssue::InvalidRelationship)?,
-                };
+                } != "private";
                 let membership = Membership {
                     relationship: rel,
                     member,
@@ -431,8 +542,17 @@ impl super::Builder {
                 }
                 if conforms(b.elements[member].ty, "Feature") {
                     features.push(member);
+                    if row.ty == "Membership" {
+                        foreign_features.insert(member);
+                        if let Some(declaring) = relations
+                            .owning_type(b, member, steps)
+                            .ok_or(TypeInputIssue::IncompleteProvider)?
+                        {
+                            todo.push(declaring);
+                        }
+                    }
                 }
-                if visibility != "private" {
+                if visible {
                     node.owned_memberships.push(membership);
                 }
             }
@@ -449,7 +569,7 @@ impl super::Builder {
                 for membership in public.iter().chain(&protected) {
                     if conforms(b.elements[membership.member].ty, "Feature") {
                         features.push(membership.member);
-                        imported_features.insert(membership.member);
+                        foreign_features.insert(membership.member);
                         // External owning Types are proof dependencies, never extra
                         // bases or inheritance contributions of the receiver.
                         if let Some(declaring) = relations
@@ -515,41 +635,18 @@ impl super::Builder {
                     }
                     owner
                 }
-                None if imported_features.contains(&feature)
-                    && b.elements[feature].ty == "Feature" =>
-                {
-                    let membership = b.elements[feature]
-                        .owning_relationship
-                        .filter(|&m| b.elements[m].ty == "OwningMembership")
-                        .ok_or(TypeInputIssue::IncompleteProvider)?;
-                    let owner = semantic_ownership::checked_relationship_carrier(
-                        b, &raw, membership, steps,
-                    )
-                    .flatten()
-                    .ok_or(TypeInputIssue::InvalidRelationship)?;
-                    if !matches!(
-                        b.elements[owner].ty,
-                        "Namespace" | "Package" | "LibraryPackage"
-                    ) || membership_evidence::member(b, &raw, owner, membership, steps)
-                        != Some(feature)
-                        || b.elements[feature]
-                            .props
-                            .get("direction")
-                            .is_some_and(|v| !v.is_null())
-                        || ["isEnd", "isPortion", "isComposite", "isVariable"]
-                            .iter()
-                            .any(|key| {
-                                b.elements[feature]
-                                    .props
-                                    .get(key)
-                                    .is_some_and(|v| v.as_bool() != Some(false))
-                            })
-                        || raw.metadata_annotation_targets.contains(&owner)
-                        || b.metadata_of.get(&owner).is_some_and(|m| !m.is_empty())
-                    {
-                        return Err(TypeInputIssue::UnsupportedConfiguration);
-                    }
-                    owner
+                None if ordinary_namespace_member_kind(b, feature) => {
+                    // Namespace members retain redefinition identities without
+                    // adding outer feature/parameter/end/result roles. Authored
+                    // bindings use the same proof. Generated bindings still
+                    // require the exact construction recipe below.
+                    ordinary_namespace_member_owner(b, &raw, feature, steps)?
+                }
+                None if generated_bindings.contains_key(&feature) => {
+                    // The source certificate proves this current generated
+                    // OwningMembership and its binary endpoint recipe. It is
+                    // not a FeatureMembership and adds no positional outer role.
+                    generated_bindings[&feature]
                 }
                 None if matches!(b.elements[feature].ty, "Multiplicity" | "MultiplicityRange") => {
                     // A named multiplicity can be an ordinary owned member of a
@@ -587,7 +684,7 @@ impl super::Builder {
                 charge(steps, 1)?;
                 feature_owners.insert(feature, owner);
             }
-            if !nodes.contains_key(&owner) && !imported_features.contains(&feature) {
+            if !nodes.contains_key(&owner) && !foreign_features.contains(&feature) {
                 return Err(TypeInputIssue::IncompleteProvider);
             }
             if !domains.owner_complete(owner)
@@ -712,7 +809,14 @@ impl super::Builder {
             }
         }
         let positional = b
-            .plan_checked_positional(&nodes, &bases, &visible_import_owners, steps)
+            .plan_checked_positional(
+                &nodes,
+                &bases,
+                &visible_import_owners,
+                &authored,
+                &stamp,
+                steps,
+            )
             .ok_or(TypeInputIssue::IncompleteProvider)?;
         charge(steps, nodes.len())?;
         if nodes
@@ -736,6 +840,75 @@ impl super::Builder {
                 .extend(targets.iter().copied());
         }
         order(&redefinitions, steps)?;
+        // Association base applicability depends on the EFFECTIVE end set.
+        // Reduce the complete, unfiltered graph using exactly the same algebra
+        // and positional certificate as the returned membership query. Candidate
+        // ancestors remain unclaimed until every visited Association passes.
+        if nodes
+            .keys()
+            .any(|&owner| matches!(b.elements[owner].ty, "Association" | "AssociationStructure"))
+        {
+            let mut reduction = Reduction::default();
+            let mut redefinition_paths = Reachability::sparse();
+            let mut ancestry_paths = Reachability::sparse();
+            let mut exported = HashMap::new();
+            for &owner in &ordered {
+                let node = &nodes[&owner];
+                let (features, surviving) = reduction
+                    .reduce(
+                        node,
+                        &exported,
+                        &redefinitions,
+                        &mut redefinition_paths,
+                        &Facts(b),
+                        &mut Some(steps),
+                    )
+                    .ok_or(TypeInputIssue::WorkLimit)?;
+                if matches!(b.elements[owner].ty, "Association" | "AssociationStructure") {
+                    charge(steps, features.len())?;
+                    let mut ends = HashSet::new();
+                    for feature in features {
+                        match b.elements[feature].props.get("isEnd") {
+                            Some(value) if value.as_bool() == Some(true) => {
+                                ends.insert(feature);
+                            }
+                            None => {}
+                            Some(value) if value.as_bool() == Some(false) => {}
+                            _ => return Err(TypeInputIssue::InvalidRelationship),
+                        }
+                    }
+                    let mut roles = vec!["Links::Link", "Base::Anything"];
+                    if ends.len() == 2 {
+                        roles.push("Links::BinaryLink");
+                    }
+                    if b.elements[owner].ty == "AssociationStructure" {
+                        roles.extend([
+                            "Objects::LinkObject",
+                            "Objects::Object",
+                            "Occurrences::Occurrence",
+                        ]);
+                        if ends.len() == 2 {
+                            roles.push("Objects::BinaryLinkObject");
+                        }
+                    }
+                    for name in roles {
+                        let target = relations
+                            .library_role(b, name, steps)
+                            .ok_or(TypeInputIssue::IncompleteProvider)?;
+                        if !ancestry_paths
+                            .reaches_budget(owner, target, &bases, &mut Some(steps))
+                            .ok_or(TypeInputIssue::WorkLimit)?
+                        {
+                            return Err(TypeInputIssue::IncompleteProvider);
+                        }
+                    }
+                }
+                let visible = reduction
+                    .export(node, surviving, &Facts(b), &mut Some(steps))
+                    .ok_or(TypeInputIssue::WorkLimit)?;
+                exported.insert(owner, visible);
+            }
+        }
         // Excluding implied supertypes changes only inheritance selection.
         // Redefinition suppression still uses the complete semantic certificate.
         let ordered = if exclude_implied {
@@ -833,6 +1006,7 @@ impl super::Builder {
             },
             root_import,
             required_positional,
+            redefinitions,
         })
     }
 }

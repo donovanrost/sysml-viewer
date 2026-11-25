@@ -198,9 +198,10 @@ impl ResolvedModel {
             }
             // Shared preparation precedes the stamp; readers never publish a
             // competing graph or retain a partial proof across a mutation.
-            if !self
-                .b
-                .ensure_positional_redefinitions_with_budget(&mut steps)
+            if self.b.effective_positional_redefinitions().is_none()
+                && !self
+                    .b
+                    .ensure_positional_redefinitions_with_budget(&mut steps)
             {
                 return Err(CardinalityIssue::IncompleteProvider);
             }

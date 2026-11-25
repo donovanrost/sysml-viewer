@@ -1,0 +1,63 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/valuation.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/valuation.rs
+new file mode 100644
+--- /dev/null
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/valuation.rs
+@@ -0,0 +1,58 @@
++//! Static typing when a valuation does not supply additional specialization.
++use super::{Builder, FeatureRequirementsFailure, TypeRelations, conforms};
++use crate::json::{membership_evidence, structural_index::StoredStructure};
++
++#[cfg(test)]
++mod tests;
++
++impl TypeRelations {
++    /// KerML checkFeatureValuationSpecialization applies only to an undirected
++    /// Feature whose owned specializations are all implied. Section 8.4.4.11
++    /// otherwise determines static typing from the declaration independently
++    /// of the value. Value compatibility and binding validity are separate.
++    ///
++    /// The caller has already established the supported Feature/owner domain.
++    /// This proof adds no edges and does not evaluate or type the value.
++    pub(super) fn require_independent_valuation_type(
++        &mut self,
++        b: &mut Builder,
++        structure: &StoredStructure,
++        feature: usize,
++        membership: usize,
++        steps: &mut usize,
++    ) -> Result<(), FeatureRequirementsFailure> {
++        use FeatureRequirementsFailure::{InvalidRelationship, Unsupported};
++        // Even when the extra specialization is inapplicable, malformed value
++        // membership/Boolean evidence must not certify a complete projection.
++        membership_evidence::valuation(b, structure, feature, steps)
++            .ok_or(InvalidRelationship)?
++            .ok_or(InvalidRelationship)?;
++        let directed = if conforms(b.elements[membership].ty, "FeatureMembership") {
++            membership_evidence::parameter_direction(b, structure, feature, steps)
++                .ok_or(InvalidRelationship)?
++                .is_some()
++        } else {
++            match b.elements[feature].props.get("direction") {
++                None => false,
++                Some(value) if value.is_null() => false,
++                Some(value) if matches!(value.as_str(), Some("in" | "out" | "inout")) => true,
++                _ => return Err(InvalidRelationship),
++            }
++        };
++        if !directed {
++            // The same stored reader verifies reciprocal ownership, endpoints,
++            // current rows and Boolean isImplied flags. Its targets exclude
++            // implied edges; a final chaining feature is recorded separately
++            // and cannot stand in for an explicit owned specialization.
++            let explicit = self
++                .stored_base_projection(b, feature, true, steps)
++                .ok_or(InvalidRelationship)?;
++            if !explicit.complete || explicit.conjugated || explicit.targets.is_empty() {
++                // This includes the true antecedent. Complete valuation-result
++                // specialization construction remains a distinct dependency.
++                return Err(Unsupported);
++            }
++        }
++        Ok(())
++    }
++}

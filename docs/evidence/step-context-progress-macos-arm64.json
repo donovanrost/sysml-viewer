@@ -1,0 +1,162 @@
+{
+  "generatedAt": "2026-10-18T06:38:42.649076+00:00",
+  "platform": "macOS-15.8-arm64-arm-64bit",
+  "status": "worktree dependency progress; not release qualification or complete Step/trigger conformance",
+  "baselineCommit": "4ee0776",
+  "scope": "Construct contextual Step bases determined by checked owner metaclass and compositeness. Certify generated nested noncomposite reference-expression result domains only with reciprocal source membership and witnessed contextual source bases. Effective-type-dependent composite owner construction remains open.",
+  "kernelInputSha256": "9c0219d51d931389dc7ab570ed51954d99150e3cdd3cbe855a28970f6a8dade7",
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/step_context.rs": "409cb503f59ebf95a9aaf473c869ea60c2f2784818c9a688d6e88082a3a9d8b8",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "8b105bad00fa9e377222526b17ed8694424ac6f03e592ef8304aef788500c1ec",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "5c426769d6bda6d8aacde2f3a3e9bf1221d9eabb3a9ecc72daaa33b47d23871d",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "6090b6f27e42381c9ec64fd69a6aa9613ca376971af37ffc81b672c3800aacb7",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs": "6fa0fb8af33417e56b0450e8240df57862373fa1e1050be84cd130adfde90ab6",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_redefinition.rs": "9b5d2d03574cbb4d961cbcab23af1c8fe6f5a3106238b0f35d9791819c7274ec",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "56579131d37560fadb92260eade4ac375b99fea9e567ced2eba725a7fd83dc24",
+    "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Performances.kerml": "fd965e184b300737a192530de0c800cdbee236cb6220612f370400da21dfb327",
+    "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Objects.kerml": "9057e2781fe8793d5108973c0647318caa26310be6231c6380152a4cbc894c25",
+    "crates/sysml-kernel/tests/trigger_result_features.rs": "94ae50b33e59fb0d4847fe501d4462a359832d9c2cb1ee7323dc10db82d09758",
+    "tools/test-vendor.mjs": "71f99ef590112c91c711d61b7aeaa823ab641cd18ea9e6c4ba58fab2c210a230",
+    "patches/manifest.json": "1ca8ed3757bc811a398082dc69c2c1ddd20797bbe8b1fa5a5e422ad3de548595",
+    "docs/evidence/step-context-construction-review.json": "5b65bbca5a77c3896f972aeb4b4d0411ce1b902a55f739d2cd6bdb4ffcdf76e2",
+    "patches/0002-package-attribute-featuring.patch": "e8d30ee7dda9ef2e71927a73d5e0e79bd940ec6838642d5072161d47c2ed71c0",
+    "patches/0003-checked-conditional-bindings.patch": "8d3ca1ea49c2f5bb6e962e599ff6a2ce4334e9600385aba4eb187e017b939ef5",
+    "patches/0004-designated-operator-cache.patch": "74933e6f3ea7da3ed508b40a51a4b8a3d93e0d724c6aeaba52f9d25666d9aed5",
+    "patches/0008-isolate-unresolved-specializations.patch": "42c4fe49b9d2a26be3c37250bf26853ac64ee7614451ed2a1ceffaae9912ae92",
+    "patches/0010-reuse-static-prefix.patch": "380179dc4b26aa80e92a591a85c8047f4e75d1e2e91a37dc7842ea1a6b15690a",
+    "patches/0011-atomic-dynamic-staging.patch": "d72a5f7bb9bafdc274c9eeb0aa742b9358bdd49a9a44ab35fb333b66f7d4d853",
+    "patches/0019-preserve-distinct-view-renderings.patch": "12180450a54c848e90e108e5e0c132c704dd3c95321533c4c4d6ed65aec53dcd",
+    "patches/0027-generated-result-inheritance.patch": "b55675b3e6600f2df5adf33eff705fe93cdbab378a5c1f6f3960fa898a078be3",
+    "patches/0028-partial-result-heritage.patch": "bd0adec56613f6d52960f0623bc8d02a795b6b172f03b86894ff4e51d6fe1d43",
+    "patches/0029-assertion-member-evidence.patch": "485faf02b1325e8b262f6a303c0a776439320f7499aa23badccedfbbfcfcc248",
+    "patches/0030-attribute-feature-domains.patch": "687168fb98ff8b2692a24212b28f021432b9c42069fcd02826c4dcc2ef886f1f",
+    "patches/0031-generated-result-domain-witnesses.patch": "080b3ce6a9710cd454f80da0e592c0302e2dc12eca7107516157403aecfb6fcc",
+    "patches/0032-predicate-result-properties.patch": "4474987eba645ff03e44b88c0b284d5ed7edc569674a44d179b55b27036b0ea2",
+    "patches/0034-contextual-step-ownership.patch": "7786bc24aa46742bbb4bd16a0bd8c575fd4d601af26bf9f5c5580720d5bd3b01"
+  },
+  "nativeTestBinaries": {
+    "target/release/deps/trigger_result_features-193bdccb12600a29": "6100ed29c28c99245ec298cffde8e1ec00b6d3c2887d407a958d271ce478574b",
+    "target/release/deps/duration_feature_certificates-6a9da535672be798": "7cd986d86a262cd930935980f759eeebdbd92e2a81edcaf85e50de4c008ee15e"
+  },
+  "sourceInterpretation": "step-context-construction-review.json",
+  "observations": [
+    "The shared static specialization planner and minimizer now add loaded plural enclosedPerformances for Step sources owned by Behavior/Step, additionally subperformances for composite sources in those contexts, and ownedPerformances for composite sources owned by Structure. Requirements accumulate independently; minimization retains paths and prevents self edges.",
+    "Positive metaclass construction is intentionally distinct from whole-Step completeness. The effective Feature.type predicate on composite Feature owners is not inferred from written typing or a partial candidate collection.",
+    "Six new private regressions cover both graph formats, Function/Predicate owning metaclasses, noncomposite structural and unowned contexts, repeat identity stability, prepared-library serialization replay, missing/wrong-kind/duplicate canonical roles, malformed ownership and flags, and budget retries.",
+    "Generated reference-result domains now admit noncomposite undirected sources owned through plain FeatureMembership. ParameterMembership, ResultExpressionMembership, malformed or enabled composite flags and missing source ownership links retain explicit incompleteness. Root abstract expressions with no membership require an independent inverse-absence proof.",
+    "A positive canonical Evaluation.result witness is insufficient: the same specialization graph must also establish every applicable Step context path plus evaluations, performances and things. Removing the enclosedPerformances canonical declaration leaves the nested result incomplete.",
+    "The full-library native test follows the deferred when-reference candidate and checks its generated result Type.feature collection. Canonical results retain exactly Base::DataValue::self and Base::things::that; legacy required data-value heritage remains incomplete.",
+    "The expanded selected vendor run includes the existing implied-planner and Feature.type suites. A large cold input-query regression exposed a repeated historical structural-scan charge in the new planner. The new planner ownership reader and the checked membership entry point now share the already acquired immutable topology while retaining query-local semantic facts and current-row checks. The 10,000,000-step limit and 10,000-declaration workload are unchanged."
+  ],
+  "verification": [
+    {
+      "command": [
+        "node",
+        "tools/test-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "passed": 512,
+      "log": "target/trigger-validation/step-context-vendor-verified.log",
+      "logSha256": "e6c366815a8e51a493464d7f8d024221de03a801f1c7b298b1ce290d6c47de1f"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "test",
+        "--locked",
+        "--release",
+        "--workspace"
+      ],
+      "exitCode": 0,
+      "passed": 94,
+      "log": "target/trigger-validation/step-context-workspace-verified.log",
+      "logSha256": "721667318f6be6cb61bd478a4d10198d2feebfb98bfb57ba7be7b4afb78fe066"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "log": "target/trigger-validation/step-context-clippy-final.log",
+      "logSha256": "5af0ea48c73214f1c233eeea7685d11bbe1942e3153c18eff48b4922c43da45d"
+    }
+  ],
+  "limitations": [
+    "The exact singular Step obligations remain open under the documented normative/library spelling discrepancy. This records interpreted plural-library behavior, not an adopted OMG erratum.",
+    "Composite Step owners whose effective Feature.type includes Structure still need construction. That phase must consume complete type projection evidence and publish its consequences atomically, accounting for dependencies whose types could change after new edges.",
+    "The nested reference integration locates result candidates through compatibility derived queries. Complete general Expression.result selection, every trigger argument configuration and all three named trigger validation rules remain open.",
+    "The installed application and qualified engine remain KERNEL-023. Conformance matrix, native/WASM parity, benchmark and desktop release qualification were not repeated for this worktree. Windows/Linux were not executed."
+  ],
+  "afterProbe": {
+    "command": [
+      "rustup",
+      "run",
+      "1.97.0",
+      "rustc",
+      "--edition",
+      "2021",
+      "-C",
+      "lto=thin",
+      "-C",
+      "opt-level=2",
+      "target/trigger-validation/step-context-after-probe.rs",
+      "-L",
+      "dependency=target/release/deps",
+      "--extern",
+      "sysmlv2_model=target/release/deps/libsysmlv2_model-efca4c1af2efa1a8.rlib",
+      "-o",
+      "target/trigger-validation/step-context-after-probe"
+    ],
+    "modelRlibSha256": "a8d4b09e181eb9a5323dc7a888dbad2e32ad8650f5b341cd19878ce4517e4e73",
+    "source": "target/trigger-validation/step-context-after-probe.rs",
+    "sourceSha256": "ac3d0185ba5c228717ff5891d52219acf16230f8c53882e6f0ea314752b07905",
+    "binarySha256": "16b918ab8c7ab420f38bc0b7bc4bf714a0fa1af14ad6b151b9a925ab6fb373cb",
+    "log": "target/trigger-validation/step-context-after-probe.log",
+    "logSha256": "e69519d6c23b17361d2df1c70296803418a7b56c4ae91c672025d3a606e7d4ee",
+    "output": "B::enclosed: ownerKind=Some(\"Behavior\"), composite=Some(false), paths=[true, true, false, false]\nB::owned: ownerKind=Some(\"Behavior\"), composite=Some(true), paths=[true, true, true, false]\nouter::enclosed: ownerKind=Some(\"Step\"), composite=Some(false), paths=[true, true, false, false]\nouter::owned: ownerKind=Some(\"Step\"), composite=Some(true), paths=[true, true, true, false]\nS::plain: ownerKind=Some(\"Structure\"), composite=Some(false), paths=[true, false, false, false]\nS::owned: ownerKind=Some(\"Structure\"), composite=Some(true), paths=[true, false, false, true]\nstructural::owned: effective owner types=Ok([(Some(\"S\"), \"Structure\")])\nstructural::owned: ownerKind=Some(\"Feature\"), composite=Some(true), paths=[true, false, false, false]\ninherited::owned: effective owner types=Ok([(Some(\"S\"), \"Structure\")])\ninherited::owned: ownerKind=Some(\"Feature\"), composite=Some(true), paths=[true, false, false, false]\nnarrowed::owned: effective owner types=Ok([(Some(\"Narrow\"), \"Classifier\")])\nnarrowed::owned: ownerKind=Some(\"Feature\"), composite=Some(true), paths=[true, false, false, false]\nunowned: ownerKind=None, composite=Some(false), paths=[true, false, false, false]\n"
+  },
+  "typedOwnerDependency": {
+    "observedCases": [
+      {
+        "source": "feature structural:S {composite step owned;}",
+        "effectiveOwnerTypes": [
+          "S (Structure)"
+        ],
+        "ownedPerformancePath": false,
+        "disposition": "required path still missing"
+      },
+      {
+        "source": "feature seed:S; feature inherited subsets seed {composite step owned;}",
+        "effectiveOwnerTypes": [
+          "S (Structure)"
+        ],
+        "ownedPerformancePath": false,
+        "disposition": "required inherited-type path still missing"
+      },
+      {
+        "source": "classifier Narrow specializes S; feature narrowed:S,Narrow {composite step owned;}",
+        "effectiveOwnerTypes": [
+          "Narrow (Classifier)"
+        ],
+        "ownedPerformancePath": false,
+        "disposition": "Structure candidate removed by the complete type reducer; written typing must not enable the rule"
+      }
+    ],
+    "nextConstructionRequirements": [
+      "Consume the shared complete Feature.type projection, including inherited typing and specialization pruning, rather than a written FeatureTyping or partial candidate predicate.",
+      "Prepare contextual edges in a detached semantic batch with explicit proof dependencies. Check that added specializations cannot invalidate the effective-type predicate that enabled them; do not publish a provisional supported-implied plan to ordinary queries.",
+      "Integrate with existing minimization, positional dependencies, ID reservation and atomic publication. Cold replay, current-row/metadata/library changes, cyclic dependencies and budget refusal need their own acceptance cases.",
+      "Missing or unsupported projection evidence remains incomplete, never a complete false applicability result."
+    ]
+  }
+}

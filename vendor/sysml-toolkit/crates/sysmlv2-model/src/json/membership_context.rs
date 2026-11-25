@@ -306,7 +306,20 @@ impl Builder {
                 None => {
                     result.incomplete = true;
                     result.truncated = context.steps > crate::eval::MAX_STEPS;
-                    return result;
+                    // A generated result can retain its checked stored bases
+                    // while required library/positional ancestry is unavailable.
+                    // These are partial compatibility candidates, never a complete
+                    // membership domain or proof of absent other inherited members.
+                    let known = include_implied
+                        .then(|| self.checked_generated_result_bases(element, &mut context.steps))
+                        .flatten();
+                    match known {
+                        Some(bases) => bases,
+                        None => {
+                            result.truncated |= context.steps > crate::eval::MAX_STEPS;
+                            return result;
+                        }
+                    }
                 }
             }
         };

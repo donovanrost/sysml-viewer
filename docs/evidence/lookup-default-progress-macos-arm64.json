@@ -1,0 +1,657 @@
+{
+  "reviewedAt": "2026-10-18T10:46:54.044956+00:00",
+  "status": "Lookup-index and effective-default changes pass all 930 vendor model tests, 98 native workspace tests, 55 Node tests, all 133 conformance cases and the current-source requirements report. Clippy, WebAssembly build, contract, provenance and evidence checks pass. All fifteen completion packages remain open.",
+  "baseline": {
+    "conformance": {
+      "path": "docs/evidence/invocation-result-conformance-macos-arm64.json",
+      "sha256": "ee390c545b40a1859bf0e67ef3db3097cba6064bbf24581151ca21817abdef12"
+    },
+    "requirementsExecution": {
+      "path": "docs/evidence/invocation-result-requirements-macos-arm64.json",
+      "sha256": "bda4dbe7cd708f0107110504b644b9fe4d1b5ecf4c9d801db40667cfbb03b653"
+    },
+    "counts": {
+      "pass": 133,
+      "fail": 0
+    },
+    "kernelInputSha256": "f4a8d697e55cf9a84e497ac7f4ded8450ece83584be3f6c37bcbeecd61758893"
+  },
+  "lookupIndex": {
+    "reason": "Construction lookup membership reduction repeatedly scanned all recorded specialization source rows for each visited Feature.",
+    "decision": "Keep immutable recorded Redefinition source-row identities in a Builder cache bound to the LayeredVec content revision. Read current outcomes every time and preserve each read row, including unresolved, duplicate and self targets, in dependency tracking. Do not create the permanent specialization index during lowering.",
+    "invalidationPartitions": [
+      "append",
+      "same-length owner mutation",
+      "same-length kind mutation",
+      "live resolved-to-resolved and unresolved outcomes",
+      "self and duplicate targets",
+      "cloned builder isolation",
+      "same-length whole-table replacement",
+      "tail truncation"
+    ],
+    "rejectedPrototype": {
+      "reason": "Building the index per walk caused the cold IMP-001 analysis to exceed its 30-second timeout. The baseline completed in 5962.5 ms. Passing focused tests did not establish acceptable performance.",
+      "log": {
+        "path": "target/trigger-validation/lookup-index-walk-rejected.log",
+        "sha256": "4c5df9e828144831af3804379822cc30586ae050f0b8f5d940d5aad4b73fde60"
+      },
+      "prototypeFocusedTests": 25,
+      "emptyFilterExcluded": "json::resolution matched zero tests"
+    },
+    "benchmark": {
+      "report": {
+        "path": "target/trigger-validation/lookup-index-benchmark.json",
+        "sha256": "c2a1e49749cae34eba0c91b8dba76b6a866074f95bb2305144497c6bb5bd7851"
+      },
+      "binarySha256": {
+        "before": "9f305f645459484f9353cf41f840eb3f685af8709e9e4358b6c22e102e3d760f",
+        "after": "c8e6063e6e79167d1da8c974c4ec82a7bdae1a9cea0f13941a0e48ec510fe113"
+      },
+      "kernelInputSha256": "ffaca0a9c115c82e72ea868d82f208b19c6ac48213cb522f09fea66c743e508e",
+      "cases": [
+        {
+          "case": "IMP-001",
+          "beforeMeanMs": 5741.999771,
+          "afterMeanMs": 3857.0356465000004,
+          "reductionPercent": 32.82765934648798
+        },
+        {
+          "case": "TYPE-005",
+          "beforeMeanMs": 5747.317625000003,
+          "afterMeanMs": 3700.8226879999984,
+          "reductionPercent": 35.60782734710966
+        },
+        {
+          "case": "ACCEPT-003",
+          "beforeMeanMs": 5782.192271,
+          "afterMeanMs": 3810.1278329999986,
+          "reductionPercent": 34.10582605304723
+        }
+      ],
+      "snapshotComparison": "All twelve runs pass their 49 distinct acceptance assertions; each case returns an identical complete JSON snapshot before/after.",
+      "boundary": "Sequential fresh CLI processes, alternating before/after order, no task-owned compilation or tests concurrently; includes loading the full pinned library. Filesystem caches are not flushed. Two observations per binary/case are a local smoke benchmark, not a distribution or cross-platform claim. This performance fingerprint precedes the additional clone/replacement/truncation test and the default-absence semantic change."
+    }
+  },
+  "effectiveDefaults": {
+    "source": {
+      "clause": "KERML-CLAUSE-8.4.4.11",
+      "title": "Feature Values Semantics",
+      "printedPage": 275,
+      "pdfPage": 301,
+      "pdfSha256": "3bcc96f989bfa9d05cd28e026df3351b795fe8d494187b87bff3db7d96373697",
+      "metamodelConstraints": [
+        "Kernel-Expressions-InvocationExpression-checkInvocationExpressionDefaultValueBindingConnector",
+        "Kernel-Expressions-ConstructorExpression-checkConstructorExpressionResultDefaultValueBindingConnector"
+      ],
+      "authorityNote": "The pinned metamodel describes required effective-default bindings but leaves the OCL body TBD. Clause 8.4.4.11 supplies the effective-default selection definition."
+    },
+    "obligation": "An owned default FeatureValue supplies itself. An owned nondefault FeatureValue blocks inheritance. Without an owned valuation, exactly one distinct inherited effective FeatureValue supplies a default; zero or multiple distinct identities give complete absence. An unresolved dependency cannot establish that set.",
+    "before": {
+      "fixture": "class A {feature a default = 1;} class B {feature b default = 2;} class C specializes A,B {feature c redefines A::a,B::b;} feature x=new C();",
+      "actual": "Err(UnsupportedConfiguration)",
+      "expected": "Ok([])",
+      "log": {
+        "path": "target/trigger-validation/default-absence-before.log",
+        "sha256": "fe3cfa4aeb7f3454ace28300e61e57a68dd6c242f1fbe1bcda9a97b2827828d4"
+      },
+      "probeSource": {
+        "path": "target/trigger-validation/default-absence-before.rs",
+        "sha256": "5997f47e4c3836d79b358c68783542cdc173350e3ffa4f3ee3800ef968f4ef7a"
+      }
+    },
+    "repair": "The existing shared redefinition traversal returns complete absence for a fully known inherited set of cardinality other than one, preserving owned override and refusal of incomplete/cyclic paths.",
+    "partitions": [
+      "distinct default identities with distinct literal values",
+      "distinct default identities with equal literal values",
+      "owned default override",
+      "owned nondefault override",
+      "diamond inheritance of one FeatureValue identity",
+      "cyclic paths remain incomplete",
+      "unresolved redefinition remains incomplete",
+      "generated binding count agrees with defaults",
+      "public native full-library construction"
+    ],
+    "limits": [
+      "InvocationExpression default binding construction and its complete result domain remain open.",
+      "This does not certify every FeatureValue rule, initial-value featuring, whole-model validity, a complete evaluator, interchange, or all constructor semantics."
+    ],
+    "fixtureReview": {
+      "initialVendorFailure": {
+        "path": "target/trigger-validation/lookup-defaults-focused-initial-fixture.log",
+        "sha256": "800eb45c3cf5df1123edf5fd396a26848e1e0164768abc69e02edec32318710c"
+      },
+      "initialNativeFailure": {
+        "path": "target/trigger-validation/lookup-defaults-native-focused-initial-fixture.log",
+        "sha256": "93b399d45cc2d102d24d8f9514fff7cf7b284065b59c3fe2c43344e33d77ba99"
+      },
+      "diagnosis": "The first fixture owned a, b and c in one Class. Owned a and b remain effective Features even when the owned c redefines them, so their own defaults must remain. The intended no-default fixture now inherits a and b from separate Classes, allowing the shared membership reducer to suppress them. A separate regression retains owned sibling defaults. The corrected old-code counterexample still returns UnsupportedConfiguration instead of complete absence.",
+      "fullLibraryDiagnostic": {
+        "path": "target/trigger-validation/lookup-defaults-native-diagnostic.log",
+        "sha256": "f63c66e0aabbb4b7d1bace05da857ff203569ebc50cc1bfb8aaca293cbf91cf0"
+      },
+      "sourceNavigationFailure": {
+        "path": "target/trigger-validation/lookup-defaults-source-navigation.log",
+        "sha256": "4bcbe2cde8668ed2bce8493d5eeb63949bcaa72878f5306ec0be2750ea153647"
+      },
+      "nativeSourceNavigationFailure": {
+        "path": "target/trigger-validation/lookup-defaults-native-source-navigation.log",
+        "sha256": "62e5c08d9c29c3199403801681aa548f62f0488a9250fe1150473a5b76ff3a28"
+      },
+      "additionalCorrections": [
+        "The full pinned Occurrences::Occurrence supplies eight defaults inherited by both test Classes. The native regression now expects their exact identities and ordering, plus the explicit local override only in the override case.",
+        "owned_members is immutable source navigation and excludes generated semantic memberships. Binding checks now traverse implied_relationships and membership_member, preserving the public source/semantic distinction."
+      ]
+    },
+    "libraryDefaults": [
+      "Occurrences::Occurrence::portionOfLife",
+      "Occurrences::Occurrence::this",
+      "Occurrences::Occurrence::localClock",
+      "Occurrences::Occurrence::isDispatch",
+      "Occurrences::Occurrence::dispatchScope",
+      "Occurrences::Occurrence::isRunToCompletion",
+      "Occurrences::Occurrence::runToCompletionScope",
+      "Occurrences::Occurrence::incomingTransferSort"
+    ],
+    "librarySource": {
+      "path": "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Occurrences.kerml",
+      "sha256": "b3a62ce0bc3a4f7e667102b4c2f68a4928ca8efeda425c6a4c8bdeadfbc9bbc1"
+    }
+  },
+  "qualification": {
+    "kernelInputSha256": "2eee5c4701a8aa580b7b1ffaaeccfece43d99a2f0dd0457ed32618d599c91d70",
+    "focused": {
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-focused.log",
+        "sha256": "ff33086a247dc131a21f6e1ece427537ce9df7acd7c7f25e7892b0c2c498d36d"
+      },
+      "lookupTestsPassed": 8,
+      "defaultTestsPassed": 19,
+      "unsettledIndexTestPassed": 1,
+      "corpusTestStatus": "failed runner prerequisite: only one workspace present; full model runner supplies all 251 pinned corpus files",
+      "boundary": "27 lookup/default tests and one indexed-read test pass. The focused process exits nonzero on the missing-corpus assertion; do not describe the complete focused command as passing."
+    },
+    "nativeFocused": {
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-native-focused.log",
+        "sha256": "b74918b6aa7a7b079e96f258514ac6f904608d4b5c27abd153a8ce0b8901280d"
+      },
+      "passed": 1,
+      "failed": 0,
+      "boundary": "Public API regression over all 94 library files, exact eight inherited default identities, owned override, and generated binding counts."
+    },
+    "provenance": {
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-provenance.log",
+        "sha256": "07e5842686d46f2bcfdb1e444177632e60ddf4be7aaa6cdb09f6ebd8087e2f02"
+      },
+      "passed": 7,
+      "failed": 0
+    },
+    "pending": [],
+    "evidenceTests": {
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-evidence-tests.log",
+        "sha256": "80f544582ecdee72572a412380c102775e212d46da42498fa4e50c1f9f3ed3e6"
+      },
+      "passed": 9,
+      "failed": 0
+    },
+    "requirementsInventory": {
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-requirements-inventory.log",
+        "sha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76"
+      },
+      "status": "passed",
+      "assessments": 77,
+      "cases": 133,
+      "coveragePercent": null
+    },
+    "sourceFormat": {
+      "rustfmt": "passed for workspace and three changed vendor source files",
+      "gitDiffCheck": "passed"
+    },
+    "contract": {
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-contract.log",
+        "sha256": "7a3b27ebe7eccaca100485afb6a2560e9b2bc3e64fa7798ffcbf723e326f26b4"
+      },
+      "status": "passed"
+    },
+    "clippy": {
+      "status": "passed",
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-clippy.log",
+        "sha256": "56ebc830e3ba57e8700fc858437f5190bd3c2581e11cc644744d8baf9b459fb6"
+      },
+      "kernelInputSha256": "2eee5c4701a8aa580b7b1ffaaeccfece43d99a2f0dd0457ed32618d599c91d70"
+    },
+    "wasmBuild": {
+      "status": "passed",
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-wasm-build.log",
+        "sha256": "bf052a51bacec24a187b1744d8c6d32c4872c52897c14e55f49d5f7b123ea282"
+      },
+      "kernelInputSha256": "2eee5c4701a8aa580b7b1ffaaeccfece43d99a2f0dd0457ed32618d599c91d70"
+    },
+    "currentCliSha256": "5b8f00a26d9994274ee9801830f5922678a770f43972f3187ea00f78b68e45cf",
+    "nativeWorkspace": {
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-workspace.log",
+        "sha256": "dc6d446b50b2046a8411ac9d8e58e26e79133286b58a8c83b14c702d143cf68c"
+      },
+      "passed": 98,
+      "failed": 0,
+      "kernelInputSha256": "2eee5c4701a8aa580b7b1ffaaeccfece43d99a2f0dd0457ed32618d599c91d70"
+    },
+    "fullModel": {
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-full-model.log",
+        "sha256": "712f561374202ed4c8755245078913a6eecf5ef571579f4a6095aa2c615d534b"
+      },
+      "passed": 930,
+      "failed": 0,
+      "kernelInputSha256": "2eee5c4701a8aa580b7b1ffaaeccfece43d99a2f0dd0457ed32618d599c91d70",
+      "binary": {
+        "path": "target/vendor-tests/build/release/deps/sysmlv2_model-e8fd76159347fed9",
+        "sha256": "f4d1cfc2b2eaa4c34da801fe8f2d3ed4a56b31ed748571b0828e7cfa34f283ef"
+      },
+      "libraryFiles": 94,
+      "upstreamCorpusFiles": 251,
+      "boundary": "All private model tests in a disposable workspace with pinned library and upstream example/training/validation corpus; macOS arm64 only."
+    },
+    "publicRuntime": {
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-public-tests.log",
+        "sha256": "691c36b2a02334788b09aaa336c932dd08b41a45ac4637fa1416e0063ea6a224"
+      },
+      "passed": 39,
+      "failed": 0,
+      "kernelInputSha256": "2eee5c4701a8aa580b7b1ffaaeccfece43d99a2f0dd0457ed32618d599c91d70",
+      "binarySha256": "5b8f00a26d9994274ee9801830f5922678a770f43972f3187ea00f78b68e45cf",
+      "boundary": "Six public native/WebAssembly runtime and runner test files, including both document orders. With seven provenance and nine evidence tests, all 55 Node tests pass."
+    },
+    "conformance": {
+      "report": {
+        "path": "docs/evidence/lookup-default-conformance-macos-arm64.json",
+        "sha256": "a62590911454d90592d2576669a7236bd3f302bc4a4cb50353b7c957fa992ceb"
+      },
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-conformance.log",
+        "sha256": "095005d1742c2e4a81a3cc42136e87528a335d21edd0f85ff015a15d27358b4d"
+      },
+      "counts": {
+        "pass": 133,
+        "known-gap": 0,
+        "planned": 0,
+        "fail": 0
+      },
+      "kernelInputSha256": "2eee5c4701a8aa580b7b1ffaaeccfece43d99a2f0dd0457ed32618d599c91d70",
+      "binarySha256": "5b8f00a26d9994274ee9801830f5922678a770f43972f3187ea00f78b68e45cf"
+    },
+    "requirementsExecution": {
+      "report": {
+        "path": "docs/evidence/lookup-default-requirements-macos-arm64.json",
+        "sha256": "7800edadc105209256b66f311ced7013eadab71e6bcfe9df032d6e354c3ea473"
+      },
+      "log": {
+        "path": "target/trigger-validation/lookup-defaults-requirements-execution.log",
+        "sha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76"
+      },
+      "status": "passed"
+    }
+  },
+  "nextActions": [
+    "Extract the shared effective-default selector and consume it from invocation default selection without fabricating constructor arguments.",
+    "Integrate invocation default BindingConnector recipes with exact accepted argument mappings and an atomic semantic ownership transaction; certify required bindings before complete invocation result membership.",
+    "Retain all fifteen completion packages as open until full obligation closure evidence exists."
+  ],
+  "invocationFollowThrough": {
+    "dependency": "The shared default selector is still constructor-scoped. Invocation result membership completeness requires its own checked default bindings, not only supplied argument success.",
+    "constructionOrdering": "materialize_owned_results currently plans constructor defaults before prepare_dynamic_graph establishes invocation positional mappings. Invocation defaults must consume a complete shared mapping at the correct staged snapshot, retain atomic ownership/ID reservation, and avoid a second inconsistent invocation planner.",
+    "requiredNextChecks": [
+      "shared effective-default domain with no duplicated inheritance implementation",
+      "supplied invocation arguments suppress their target defaults",
+      "owning namespace is invocation for invocation defaults, constructor result for constructor defaults",
+      "default bindings retain exact featureWithValue and value identities",
+      "missing defaults or incomplete dependencies prevent complete invocation result domain",
+      "complete non-Function Behavior and Feature-typed invocation semantics remain separate open obligations"
+    ],
+    "triggerLibraryReview": {
+      "source": "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Triggers.kerml",
+      "sha256": "124cad3625935e078d1363e6100ee12537ca9c51445a18108e056db8b4885609",
+      "functions": {
+        "Triggers::TriggerWhen": {
+          "ownedDefaultParameters": [
+            "monitor"
+          ],
+          "requiredReceiverHasDefault": false
+        },
+        "Triggers::TriggerAt": {
+          "ownedDefaultParameters": [
+            "clock",
+            "monitor"
+          ],
+          "requiredReceiverHasDefault": false
+        },
+        "Triggers::TriggerAfter": {
+          "ownedDefaultParameters": [
+            "clock",
+            "monitor"
+          ],
+          "requiredReceiverHasDefault": false
+        }
+      },
+      "boundary": "These are directly authored defaults only. Complete selection must include inherited features and use exact FeatureValue identities; this is not an executed invocation-default certificate."
+    },
+    "selectionProbe": {
+      "source": {
+        "path": "target/trigger-validation/invocation-default-probe.rs",
+        "sha256": "9b898c7a0cbeb332b5ef615785ee36578bda45e8ff086e717f54c7104c7320ee"
+      },
+      "runner": {
+        "path": "target/trigger-validation/probe-invocation-defaults.mjs",
+        "sha256": "c0d35504a571d45f8105b56ae916024d6266b1b263ea6a7d2839510293dc3073"
+      },
+      "log": {
+        "path": "target/trigger-validation/invocation-default-probe.log",
+        "sha256": "599cf1a34a7c88d40732f20eea552221b11f141402acde809504431fa480dd0e"
+      },
+      "productionInputSha256": "2eee5c4701a8aa580b7b1ffaaeccfece43d99a2f0dd0457ed32618d599c91d70",
+      "status": "Five real full-library call sites select complete defaults after their supplied arguments are certified. The supplied F argument removes exactly F::a; nine inherited Performance/Occurrence defaults remain.",
+      "cases": [
+        {
+          "callee": "F",
+          "supplied": 0,
+          "steps": 58131,
+          "defaults": [
+            {
+              "feature": "F::a",
+              "featureWithValue": "F::a"
+            },
+            {
+              "feature": "Performances::Performance::isDispatch",
+              "featureWithValue": "Performances::Performance::isDispatch"
+            },
+            {
+              "feature": "Performances::Performance::dispatchScope",
+              "featureWithValue": "Performances::Performance::dispatchScope"
+            },
+            {
+              "feature": "Performances::Performance::thisPerformance",
+              "featureWithValue": "Performances::Performance::thisPerformance"
+            },
+            {
+              "feature": "Occurrences::Occurrence::portionOfLife",
+              "featureWithValue": "Occurrences::Occurrence::portionOfLife"
+            },
+            {
+              "feature": "Occurrences::Occurrence::this",
+              "featureWithValue": "Occurrences::Occurrence::this"
+            },
+            {
+              "feature": "Occurrences::Occurrence::localClock",
+              "featureWithValue": "Occurrences::Occurrence::localClock"
+            },
+            {
+              "feature": "Occurrences::Occurrence::isRunToCompletion",
+              "featureWithValue": "Occurrences::Occurrence::isRunToCompletion"
+            },
+            {
+              "feature": "Occurrences::Occurrence::runToCompletionScope",
+              "featureWithValue": "Occurrences::Occurrence::runToCompletionScope"
+            },
+            {
+              "feature": "Occurrences::Occurrence::incomingTransferSort",
+              "featureWithValue": "Occurrences::Occurrence::incomingTransferSort"
+            }
+          ]
+        },
+        {
+          "callee": "F",
+          "supplied": 1,
+          "steps": 58115,
+          "defaults": [
+            {
+              "feature": "Performances::Performance::isDispatch",
+              "featureWithValue": "Performances::Performance::isDispatch"
+            },
+            {
+              "feature": "Performances::Performance::dispatchScope",
+              "featureWithValue": "Performances::Performance::dispatchScope"
+            },
+            {
+              "feature": "Performances::Performance::thisPerformance",
+              "featureWithValue": "Performances::Performance::thisPerformance"
+            },
+            {
+              "feature": "Occurrences::Occurrence::portionOfLife",
+              "featureWithValue": "Occurrences::Occurrence::portionOfLife"
+            },
+            {
+              "feature": "Occurrences::Occurrence::this",
+              "featureWithValue": "Occurrences::Occurrence::this"
+            },
+            {
+              "feature": "Occurrences::Occurrence::localClock",
+              "featureWithValue": "Occurrences::Occurrence::localClock"
+            },
+            {
+              "feature": "Occurrences::Occurrence::isRunToCompletion",
+              "featureWithValue": "Occurrences::Occurrence::isRunToCompletion"
+            },
+            {
+              "feature": "Occurrences::Occurrence::runToCompletionScope",
+              "featureWithValue": "Occurrences::Occurrence::runToCompletionScope"
+            },
+            {
+              "feature": "Occurrences::Occurrence::incomingTransferSort",
+              "featureWithValue": "Occurrences::Occurrence::incomingTransferSort"
+            }
+          ]
+        },
+        {
+          "callee": "Triggers::TriggerAfter",
+          "supplied": 1,
+          "steps": 58511,
+          "defaults": [
+            {
+              "feature": "Triggers::TriggerAfter::clock",
+              "featureWithValue": "Triggers::TriggerAfter::clock"
+            },
+            {
+              "feature": "Triggers::TriggerAfter::monitor",
+              "featureWithValue": "Triggers::TriggerAfter::monitor"
+            },
+            {
+              "feature": "Performances::Performance::isDispatch",
+              "featureWithValue": "Performances::Performance::isDispatch"
+            },
+            {
+              "feature": "Performances::Performance::dispatchScope",
+              "featureWithValue": "Performances::Performance::dispatchScope"
+            },
+            {
+              "feature": "Performances::Performance::thisPerformance",
+              "featureWithValue": "Performances::Performance::thisPerformance"
+            },
+            {
+              "feature": "Occurrences::Occurrence::portionOfLife",
+              "featureWithValue": "Occurrences::Occurrence::portionOfLife"
+            },
+            {
+              "feature": "Occurrences::Occurrence::this",
+              "featureWithValue": "Occurrences::Occurrence::this"
+            },
+            {
+              "feature": "Occurrences::Occurrence::localClock",
+              "featureWithValue": "Occurrences::Occurrence::localClock"
+            },
+            {
+              "feature": "Occurrences::Occurrence::isRunToCompletion",
+              "featureWithValue": "Occurrences::Occurrence::isRunToCompletion"
+            },
+            {
+              "feature": "Occurrences::Occurrence::runToCompletionScope",
+              "featureWithValue": "Occurrences::Occurrence::runToCompletionScope"
+            },
+            {
+              "feature": "Occurrences::Occurrence::incomingTransferSort",
+              "featureWithValue": "Occurrences::Occurrence::incomingTransferSort"
+            }
+          ]
+        },
+        {
+          "callee": "Triggers::TriggerAt",
+          "supplied": 1,
+          "steps": 58613,
+          "defaults": [
+            {
+              "feature": "Triggers::TriggerAt::clock",
+              "featureWithValue": "Triggers::TriggerAt::clock"
+            },
+            {
+              "feature": "Triggers::TriggerAt::monitor",
+              "featureWithValue": "Triggers::TriggerAt::monitor"
+            },
+            {
+              "feature": "Performances::Performance::isDispatch",
+              "featureWithValue": "Performances::Performance::isDispatch"
+            },
+            {
+              "feature": "Performances::Performance::dispatchScope",
+              "featureWithValue": "Performances::Performance::dispatchScope"
+            },
+            {
+              "feature": "Performances::Performance::thisPerformance",
+              "featureWithValue": "Performances::Performance::thisPerformance"
+            },
+            {
+              "feature": "Occurrences::Occurrence::portionOfLife",
+              "featureWithValue": "Occurrences::Occurrence::portionOfLife"
+            },
+            {
+              "feature": "Occurrences::Occurrence::this",
+              "featureWithValue": "Occurrences::Occurrence::this"
+            },
+            {
+              "feature": "Occurrences::Occurrence::localClock",
+              "featureWithValue": "Occurrences::Occurrence::localClock"
+            },
+            {
+              "feature": "Occurrences::Occurrence::isRunToCompletion",
+              "featureWithValue": "Occurrences::Occurrence::isRunToCompletion"
+            },
+            {
+              "feature": "Occurrences::Occurrence::runToCompletionScope",
+              "featureWithValue": "Occurrences::Occurrence::runToCompletionScope"
+            },
+            {
+              "feature": "Occurrences::Occurrence::incomingTransferSort",
+              "featureWithValue": "Occurrences::Occurrence::incomingTransferSort"
+            }
+          ]
+        },
+        {
+          "callee": "Triggers::TriggerWhen",
+          "supplied": 1,
+          "steps": 58503,
+          "defaults": [
+            {
+              "feature": "Triggers::TriggerWhen::monitor",
+              "featureWithValue": "Triggers::TriggerWhen::monitor"
+            },
+            {
+              "feature": "Performances::Performance::isDispatch",
+              "featureWithValue": "Performances::Performance::isDispatch"
+            },
+            {
+              "feature": "Performances::Performance::dispatchScope",
+              "featureWithValue": "Performances::Performance::dispatchScope"
+            },
+            {
+              "feature": "Performances::Performance::thisPerformance",
+              "featureWithValue": "Performances::Performance::thisPerformance"
+            },
+            {
+              "feature": "Occurrences::Occurrence::portionOfLife",
+              "featureWithValue": "Occurrences::Occurrence::portionOfLife"
+            },
+            {
+              "feature": "Occurrences::Occurrence::this",
+              "featureWithValue": "Occurrences::Occurrence::this"
+            },
+            {
+              "feature": "Occurrences::Occurrence::localClock",
+              "featureWithValue": "Occurrences::Occurrence::localClock"
+            },
+            {
+              "feature": "Occurrences::Occurrence::isRunToCompletion",
+              "featureWithValue": "Occurrences::Occurrence::isRunToCompletion"
+            },
+            {
+              "feature": "Occurrences::Occurrence::runToCompletionScope",
+              "featureWithValue": "Occurrences::Occurrence::runToCompletionScope"
+            },
+            {
+              "feature": "Occurrences::Occurrence::incomingTransferSort",
+              "featureWithValue": "Occurrences::Occurrence::incomingTransferSort"
+            }
+          ]
+        }
+      ],
+      "boundary": "Temporary private test in an ignored disposable copy adapts current invocation callee/input identities to the existing constructor-scoped selector. It does not implement invocation default binding construction, establish an invocation result certificate, or add a production API. Probe success alone is not qualification."
+    }
+  },
+  "updatedAt": "2026-10-18T11:10:21.837138+00:00",
+  "implementationEvidenceRefresh": {
+    "reviewedAt": "2026-10-18T10:56:20.202593+00:00",
+    "beforeSha256": "9da28a3fe62db57a2b4094f829b45b01b643d6dcd0a2e3aee2c1a1e20d34d565",
+    "afterSha256": "dd80befb2eb3466496b682ab74e790b851c4e04c250c0f07e5048b940dd90eaa",
+    "changes": [
+      {
+        "id": "graph",
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+        "symbol": "pub fn effective_features(",
+        "beforeSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5",
+        "afterSha256": "f4f42a2c887ecb810c93eba942dc7c7a100a0374cab156856280f13174596eef"
+      },
+      {
+        "id": "resolution",
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+        "symbol": "pub fn resolve_in(",
+        "beforeSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5",
+        "afterSha256": "f4f42a2c887ecb810c93eba942dc7c7a100a0374cab156856280f13174596eef"
+      },
+      {
+        "id": "connector-ends",
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+        "symbol": "pub fn connector_end_targets(",
+        "beforeSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5",
+        "afterSha256": "f4f42a2c887ecb810c93eba942dc7c7a100a0374cab156856280f13174596eef"
+      },
+      {
+        "id": "state-body-query",
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+        "symbol": "pub fn state_subactions(",
+        "beforeSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5",
+        "afterSha256": "f4f42a2c887ecb810c93eba942dc7c7a100a0374cab156856280f13174596eef"
+      },
+      {
+        "id": "transition-construction",
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+        "symbol": "\"sourceparam\"",
+        "beforeSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5",
+        "afterSha256": "f4f42a2c887ecb810c93eba942dc7c7a100a0374cab156856280f13174596eef"
+      },
+      {
+        "id": "accept-construction",
+        "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+        "symbol": "let payload_element = self.emit_payload",
+        "beforeSha256": "3077ffeae9eb0dbe10c5e9eb242795bcd87639f30af72fa16d6457d6ceb1e3b5",
+        "afterSha256": "f4f42a2c887ecb810c93eba942dc7c7a100a0374cab156856280f13174596eef"
+      }
+    ],
+    "review": "Reviewed the six public/construction source anchors and unchanged bounded assessments against the lookup cache diff. Source-row indexing leaves APIs and construction rules unchanged; outcomes and lookup misses remain live, with row mutation and clone regressions. The local before/after CLI benchmark preserves the entire snapshot for all three cases. All 77 assessment records retain their source mappings, assertions and limits.",
+    "boundary": "This records current implementation candidates, not new conformance coverage. Focused lookup/default tests and the public native default test pass; broader qualification is still running."
+  }
+}

@@ -1,32 +1,219 @@
 diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs
-index 762a23a..dd12dd9 100644
 --- a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs
 +++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs
-@@ -1,3 +1,5 @@
+@@ -1,9 +1,21 @@
 +//! Local modification (KERNEL-001): audit static package-owned AttributeUsage
 +//! featuring evidence. See patches/0002-package-attribute-featuring.patch.
  //! Query-local, bounded evidence for stored type specialization.
  //!
  //! Positive witnesses use declaration identities. Negative facts require a
-@@ -406,9 +408,16 @@ impl TypeRelations {
+ //! complete stored/provider walk and audited required library bases at every
+ //! visited non-conjugated type. Other families remain unknown; no unsupported
+ //! base omission is a negative fact.
++#[cfg(test)]
++mod association_domains_tests;
++#[cfg(test)]
++mod chaining_types_tests;
++#[cfg(test)]
++mod namespace_member_tests;
++#[cfg(test)]
++mod ordinary_features_tests;
++mod valuation;
++
+ use super::{Builder, provider_completeness::ProviderCompleteness, semantic_ownership};
+ use crate::metaclass::conforms;
+ use std::collections::{HashMap, HashSet};
+@@ -62,6 +74,11 @@
+ /// Reuse only within one query over an unchanged model.
+ #[derive(Default)]
+ pub(super) struct TypeRelations {
++    association_membership_queries: HashSet<usize>,
++    projection_context: super::feature_type_projection::ProjectionContext,
++    /// Prospective specialization writers excluded by a detached construction
++    /// proof. A complete negative path must never traverse one of these rows.
++    changing_specializations: Option<std::sync::Arc<HashSet<usize>>>,
+     publication: Option<super::publication::Revision>,
+     rows: Option<crate::layered::Revision>,
+     metadata: Option<Option<std::sync::Arc<()>>>,
+@@ -78,9 +95,20 @@
+     required_library: Option<HashMap<&'static str, Option<usize>>>,
+ }
+ 
+-/// Positive type-kind facts for a composition's Feature owner. Checked readers
+-/// supply these only after a complete projection; static planning uses validated
+-/// owned typing witnesses and therefore cannot infer absent facts.
++/// Applicable typing obligations and derived dependency targets certified by
++/// the common membership and one-hop chain readers. No graph rows are published;
++/// callers must still prove all required paths in their projection.
++#[derive(Debug)]
++pub(super) struct FeatureRequirements {
++    pub(super) features: Vec<usize>,
++    pub(super) typings: Vec<usize>,
++    pub(super) positional_redefinitions: Vec<usize>,
++    pub(super) chaining_feature: Option<usize>,
++}
++
++/// Type-kind facts for a contextual Feature owner, including portions and
++/// compositions. Checked readers supply both positive and negative facts only
++/// after a complete effective-type projection.
+ #[derive(Clone, Copy, Debug, Default)]
+ pub(super) struct CompositionOwner {
+     pub(super) object: bool,
+@@ -128,6 +156,92 @@
+ }
+ 
+ impl TypeRelations {
++    pub(super) fn with_projection_context(
++        mut self,
++        context: super::feature_type_projection::ProjectionContext,
++    ) -> Self {
++        self.projection_context = context;
++        self
++    }
++
++    /// Identify conditional obligations requiring a complete owning Feature.type.
++    /// Both projection and negative specialization use this same applicability.
++    pub(super) fn feature_context_owner(
++        &mut self,
++        b: &mut Builder,
++        feature: usize,
++        raw: &super::structural_index::StoredStructure,
++        steps: &mut usize,
++    ) -> Option<Option<usize>> {
++        let portion = super::portion_context::antecedent(b, feature, raw, self, steps)?;
++        let element = b.elements.get(feature)?;
++        let owner = match portion {
++            super::portion_context::Antecedent::OwnerType(owner) => Some(owner),
++            _ if conforms(element.ty, "OccurrenceUsage")
++                && element.props.get("isComposite").and_then(|v| v.as_bool()) == Some(true) =>
++            {
++                self.owning_type(b, feature, steps)?
++            }
++            _ => None,
++        };
++        Some(owner.filter(|&owner| conforms(b.elements[owner].ty, "Feature")))
++    }
++
++    pub(super) fn with_stable_specializations(
++        structure: std::sync::Arc<super::structural_index::StoredStructure>,
++        changing: std::sync::Arc<HashSet<usize>>,
++    ) -> Self {
++        Self {
++            changing_specializations: Some(changing),
++            ..Self::with_structure(structure)
++        }
++    }
++    /// Start a new query with an already acquired immutable topology. This
++    /// shares structural identities only; semantic witnesses remain query-local.
++    /// The ordinary current-row check still rebuilds a stale or foreign index.
++    pub(super) fn with_structure(
++        structure: std::sync::Arc<super::structural_index::StoredStructure>,
++    ) -> Self {
++        Self {
++            evidence: FeaturingEvidence {
++                structure,
++                ..Default::default()
++            },
++            ..Default::default()
++        }
++    }
++
++    /// Reuse a caller's current topology in a relation proof that may already
++    /// contain semantic facts. Never refresh a stale semantic stamp implicitly.
++    pub(super) fn share_current_structure(
++        &mut self,
++        b: &mut Builder,
++        structure: std::sync::Arc<super::structural_index::StoredStructure>,
++        steps: &mut usize,
++    ) -> Option<()> {
++        charge(steps, 1)?;
++        if !self.current(b) || !structure.is_current(b) {
++            return None;
++        }
++        if !self.evidence.structure.is_current(b) {
++            charge(
++                steps,
++                self.evidence
++                    .owners
++                    .capacity()
++                    .saturating_add(self.evidence.featuring.capacity()),
++            )?;
++            for values in self.evidence.featuring.values() {
++                charge(steps, values.len())?;
++            }
++            self.evidence = FeaturingEvidence {
++                structure,
++                ..Default::default()
++            };
++        }
++        Some(())
++    }
++
+     /// Discard query-local facts after the caller's semantic stamp changes.
+     /// Charge owned containers before traversing or releasing their contents.
+     pub(super) fn reset_with_budget(&mut self, steps: &mut usize) -> Option<()> {
+@@ -149,7 +263,16 @@
+             charge(steps, features.len())?;
+         }
+         self.providers.reset_with_budget(steps)?;
+-        *self = Self::default();
++        let changing_specializations = self.changing_specializations.clone();
++        let projection_context = self.projection_context.clone();
++        let association_membership_queries =
++            std::mem::take(&mut self.association_membership_queries);
++        *self = Self {
++            association_membership_queries,
++            changing_specializations,
++            projection_context,
++            ..Self::default()
++        };
+         Some(())
+     }
+ 
+@@ -221,7 +344,24 @@
+         general: usize,
+         steps: &mut usize,
+     ) -> RelationFact {
+-        if !self.current(b) || self.refresh_planner_state(b, steps).is_none() {
++        if !self.current(b) {
++            return RelationFact::Unknown;
++        }
++        // Reject a contradictory standalone source before rebuilding semantic
++        // plans. Otherwise a known malformed row can repeatedly invalidate the
++        // planner until the work limit, obscuring the actual missing proof.
++        // Reflexivity and conjugated-receiver normalization retain their own
++        // rules below; an unrelated malformed base cannot change either one.
++        if specific != general
++            && self.owned_conjugation(b, specific, steps) == Some(None)
++            && (self.evidence.index(b, steps).is_none()
++                || self.evidence.incomplete()
++                || (self.evidence.bad_bases.contains(&specific)
++                    && !self.nonowned_specializations_complete(b, specific, steps)))
++        {
++            return RelationFact::Unknown;
++        }
++        if self.refresh_planner_state(b, steps).is_none() {
+             return RelationFact::Unknown;
+         }
+         // KerML Type::specializes delegates a conjugated RECEIVER to its
+@@ -406,8 +546,15 @@
                  return Some(false);
              }
              let e = b.elements.get(e)?;
 -            if e.ty != "Feature" {
 +            if !matches!(e.ty, "Feature" | "AttributeUsage") {
                  return Some(false);
-             }
++            }
 +            if e.ty == "AttributeUsage" {
 +                match e.props.get("isVariation") {
 +                    None => {}
 +                    Some(value) if !value.as_bool()? => {}
 +                    _ => return Some(false),
 +                }
-+            }
+             }
              match e.props.get("isVariable") {
                  None => Some(true),
-                 Some(value) => value.as_bool().map(|variable| !variable),
-@@ -431,6 +440,22 @@ impl TypeRelations {
+@@ -431,6 +578,22 @@
                  return Some(false);
              }
              self.evidence.index(b, steps)?;
@@ -49,10 +236,873 @@ index 762a23a..dd12dd9 100644
              if let Some(rel) = b.elements[feature].owning_relationship {
                  if !conforms(b.elements.get(rel)?.ty, "FeatureMembership") {
                      if let Some(owner) = self.evidence.carrier(b, rel, steps)? {
-@@ -2211,6 +2236,95 @@ mod featuring_evidence_tests {
-         ResolvedModel::build(&model)
+@@ -508,7 +671,7 @@
+         original: Option<usize>,
+         owner_types: Option<CompositionOwner>,
+         steps: &mut usize,
+-    ) -> Result<(Vec<usize>, Vec<usize>), FeatureRequirementsFailure> {
++    ) -> Result<FeatureRequirements, FeatureRequirementsFailure> {
+         use FeatureRequirementsFailure::{InvalidRelationship, Unsupported};
+         if !self.current(b) || !b.dynamic_evidence_current(feature) {
+             return Err(Unsupported);
+@@ -519,28 +682,24 @@
+             .ok_or(InvalidRelationship)?;
+         let e = b.elements.get(feature).ok_or(InvalidRelationship)?;
+         let ty = e.ty;
+-        if !matches!(
+-            ty,
+-            "Feature"
+-                | "Step"
+-                | "Expression"
+-                | "ReferenceUsage"
+-                | "AttributeUsage"
+-                | "OccurrenceUsage"
+-                | "ItemUsage"
+-                | "PartUsage"
+-        ) || original.is_some()
++        let step_domain = super::step_context::supports_membership_domain(ty);
++        if !(step_domain
++            || matches!(
++                ty,
++                "Feature"
++                    | "Step"
++                    | "Expression"
++                    | "ReferenceUsage"
++                    | "AttributeUsage"
++                    | "OccurrenceUsage"
++                    | "ItemUsage"
++                    | "PartUsage"
++            ))
++            || original.is_some()
+             || b.metadata_associations_incomplete
+             || structure.annotations_incomplete
+             || structure.metadata_annotation_targets.contains(&feature)
+             || b.metadata_of.get(&feature).is_some_and(|v| !v.is_empty())
+-        {
+-            return Err(Unsupported);
+-        }
+-        // These flags activate unaudited conditional specialization families.
+-        if e.props
+-            .get("isPortion")
+-            .is_some_and(|v| v.as_bool() != Some(false))
+         {
+             return Err(Unsupported);
+         }
+@@ -570,6 +729,13 @@
+         }
+         let ordinary_feature =
+             ty == "Feature" && !is_end && e.props.get("direction").is_none_or(|v| v.is_null());
++        let ordinary_step = step_domain
++            && !composite
++            && !is_end
++            && e.props.get("direction").is_none_or(|v| v.is_null());
++        if step_domain && !ordinary_step {
++            return Err(Unsupported);
++        }
+         let membership = e.owning_relationship.ok_or(Unsupported)?;
+         self.evidence.index(b, steps).ok_or(InvalidRelationship)?;
+         let carrier = self
+@@ -579,37 +745,97 @@
+             .ok_or(InvalidRelationship)?;
+         let owner_kind = b.elements.get(carrier).ok_or(InvalidRelationship)?.ty;
+         let namespace = matches!(owner_kind, "Namespace" | "Package" | "LibraryPackage");
+-        if namespace {
++        let valuation = ordinary_step && b.elements[membership].ty == "FeatureValue";
++        if valuation
++            && super::membership_evidence::member(b, &structure, carrier, membership, steps)
++                != Some(feature)
++        {
++            return Err(InvalidRelationship);
++        }
++        // Authored parameters of admitted Behavior and Step families share the
++        // central ordered membership proof. Return slots require Function or
++        // Expression owners. The owner proof below still checks its complete
++        // domain and positional obligations; this kind test is not a certificate.
++        let step_owner = super::step_context::supports_membership_domain(owner_kind);
++        let ordinary_parameter = ty == "Feature"
++            && !is_end
++            && match b.elements[membership].ty {
++                "ParameterMembership" => {
++                    matches!(owner_kind, "Behavior" | "Function" | "Predicate") || step_owner
++                }
++                "FeatureMembership" => {
++                    (matches!(owner_kind, "Behavior" | "Function" | "Predicate") || step_owner)
++                        && b.elements[feature]
++                            .props
++                            .get("direction")
++                            .is_some_and(|v| !v.is_null())
++                }
++                "ReturnParameterMembership" => {
++                    matches!(owner_kind, "Function" | "Predicate")
++                        || (step_owner && conforms(owner_kind, "Expression"))
++                }
++                _ => false,
++            };
++        if ordinary_parameter
++            && super::membership_evidence::parameter_direction(b, &structure, feature, steps)
++                .flatten()
++                .is_none()
++        {
++            return Err(InvalidRelationship);
++        }
++        // TypeFeatureMember uses ordinary OwningMembership. The enclosing
++        // Type is a namespace here; it does not give the member an owningType
++        // or activate parameter, result, portion or Step enclosure obligations.
++        let namespace_member = (ordinary_feature || ordinary_step)
++            && !composite
++            && b.elements[membership].ty == "OwningMembership"
++            && conforms(owner_kind, "Type");
++        if namespace_member
++            && super::membership_evidence::ordinary_namespace_feature_owner(
++                b, &structure, feature, steps,
++            ) != Some(carrier)
++        {
++            return Err(InvalidRelationship);
++        }
++        if namespace || valuation || namespace_member {
+             if self.evidence.owning_type(b, feature, steps) != Some(None) {
+                 return Err(InvalidRelationship);
+             }
+         } else {
+-            // Ordinary Usage families and undirected non-end Kernel Features
+-            // have audited owner contexts. Exact owner kinds exclude behavior,
+-            // result, flow and cross contexts; FeatureMembership excludes variant
+-            // antecedents. Usage end order is certified by the shared reducer.
+-            if !(conforms(ty, "Usage") || ordinary_feature)
+-                || !(b.elements[membership].ty == "FeatureMembership"
+-                    || (is_end && b.elements[membership].ty == "EndFeatureMembership"))
+-                || !(matches!(
+-                    owner_kind,
+-                    "Type"
+-                        | "Classifier"
+-                        | "Class"
+-                        | "Structure"
+-                        | "DataType"
+-                        | "Definition"
+-                        | "AttributeDefinition"
+-                        | "OccurrenceDefinition"
+-                        | "ItemDefinition"
+-                        | "PartDefinition"
+-                ) || (composite
+-                    && conforms(ty, "OccurrenceUsage")
+-                    && matches!(
+-                        owner_kind,
+-                        "Feature" | "OccurrenceUsage" | "ItemUsage" | "PartUsage"
+-                    )
+-                    && owner_types.is_some()))
++            // For plain noncomposite, undirected Features the owner adds no
++            // typing specialization except the FlowEnd payload rule. Exact
++            // FeatureMembership also excludes the owned-cross-feature role.
++            // Portions, variability and metadata were checked above; composite
++            // Usage and parameter contexts retain their separate certificates.
++            if !ordinary_parameter
++                && (!(conforms(ty, "Usage") || ordinary_feature || ordinary_step)
++                    || !(b.elements[membership].ty == "FeatureMembership"
++                        || (is_end && b.elements[membership].ty == "EndFeatureMembership"))
++                    || !((ordinary_step && conforms(owner_kind, "Type"))
++                        || (ordinary_feature
++                            && !composite
++                            && conforms(owner_kind, "Type")
++                            && !conforms(owner_kind, "FlowEnd"))
++                        || matches!(
++                            owner_kind,
++                            "Type"
++                                | "Classifier"
++                                | "Class"
++                                | "Structure"
++                                | "DataType"
++                                | "Definition"
++                                | "AttributeDefinition"
++                                | "OccurrenceDefinition"
++                                | "ItemDefinition"
++                                | "PartDefinition"
++                        )
++                        || (composite
++                            && conforms(ty, "OccurrenceUsage")
++                            && matches!(
++                                owner_kind,
++                                "Feature" | "OccurrenceUsage" | "ItemUsage" | "PartUsage"
++                            )
++                            && owner_types.is_some())))
+             {
+                 return Err(Unsupported);
+             }
+@@ -617,21 +843,66 @@
+                 return Err(InvalidRelationship);
+             }
+         }
++        // Share the exact one-hop source used by supertypes and static planning.
++        // Every owned link and orphan source is checked, not only the final link.
++        let chaining_feature =
++            checked_feature_target(b, &structure, feature, owned, b.elements.len(), steps)
++                .ok_or(InvalidRelationship)?;
+         charge(steps, owned.len()).ok_or(Unsupported)?;
+         let mut has_owned_typing = false;
++        let (mut owned_object, mut owned_occurrence, mut owned_data) = (false, false, false);
+         for &relationship in owned {
+             let kind = b.elements.get(relationship).ok_or(InvalidRelationship)?.ty;
+-            has_owned_typing |= conforms(kind, "FeatureTyping");
+-            if conforms(kind, "FeatureValue")
+-                || conforms(kind, "FeatureChaining")
++            if conforms(kind, "FeatureTyping") {
++                has_owned_typing = true;
++                if self.evidence.carrier(b, relationship, steps) != Some(Some(feature)) {
++                    return Err(InvalidRelationship);
++                }
++                let target = endpoint(
++                    b,
++                    feature,
++                    relationship,
++                    &["typedFeature", "specific"],
++                    &["type", "general"],
++                    "Type",
++                    steps,
++                )
++                .ok_or(InvalidRelationship)?;
++                let kind = b.elements[target].ty;
++                owned_object |= conforms(kind, "Structure");
++                owned_occurrence |= conforms(kind, "Class");
++                owned_data |= conforms(kind, "DataType");
++            }
++            if conforms(kind, "FeatureValue") {
++                self.require_independent_valuation_type(b, &structure, feature, membership, steps)?;
++            }
++            if conforms(kind, "FeatureInverting") {
++                // Inverting is a Relationship, not a typing/subsetting edge.
++                // Its value semantics do not change deriveFeatureType. Still
++                // require its reciprocal carrier and complete endpoint aliases
++                // for every caller, including negative specialization proofs.
++                if self.evidence.carrier(b, relationship, steps) != Some(Some(feature)) {
++                    return Err(InvalidRelationship);
++                }
++                endpoint(
++                    b,
++                    feature,
++                    relationship,
++                    &["featureInverted"],
++                    &["invertingFeature"],
++                    "Feature",
++                    steps,
++                )
++                .ok_or(InvalidRelationship)?;
++            }
++            if conforms(kind, "ResultExpressionMembership")
+                 || conforms(kind, "CrossSubsetting")
+-                || conforms(kind, "FeatureInverting")
+                 || matches!(kind, "Unioning" | "Differencing")
+             {
+                 return Err(Unsupported);
+             }
+             if kind == "Intersecting" {
+-                if !composite || !ordinary_feature {
++                if !(ordinary_step || ordinary_feature) {
+                     return Err(Unsupported);
+                 }
+                 if self.evidence.carrier(b, relationship, steps) != Some(Some(feature)) {
+@@ -680,7 +951,7 @@
+             return Err(Unsupported);
+         }
+         charge(steps, typings.len()).ok_or(Unsupported)?;
+-        let (mut object, mut occurrence, mut data) = (false, false, false);
++        let (mut object, mut occurrence) = (false, false);
+         for &target in typings {
+             let target_ty = b.elements.get(target).ok_or(InvalidRelationship)?.ty;
+             if !conforms(target_ty, "Classifier") {
+@@ -688,15 +959,14 @@
+             }
+             object |= conforms(target_ty, "Structure");
+             occurrence |= conforms(target_ty, "Class");
+-            data |= conforms(target_ty, "DataType");
+         }
+         let roles = [
+             (true, "Base::things"),
+             (conforms(ty, "Step"), "Performances::performances"),
+             (conforms(ty, "Expression"), "Performances::evaluations"),
+-            (object, "Objects::objects"),
+-            (occurrence, "Occurrences::occurrences"),
+-            (data || ty == "AttributeUsage", "Base::dataValues"),
++            (owned_object, "Objects::objects"),
++            (owned_occurrence, "Occurrences::occurrences"),
++            (owned_data || ty == "AttributeUsage", "Base::dataValues"),
+             (conforms(ty, "OccurrenceUsage"), "Occurrences::occurrences"),
+             (conforms(ty, "ItemUsage"), "Items::items"),
+             (ty == "PartUsage", "Parts::parts"),
+@@ -704,6 +974,46 @@
+         let mut required = Vec::with_capacity(roles.iter().filter(|(needed, _)| *needed).count());
+         for (needed, name) in roles {
+             if needed {
++                required.push(self.required_role(b, name, steps).ok_or(Unsupported)?);
++            }
++        }
++        let portion = super::portion_context::antecedent(b, feature, &structure, self, steps)
++            .ok_or(InvalidRelationship)?;
++        let requires_portions = match portion {
++            super::portion_context::Antecedent::Inapplicable => false,
++            super::portion_context::Antecedent::Applies => true,
++            super::portion_context::Antecedent::OwnerType(_) => {
++                owner_types.ok_or(Unsupported)?.occurrence
++            }
++        };
++        if requires_portions {
++            required.push(
++                self.required_role(b, super::portion_context::PORTIONS, steps)
++                    .ok_or(Unsupported)?,
++            );
++        }
++        if ordinary_step {
++            let contextual =
++                super::step_context::metaclass_requirements(b, feature, &structure, self, steps)
++                    .ok_or(Unsupported)?;
++            for name in contextual {
++                required.push(self.required_role(b, name, steps).ok_or(Unsupported)?);
++            }
++            for (applies, name) in [
++                (
++                    conforms(ty, "BooleanExpression"),
++                    "Performances::booleanEvaluations",
++                ),
++                (
++                    conforms(ty, "LiteralExpression"),
++                    "Performances::literalEvaluations",
++                ),
++            ] {
++                if applies {
++                    required.push(self.required_role(b, name, steps).ok_or(Unsupported)?);
++                }
++            }
++            if let Some(name) = super::implied::literal_implied_base(ty) {
+                 required.push(self.required_role(b, name, steps).ok_or(Unsupported)?);
+             }
+         }
+@@ -718,7 +1028,8 @@
+                 required.push(self.required_role(b, name, steps).ok_or(Unsupported)?);
+             }
+         }
+-        if is_end && !namespace {
++        let mut positional_redefinitions = Vec::new();
++        if (is_end || ordinary_parameter) && !namespace {
+             // This is the same complete Membership/positional certificate used
+             // by Type.feature. Its generated targets are required witnesses in
+             // the shared semantic graph, never a second set of implicit edges.
+@@ -740,7 +1051,10 @@
+             for &relationship in owned {
+                 charge(steps, 1).ok_or(Unsupported)?;
+                 let kind = b.elements[relationship].ty;
+-                if conforms(kind, "OwningMembership") && !conforms(kind, "FeatureMembership") {
++                if is_end
++                    && conforms(kind, "OwningMembership")
++                    && !conforms(kind, "FeatureMembership")
++                {
+                     let member = super::membership_evidence::member(
+                         b,
+                         &structure,
+@@ -759,35 +1073,93 @@
+                 }
+             }
+             if let Some(targets) = sequence.required_positional.remove(&feature) {
+-                charge(steps, targets.len()).ok_or(Unsupported)?;
+-                required.extend(targets);
+-            }
+-        }
++                charge(steps, targets.len().saturating_mul(2)).ok_or(Unsupported)?;
++                required.extend(targets.iter().copied());
++                positional_redefinitions = targets;
++            }
++        }
++        required.extend(chaining_feature);
+         let anything = self
+             .required_role(b, "Base::Anything", steps)
+             .ok_or(Unsupported)?;
+-        Ok((required, vec![anything]))
++        Ok(FeatureRequirements {
++            features: required,
++            typings: vec![anything],
++            positional_redefinitions,
++            chaining_feature,
++        })
      }
  
+     // Audited family obligations for complete negative specialization paths.
+     // Verify inherited family requirements, rather than assuming a partial
+     // replacement library supplies its own ancestor heritage correctly. These
+     // targets are obligations to prove through the shared graph, not new edges.
++    /// Candidate ancestry for the shared membership proof, not a complete
++    /// specialization certificate. Association binary requirements depend on
++    /// the effective ends computed by that proof. Its caller MUST audit every
++    /// visited Association after reduction and before exposing any result.
++    /// Nothing is inserted into the complete-bases or negative-reachability cache.
++    pub(super) fn association_membership_candidate_bases(
++        &mut self,
++        b: &mut Builder,
++        specific: usize,
++        steps: &mut usize,
++    ) -> Option<Vec<usize>> {
++        if !self.current(b)
++            || !b.dynamic_evidence_current(specific)
++            || !matches!(
++                b.elements.get(specific)?.ty,
++                "Association" | "AssociationStructure"
++            )
++            || self
++                .changing_specializations
++                .as_ref()
++                .is_some_and(|rows| rows.contains(&specific))
++        {
++            return None;
++        }
++        self.refresh_planner_state(b, steps)?;
++        let projection = self.stored_base_projection(b, specific, false, steps)?;
++        if !projection.complete
++            || projection.conjugated
++            || !projection.feature_chain_complete
++            || projection.final_chain.is_some()
++        {
++            return None;
++        }
++        let scope = b.elem_scope.get(&specific).copied()?;
++        if !self.providers.scope(b, scope, steps) {
++            return None;
++        }
++        let mut targets = projection.targets;
++        let mut seen = projection.target_set;
++        for target in b.value_context_bases(specific, steps)? {
++            charge(steps, 1)?;
++            if seen.insert(target) {
++                targets.push(target);
++            }
++        }
++        charge(steps, targets.len())?;
++        Some(targets)
++    }
++
+     fn required_bases(
+         &mut self,
+         b: &mut Builder,
+         specific: usize,
+         steps: &mut usize,
+     ) -> Option<Vec<usize>> {
+-        if matches!(
+-            b.elements.get(specific)?.ty,
+-            "Feature"
+-                | "ReferenceUsage"
+-                | "AttributeUsage"
+-                | "OccurrenceUsage"
+-                | "ItemUsage"
+-                | "PartUsage"
+-        ) {
++        if super::step_context::supports_membership_domain(b.elements.get(specific)?.ty)
++            || matches!(
++                b.elements.get(specific)?.ty,
++                "Feature"
++                    | "ReferenceUsage"
++                    | "AttributeUsage"
++                    | "OccurrenceUsage"
++                    | "ItemUsage"
++                    | "PartUsage"
++            )
++        {
+             let owned = self.evidence.relationships(b, specific, steps)?;
+             let mut typings = Vec::new();
+             for &relation in &owned {
+@@ -804,11 +1176,41 @@
+                     )?);
+                 }
+             }
+-            let (mut feature_bases, type_bases) = self
+-                .feature_requirements(b, specific, &owned, &typings, None, None, steps)
++            let raw = super::structural_index::StoredStructure::for_query(b, steps)?;
++            let owner = self.feature_context_owner(b, specific, &raw, steps)?;
++            let owner_types = owner
++                .map(|owner| {
++                    super::feature_type_projection::contextual_owner_types(
++                        b,
++                        owner,
++                        self.changing_specializations.clone(),
++                        self.projection_context.clone(),
++                        steps,
++                    )
++                })
++                .transpose()
+                 .ok()?;
+-            feature_bases.extend(type_bases);
+-            return Some(feature_bases);
++            let mut requirements = self
++                .feature_requirements(b, specific, &owned, &typings, None, owner_types, steps)
++                .ok()?;
++            requirements.features.extend(requirements.typings);
++            return Some(requirements.features);
++        }
++        if matches!(
++            b.elements.get(specific)?.ty,
++            "Association" | "AssociationStructure"
++        ) {
++            // The shared provider first collects an unclaimed Association graph,
++            // then verifies every conditional base against its reduced end set.
++            // Recursion is a refusal, never evidence for an absent dependency.
++            if self.association_membership_queries.len() >= super::MAX_RESOLUTION_DEPTH
++                || !self.association_membership_queries.insert(specific)
++            {
++                return None;
++            }
++            let domain = b.checked_type_memberships_with_relations(specific, steps, self);
++            self.association_membership_queries.remove(&specific);
++            domain.ok()?;
+         }
+         let element = b.elements.get(specific)?;
+         if conforms(element.ty, "Definition") {
+@@ -843,8 +1245,23 @@
+                 "Occurrences::Occurrence",
+                 "Base::Anything",
+             ],
++            "Association" => &["Links::Link", "Base::Anything"],
++            "AssociationStructure" => &[
++                "Objects::LinkObject",
++                "Links::Link",
++                "Objects::Object",
++                "Occurrences::Occurrence",
++                "Base::Anything",
++            ],
+             "DataType" | "AttributeDefinition" => &["Base::DataValue", "Base::Anything"],
+             "Behavior" => &[
++                "Performances::Performance",
++                "Occurrences::Occurrence",
++                "Base::Anything",
++            ],
++            "Predicate" => &[
++                "Performances::BooleanEvaluation",
++                "Performances::Evaluation",
+                 "Performances::Performance",
+                 "Occurrences::Occurrence",
+                 "Base::Anything",
+@@ -899,6 +1316,9 @@
+                     {
+                         "Occurrences::Occurrence::suboccurrences"
+                     }
++                    [p, t, n] if p == "Occurrences" && t == "Occurrence" && n == "portions" => {
++                        super::portion_context::PORTIONS
++                    }
+                     [p, t, n] if p == "Objects" && t == "Object" && n == "subobjects" => {
+                         "Objects::Object::subobjects"
+                     }
+@@ -908,10 +1328,31 @@
+                     [p, t, n] if p == "Items" && t == "Item" && n == "subparts" => {
+                         "Items::Item::subparts"
+                     }
++                    [p, t, n]
++                        if p == "Performances"
++                            && t == "Performance"
++                            && n == "enclosedPerformances" =>
++                    {
++                        super::step_context::ENCLOSED
++                    }
++                    [p, t, n]
++                        if p == "Performances" && t == "Performance" && n == "subperformances" =>
++                    {
++                        super::step_context::SUBPERFORMANCES
++                    }
++                    [p, t, n] if p == "Objects" && t == "Object" && n == "ownedPerformances" => {
++                        super::step_context::OWNED
++                    }
+                     [p, n] if p == "Parts" && n == "parts" => "Parts::parts",
+                     [p, n] if p == "Items" && n == "items" => "Items::items",
+                     [p, n] if p == "Parts" && n == "Part" => "Parts::Part",
+                     [p, n] if p == "Items" && n == "Item" => "Items::Item",
++                    [p, n] if p == "Links" && n == "Link" => "Links::Link",
++                    [p, n] if p == "Links" && n == "BinaryLink" => "Links::BinaryLink",
++                    [p, n] if p == "Objects" && n == "LinkObject" => "Objects::LinkObject",
++                    [p, n] if p == "Objects" && n == "BinaryLinkObject" => {
++                        "Objects::BinaryLinkObject"
++                    }
+                     [p, n] if p == "Links" && n == "SelfLink" => "Links::SelfLink",
+                     [p, n] if p == "Occurrences" && n == "HappensLink" => {
+                         "Occurrences::HappensLink"
+@@ -930,11 +1371,25 @@
+                     [p, n] if p == "Performances" && n == "evaluations" => {
+                         "Performances::evaluations"
+                     }
++                    [p, n]
++                        if p == "Performances"
++                            && super::step_context::EXPRESSION_ROLES
++                                .iter()
++                                .any(|name| name.rsplit("::").next() == Some(n.as_str())) =>
++                    {
++                        *super::step_context::EXPRESSION_ROLES
++                            .iter()
++                            .find(|name| name.rsplit("::").next() == Some(n.as_str()))
++                            .unwrap()
++                    }
+                     [p, n] if p == "Base" && n == "DataValue" => "Base::DataValue",
+                     [p, n] if p == "Occurrences" && n == "Occurrence" => "Occurrences::Occurrence",
+                     [p, n] if p == "Objects" && n == "Object" => "Objects::Object",
+                     [p, n] if p == "Performances" && n == "Performance" => {
+                         "Performances::Performance"
++                    }
++                    [p, n] if p == "Performances" && n == "BooleanEvaluation" => {
++                        "Performances::BooleanEvaluation"
+                     }
+                     [p, n] if p == "Performances" && n == "Evaluation" => {
+                         "Performances::Evaluation"
+@@ -954,29 +1409,44 @@
+                 let kind = match name {
+                     "Parts::parts" | "Items::Item::subparts" => "PartUsage",
+                     "Items::items" | "Items::Item::subitems" => "ItemUsage",
+-                    "Occurrences::Occurrence::suboccurrences" | "Objects::Object::subobjects" => {
+-                        "Feature"
+-                    }
++                    "Occurrences::Occurrence::suboccurrences"
++                    | "Objects::Object::subobjects"
++                    | super::portion_context::PORTIONS => "Feature",
+                     "Parts::Part" => "PartDefinition",
+                     "Items::Item" => "ItemDefinition",
+                     "Occurrences::Occurrence" => "Class",
+-                    "Links::SelfLink" | "Occurrences::HappensLink" => "Association",
++                    "Links::Link"
++                    | "Links::BinaryLink"
++                    | "Links::SelfLink"
++                    | "Occurrences::HappensLink" => "Association",
++                    "Objects::LinkObject" | "Objects::BinaryLinkObject" => "AssociationStructure",
+                     "Actions::Action" => "ActionDefinition",
+                     "Base::things"
+                     | "Base::dataValues"
+                     | "Occurrences::occurrences"
+                     | "Objects::objects" => "Feature",
+-                    "Performances::performances" => "Step",
++                    "Performances::performances"
++                    | super::step_context::ENCLOSED
++                    | super::step_context::SUBPERFORMANCES
++                    | super::step_context::OWNED => "Step",
+                     "Performances::evaluations" => "Expression",
++                    name if super::step_context::EXPRESSION_ROLES.contains(&name) => "Expression",
+                     "Objects::Object" => "Structure",
+                     "Base::DataValue" => "DataType",
+                     "Performances::Performance" => "Behavior",
+                     "Performances::Evaluation" => "Function",
++                    "Performances::BooleanEvaluation" => "Predicate",
+                     _ => "Classifier",
+                 };
+-                let target = id
+-                    .and_then(|id| b.element_index_of_uuid(id))
+-                    .filter(|&e| e < b.lib_boundary && conforms(b.elements[e].ty, kind));
++                let target = id.and_then(|id| b.element_index_of_uuid(id)).filter(|&e| {
++                    e < b.lib_boundary
++                            && conforms(b.elements[e].ty, kind)
++                            // The loaded identity index records original names.
++                            // A renamed raw declaration cannot supply the old
++                            // canonical role merely by retaining its UUID.
++                            && b.elements[e].props.get("declaredName").and_then(|v| v.as_str())
++                                == name.rsplit("::").next()
++                });
+                 resolved.insert(name, target);
+             }
+             self.required_library = Some(resolved);
+@@ -1051,6 +1521,16 @@
+         fact
+     }
+ 
++    fn nonowned_specializations_complete(
++        &mut self,
++        b: &mut Builder,
++        source: usize,
++        steps: &mut usize,
++    ) -> bool {
++        let raw = std::sync::Arc::clone(&self.evidence.structure);
++        nonowned_specializations_complete(b, &raw, source, steps)
++    }
++
+     /// The direct stored reader shared by exact explicit-only operations and
+     /// qualified specialization evidence. No implied provider is invoked here.
+     fn stored_base_projection(
+@@ -1073,7 +1553,8 @@
+         }
+         self.evidence.index(b, steps)?;
+         if self.evidence.incomplete()
+-            || self.evidence.bad_bases.contains(&specific)
++            || (self.evidence.bad_bases.contains(&specific)
++                && !self.nonowned_specializations_complete(b, specific, steps))
+             || self.evidence.bad_chains.contains(&specific)
+         {
+             return None;
+@@ -1288,6 +1769,13 @@
+         }
+         self.refresh_planner_state(b, steps)?;
+         charge(steps, 1)?;
++        if self
++            .changing_specializations
++            .as_ref()
++            .is_some_and(|rows| rows.contains(&specific))
++        {
++            return None;
++        }
+         if let Some(bases) = self.bases.get(&specific) {
+             charge(steps, bases.targets.len())?;
+             return Some(bases.clone());
+@@ -1298,32 +1786,77 @@
+         let mut complete = projection.complete;
+         let mut required = Vec::new();
+         if !projection.conjugated {
+-            // The provider establishes the supported implied/positional base
+-            // evidence and preserves caller lookup state. An incomplete
+-            // provider does not invalidate an already proven explicit path.
+-            let provider = b
+-                .elem_scope
+-                .get(&specific)
+-                .copied()
+-                .is_some_and(|scope| self.providers.scope(b, scope, steps));
+-            if provider && complete {
+-                match b.value_context_bases(specific, steps) {
+-                    Some(bases) => {
+-                        for target in bases {
+-                            charge(steps, 1)?;
+-                            if target_set.insert(target) {
+-                                targets.push(target);
+-                            }
++            if specific >= b.explicit_len() {
++                match b.complete_generated_reference_result(specific, steps) {
++                    Some(anchor) => {
++                        // Read the complete contextual Step obligations from the
++                        // same reciprocal ownership evidence used by construction.
++                        // This admits plain noncomposite nested references while
++                        // retaining explicit refusal of parameter/result contexts.
++                        let contextual =
++                            super::step_context::reference_requirements(b, anchor, self, steps);
++                        complete &= contextual.is_some();
++                        // Positive canonical result evidence alone cannot establish
++                        // the source's mandatory inherited expression/step/feature
++                        // specializations. Prove those paths in this same graph.
++                        for name in [
++                            "Performances::evaluations",
++                            "Performances::performances",
++                            "Base::things",
++                        ]
++                        .into_iter()
++                        .chain(contextual.into_iter().flatten())
++                        {
++                            complete &= self.required_role(b, name, steps).is_some_and(|target| {
++                                self.walk(b, anchor, target, 0, &mut HashSet::new(), steps)
++                                    == RelationFact::Yes
++                            });
+                         }
+                     }
+                     None => complete = false,
+                 }
++                for name in ["Base::things", "Base::Anything"] {
++                    match self.required_role(b, name, steps) {
++                        Some(target) => required.push(target),
++                        None => complete = false,
++                    }
++                }
+             } else {
+-                complete = false;
+-            }
+-            match self.required_bases(b, specific, steps) {
+-                Some(targets) => required = targets,
+-                None => complete = false,
++                // The provider establishes the supported implied/positional base
++                // evidence and preserves caller lookup state. An incomplete
++                // provider does not invalidate an already proven explicit path.
++                let provider =
++                    if super::step_context::supports_membership_domain(b.elements[specific].ty) {
++                        // The common Step applicability reader below certifies its
++                        // exact source context. Stored/retained identity bases do
++                        // not require a synthetic textual scope for a literal.
++                        b.effective_positional_redefinitions().is_some()
++                            || b.ensure_positional_redefinitions_with_budget(steps)
++                    } else {
++                        b.elem_scope
++                            .get(&specific)
++                            .copied()
++                            .is_some_and(|scope| self.providers.scope(b, scope, steps))
++                    };
++                if provider && complete {
++                    match b.value_context_bases(specific, steps) {
++                        Some(bases) => {
++                            for target in bases {
++                                charge(steps, 1)?;
++                                if target_set.insert(target) {
++                                    targets.push(target);
++                                }
++                            }
++                        }
++                        None => complete = false,
++                    }
++                } else {
++                    complete = false;
++                }
++                match self.required_bases(b, specific, steps) {
++                    Some(targets) => required = targets,
++                    None => complete = false,
++                }
+             }
+         }
+         if let Some(target) = projection.final_chain {
+@@ -1367,6 +1900,61 @@
+         }
+         Some(bases)
+     }
++}
++
++/// Type.supertypes selects ownedSpecialization only. Valid standalone
++/// typings and subclassifications therefore add no Type supertype. Audit
++/// every row's exact source, target kind and carrier before excluding it;
++/// other nonowned specialization families remain explicitly unqualified.
++pub(super) fn nonowned_specializations_complete(
++    b: &mut Builder,
++    raw: &super::structural_index::StoredStructure,
++    source: usize,
++    steps: &mut usize,
++) -> bool {
++    let Some(rows) = raw.nonowned_bases.get(&source) else {
++        return false;
++    };
++    if rows.is_empty() || charge(steps, rows.len()).is_none() {
++        return false;
++    }
++    for &row in rows {
++        let (source_kind, source_keys, target_keys, target_kind): (&str, &[&str], &[&str], &str) =
++            if conforms(b.elements[row].ty, "FeatureTyping") {
++                (
++                    "Feature",
++                    &["typedFeature", "specific"],
++                    &["type", "general"],
++                    "Type",
++                )
++            } else if b.elements[row].ty == "Subclassification" {
++                (
++                    "Classifier",
++                    &["subclassifier", "specific"],
++                    &["superclassifier", "general"],
++                    "Classifier",
++                )
++            } else {
++                return false;
++            };
++        if !conforms(b.elements[source].ty, source_kind)
++            || semantic_ownership::checked_relationship_carrier(b, raw, row, steps) != Some(None)
++            || endpoint_with_carrier(
++                b,
++                source,
++                None,
++                row,
++                source_keys,
++                target_keys,
++                target_kind,
++                steps,
++            )
++            .is_none()
++        {
++            return false;
++        }
++    }
++    true
+ }
+ 
+ pub(super) fn endpoint(
+@@ -2209,6 +2797,95 @@
+         let parsed = model.add_source("evidence.kerml", source);
+         assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
+         ResolvedModel::build(&model)
++    }
++
 +    fn package_attribute() -> (ResolvedModel, usize) {
 +        let mut m = Model::new();
 +        m.add_source("attribute.sysml", "package P { attribute count = 3; }");
@@ -140,8 +1190,82 @@ index 762a23a..dd12dd9 100644
 +            TypeRelations::default().audited_featuring_domain(&mut r.b, &[f], &mut 0),
 +            Some(true)
 +        );
-+    }
-+
+     }
+ 
      #[test]
-     fn inverse_featuring_and_reciprocal_membership_are_observed() {
-         let mut r = model("class B; class A {feature x;} featuring A::x by B;");
+@@ -2412,6 +3089,41 @@
+             TypeRelations::default().specializes(&mut r.b, a, b, &mut 0),
+             RelationFact::Unknown
+         );
++    }
++    #[test]
++    fn required_library_role_rechecks_current_declaration_name_and_retry() {
++        let mut model = Model::new();
++        model.add_library_source(
++            "base.kerml",
++            "standard library package Base {classifier Anything;}",
++        );
++        let mut r = ResolvedModel::build(&model);
++        let target = r.resolve_qualified("Base::Anything").unwrap().0;
++        let id = r.b.elements[target].id;
++        for value in [
++            serde_json::json!("Renamed"),
++            serde_json::Value::Null,
++            serde_json::json!(17),
++            serde_json::json!(""),
++        ] {
++            let mut held = TypeRelations::default();
++            assert_eq!(
++                held.library_role(&mut r.b, "Base::Anything", &mut 0),
++                Some(target)
++            );
++            r.b.set(target, "declaredName", value);
++            assert_eq!(r.b.elements[target].id, id);
++            assert_eq!(held.library_role(&mut r.b, "Base::Anything", &mut 0), None);
++            assert_eq!(
++                TypeRelations::default().library_role(&mut r.b, "Base::Anything", &mut 0),
++                None
++            );
++            r.b.set(target, "declaredName", serde_json::json!("Anything"));
++            assert_eq!(
++                TypeRelations::default().library_role(&mut r.b, "Base::Anything", &mut 0),
++                Some(target)
++            );
++        }
+     }
+     #[test]
+     fn owned_feature_budget_retry_does_not_cache_a_false_witness() {
+@@ -2664,7 +3376,7 @@
+                 2 => r.b.set(slot, "isVariable", serde_json::json!(true)),
+                 3 => r.b.set(slot, "direction", serde_json::json!(false)),
+                 4 => r.b.elements[membership].ty = "EndFeatureMembership",
+-                5 => r.b.elements[parent].ty = "Function",
++                5 => r.b.elements[parent].ty = "FlowEnd",
+                 _ => r.b.elements[parent]
+                     .owned_relationships
+                     .make_mut()
+@@ -2674,6 +3386,24 @@
+                 TypeRelations::default().specializes(&mut r.b, slot, unrelated, &mut 0),
+                 RelationFact::Unknown,
+                 "mutation {mutation}"
++            );
++        }
++        // A plain member has no parameter/result obligations merely because
++        // its owner is a Function. Making it directed changes applicability.
++        for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++            let mut r = fixture(format, "class Parent {feature slot;}");
++            let parent = r.resolve_qualified("Parent").unwrap().0;
++            let slot = r.resolve_qualified("Parent::slot").unwrap().0;
++            let unrelated = r.resolve_qualified("Links::SelfLink").unwrap().0;
++            r.b.elements[parent].ty = "Function";
++            assert_eq!(
++                TypeRelations::default().specializes(&mut r.b, slot, unrelated, &mut 0),
++                RelationFact::No
++            );
++            r.b.set(slot, "direction", serde_json::json!("in"));
++            assert_eq!(
++                TypeRelations::default().specializes(&mut r.b, slot, unrelated, &mut 0),
++                RelationFact::Unknown
+             );
+         }
+         let mut r = fixture(GraphFormat::CanonicalV3, "class Parent {feature slot=4;}");

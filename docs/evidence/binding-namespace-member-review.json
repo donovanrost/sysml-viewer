@@ -1,0 +1,216 @@
+{
+  "reviewedAt": "2026-10-18T18:45:05.345489+00:00",
+  "status": "Binding namespace-member source admitted. Final-source qualification has one conformance process timeout after 132 passes; investigation and requirements gate pending. No family or package closes.",
+  "productionKernelInputSha256": "52813ee85839cef183e993ed155113272e72bc60f22c815a2563df6a4b85d2bf",
+  "sources": [
+    {
+      "path": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466"
+    },
+    {
+      "path": "target/standards/kerml.pdf",
+      "sha256": "3bcc96f989bfa9d05cd28e026df3351b795fe8d494187b87bff3db7d96373697"
+    }
+  ],
+  "anchors": [
+    {
+      "id": "Kernel-Connectors-BindingConnector",
+      "name": "BindingConnector",
+      "statements": [
+        "<p>A <code>BindingConnector</code> is a binary <code>Connector</code> that requires its <code>relatedFeatures</code> to identify the same things (have the same values).</p> "
+      ]
+    },
+    {
+      "id": "Core-Types-Type-ownedFeature",
+      "name": "ownedFeature",
+      "statements": [
+        "<p>The <code>ownedMemberFeatures</code> of the <code>ownedFeatureMemberships</code> of this <code>Type</code>.</p> "
+      ]
+    },
+    {
+      "id": "Core-Types-Type-removeRedefinedFeatures_Membership",
+      "name": "removeRedefinedFeatures",
+      "statements": [
+        "<p>Return a subset of <code>memberships</code>, removing those <code>Memberships</code> whose <code>memberElements</code> are <code>Features</code> and for which either of the following two conditions holds:</p>  <ol>  <li>The <code>memberElement</code> of the <code>Membership</code> is included in redefined <code>Features</code> of another <code>Membership</code> in <code>memberships</code>.</li>  <li>One of the redefined <code>Features</code> of the <code>Membership</code> is a directly <code>redefinedFeature</code> of an <code>ownedFeature</code> of this <code>Type</code>.</li> </ol>  <p>For this purpose, the redefined <code>Features</code> of a <code>Membership</code> whose <code>memberElement</code> is a <code>Feature</code> includes the <code>memberElement</code> and all <code>Features</code> directly or indirectly redefined by the <code>memberElement</code>.</p>"
+      ]
+    },
+    {
+      "id": "Core-Features-Feature-owningType",
+      "name": "owningType",
+      "statements": [
+        "<p>The <code>Type</code> that is the <code>owningType</code> of the <code>owningFeatureMembership</code> of this <code>Feature</code>.</p>"
+      ]
+    },
+    {
+      "id": "Core-Features-Feature-checkFeatureParameterRedefinition",
+      "name": "checkFeatureParameterRedefinition",
+      "statements": [
+        "<p>If a <code>Feature</code> is a <code>parameter</code> of an <code>owningType</code> that is a <code>Behavior</code> or <code>Step</code>, but <em>not</em> </p> <ul>     <li>A <code>result</code> <code>parameter</code></li>     <li>A <code>parameter</code> of an <code>InvocationExpression</code>, with at least one non-implied <code>ownedRedefinition</code></li> </ul> <p>then, for each direct supertype of its <code>owningType</code> that is also a <code>Behavior</code> or <code>Step</code>, it must redefine the <code>parameter</code> at the same position, if any.</p>",
+        "owningType <> null and not owningFeatureMembership.     oclIsKindOf(ReturnParameterMembership) and (owningType.oclIsKindOf(Behavior) or  owningType.oclIsKindOf(Step) and     (owningType.oclIsKindOf(InvocationExpression) implies       not ownedRedefinition->exists(not isImplied))  implies     let i : Integer =         owningType.ownedFeature->select(direction <> null)->             reject(owningFeatureMembership.                 oclIsKindOf(ReturnParameterMembership))->             indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |             let ownedParameters : Sequence(Feature) =                 supertype.ownedFeature->select(direction <> null)->                      reject(owningFeatureMembership.                          oclIsKindOf(ReturnParameterMembership)) in             ownedParameters->size() >= i implies                 redefines(ownedParameters->at(i))"
+      ]
+    },
+    {
+      "id": "Core-Features-Feature-checkFeatureEndRedefinition",
+      "name": "checkFeatureEndRedefinition",
+      "statements": [
+        "<p>If a <code>Feature</code> has <code>isEnd = true</code> and an <code>owningType</code> that is not empty, then, for each direct supertype of its <code>owningType</code>, it must redefine the <code>endFeature</code> at the same position, if any.</p>",
+        "isEnd and owningType <> null implies     let i : Integer =          owningType.ownedEndFeature->indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |              supertype.endFeature->size() >= i implies                 redefines(supertype.endFeature->at(i))"
+      ]
+    },
+    {
+      "id": "Root-Namespaces-Namespace-member",
+      "name": "member",
+      "statements": [
+        "<p>The set of all member <code>Elements</code> of this <code>Namespace</code>, which are the <code>memberElements</code> of all <code>memberships</code> of the <code>Namespace</code>.</p> "
+      ]
+    },
+    {
+      "id": "Root-Namespaces-Namespace-ownedMember",
+      "name": "ownedMember",
+      "statements": [
+        "<p>The owned <code>members</code> of this <code>Namespace</code>, which are the <cpde><code>ownedMemberElements</code> of the <code>ownedMemberships</code> of the <code>Namespace</code>.</p> "
+      ]
+    }
+  ],
+  "grammar": "KerML 8.2.4.1.6: TypeFeatureMember creates OwningMembership; OwnedFeatureMember creates FeatureMembership. FeatureElement includes BindingConnector.",
+  "finding": "An authored BindingConnector in an ordinary namespace membership participates in shared membership/redefinition reduction, but adds no outer ownedFeature, parameter, end or result role. Existing TypeInputs rejects this metaclass in the no-owningType branch and thereby prevents otherwise complete enclosing parameter type/input queries.",
+  "implementation": "Widen the existing ordinary namespace branch for exact BindingConnector rows in the explicit construction prefix. Reuse the current reciprocal owner, complete inverse membership, metadata and neutral role guards. Preserve all common owned/inverse redefinition reduction. Generated bindings continue through the separate exact construction recipe certificate.",
+  "boundaries": [
+    "This establishes enclosing membership and input queries, not BindingConnector relatedFeature, featuringType, ancestry, endpoint validation or whole-model validity.",
+    "Generated rows must not obtain authored admission by setting isImplied.",
+    "Inline owned cross-feature typing and contextual default-binding endpoint construction remain open.",
+    "General Connector subclasses and directed/composite/variable/end/portion roles remain outside this admission."
+  ],
+  "candidateFiles": {
+    "target/trigger-validation/binding-member-stage/json/type_inputs.rs": "e0a3dcd26cb1d904e7f597cccb8b283d7c6a6350717b354cb3f0346fd938f210",
+    "target/trigger-validation/binding-member-stage/json/type_relations/namespace_member_tests.rs": "9047cd5301ac9cd62761084669586f1f4983977e6482c2b57ed74bbddaf311bb"
+  },
+  "executions": [
+    {
+      "log": "target/trigger-validation/binding-members-first.log",
+      "status": "pass",
+      "tests": 1,
+      "meaning": "Full-library control, factored binding and inline binding restore exact outer inputs and local Integer types.",
+      "logSha256": "22d6d91d2ec1d0d16e210073d9fd0008d317d575e53aefc84ccd6c88ba674709"
+    },
+    {
+      "log": "target/trigger-validation/binding-members-expanded.log",
+      "status": "fail",
+      "passed": 81,
+      "failed": 2,
+      "meaning": "Two newly written no-library fixtures assumed complete ownership/inheritance. Existing expanded suites passed; the new fixtures require canonical library dependencies.",
+      "logSha256": "d76c0cf94cd2cdc04b0b39780417400070a0ab40ad1b6f0da9d8763c77791e31"
+    },
+    {
+      "log": "target/trigger-validation/binding-members-corrected.log",
+      "status": "fail",
+      "passed": 1,
+      "failed": 1,
+      "meaning": "With full library, alias/redefinition acceptance passes. A malformed-role case is refused only by work exhaustion; retain the stricter refusal test and identify the case.",
+      "logSha256": "4b9c107329525eb361b44fc9fc829602a4ee6d218026617e4b316d32084bac9f"
+    },
+    {
+      "log": "target/trigger-validation/binding-members-damage.log",
+      "logSha256": "e69f824dbd7ada63e0736c485aec3bc3f2b976e3d5fed49bb16b57fd9a960e80",
+      "status": "fail",
+      "passed": 1,
+      "failed": 2,
+      "meaning": "CanonicalV3 cold direction edit returned WorkLimit at 10020976 steps. Uncertified appended membership also exhausted work. Raw/prepared/serialized replay and explicit budget retry passed."
+    },
+    {
+      "log": "target/trigger-validation/binding-members-preflight.log",
+      "logSha256": "57468f1eb8be95dca9c7ff198ca99ecb8bc835fdc0af58494887b31e07274827",
+      "status": "pass",
+      "passed": 85,
+      "failed": 0,
+      "suiteCounts": [
+        13,
+        44,
+        17,
+        11
+      ],
+      "meaning": "All namespace members, type inputs, type features and reference memberships pass; includes new authored binding and early refusal acceptance."
+    }
+  ],
+  "pending": [
+    "Full retry93985 finished128pass/5timeouts spanning recorded system sleep; ACCEPT-003 passed in4954ms. Sleep-scoped full rerun awaits isolated Association tests78641.",
+    "Archive passing matching conformance/requirements reports only after successful full requalification.",
+    "Continue complete Connector and contextual default endpoint semantics."
+  ],
+  "updatedAt": "2026-10-18T22:58:44.224414+00:00",
+  "earlyRefusalRepair": {
+    "status": "Expanded candidate checks pass",
+    "session": 86391,
+    "log": "target/trigger-validation/binding-members-preflight.log",
+    "rationale": "When current positional evidence is absent, validate current local carriers, membership inverse domains and the same ordinary namespace-role guards before rebuilding the shared fixed point. These are necessary conditions already required by the complete reader; success still runs all semantic checks.",
+    "scope": "Refactor the existing ordinary namespace-role predicate into one shared helper, retaining exact authored-prefix BindingConnector admission and generated recipe separation. Do not increase MAX_STEPS or skip any positive proof.",
+    "review": "The early check examines only current receiver relationships. Invalid local membership or neutral-role evidence was already a refusal in the complete reader. It can reject earlier but cannot certify inputs or suppress inherited obligations. Current stored-structure queries enforce UUID and ownership provenance.",
+    "tests": 85
+  },
+  "acceptedCandidateInputs": {
+    "target/trigger-validation/binding-member-reviewed-stage/json/type_inputs.rs": "e0a3dcd26cb1d904e7f597cccb8b283d7c6a6350717b354cb3f0346fd938f210",
+    "target/trigger-validation/binding-member-reviewed-stage/json/type_relations/namespace_member_tests.rs": "9047cd5301ac9cd62761084669586f1f4983977e6482c2b57ed74bbddaf311bb"
+  },
+  "publicCandidate": {
+    "path": "target/trigger-validation/binding-namespace-members-public.rs",
+    "sha256": "1c3ee61d343c3c98864df47169ebd5cfdffd49ccf21080cc8a8b68fc024ef30a",
+    "session": 11048,
+    "status": "pass",
+    "log": "target/trigger-validation/binding-members-public-complete-signature.log",
+    "exitCode": 0,
+    "tests": 1,
+    "logSha256": "956699b2f023690be67762de4b3f98c1875bd7d4c268f3563028b334303ffddf",
+    "archivedSource": "target/trigger-validation/binding-namespace-members-reviewed-public.rs",
+    "archivedSourceSha256": "1c3ee61d343c3c98864df47169ebd5cfdffd49ccf21080cc8a8b68fc024ef30a"
+  },
+  "legacyReview": {
+    "status": "Independent missing-base boundary confirmed. Explicit parameter paths repaired the fixture; chain/result dependency remains unresolved.",
+    "diagnosticLog": "target/trigger-validation/binding-members-public-diagnostic.log",
+    "diagnosticLogSha256": "159d933431721877e63c195dfcefd91c34cd5b31b86cf5fdb9afb336c67d1ded",
+    "controlLog": "target/trigger-validation/binding-members-public-control.log",
+    "controlLogSha256": "efe0f3721247da06938df8ca377b410dc4167f19a3aea42f7f9d74be3a422c1a",
+    "finding": "CanonicalV3 exact parameter and chain typing passes cold and warm with and without bindings. LegacyV2 F::x, F::result, actual::local and actual::right remain MissingRequiredFamilies with and without bindings; exact outer inputs pass in all four cases. F::e has exact LiteralIntegerEvaluation type in all cases.",
+    "implementationAnchor": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs:owned_typing_requirements returns before unconditional typed-feature bases for non-CanonicalV3 graphs.",
+    "priorReview": "docs/evidence/feature-chaining-type-review.json:extension.legacyFinding",
+    "acceptanceDecision": "Preserve unmodified CanonicalV3 exact public types. Assert the unmodified legacy incomplete cases and exact input roles, then supply the absent Base::dataValues paths and a local explicitly typed expression return to test exact typing in a complete legacy model. This does not repair or claim full legacy implicit construction. The same pattern is already used by chained_feature_types.rs.",
+    "originalPublicSource": "target/trigger-validation/binding-namespace-members-public-initial.rs",
+    "originalPublicSourceSha256": "6cb9a030181f813bf88efd90a0d37734a5fa68e41d6e1ee7c88229577f425f9e",
+    "resultDiagnostic": {
+      "session": 63515,
+      "source": "target/trigger-validation/binding-namespace-members-result-diagnostic.rs",
+      "sourceSha256": "71a4cd0e3dd313bd848c69546a9dc0aa36f5d89b2dcf196df484a7e1a9067d59",
+      "log": "target/trigger-validation/binding-members-result-diagnostic.log",
+      "status": "terminal exit 0",
+      "logSha256": "0c26fc8be9e24420fa8a4fa3b8df93de965b6b98375759505ad767f5aee9b57b"
+    },
+    "selectedResultFinding": "The legacy chain points to the expected local return identity 9e246d25-7269-561c-90fa-8f3e3856a7ab, and result selection is exact. That return type remains incomplete despite its own dataValues path. An inherited literal-return prerequisite is the suspected dependency, not yet a traced or repaired rule. Parameter typing is repaired independently. The fully authored ExplicitValue signature passes; no incorrect chain target was found.",
+    "completeFixtureDecision": "Keep unmodified canonical literal-result acceptance and the unmodified legacy negative controls. For a complete legacy typing positive, use an authored ExplicitValue Function with an Integer return and explicit Base::dataValues paths. This tests the same membership/type/chain query with complete signature prerequisites. Full legacy implicit construction and literal-result dependency closure remain open; neither is bypassed in the query."
+  },
+  "fullModelAcceptance": {
+    "status": "pass",
+    "session": 13878,
+    "log": "target/trigger-validation/binding-members-full-model.log",
+    "expectedTests": 1013,
+    "productionKernelInputSha256": "52813ee85839cef183e993ed155113272e72bc60f22c815a2563df6a4b85d2bf",
+    "candidateInputs": {
+      "target/trigger-validation/binding-member-reviewed-stage/json/type_inputs.rs": "e0a3dcd26cb1d904e7f597cccb8b283d7c6a6350717b354cb3f0346fd938f210",
+      "target/trigger-validation/binding-member-reviewed-stage/json/type_relations/namespace_member_tests.rs": "9047cd5301ac9cd62761084669586f1f4983977e6482c2b57ed74bbddaf311bb"
+    },
+    "tests": 1013,
+    "logSha256": "1108c2b7ff3130315adef99a6219b8ef55fed4e6bd9a4f86b022dcb866eaa2a1",
+    "exitCode": 0
+  },
+  "admission": {
+    "recordedAt": "2026-10-18T19:12:30.272059+00:00",
+    "previousQualifiedKernelInputSha256": "52813ee85839cef183e993ed155113272e72bc60f22c815a2563df6a4b85d2bf",
+    "kernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+    "files": {
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "e0a3dcd26cb1d904e7f597cccb8b283d7c6a6350717b354cb3f0346fd938f210",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/namespace_member_tests.rs": "9047cd5301ac9cd62761084669586f1f4983977e6482c2b57ed74bbddaf311bb",
+      "crates/sysml-kernel/tests/binding_namespace_members.rs": "1c3ee61d343c3c98864df47169ebd5cfdffd49ccf21080cc8a8b68fc024ef30a",
+      "patches/manifest.json": "6b0f787883d3e8990dd83f55a59f3955b9c360a2257cb1d36099c500d5015b20"
+    },
+    "review": "The shared local preflight repeats only required structural guards from the complete reader. Positive queries still run all prior membership, inheritance, positional and redefinition checks. Exact BindingConnector admission is restricted to the construction prefix; generated rows retain their independent recipe certificate. No assessment source anchors point to the two changed vendor files, and existing assessment assertions and limits are unchanged."
+  },
+  "qualificationProgress": "106 native,1013 isolated model,39 public regressions,Clippy,builds,provenance/contract checks pass. Full retry128pass/5sleep-affected timeouts; original ACCEPT-003 passed in4954ms. Matching requirements evidence records the five failures after refreshing two stale generated source hashes. See binding-namespace-members-progress-macos-arm64.json."
+}

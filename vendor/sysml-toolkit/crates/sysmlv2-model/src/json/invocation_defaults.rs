@@ -1,0 +1,768 @@
+//! Omitted defaults over the same complete callee and supplied-argument proof
+//! used by InvocationExpression.argument. The dedicated append planner runs
+//! only after argument specialization publication, under the same guard.
+use super::{
+    Builder, EffectiveDefaultBinding, EffectiveDefaultIssue, ElementRef, InvocationBindingIssue,
+    InvocationBindings, ResolvedModel, TypeInputIssue,
+    constructor_bindings::{ConstructorBatchEvidence, ConstructorBindingIssue},
+    semantic::certified_types::Stamp,
+};
+use std::collections::HashSet;
+
+/// One coherent supplied-argument and omitted-default selection. This does not
+/// certify that the required BindingConnectors have been constructed, evaluate
+/// their values, or establish whole-invocation validity.
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[non_exhaustive]
+pub struct InvocationDefaults {
+    pub arguments: InvocationBindings,
+    pub defaults: Vec<EffectiveDefaultBinding>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[non_exhaustive]
+pub enum InvocationDefaultIssue {
+    Arguments(InvocationBindingIssue),
+    IncompleteFeatures(TypeInputIssue),
+    Selection(EffectiveDefaultIssue),
+    StaleEvidence,
+    WorkLimit,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[non_exhaustive]
+pub struct InvocationDefaultReport {
+    pub selection: Result<InvocationDefaults, InvocationDefaultIssue>,
+    pub steps: usize,
+}
+
+impl ResolvedModel {
+    /// Select effective defaults for omitted features of an admitted invocation
+    /// callee. Exact supplied inputs suppress only their own defaults. Complete
+    /// absence remains distinct from an unavailable argument or feature proof.
+    /// This query neither publishes rows nor executes default expressions.
+    pub fn invocation_default_report(&mut self, receiver: ElementRef) -> InvocationDefaultReport {
+        self.invocation_default_report_with_budget(receiver, 0)
+    }
+
+    pub(in crate::json) fn invocation_default_report_with_budget(
+        &mut self,
+        receiver: ElementRef,
+        initial: usize,
+    ) -> InvocationDefaultReport {
+        let mut steps = initial;
+        let selection = self.b.checked_invocation_defaults_in_batch(
+            receiver.0,
+            &mut steps,
+            &mut ConstructorBatchEvidence::default(),
+        );
+        InvocationDefaultReport {
+            selection: if steps > crate::eval::MAX_STEPS {
+                Err(InvocationDefaultIssue::WorkLimit)
+            } else {
+                selection
+            },
+            steps,
+        }
+    }
+}
+
+impl Builder {
+    pub(super) fn checked_invocation_defaults_in_batch(
+        &mut self,
+        receiver: usize,
+        steps: &mut usize,
+        batch: &mut ConstructorBatchEvidence,
+    ) -> Result<InvocationDefaults, InvocationDefaultIssue> {
+        let arguments = self
+            .checked_invocation_bindings_in_batch(receiver, steps, None, batch)
+            .map_err(InvocationDefaultIssue::Arguments)?;
+        let stamp = Stamp::capture_builder(self);
+        let projection = batch
+            .features(self, arguments.callee.0, steps)
+            .map_err(|issue| match issue {
+                ConstructorBindingIssue::IncompleteFeatures(issue) => {
+                    InvocationDefaultIssue::IncompleteFeatures(issue)
+                }
+                ConstructorBindingIssue::WorkLimit => InvocationDefaultIssue::WorkLimit,
+                _ => InvocationDefaultIssue::Selection(EffectiveDefaultIssue::IncompleteProvider),
+            })?;
+        *steps = steps.saturating_add(arguments.bindings.len());
+        if *steps > crate::eval::MAX_STEPS {
+            return Err(InvocationDefaultIssue::WorkLimit);
+        }
+        let supplied: HashSet<_> = arguments
+            .bindings
+            .iter()
+            .map(|binding| binding.input.0)
+            .collect();
+        let defaults = batch
+            .defaults(self, &projection.features, &supplied, steps)
+            .map_err(InvocationDefaultIssue::Selection)?;
+        if !stamp.current_builder(self) {
+            return Err(InvocationDefaultIssue::StaleEvidence);
+        }
+        Ok(InvocationDefaults {
+            arguments,
+            defaults,
+        })
+    }
+}
+
+/// A closed recipe family. Only this factory may create it: existing owners
+/// receive anonymous OwningMemberships, never FeatureMemberships, and every
+/// added specialization/featuring source is a fresh endpoint row. This is the
+/// non-interference boundary for preserving the earlier construction recipes.
+pub(super) struct Append {
+    stamp: Stamp,
+    pub(super) rows: Vec<super::Elem>,
+    pub(super) ownership: super::semantic_ownership::SemanticOwnership,
+    pub(super) edges: Vec<(uuid::Uuid, uuid::Uuid)>,
+    pub(super) local: HashSet<usize>,
+}
+impl Append {
+    pub(super) fn current(&self, b: &Builder) -> bool {
+        self.stamp.current_builder(b)
+    }
+}
+
+pub(super) fn prepare_append(
+    b: &mut Builder,
+    steps: &mut usize,
+) -> Result<Option<Append>, super::dynamic_invocations::Refusal> {
+    use super::dynamic_invocations::Refusal;
+    let charge = |steps: &mut usize, n: usize| {
+        *steps = steps.saturating_add(n);
+        if *steps > crate::eval::MAX_STEPS {
+            Err(Refusal::WorkLimit)
+        } else {
+            Ok(())
+        }
+    };
+    charge(steps, 1)?;
+    if b.graph_format != crate::model::GraphFormat::CanonicalV3 {
+        return Ok(None);
+    }
+    // Finish shared lazy evidence before pinning the selection transaction.
+    b.retained_typing_edges(steps).ok_or(Refusal::Incomplete)?;
+    super::structural_index::StoredStructure::for_query(b, steps).ok_or(Refusal::Incomplete)?;
+    if !b
+        .dynamic_graph
+        .as_ref()
+        .is_some_and(|snapshot| snapshot.current(b))
+    {
+        return Err(Refusal::Stale);
+    }
+    let mut stamp: Option<Stamp> = None;
+    let mut batch = ConstructorBatchEvidence::default();
+    let mut plans = Vec::new();
+    let mut reserved = HashSet::new();
+    for receiver in 0..b.explicit_len() {
+        charge(steps, 1)?;
+        if !matches!(
+            b.elements[receiver].ty,
+            "InvocationExpression" | "OperatorExpression" | "TriggerInvocationExpression"
+        ) {
+            continue;
+        }
+        let Ok(selection) = b.checked_invocation_defaults_in_batch(receiver, steps, &mut batch)
+        else {
+            charge(steps, 0)?;
+            continue;
+        };
+        // The first complete query may initialize the shared positional cache.
+        // It already checks its own before/after evidence; pin its final state
+        // before retaining any recipe. Later selections must share that state.
+        if let Some(stamp) = &stamp {
+            if !stamp.current_builder(b) {
+                return Err(Refusal::Stale);
+            }
+        } else {
+            stamp = Some(Stamp::capture_builder(b));
+        }
+        if let Some(family) = super::owned_results::plan_default_bindings(
+            b,
+            receiver,
+            receiver,
+            &selection.defaults,
+            &reserved,
+            steps,
+        ) {
+            reserved.extend(family.iter().flat_map(|plan| plan.ids()));
+            plans.extend(family);
+        }
+        charge(steps, 0)?;
+    }
+    if stamp
+        .as_ref()
+        .is_some_and(|stamp| !stamp.current_builder(b))
+    {
+        return Err(Refusal::Stale);
+    }
+    if plans.is_empty() {
+        return Ok(None);
+    }
+    charge(steps, plans.len().saturating_mul(10))?;
+    let mut ownership = b
+        .semantic_ownership
+        .as_ref()
+        .ok_or(Refusal::Incomplete)?
+        .clone_with_budget(steps)
+        .ok_or(Refusal::WorkLimit)?;
+    let mut rows = Vec::new();
+    let mut edges = Vec::new();
+    let mut roles = Vec::new();
+    for plan in plans {
+        let start = b.elements.len() + rows.len();
+        let (bindings, featuring) =
+            super::owned_results::stage_default_binding(b, &mut ownership, plan, start, &mut rows);
+        edges.extend(bindings);
+        roles.extend(featuring);
+    }
+    // Featuring admission is part of this transaction: a refusal leaves every
+    // existing row and ownership record unchanged, with no partial default tail.
+    let local =
+        super::local_featuring::prepare(b, &rows, &roles, steps)?.append(&mut rows, &mut ownership);
+    if stamp
+        .as_ref()
+        .is_some_and(|stamp| !stamp.current_builder(b))
+    {
+        return Err(Refusal::Stale);
+    }
+    Ok(Some(Append {
+        stamp: stamp.expect("nonempty recipes have complete selection evidence"),
+        rows,
+        ownership,
+        edges,
+        local,
+    }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::model::{GraphFormat, Model};
+
+    const LIB: &str = "standard library package Base {classifier Anything; feature things:Anything;}
+        standard library package Occurrences {class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things;}
+        standard library package Performances {behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance {return result;} step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances;}";
+
+    fn fixture(source: &str) -> (ResolvedModel, ElementRef) {
+        let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
+        assert!(
+            model
+                .add_library_source("defaults-library.kerml", LIB)
+                .diagnostics
+                .is_empty()
+        );
+        let parsed = model.add_source("defaults.kerml", source);
+        assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
+        let mut r = ResolvedModel::build(&model);
+        let call = r
+            .user_elements()
+            .find(|&e| r.element_type(e) == "InvocationExpression")
+            .unwrap();
+        r.ensure_implied();
+        (r, call)
+    }
+
+    fn assert_published(
+        r: &mut ResolvedModel,
+        call: ElementRef,
+        defaults: &[EffectiveDefaultBinding],
+    ) {
+        for default in defaults {
+            assert!(
+                super::super::owned_results::default_binding_present(
+                    &mut r.b, call.0, default, &mut 0,
+                ),
+                "missing default for {:?}",
+                r.element_qualified_name(default.feature)
+            );
+        }
+        let bindings: Vec<_> = super::super::semantic_ownership::owned_relationships(&r.b, call.0)
+            .unwrap()
+            .iter()
+            .filter(|&rel| r.b.elements[rel].ty == "OwningMembership")
+            .flat_map(|rel| r.b.elements[rel].children.iter().copied())
+            .filter(|&member| r.b.elements[member].ty == "BindingConnector")
+            .collect();
+        assert_eq!(
+            bindings.len(),
+            defaults
+                .iter()
+                .map(|d| d.valuation)
+                .collect::<HashSet<_>>()
+                .len()
+        );
+        for binding in bindings {
+            let ends: Vec<_> = r.b.elements[binding]
+                .owned_relationships
+                .iter()
+                .flat_map(|&rel| r.b.elements[rel].children.iter().copied())
+                .collect();
+            assert_eq!(ends.len(), 2);
+            for end in ends {
+                let owned =
+                    super::super::semantic_ownership::owned_relationships(&r.b, end).unwrap();
+                assert!(owned.iter().any(|rel| {
+                    r.b.elements[rel].ty == "TypeFeaturing"
+                        && r.b.elements[rel]
+                            .props
+                            .get("featuringType")
+                            .and_then(|v| v.as_reference())
+                            == Some(r.b.elements[binding].id)
+                }));
+            }
+        }
+    }
+
+    #[test]
+    fn supplied_input_identities_suppress_only_their_own_defaults() {
+        for (arguments, expected) in [
+            ("", vec!["a", "b"]),
+            ("2", vec!["b"]),
+            ("b=2", vec!["a"]),
+            ("b=2,a=1", vec![]),
+        ] {
+            let (mut r, call) = fixture(&format!(
+                "function F {{in a default = 1; in b default = 2; return r;}} feature x=F({arguments});"
+            ));
+            let rows = r.b.elements.len();
+            let selection = r.invocation_default_report(call).selection.unwrap();
+            assert_published(&mut r, call, &selection.defaults);
+            assert_eq!(
+                selection.arguments.callee,
+                r.resolve_qualified("F").unwrap()
+            );
+            let expected: Vec<_> = expected
+                .into_iter()
+                .map(|name| r.resolve_qualified(&format!("F::{name}")).unwrap())
+                .collect();
+            assert_eq!(
+                selection
+                    .defaults
+                    .iter()
+                    .map(|d| d.feature)
+                    .collect::<Vec<_>>(),
+                expected
+            );
+            assert_eq!(
+                selection
+                    .defaults
+                    .iter()
+                    .map(|d| d.feature_with_value)
+                    .collect::<Vec<_>>(),
+                expected
+            );
+            assert_eq!(
+                r.b.elements.len(),
+                rows,
+                "selection must not publish binding rows"
+            );
+        }
+    }
+
+    #[test]
+    fn inherited_defaults_share_unique_identity_and_owned_override_rules() {
+        for (declarations, expected) in [
+            (
+                "function A {in a default=1;} function F specializes A {in c redefines a;return r;}",
+                Some("A::a"),
+            ),
+            (
+                "function A {in a default=1;} function B {in b default=2;} function F specializes A,B {in c redefines A::a,B::b;return r;}",
+                None,
+            ),
+            (
+                "function A {in a default=1;} function B {in b default=1;} function F specializes A,B {in c redefines A::a,B::b;return r;}",
+                None,
+            ),
+            (
+                "function A {in a default=1;} function B {in b default=2;} function F specializes A,B {in c redefines A::a,B::b default=3;return r;}",
+                Some("F::c"),
+            ),
+            (
+                "function A {in a default=1;} function F specializes A {in c redefines a=3;return r;}",
+                None,
+            ),
+            (
+                "function A {in a default=1;} function L specializes A {in l redefines a;} function R specializes A {in r redefines a;} function F specializes L,R {in c redefines L::l,R::r;return result;}",
+                Some("A::a"),
+            ),
+        ] {
+            let (mut r, call) = fixture(&format!("{declarations} feature x=F();"));
+            let selection = r
+                .invocation_default_report(call)
+                .selection
+                .unwrap_or_else(|issue| panic!("{declarations}: {issue:?}"));
+            if let Some(expected) = expected {
+                assert_eq!(selection.defaults.len(), 1, "{declarations}");
+                assert_eq!(
+                    selection.defaults[0].feature,
+                    r.resolve_qualified("F::c").unwrap()
+                );
+                assert_eq!(
+                    selection.defaults[0].feature_with_value,
+                    r.resolve_qualified(expected).unwrap()
+                );
+            } else {
+                assert!(selection.defaults.is_empty(), "{declarations}");
+            }
+        }
+    }
+
+    #[test]
+    fn selection_includes_noninput_defaults_and_does_not_execute_values() {
+        let (mut r, call) = fixture(
+            "function F {private feature hidden default=9; in a default=1; return r default=3;} feature x=F(2);",
+        );
+        let selection = r.invocation_default_report(call).selection.unwrap();
+        let expected: Vec<_> = ["F::hidden", "F::r"]
+            .into_iter()
+            .map(|name| r.resolve_qualified(name).unwrap())
+            .collect();
+        assert_eq!(
+            selection
+                .defaults
+                .iter()
+                .map(|d| d.feature)
+                .collect::<Vec<_>>(),
+            expected
+        );
+        let (mut r, _) = fixture("function F {in a default=Missing();return r;} feature x=F();");
+        let f = r.resolve_qualified("F").unwrap();
+        let calls: Vec<_> = r
+            .user_elements()
+            .filter(|&e| r.element_type(e) == "InvocationExpression")
+            .collect();
+        let call = calls
+            .into_iter()
+            .find(|&e| {
+                r.invocation_binding_report(e)
+                    .arguments
+                    .is_ok_and(|a| a.callee == f)
+            })
+            .unwrap();
+        let selection = r.invocation_default_report(call).selection.unwrap();
+        assert_eq!(selection.defaults.len(), 1);
+        assert_eq!(
+            r.element_type(selection.defaults[0].value),
+            "InvocationExpression"
+        );
+    }
+
+    #[test]
+    fn incomplete_paths_are_not_empty_defaults_and_work_limits_allow_retry() {
+        for source in [
+            "function F {in a redefines Missing;return r;} feature x=F();",
+            "function F {in a redefines b;in b redefines a;return r;} feature x=F();",
+            "feature x=Missing();",
+        ] {
+            let (mut r, call) = fixture(source);
+            assert!(
+                r.invocation_default_report(call).selection.is_err(),
+                "{source}"
+            );
+        }
+        let (mut r, call) = fixture("function F {in a default=1;return r;} feature x=F();");
+        let expected = r.invocation_default_report(call).selection.unwrap();
+        let rows = r.b.elements.len();
+        assert_eq!(
+            r.invocation_default_report_with_budget(call, crate::eval::MAX_STEPS)
+                .selection,
+            Err(InvocationDefaultIssue::WorkLimit)
+        );
+        assert_eq!(
+            r.invocation_default_report(call).selection,
+            Ok(expected.clone())
+        );
+        assert_eq!(r.b.elements.len(), rows);
+        r.b.elements[expected.defaults[0].valuation.0]
+            .props
+            .insert("isDefault", serde_json::Value::Null);
+        assert!(r.invocation_default_report(call).selection.is_err());
+    }
+
+    #[test]
+    fn full_library_calls_retain_all_inherited_and_trigger_defaults() {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../spec-refs/SysML-v2-Release/sysml.library");
+        let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
+        assert_eq!(model.load_library_dir(&root).unwrap(), 94);
+        assert!(model.add_source("defaults.kerml", "function F {in a default=1;return r;} feature missing=F(); feature supplied=F(2);").diagnostics.is_empty());
+        assert!(model.add_source("triggers.sysml", "attribute d:ISQ::DurationValue; attribute t:Time::TimeInstantValue; attribute c:ScalarValues::Boolean; action delay accept after d; action instant accept at t; action change accept when c;").diagnostics.is_empty());
+        let mut r = ResolvedModel::build(&model);
+        r.ensure_implied();
+        let inherited: Vec<_> = [
+            "Performances::Performance::isDispatch",
+            "Performances::Performance::dispatchScope",
+            "Performances::Performance::thisPerformance",
+            "Occurrences::Occurrence::portionOfLife",
+            "Occurrences::Occurrence::this",
+            "Occurrences::Occurrence::localClock",
+            "Occurrences::Occurrence::isRunToCompletion",
+            "Occurrences::Occurrence::runToCompletionScope",
+            "Occurrences::Occurrence::incomingTransferSort",
+        ]
+        .into_iter()
+        .map(|name| r.resolve_qualified(name).unwrap())
+        .collect();
+        let calls: Vec<_> = r
+            .user_elements()
+            .filter(|&e| {
+                matches!(
+                    r.element_type(e),
+                    "InvocationExpression" | "TriggerInvocationExpression"
+                )
+            })
+            .collect();
+        assert_eq!(calls.len(), 5);
+        for call in calls {
+            let rows = r.b.elements.len();
+            let selection = r.invocation_default_report(call).selection.unwrap();
+            assert_published(&mut r, call, &selection.defaults);
+            let callee = r
+                .element_qualified_name(selection.arguments.callee)
+                .unwrap();
+            let owned: &[&str] = match callee.as_str() {
+                "F" if selection.arguments.bindings.is_empty() => &["a"],
+                "F" => &[],
+                "Triggers::TriggerWhen" => &["monitor"],
+                "Triggers::TriggerAt" | "Triggers::TriggerAfter" => &["clock", "monitor"],
+                other => panic!("unexpected callee {other}"),
+            };
+            let mut expected: Vec<_> = owned
+                .iter()
+                .map(|name| r.resolve_qualified(&format!("{callee}::{name}")).unwrap())
+                .collect();
+            expected.extend(&inherited);
+            assert_eq!(
+                selection
+                    .defaults
+                    .iter()
+                    .map(|d| d.feature)
+                    .collect::<Vec<_>>(),
+                expected,
+                "{callee}"
+            );
+            assert_eq!(
+                selection
+                    .defaults
+                    .iter()
+                    .map(|d| d.feature_with_value)
+                    .collect::<Vec<_>>(),
+                expected,
+                "{callee}"
+            );
+            assert_eq!(r.b.elements.len(), rows);
+        }
+    }
+
+    #[test]
+    fn shared_valuation_constructs_one_binding_and_repeated_demands_keep_identity() {
+        let (mut r, call) = fixture(
+            "function A {in a default=1;} function F specializes A {in b redefines a; in c redefines a; return result;} feature x=F();",
+        );
+        let selection = r.invocation_default_report(call).selection.unwrap();
+        assert_eq!(selection.defaults.len(), 2);
+        assert_eq!(
+            selection.defaults[0].valuation,
+            selection.defaults[1].valuation
+        );
+        assert_published(&mut r, call, &selection.defaults);
+        let rows = r.b.elements.len();
+        let ids: Vec<_> = r.b.elements.iter().map(|row| row.id).collect();
+        r.ensure_implied();
+        assert_eq!(r.b.elements.len(), rows);
+        assert_eq!(
+            ids,
+            r.b.elements.iter().map(|row| row.id).collect::<Vec<_>>()
+        );
+        assert_eq!(r.invocation_default_report(call).selection, Ok(selection));
+        let mut steps = crate::eval::MAX_STEPS;
+        assert!(matches!(
+            prepare_append(&mut r.b, &mut steps),
+            Err(super::super::dynamic_invocations::Refusal::WorkLimit)
+        ));
+        assert_eq!(r.b.elements.len(), rows);
+        assert!(prepare_append(&mut r.b, &mut 0).unwrap().is_none());
+    }
+
+    #[test]
+    fn binding_collision_rejects_the_whole_call_family_but_not_an_independent_call() {
+        let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
+        model.add_library_source("defaults-library.kerml", LIB);
+        assert!(model.add_source("collision.kerml", "function F {in a default=1;in b default=2;return r;} feature alpha=F();feature beta=F();feature blocker;").diagnostics.is_empty());
+        let mut r = ResolvedModel::build(&model);
+        let calls: Vec<_> = r
+            .user_elements()
+            .filter(|&e| r.element_type(e) == "InvocationExpression")
+            .collect();
+        assert_eq!(calls.len(), 2);
+        let feature = r.resolve_qualified("F::b").unwrap();
+        let valuation = r.b.elements[feature.0]
+            .owned_relationships
+            .iter()
+            .copied()
+            .find(|&rel| r.b.elements[rel].ty == "FeatureValue")
+            .unwrap();
+        let collision = uuid::Uuid::new_v5(
+            &uuid::Uuid::NAMESPACE_OID,
+            format!(
+                "{}/implied/defaultBinding/{}",
+                r.element_id(calls[0]),
+                r.b.elements[valuation].id
+            )
+            .as_bytes(),
+        );
+        let blocker = r.resolve_qualified("blocker").unwrap();
+        r.b.elements[blocker.0].id = collision;
+        r.ensure_implied();
+        let first = r.invocation_default_report(calls[0]).selection.unwrap();
+        assert_eq!(first.defaults.len(), 2);
+        for default in &first.defaults {
+            assert!(!super::super::owned_results::default_binding_present(
+                &mut r.b, calls[0].0, default, &mut 0
+            ));
+        }
+        let second = r.invocation_default_report(calls[1]).selection.unwrap();
+        assert_published(&mut r, calls[1], &second.defaults);
+    }
+
+    #[test]
+    fn endpoint_and_source_edits_revoke_held_evidence_without_rewriting_old_rows() {
+        let (mut r, call) =
+            fixture("function F {in a default=1;return r;} feature x=F(); feature other;");
+        let selection = r.invocation_default_report(call).selection.unwrap();
+        let default = &selection.defaults[0];
+        assert_published(&mut r, call, &selection.defaults);
+        let snapshot = r.b.dynamic_graph.clone().unwrap();
+        let stamp = Stamp::capture_builder(&mut r.b);
+        let target = r.element_id(default.feature_with_value);
+        let reference =
+            r.b.elements
+                .iter()
+                .position(|row| {
+                    row.ty == "ReferenceSubsetting"
+                        && row
+                            .props
+                            .get("referencedFeature")
+                            .and_then(|v| v.as_reference())
+                            == Some(target)
+                })
+                .unwrap();
+        let old = r.b.elements[reference].props.clone();
+        let other = r.resolve_qualified("other").unwrap();
+        let other_id = r.element_id(other);
+        r.b.elements[reference]
+            .props
+            .insert("referencedFeature", serde_json::json!({"@id":other_id}));
+        assert!(!stamp.current_builder(&r.b));
+        assert!(!snapshot.current(&r.b));
+        assert!(!super::super::owned_results::default_binding_present(
+            &mut r.b, call.0, default, &mut 0
+        ));
+        r.b.elements[reference].props = old;
+        // Restoring bytes cannot revive an obsolete publication revision.
+        assert!(!snapshot.current(&r.b));
+        let rows = r.b.elements.len();
+        assert!(prepare_append(&mut r.b, &mut 0).is_err());
+        assert_eq!(r.b.elements.len(), rows);
+    }
+
+    #[test]
+    fn constructed_defaults_replay_across_raw_cached_and_prepared_libraries() {
+        use crate::{libcache::LibraryCache, prepared::PreparedLibrary};
+        use std::sync::Arc;
+        let mut base = Model::with_graph_format(GraphFormat::CanonicalV3);
+        base.add_library_source("defaults-library.kerml", LIB);
+        base.record_library_cache();
+        ResolvedModel::build(&base);
+        let cache =
+            LibraryCache::from_bytes(&base.take_recorded_library_cache().unwrap().to_bytes())
+                .unwrap();
+        let prepared = base.prepare_library().unwrap();
+        let decoded =
+            Arc::new(PreparedLibrary::from_bytes(&prepared.to_bytes(143).unwrap(), 143).unwrap());
+        let mut expected = None;
+        for mode in 0..4 {
+            let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
+            match mode {
+                2 => Arc::clone(&prepared).install(&mut model).unwrap(),
+                3 => Arc::clone(&decoded).install(&mut model).unwrap(),
+                _ => {
+                    model.add_library_source("defaults-library.kerml", LIB);
+                    if mode == 1 {
+                        model.set_library_cache(cache.clone());
+                    }
+                }
+            }
+            model.add_source(
+                "defaults.kerml",
+                "function F {in a default=1;in b default=2;return r;} feature x=F(3);",
+            );
+            let mut r = ResolvedModel::build(&model);
+            let call = r
+                .user_elements()
+                .find(|&e| r.element_type(e) == "InvocationExpression")
+                .unwrap();
+            let full =
+                crate::full::resolved_to_full_json(&mut r, &model, Default::default()).unwrap();
+            let selection = r.invocation_default_report(call).selection.unwrap();
+            assert_eq!(selection.defaults.len(), 1);
+            assert_published(&mut r, call, &selection.defaults);
+            if let Some(expected) = &expected {
+                assert_eq!(&full, expected);
+            } else {
+                expected = Some(full.clone());
+            }
+            assert_eq!(
+                crate::full::resolved_to_full_json(&mut r, &model, Default::default()).unwrap(),
+                full
+            );
+        }
+    }
+
+    #[test]
+    fn shared_default_memo_reuses_complete_facts_and_invalidates_after_same_length_edits() {
+        let (mut r, call) = fixture(
+            "function A {in a default=1;} function F specializes A {in b redefines a;return result;} feature x=F();",
+        );
+        let mut batch = ConstructorBatchEvidence::default();
+        let mut cold = 0;
+        let expected =
+            r.b.checked_invocation_defaults_in_batch(call.0, &mut cold, &mut batch)
+                .unwrap();
+        let mut warm = 0;
+        assert_eq!(
+            r.b.checked_invocation_defaults_in_batch(call.0, &mut warm, &mut batch)
+                .unwrap(),
+            expected
+        );
+        assert!(warm < cold, "{warm} >= {cold}");
+        let rows = r.b.elements.len();
+        r.b.elements[expected.defaults[0].valuation.0]
+            .props
+            .insert("isDefault", serde_json::Value::Null);
+        assert!(
+            r.b.checked_invocation_defaults_in_batch(call.0, &mut 0, &mut batch)
+                .is_err()
+        );
+        assert_eq!(r.b.elements.len(), rows);
+    }
+
+    #[test]
+    fn accepted_positional_plan_serves_cold_queries_without_a_second_static_walk() {
+        let (mut r, call) = fixture("function F {in a default=1;return r;} feature x=F();");
+        assert!(r.b.positional_redefinitions.is_none());
+        let snapshot = r.b.dynamic_graph.clone().unwrap();
+        assert!(snapshot.plan.is_some());
+        let callee = r.resolve_qualified("F").unwrap();
+        assert!(r.type_feature_report(callee).projections.is_ok());
+        let selection = r.invocation_default_report(call).selection.unwrap();
+        assert_published(&mut r, call, &selection.defaults);
+        assert!(r.b.positional_redefinitions.is_none());
+        assert!(snapshot.current(&r.b));
+    }
+}

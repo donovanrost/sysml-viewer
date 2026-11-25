@@ -1,0 +1,921 @@
+{
+  "recordedAt": "2026-10-18T15:23:34.339429+00:00",
+  "status": "Open. Reviewed isolated candidate admitted after 13 acceptance, 143 broader and one public integration test. Final-source qualification is pending; no complete family or package closes.",
+  "kernelInputSha256": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028",
+  "source": {
+    "kermlXmiSha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "kermlPdfSha256": "3bcc96f989bfa9d05cd28e026df3351b795fe8d494187b87bff3db7d96373697",
+    "anchors": [
+      {
+        "id": "Core-Features-Feature-isPortion",
+        "name": "isPortion",
+        "comments": [
+          "<p>Whether the values of this <code>Feature</code> are contained in the space and time of instances of the domain of the <code>Feature</code> and represent the same thing as those instances.</p> "
+        ],
+        "bodies": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-checkFeaturePortionSpecialization",
+        "name": "checkFeaturePortionSpecialization",
+        "comments": [
+          "<p>If a <code>Feature</code> has <code>isPortion = true</code>, an <code>ownedTyping </code> relationship to a <code>Class</code>, and an <code>owningType</code> that is a <code>Class</code> or another <code>Feature</code> typed by a <code>Class</code>, then it must directly or indirectly specialize <em><code>Occurrences::Occurrence::portions</code></em> from the Kernel Semantic Library.</p>"
+        ],
+        "bodies": [
+          "isPortion and ownedTyping.type->includes(oclIsKindOf(Class)) and owningType <> null and (owningType.oclIsKindOf(Class) or  owningType.oclIsKindOf(Feature) and     owningType.oclAsType(Feature).type->         exists(oclIsKindOf(Class))) implies     specializesFromLibrary('Occurrence::Occurrence::portions')"
+        ],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-ownedTyping",
+        "name": "ownedTyping",
+        "comments": [
+          "<p>The <code>ownedSpecializations</code> of this <code>Feature</code> that are <code>FeatureTypings</code>, for which the <code>Feature</code> is the <code>typedFeature</code>.</p>"
+        ],
+        "bodies": [],
+        "subsets": [
+          "Core-Types-Type-ownedSpecialization",
+          "Core-Features-A_typing_typedFeature-typing"
+        ]
+      },
+      {
+        "id": "Core-Features-Feature-deriveFeatureOwnedTyping",
+        "name": "deriveFeatureOwnedTyping",
+        "comments": [
+          "<p>The <code>ownedTypings</code> of a <code>Feature</code> are its <code>ownedSpecializations</code> that are <code>FeatureTypings</code>.</p>"
+        ],
+        "bodies": [
+          "ownedTyping = ownedGeneralization->selectByKind(FeatureTyping)"
+        ],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-owningType",
+        "name": "owningType",
+        "comments": [
+          "<p>The <code>Type</code> that is the <code>owningType</code> of the <code>owningFeatureMembership</code> of this <code>Feature</code>.</p>"
+        ],
+        "bodies": [],
+        "subsets": [
+          "Core-Features-Feature-featuringType",
+          "Core-Types-A_typeWithFeature_feature-typeWithFeature",
+          "Root-Elements-Element-owningNamespace"
+        ]
+      },
+      {
+        "id": "Core-Features-Feature-deriveFeatureType",
+        "name": "deriveFeatureType",
+        "comments": [
+          "<p>The <code>types</code> of a <code>Feature</code> are the union of the <code>types</code> of its <code>typings</code> and the <code>types</code> of the <code>Features</code> it subsets, with all redundant supertypes removed. If the <code>Feature</code> has <code>chainingFeatures</code>, then the union also includes the types of the last <code>chainingFeature</code>.</p>"
+        ],
+        "bodies": [
+          "type =      let types : OrderedSet(Types) = OrderedSet{self}->         -- Note: The closure operation automatically handles circular relationships.         closure(typingFeatures()).typing.type->asOrderedSet() in     types->reject(t1 | types->exist(t2 | t2 <> t1 and t2.specializes(t1)))"
+        ],
+        "subsets": []
+      }
+    ],
+    "library": {
+      "path": "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Occurrences.kerml",
+      "sha256": "b3a62ce0bc3a4f7e667102b4c2f68a4928ca8efeda425c6a4c8bdeadfbc9bbc1",
+      "finding": "Occurrence owns the portion Features portions, timeSlices and spaceSlices; both slice Features subset portions. portionOf is inverse of portions."
+    }
+  },
+  "baseline": {
+    "queries": [
+      {
+        "feature": "Owner::plain",
+        "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+        "steps": 1270661,
+        "compatibilityPathObserved": false
+      },
+      {
+        "feature": "Owner::direct",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569317,
+        "compatibilityPathObserved": false
+      },
+      {
+        "feature": "Owner::explicit",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569543,
+        "compatibilityPathObserved": true
+      },
+      {
+        "feature": "Owner::data",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581615,
+        "compatibilityPathObserved": false
+      },
+      {
+        "feature": "owner",
+        "result": "Ok([Some(\"Owner\")])",
+        "steps": 571378,
+        "compatibilityPathObserved": false
+      },
+      {
+        "feature": "owner::nested",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569317,
+        "compatibilityPathObserved": false
+      },
+      {
+        "feature": "inherited",
+        "result": "Ok([Some(\"Owner\")])",
+        "steps": 571415,
+        "compatibilityPathObserved": false
+      },
+      {
+        "feature": "inherited::nested",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569317,
+        "compatibilityPathObserved": false
+      },
+      {
+        "feature": "narrowed",
+        "result": "Ok([Some(\"Narrow\")])",
+        "steps": 573412,
+        "compatibilityPathObserved": false
+      },
+      {
+        "feature": "narrowed::nested",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569317,
+        "compatibilityPathObserved": false
+      },
+      {
+        "feature": "outside",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569317,
+        "compatibilityPathObserved": false
+      },
+      {
+        "feature": "anyOwner::child",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569317,
+        "compatibilityPathObserved": false
+      },
+      {
+        "feature": "Occurrences::Occurrence::portions",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569522,
+        "compatibilityPathObserved": true
+      },
+      {
+        "feature": "Occurrences::Occurrence::timeSlices",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569549,
+        "compatibilityPathObserved": true
+      },
+      {
+        "feature": "Occurrences::Occurrence::spaceSlices",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569549,
+        "compatibilityPathObserved": true
+      }
+    ],
+    "complete": 4,
+    "total": 15,
+    "files": {
+      "target/trigger-validation/portion-applicability-public-probe.rs": "9a3675b7ae2cac1935f40f1ea843b1c561f6e2e32be9bcb8d66d9947b6625c59",
+      "target/trigger-validation/portion-applicability-public-probe.log": "5a0e84eeffb641b864fd42347d7807bd12742000ab17e86bfc392cf05d2c4fe6",
+      "target/trigger-validation/portion-applicability-public-probe-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target/trigger-validation/libsysmlv2_model_for_portion_probe.rlib": "952bb30f0173b1c1e65f10eef8a9cb21a20cb71f83a766fef25cb4c129b62249"
+    },
+    "limits": "Compatibility reachability false does not prove complete absence. True explicit/library paths show existing paths, but the checked Feature.type query still refuses all eleven portion Features. These are diagnostic observations, not whole-model validity assertions."
+  },
+  "findings": [
+    "The applicable specialization is conditional: isPortion, an owned FeatureTyping to Class, and an owningType that is Class or a Feature whose effective type includes a Class. Written inherited typing alone is not ownedTyping.",
+    "The pinned prose and actual library use Occurrences::Occurrence::portions; the OCL string uses singular Occurrence. Its includes(oclIsKindOf(Class)) predicate and deriveFeatureOwnedTyping ownedGeneralization spelling also conflict with the surrounding property definitions. These discrepancies require a recorded implementation interpretation and remain visible qualification limits.",
+    "The existing shared FeatureRequirements explicitly refuses isPortion=true. The public baseline confirms this refusal even for portions with existing direct/transitive library paths. Removing that guard alone would fail to account for conditional required bases.",
+    "The executed narrowed owner has effective type Narrow, a Classifier, after redundant Class Owner is pruned. Thus scanning only written Class typing would produce the wrong applicability predicate for its child.",
+    "The current shared owner-type certificate is supplied for composite OccurrenceUsage contexts. Portion applicability needs complete effective owner typing under the same work budget and dependency proof; incomplete owner evidence must not become a false predicate. Finite closed typing cycles use the same ordinary closure algorithm.",
+    "The library portion and slice Features block Occurrence/Performance self-chain typing, which in turn blocks several selected default result types. Full invocation default binding obligations remain separate."
+  ],
+  "acceptancePlan": [
+    "Check exact applicability for Class owners, Features typed directly/inherited by Class, non-Class owners, no owning Type, and a redundant Class pruned from effective owner types.",
+    "Distinguish owned Class typing from inherited typing, inverse FeatureTyping relationships and data-only types. Include multiple owned types and nonconforming or unresolved endpoints.",
+    "Check required library identity and direct/indirect/self paths. Missing, shadowed or malformed library evidence stays incomplete; an explicit existing path does not excuse incomplete antecedent evidence.",
+    "Preserve independent ordinary Feature checks for ownership, flags, metadata, valuation, specialization and role membership. Deliberately damage fresh and previously queried graphs.",
+    "Use the shared static planner for required implicit specialization and the same applicability proof for checked readers. Qualify effective owner predicates against the final prospective specialization write set to avoid circular self-justification.",
+    "Check exact Feature.type for portions/timeSlices/spaceSlices and dependent self/default results in full-library raw/prepared/serialized models, both graph formats where supported, with mutation and cumulative work exhaustion/retry."
+  ],
+  "coverageCountsChanged": false,
+  "implementationReview": {
+    "files": {
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "b309cb83230d7b00e1070c0206b3090eb10d9857f6e51eaa9c5c4f46baf90493",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs": "42216b2a830a5b2f35af7dbdc74e645578b22503cc8be8184e6e30aea60acbdc",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs": "65700d3ee4278a389798f956e8f908f26d6b860d594dffed06938b33bf58de67",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/step_context.rs": "1ef072f1ca0fa39880883e52c60e957621f15041bba91bae9d91e26a4afd9121",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "bae2c4214d5ecd0111cb3473d3e5a7865a468f84a35cd66957b776b78416e3d7",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs": "682dfa8012efbcbd8c5e7afaeb7e0c9f2ed8e88cff3b76e90de7680ba27bd02c",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs": "1e51bd7167a6057a5946abf723c1633b5bf9d4b7220882bab8164f827666213e"
+    },
+    "sharedMechanism": [
+      "owned_typing_kinds already checks reciprocal owned FeatureTyping endpoints, distinguishes Class/Structure/DataType, and excludes dynamic suffixes from static input. Reuse this witness for positive static construction; establish complete absence separately for checked applicability.",
+      "TypeRelations::feature_requirements currently has an unconditional portion refusal. Replace it only with an exact conditional obligation whose owning Type, owned-typing predicate and required target are all checked.",
+      "RepositoryTyping contextual_owners currently computes CompositionOwner with object/occurrence predicates from complete effective owner types. Reuse that projection rather than introduce a competing owner-type traversal.",
+      "structural_owners_for_planning is currently a Structure-only selector over the complete type reducer; the analogous Class predicate should use the same projection and unchanged work accounting.",
+      "step_context::typed_requirements and dynamic_invocations already implement prospective-writer exclusion and final-write auditing. Portion Feature owners need the same policy, including explicit incomplete candidates for coupled proofs and activation when a model contains portions without calls.",
+      "TypeRelations negative specialization paths also consume required_bases without the type adapters owner certificate. A portion change must account for this path; a public Feature.type positive alone cannot qualify negative specialization or whole-family closure."
+    ],
+    "interpretation": "Use the exact plural Occurrences library identity and the prose/property-owned Class predicate, recording the published OCL spelling discrepancies. This is a proposed implementation interpretation; no standard correction or complete portion semantics claim is made."
+  },
+  "adjacentObligations": {
+    "rules": [
+      {
+        "source": "target/standards/kerml.xmi",
+        "id": "Core-Features-Feature-validateFeaturePortionNotVariable",
+        "bodies": [
+          "isPortion implies not isVariable"
+        ]
+      },
+      {
+        "source": "target/standards/kerml.xmi",
+        "id": "Core-Features-Feature-validateFeatureEndNotDerivedAbstractCompositeOrPortion",
+        "bodies": [
+          "isEnd implies not (isDerived or isAbstract or isComposite or isPortion)"
+        ]
+      },
+      {
+        "source": "target/standards/sysml.xmi",
+        "id": "Systems-Occurrences-OccurrenceUsage-validateOccurrenceUsageIsPortion",
+        "bodies": [
+          "portionKind <> null implies isPortion"
+        ]
+      },
+      {
+        "source": "target/standards/sysml.xmi",
+        "id": "Systems-DefinitionAndUsage-Usage-deriveUsageMayTimeVary",
+        "bodies": [
+          "mayTimeVary =     owningType <> null and     owningType.specializesFromLibrary('Occurrences::Occurrence') and     not (         isPortion or         specializesFromLibrary('Links::SelfLink') or         specializesFromLibrary('Occurrences::HappensLink') or         isComposite and specializesFromLibrary('Actions::Action')     )"
+        ]
+      }
+    ],
+    "scope": "The portion-not-variable and end-flag validations remain separate. Existing Feature variability guards remain in force; SysML non-null portionKind remains unsupported by this typing certificate. Usage mayTimeVary derivation is not qualified by static type acceptance."
+  },
+  "prototype": {
+    "status": "Isolated diagnostics pass: 17 exact feature types and 10 complete selected default result types. Preparing adversarial/replay acceptance before production admission.",
+    "basedOnKernelInputSha256": "f4c0619cc8a3437ecf66adb27ef2523a7344f336932601a058b7f41fd8ab0543",
+    "files": {
+      "target/trigger-validation/portion-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+      "target/trigger-validation/portion-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+      "target/trigger-validation/portion-stage/json/feature_type_projection/adapter.rs": "39348adb61f6ce4b41367fba163300e28ba4140fa5064550ad5a41978e989e14",
+      "target/trigger-validation/portion-stage/json/feature_type_projection.rs": "eed91566300c6976af8ea47eb986c940c005dd66f8aff95118269d3be6f26ab5",
+      "target/trigger-validation/portion-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+      "target/trigger-validation/portion-stage/json/portion_context/tests.rs": "5b0debad1dcdc3d7cf1aa8e1796100703d420bcc828214d1735b0d394c7efb60",
+      "target/trigger-validation/portion-stage/json/portion_context.rs": "176e3252087f063de15304990afdc50cff8fb325ded6933c352a6efcacfe1e2d",
+      "target/trigger-validation/portion-stage/json/type_relations.rs": "cad02735f8614477480ea71ebd2a0b3b79a589e13023cdf98666ac8e10cc4cfe",
+      "target/trigger-validation/portion-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727"
+    },
+    "runner": "target/trigger-validation/test-portion-prototype.mjs",
+    "openProof": "Standalone negative specialization queries for Feature-owned portions still lack a complete effective-owner certificate. The prototype must not claim whole-family closure from Feature.type successes.",
+    "diagnostics": "Seventeen feature-type cases include the fifteen-query baseline plus Occurrence/Performance self. A separate invocation fixture probes all ten selected default result types. These are pending diagnostics, not executed acceptance evidence.",
+    "compileFailure": {
+      "log": "target/trigger-validation/portion-prototype-compile-failure.log",
+      "logSha256": "efa6e1cf75368d6e31afa59562f059afcb5f1d284173cf2f183aee0c10fb7566",
+      "finding": "The owned relationship list initially collected references instead of indices; the iteration now copies usize values. No semantic test executed in the failed compile.",
+      "files": {
+        "target/trigger-validation/portion-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+        "target/trigger-validation/portion-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+        "target/trigger-validation/portion-stage/json/feature_type_projection/adapter.rs": "39348adb61f6ce4b41367fba163300e28ba4140fa5064550ad5a41978e989e14",
+        "target/trigger-validation/portion-stage/json/feature_type_projection.rs": "eed91566300c6976af8ea47eb986c940c005dd66f8aff95118269d3be6f26ab5",
+        "target/trigger-validation/portion-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+        "target/trigger-validation/portion-stage/json/portion_context/tests.rs": "5b0debad1dcdc3d7cf1aa8e1796100703d420bcc828214d1735b0d394c7efb60",
+        "target/trigger-validation/portion-stage/json/portion_context.rs": "50b8cab93ba066103af2fa7d1d0ce9ed50a50edc54bf3ea473a8a80b23df975a",
+        "target/trigger-validation/portion-stage/json/type_relations.rs": "cad02735f8614477480ea71ebd2a0b3b79a589e13023cdf98666ac8e10cc4cfe",
+        "target/trigger-validation/portion-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727"
+      }
+    },
+    "session": 18236,
+    "log": "target/trigger-validation/portion-prototype.log",
+    "initialRun": {
+      "status": "fail",
+      "featureTypesComplete": 8,
+      "featureQueries": 17,
+      "defaultResultsComplete": 6,
+      "defaultResults": 10,
+      "log": "target/trigger-validation/portion-prototype-initial-failure.log",
+      "logSha256": "ca9361d54f5f71db13216c7adccce044a4d3209191b35c662c068d7b8df66fcc",
+      "archivedInputs": {
+        "target/trigger-validation/portion-initial-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+        "target/trigger-validation/portion-initial-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+        "target/trigger-validation/portion-initial-stage/json/feature_type_projection/adapter.rs": "39348adb61f6ce4b41367fba163300e28ba4140fa5064550ad5a41978e989e14",
+        "target/trigger-validation/portion-initial-stage/json/feature_type_projection.rs": "eed91566300c6976af8ea47eb986c940c005dd66f8aff95118269d3be6f26ab5",
+        "target/trigger-validation/portion-initial-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+        "target/trigger-validation/portion-initial-stage/json/portion_context/tests.rs": "5b0debad1dcdc3d7cf1aa8e1796100703d420bcc828214d1735b0d394c7efb60",
+        "target/trigger-validation/portion-initial-stage/json/portion_context.rs": "176e3252087f063de15304990afdc50cff8fb325ded6933c352a6efcacfe1e2d",
+        "target/trigger-validation/portion-initial-stage/json/type_relations.rs": "cad02735f8614477480ea71ebd2a0b3b79a589e13023cdf98666ac8e10cc4cfe",
+        "target/trigger-validation/portion-initial-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727"
+      },
+      "finding": "The formerly missing direct/inherited Class-owner specialization paths are now observed. All four inapplicable-antecedent portion types complete. Required portions/slice/self closure still fails, so the run does not establish the intended end state. A targeted trace will identify the remaining domain blocker.",
+      "harness": "The test subprocess reported two failed tests and exited. Its idle Node parent remained live with no children and was explicitly terminated before rerunning; this is not a restart due to silent output."
+    },
+    "intersectionDependency": {
+      "trace": "target/trigger-validation/portion-intersection-refusal.log",
+      "traceSha256": "491f2e554686689ccc7050a2c28432b38b75b38f55eb0abd70cb191bc369c3d5",
+      "finding": "The executed trace identifies Occurrences::Occurrence::spaceTimeEnclosedOccurrences as the required-family refusal for every failing portion/slice/self closure. Its two Intersecting targets are also exact owned Subsetting targets in the pinned library.",
+      "review": "deriveFeatureType follows typingFeatures (subsettings and final chaining target). The existing guarded intersection logic already requires every target to be an exact owned non-cross Subsetting target, validates endpoints and reciprocal carriers, and adds no typing edge. The prototype extends that same condition from Step/composite Feature to ordinary noncomposite Feature; it does not admit unmatched intersection targets or qualify intersection value semantics and named validation constraints.",
+      "anchors": [
+        {
+          "id": "Core-Types-Type-deriveTypeOwnedIntersecting",
+          "bodies": [
+            "ownedRelationship->selectByKind(Intersecting)"
+          ],
+          "comments": [
+            "<p>The <code>ownedIntersectings</code> of a <code>Type</code> are the <code>ownedRelationships</code> that are <code>Intersectings</code>.</p>"
+          ]
+        },
+        {
+          "id": "Core-Types-Type-deriveTypeIntersectingType",
+          "bodies": [
+            "intersectingType = ownedIntersecting.intersectingType"
+          ],
+          "comments": [
+            "<p>The <code>intersectingTypes</code> of a <code>Type</code> are the <code>intersectingTypes</code> of its <code>ownedIntersectings</code>.</p>"
+          ]
+        },
+        {
+          "id": "Core-Types-Type-validateTypeOwnedIntersectingNotOne",
+          "bodies": [
+            "ownedIntersecting->size() <> 1"
+          ],
+          "comments": [
+            "A <code>Type</code> must not have exactly one <code>ownedIntersecting</code>."
+          ]
+        },
+        {
+          "id": "Core-Types-Type-validateTypeIntersectingTypesNotSelf",
+          "bodies": [
+            "intersectingType->excludes(self)"
+          ],
+          "comments": [
+            "<p>A <code>Type</code> cannot be one of its own <code>intersectingTypes</code>.</p>"
+          ]
+        }
+      ]
+    },
+    "successfulDiagnostic": {
+      "status": "pass",
+      "tests": 2,
+      "log": "target/trigger-validation/portion-prototype-intersection.log",
+      "logSha256": "223d679a3f80e6381a0d4a45e38250758e5d12e914209a47488bc8fa1b18fcea",
+      "featureTypes": [
+        {
+          "feature": "Owner::plain",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 1270687,
+          "compatibilityPathObserved": false
+        },
+        {
+          "feature": "Owner::direct",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 1220113,
+          "compatibilityPathObserved": true
+        },
+        {
+          "feature": "Owner::explicit",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 569829,
+          "compatibilityPathObserved": true
+        },
+        {
+          "feature": "Owner::data",
+          "result": "Ok([Some(\"ScalarValues::Integer\")])",
+          "steps": 581695,
+          "compatibilityPathObserved": false
+        },
+        {
+          "feature": "owner",
+          "result": "Ok([Some(\"Owner\")])",
+          "steps": 571399,
+          "compatibilityPathObserved": false
+        },
+        {
+          "feature": "owner::nested",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 572025,
+          "compatibilityPathObserved": true
+        },
+        {
+          "feature": "inherited",
+          "result": "Ok([Some(\"Owner\")])",
+          "steps": 571440,
+          "compatibilityPathObserved": false
+        },
+        {
+          "feature": "inherited::nested",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 572066,
+          "compatibilityPathObserved": true
+        },
+        {
+          "feature": "narrowed",
+          "result": "Ok([Some(\"Narrow\")])",
+          "steps": 573434,
+          "compatibilityPathObserved": false
+        },
+        {
+          "feature": "narrowed::nested",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 573612,
+          "compatibilityPathObserved": false
+        },
+        {
+          "feature": "outside",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 569398,
+          "compatibilityPathObserved": false
+        },
+        {
+          "feature": "anyOwner::child",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 569496,
+          "compatibilityPathObserved": false
+        },
+        {
+          "feature": "Occurrences::Occurrence::portions",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 569741,
+          "compatibilityPathObserved": true
+        },
+        {
+          "feature": "Occurrences::Occurrence::timeSlices",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 569847,
+          "compatibilityPathObserved": true
+        },
+        {
+          "feature": "Occurrences::Occurrence::spaceSlices",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 569847,
+          "compatibilityPathObserved": true
+        },
+        {
+          "feature": "Occurrences::Occurrence::self",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 570540,
+          "compatibilityPathObserved": true
+        },
+        {
+          "feature": "Performances::Performance::self",
+          "result": "Ok([Some(\"Performances::Performance\")])",
+          "steps": 572674,
+          "compatibilityPathObserved": true
+        }
+      ],
+      "defaultResults": [
+        {
+          "feature": "F::x",
+          "result": "Ok([Some(\"ScalarValues::Integer\")])",
+          "steps": 744544
+        },
+        {
+          "feature": "Performances::Performance::isDispatch",
+          "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+          "steps": 792857
+        },
+        {
+          "feature": "Performances::Performance::dispatchScope",
+          "result": "Ok([Some(\"Performances::Performance\")])",
+          "steps": 695781
+        },
+        {
+          "feature": "Performances::Performance::thisPerformance",
+          "result": "Ok([Some(\"Performances::Performance\")])",
+          "steps": 696986
+        },
+        {
+          "feature": "Occurrences::Occurrence::portionOfLife",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 694839
+        },
+        {
+          "feature": "Occurrences::Occurrence::this",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 694839
+        },
+        {
+          "feature": "Occurrences::Occurrence::localClock",
+          "result": "Ok([Some(\"Clocks::UniversalClockLife\")])",
+          "steps": 700004
+        },
+        {
+          "feature": "Occurrences::Occurrence::isRunToCompletion",
+          "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+          "steps": 792857
+        },
+        {
+          "feature": "Occurrences::Occurrence::runToCompletionScope",
+          "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+          "steps": 694839
+        },
+        {
+          "feature": "Occurrences::Occurrence::incomingTransferSort",
+          "result": "Ok([Some(\"Occurrences::IncomingTransferSort\")])",
+          "steps": 702371
+        }
+      ],
+      "archivedInputs": {
+        "target/trigger-validation/portion-passing-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+        "target/trigger-validation/portion-passing-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+        "target/trigger-validation/portion-passing-stage/json/feature_type_projection/adapter.rs": "39348adb61f6ce4b41367fba163300e28ba4140fa5064550ad5a41978e989e14",
+        "target/trigger-validation/portion-passing-stage/json/feature_type_projection.rs": "eed91566300c6976af8ea47eb986c940c005dd66f8aff95118269d3be6f26ab5",
+        "target/trigger-validation/portion-passing-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+        "target/trigger-validation/portion-passing-stage/json/portion_context/tests.rs": "5b0debad1dcdc3d7cf1aa8e1796100703d420bcc828214d1735b0d394c7efb60",
+        "target/trigger-validation/portion-passing-stage/json/portion_context.rs": "176e3252087f063de15304990afdc50cff8fb325ded6933c352a6efcacfe1e2d",
+        "target/trigger-validation/portion-passing-stage/json/type_relations.rs": "34465b88eb3e7d1acf881bbfbe81888a89309034ed7ebabe4964020ae28c64df",
+        "target/trigger-validation/portion-passing-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727"
+      },
+      "limits": "The first diagnostic asserts seventeen exact types. The default diagnostic asserts completeness and prints identities; exact default identities, relationships, mutation and replay still need acceptance tests. Production is unchanged."
+    }
+  },
+  "updatedAt": "2026-10-18T16:37:23.368204+00:00",
+  "acceptance": {
+    "status": "Five isolated acceptance tests pass. No production admission; the listed pending obligations remain open.",
+    "session": 3450,
+    "runner": "target/trigger-validation/test-portion-acceptance.mjs",
+    "log": "target/trigger-validation/portion-acceptance.log",
+    "tests": 5,
+    "damagePartitions": 10,
+    "files": {
+      "target/trigger-validation/portion-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+      "target/trigger-validation/portion-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+      "target/trigger-validation/portion-stage/json/feature_type_projection/adapter.rs": "39348adb61f6ce4b41367fba163300e28ba4140fa5064550ad5a41978e989e14",
+      "target/trigger-validation/portion-stage/json/feature_type_projection.rs": "eed91566300c6976af8ea47eb986c940c005dd66f8aff95118269d3be6f26ab5",
+      "target/trigger-validation/portion-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+      "target/trigger-validation/portion-stage/json/portion_context/acceptance.rs": "9116b647bf392f14812be7d315d255d93df6af27f6d477b4a7e388f02b1a6fd9",
+      "target/trigger-validation/portion-stage/json/portion_context/tests.rs": "5b0debad1dcdc3d7cf1aa8e1796100703d420bcc828214d1735b0d394c7efb60",
+      "target/trigger-validation/portion-stage/json/portion_context.rs": "6c0a57eb75ea7858f10a94b35f41228136afc32e40a11c7eb7f9ccb85c4db6c5",
+      "target/trigger-validation/portion-stage/json/type_relations.rs": "34465b88eb3e7d1acf881bbfbe81888a89309034ed7ebabe4964020ae28c64df",
+      "target/trigger-validation/portion-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727"
+    },
+    "partitions": [
+      "Exact Feature.type report/property pairs and Class versus complete effective Feature-owner antecedents, including a closed positive owner-typing cycle.",
+      "Ten malformed ownership/typing/flag/library cases refuse type and negative specialization below the work allowance.",
+      "The same ten edits revoke previous type successes.",
+      "Ordinary intersections require every exact subsetting witness.",
+      "Raw/prepared/serialized identities, read-only queries, cumulative budget exhaustion and retry."
+    ],
+    "pending": [
+      "Exact identity assertions for all ten selected default result types.",
+      "Nonowned versus owned typing, stable-predicate exclusion, missing/unresolved owner types, both graph formats and broader existing-module regressions.",
+      "Complete negative specialization proof for valid Feature-owned portions and coupled construction predicates remain open."
+    ],
+    "completedAt": "2026-10-18T16:00:43.766799+00:00",
+    "logSha256": "47c9f3ddb14ef2b2fcb531a8cb6414a4e04158fb4d13c9a849c85caf839fdded",
+    "archivedInputs": {
+      "target/trigger-validation/portion-accepted-five-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+      "target/trigger-validation/portion-accepted-five-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+      "target/trigger-validation/portion-accepted-five-stage/json/feature_type_projection/adapter.rs": "39348adb61f6ce4b41367fba163300e28ba4140fa5064550ad5a41978e989e14",
+      "target/trigger-validation/portion-accepted-five-stage/json/feature_type_projection.rs": "eed91566300c6976af8ea47eb986c940c005dd66f8aff95118269d3be6f26ab5",
+      "target/trigger-validation/portion-accepted-five-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+      "target/trigger-validation/portion-accepted-five-stage/json/portion_context/acceptance.rs": "9116b647bf392f14812be7d315d255d93df6af27f6d477b4a7e388f02b1a6fd9",
+      "target/trigger-validation/portion-accepted-five-stage/json/portion_context/tests.rs": "5b0debad1dcdc3d7cf1aa8e1796100703d420bcc828214d1735b0d394c7efb60",
+      "target/trigger-validation/portion-accepted-five-stage/json/portion_context.rs": "6c0a57eb75ea7858f10a94b35f41228136afc32e40a11c7eb7f9ccb85c4db6c5",
+      "target/trigger-validation/portion-accepted-five-stage/json/type_relations.rs": "34465b88eb3e7d1acf881bbfbe81888a89309034ed7ebabe4964020ae28c64df",
+      "target/trigger-validation/portion-accepted-five-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727"
+    },
+    "libraryDefaultFinding": "The pinned Occurrence::portionOfLife declaration is typed by Life but defaults to self. Its checked default-expression result is Occurrence, matching the source self Feature; do not coerce the result type to the valued Feature type. Default binding/value-conformance semantics remain separate."
+  },
+  "featureOwnerNegativeProof": {
+    "status": "Isolated prototype: five previously Unknown negative specialization queries now prove No; all six portion acceptance tests pass. Expanded acceptance and broader modules remain pending. No production admission.",
+    "recordedAt": "2026-10-18T16:09:59.955823+00:00",
+    "before": {
+      "log": "target/trigger-validation/portion-owner-negative-before.log",
+      "logSha256": "2ab6dfcfe4af9c8a407027515e3d0299394879601c88aabef7eed11e79ccb5c4",
+      "cases": [
+        "owner::nested",
+        "inherited::nested",
+        "narrowed::nested",
+        "anyOwner::child",
+        "cyclic::nested"
+      ],
+      "result": "All five return Unknown, below the work limit. The new acceptance test fails as intended.",
+      "archivedInputs": {
+        "target/trigger-validation/portion-owner-negative-before-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+        "target/trigger-validation/portion-owner-negative-before-stage/json/portion_context.rs": "6c0a57eb75ea7858f10a94b35f41228136afc32e40a11c7eb7f9ccb85c4db6c5",
+        "target/trigger-validation/portion-owner-negative-before-stage/json/feature_type_projection.rs": "eed91566300c6976af8ea47eb986c940c005dd66f8aff95118269d3be6f26ab5",
+        "target/trigger-validation/portion-owner-negative-before-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+        "target/trigger-validation/portion-owner-negative-before-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+        "target/trigger-validation/portion-owner-negative-before-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+        "target/trigger-validation/portion-owner-negative-before-stage/json/type_relations.rs": "34465b88eb3e7d1acf881bbfbe81888a89309034ed7ebabe4964020ae28c64df",
+        "target/trigger-validation/portion-owner-negative-before-stage/json/portion_context/acceptance.rs": "b0f497e8e39b04e514ab11092c1783e24153d09c21b01fdf76f9894bd2659821",
+        "target/trigger-validation/portion-owner-negative-before-stage/json/portion_context/tests.rs": "5b0debad1dcdc3d7cf1aa8e1796100703d420bcc828214d1735b0d394c7efb60",
+        "target/trigger-validation/portion-owner-negative-before-stage/json/feature_type_projection/adapter.rs": "39348adb61f6ce4b41367fba163300e28ba4140fa5064550ad5a41978e989e14"
+      }
+    },
+    "after": {
+      "log": "target/trigger-validation/portion-owner-negative-after.log",
+      "logSha256": "4e585bf8fa4646758ad827537d8ce168c649bba982b562e4523bad08ce0c0caa",
+      "result": "6 acceptance tests pass. All five owner cases prove No against ScalarValues::Boolean; malformed evidence still remains Unknown.",
+      "archivedInputs": {
+        "target/trigger-validation/portion-owner-negative-after-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+        "target/trigger-validation/portion-owner-negative-after-stage/json/portion_context.rs": "6c0a57eb75ea7858f10a94b35f41228136afc32e40a11c7eb7f9ccb85c4db6c5",
+        "target/trigger-validation/portion-owner-negative-after-stage/json/feature_type_projection.rs": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39",
+        "target/trigger-validation/portion-owner-negative-after-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+        "target/trigger-validation/portion-owner-negative-after-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+        "target/trigger-validation/portion-owner-negative-after-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+        "target/trigger-validation/portion-owner-negative-after-stage/json/type_relations.rs": "bc607f8a11c21e5774852206e7069761f6d227b0e334bf62d7ec0853d1523582",
+        "target/trigger-validation/portion-owner-negative-after-stage/json/portion_context/acceptance.rs": "b0f497e8e39b04e514ab11092c1783e24153d09c21b01fdf76f9894bd2659821",
+        "target/trigger-validation/portion-owner-negative-after-stage/json/portion_context/tests.rs": "5b0debad1dcdc3d7cf1aa8e1796100703d420bcc828214d1735b0d394c7efb60",
+        "target/trigger-validation/portion-owner-negative-after-stage/json/feature_type_projection/adapter.rs": "f57453b4cf97533cafe784d6dc36244e2acdf073c37dd3b8228845e0f3521306"
+      }
+    },
+    "implementation": "Both checked type projection and required negative specialization bases use the same complete effective owner-type certificate and applicability selector. Nested projectors share a query-local recursion boundary, cumulative work budget and prospective-specialization-writer exclusions. The recursion entry releases on ordinary return and unwind, and model-state stamps still govern cached facts.",
+    "pending": [
+      "Public integration and reviewed patch/source admission",
+      "Full vendor/native/public/provenance/conformance qualification",
+      "Separate mutually stable conditional-construction proof and remaining portion validation obligations"
+    ],
+    "expandedInitial": {
+      "log": "target/trigger-validation/portion-expanded-acceptance.log",
+      "logSha256": "baf62b856f7daf15a3fc76e71578de1f8496d2025f2213a7e4ca0c9a20ea52c6",
+      "result": "9 passed, 1 failed: standalone owned-typing applicability exposed a preexisting false MissingRequiredFamilies refusal. Exact ten default-result identities, future-writer exclusions, changed owner type, coupled-context refusal and budget retry pass.",
+      "archivedInputs": {
+        "target/trigger-validation/portion-expanded-acceptance-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+        "target/trigger-validation/portion-expanded-acceptance-stage/json/portion_context.rs": "6c0a57eb75ea7858f10a94b35f41228136afc32e40a11c7eb7f9ccb85c4db6c5",
+        "target/trigger-validation/portion-expanded-acceptance-stage/json/feature_type_projection.rs": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39",
+        "target/trigger-validation/portion-expanded-acceptance-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+        "target/trigger-validation/portion-expanded-acceptance-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+        "target/trigger-validation/portion-expanded-acceptance-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+        "target/trigger-validation/portion-expanded-acceptance-stage/json/type_relations.rs": "bc607f8a11c21e5774852206e7069761f6d227b0e334bf62d7ec0853d1523582",
+        "target/trigger-validation/portion-expanded-acceptance-stage/json/portion_context/acceptance.rs": "20097c8bc55dd9867c2d017c589c3c184176fb19e4d3c8677f7fa0edbefe2870",
+        "target/trigger-validation/portion-expanded-acceptance-stage/json/portion_context/tests.rs": "5b0debad1dcdc3d7cf1aa8e1796100703d420bcc828214d1735b0d394c7efb60",
+        "target/trigger-validation/portion-expanded-acceptance-stage/json/feature_type_projection/adapter.rs": "f57453b4cf97533cafe784d6dc36244e2acdf073c37dd3b8228845e0f3521306"
+      }
+    }
+  },
+  "broaderInitial": {
+    "log": "target/trigger-validation/portion-broader-initial.log",
+    "logSha256": "13179cd41ca749a5d0f9b025b70c33c5d7587543170e7c01b76e23acadc30bb3",
+    "result": "10 portion tests pass with an explicit-base control; TypeRelations 62 pass/1 obsolete refusal, FeatureTypeProjection 33 pass/2 obsolete refusal expectations, recursive visibility 7 pass/1 obsolete refusal. The standalone refusal prompted normative source review before accepting it as a correct limitation.",
+    "archivedInputs": {
+      "target/trigger-validation/portion-broader-initial-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+      "target/trigger-validation/portion-broader-initial-stage/json/portion_context.rs": "6c0a57eb75ea7858f10a94b35f41228136afc32e40a11c7eb7f9ccb85c4db6c5",
+      "target/trigger-validation/portion-broader-initial-stage/json/feature_type_projection.rs": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39",
+      "target/trigger-validation/portion-broader-initial-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+      "target/trigger-validation/portion-broader-initial-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+      "target/trigger-validation/portion-broader-initial-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+      "target/trigger-validation/portion-broader-initial-stage/json/type_relations.rs": "bc607f8a11c21e5774852206e7069761f6d227b0e334bf62d7ec0853d1523582",
+      "target/trigger-validation/portion-broader-initial-stage/json/portion_context/acceptance.rs": "7a7270719f8e06f5366b908cdec301db83c159d57f12ff5ce2c96ff619a1bab4",
+      "target/trigger-validation/portion-broader-initial-stage/json/portion_context/tests.rs": "5b0debad1dcdc3d7cf1aa8e1796100703d420bcc828214d1735b0d394c7efb60",
+      "target/trigger-validation/portion-broader-initial-stage/json/feature_type_projection/adapter.rs": "f57453b4cf97533cafe784d6dc36244e2acdf073c37dd3b8228845e0f3521306"
+    }
+  },
+  "ownedTypingFamilyReview": {
+    "sourceSha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "anchors": [
+      {
+        "id": "Core-Features-Feature-checkFeatureObjectSpecialization",
+        "name": "checkFeatureObjectSpecialization",
+        "comments": [
+          "<p>If a <code>Feature</code> has an <code>ownedTyping</code> relationship to a <code>Structure</code>, then it must directly or indirectly specialize <code><em>Objects::objects</em></code> from the Kernel Semantics Library.</p>"
+        ],
+        "bodies": [
+          "ownedTyping.type->exists(selectByKind(Structure)) implies specializesFromLibary('Objects::objects')"
+        ]
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureOccurrenceSpecialization",
+        "name": "checkFeatureOccurrenceSpecialization",
+        "comments": [
+          "<p>If a <code>Feature</code> has an <code>ownedTyping</code> relationship to a <code>Class</code>, then it must directly or indirectly specialize <code><em>Occurrences::occurrences</em></code> from the Kernel Semantic Library.</p>"
+        ],
+        "bodies": [
+          "ownedTyping.type->exists(selectByKind(Class)) implies specializesFromLibrary('Occurrences::occurrences')"
+        ]
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureDataValueSpecialization",
+        "name": "checkFeatureDataValueSpecialization",
+        "comments": [
+          "<p>If a <code>Feature</code> has an <code>ownedTyping</code> relationship to a <code>DataType</code>, then it must directly or indirectly specialize <code><em>Base::dataValues</em></code> from the Kernel Semantic Library.</p>"
+        ],
+        "bodies": [
+          "ownedTyping.type->exists(selectByKind(DataType)) implies specializesFromLibrary('Base::dataValues')"
+        ]
+      }
+    ],
+    "finding": "The three base specialization antecedents use ownedTyping, not the full inverse typing collection. Type projection supplied all inverse typing targets to feature_requirements, spuriously demanding occurrence/object/data-value bases for standalone typing. The isolated correction derives those three role flags only from checked reciprocal owned FeatureTyping rows; all inverse targets still contribute to Feature.type and retain the existing supported-kind checks. Composite family interpretation is unchanged. Malformed OCL exists/selectByKind and Libary spellings remain recorded source issues; the ownedTyping antecedent is explicit in both prose and OCL.",
+    "acceptance": "Original bare standalone case must now expose its exact type, without an authored workaround; explicit-base, inherited-only and owned-typing controls remain. Three additional data/occurrence/object cases assert exact types and specialization absence/presence."
+  },
+  "broaderCorrected": {
+    "status": "Completed with two new standalone negative-proof failures; all three broader existing modules pass.",
+    "log": "target/trigger-validation/portion-broader-corrected.log",
+    "obsoleteTestReview": [
+      "Data-typed default Feature with isPortion=true has no owned Class witness; replace blanket refusal with exact Integer positive and malformed Boolean negative.",
+      "Namespace-owned OccurrenceUsage has no owning Type; portion flag alone is inapplicable. Preserve non-null portionKind, variation, malformed flags and metadata negatives.",
+      "Recursive empty-typed portion child has no owned Class witness; assert exact memberships. Use a Class-typed Feature owner and typed portion with genuinely absent library portions role for the negative.",
+      "Ten selected default results now have separately verified exact types; retain exact more-specific types and do not coerce portionOfLife result Occurrence to its valued Feature type Life."
+    ],
+    "logSha256": "2cd704f46d00cb09a0fdbda9bfb191966beda0281496f1a3648ce64d8e4d7cde",
+    "result": {
+      "portionAcceptance": {
+        "passed": 9,
+        "failed": 2
+      },
+      "graphFormatsDiagnostic": {
+        "passed": 1
+      },
+      "typeRelations": {
+        "passed": 64
+      },
+      "featureTypeProjection": {
+        "passed": 35
+      },
+      "recursiveVisibility": {
+        "passed": 8
+      }
+    },
+    "finding": "Exact standalone Feature.type now succeeds after the owned-typing applicability correction. Negative specialization is still Unknown because StoredStructure marks every nonowned base as bad; the complete owned-specialization reader cannot yet distinguish valid standalone FeatureTyping from malformed ownership. The two No assertions are retained as desired behavior, not weakened.",
+    "archivedInputs": {
+      "target/trigger-validation/portion-broader-corrected-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+      "target/trigger-validation/portion-broader-corrected-stage/json/portion_context.rs": "6c0a57eb75ea7858f10a94b35f41228136afc32e40a11c7eb7f9ccb85c4db6c5",
+      "target/trigger-validation/portion-broader-corrected-stage/json/feature_type_projection.rs": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39",
+      "target/trigger-validation/portion-broader-corrected-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+      "target/trigger-validation/portion-broader-corrected-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+      "target/trigger-validation/portion-broader-corrected-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+      "target/trigger-validation/portion-broader-corrected-stage/json/type_relations.rs": "29bd845d5cf468b09a67be0857c0c708d5f23578d6f3da5b58f2e020f188cb95",
+      "target/trigger-validation/portion-broader-corrected-stage/json/portion_context/acceptance.rs": "f59a00323c3ac5254d4400a586d402c8cb185aae73b811fd896096cb137d1c06",
+      "target/trigger-validation/portion-broader-corrected-stage/json/portion_context/tests.rs": "08d31586cc6ece07a94146bf54dafb760368245bc6d1b9563260f36994825e20",
+      "target/trigger-validation/portion-broader-corrected-stage/json/feature_type_projection/adapter.rs": "f57453b4cf97533cafe784d6dc36244e2acdf073c37dd3b8228845e0f3521306",
+      "target/trigger-validation/portion-broader-corrected-stage/json/feature_type_projection/repository_tests.rs": "2466e1c8eb5a567b2eb4757baa9db2622da23bc67778ada3c1b29d4227ec3f85",
+      "target/trigger-validation/portion-broader-corrected-stage/json/feature_type_projection/semantic_positional_tests.rs": "1c0004d3df2ff04980d3ef927470eadd2b0aa99dc42ef5d04c8c7e24b8404791",
+      "target/trigger-validation/portion-broader-corrected-stage/json/operations/namespaces/recursive_features.rs": "b0bcbb1aa4cfa4e44609561aaf87b756bd986a1b96b98cf9a1922b5ae6ae51ba",
+      "target/trigger-validation/portion-broader-corrected-stage/json/type_relations/ordinary_features_tests.rs": "d021098386fb3810640650e66d6933f68425984ab5d110e66062e10ad9e00615"
+    }
+  },
+  "standaloneSpecializationReview": {
+    "status": "Prototype running; no admission.",
+    "sourceSha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "anchors": [
+      {
+        "id": "Core-Types-Type-ownedSpecialization",
+        "name": "ownedSpecialization",
+        "bodies": [
+          "<p>The <code>ownedRelationships</code> of this <code>Type</code> that are <code>Specializations</code>, for which the <code>Type</code> is the <code>specific</code> <code>Type</code>.</p> "
+        ]
+      },
+      {
+        "id": "Core-Types-Type-supertypes_Boolean",
+        "name": "supertypes",
+        "bodies": [
+          "if isConjugated then Sequence{conjugator.originalType} else if not excludeImplied then ownedSpecialization.general else ownedSpecialization->reject(isImplied).general endif endif",
+          "<p>If this <code>Type</code> is conjugated, then return just the <code>originalType</code> of the <code>Conjugation</code>. Otherwise, return the <code>general</code> <code>Types</code> from all <code>ownedSpecializations</code> of this type, if <code>excludeImplied = false</code>, or all non-implied <code>ownedSpecializations</code>, if <code>excludeImplied = true</code>.</p>"
+        ]
+      },
+      {
+        "id": "Core-Types-Type-allSupertypes_",
+        "name": "allSupertypes",
+        "bodies": [
+          "OrderedSet{self}->closure(supertypes(false))",
+          "<p>Return this <code>Type</code> and all <code>Types</code> that are directly or transitively supertypes of this <code>Type</code> (as determined by the <code>supertypes</code> operation with <code>excludeImplied = false</code>).</p> "
+        ]
+      },
+      {
+        "id": "Core-Types-Type-specializes_Type",
+        "name": "specializes",
+        "bodies": [
+          "if isConjugated then ownedConjugator.originalType.specializes(supertype) else allSupertypes()->includes(supertype) endif",
+          "<p>Check whether this <code>Type</code> is a direct or indirect specialization of the given <code>supertype<code>.</p>"
+        ]
+      }
+    ],
+    "finding": "Feature.type includes inverse FeatureTyping; Type.supertypes uses ownedSpecialization. Valid standalone FeatureTyping must not become a new supertype edge or an automatic ownership contradiction. The prototype retains the foreign rows in the existing structural index and validates every row before excluding it from the owned supertype closure. Other foreign relationship families remain separately unqualified.",
+    "pending": "Execute positive/negative controls, especially conflicting typed/generic sources, missing targets, carrier contradictions, post-query edits, cached structural-prefix equivalence and budgets. Do not admit based only on happy paths.",
+    "initialExecution": {
+      "compileFailure": "target/trigger-validation/portion-standalone-proof-compile-failure.log",
+      "compileFailureSha256": "e262ba073199263d90235887846fc9257bb141a4e77faf48aa8f2f6abe8f7b8a",
+      "compileRepair": "Use the Properties insert/set interface for null source damage; Properties has no remove method.",
+      "log": "target/trigger-validation/portion-standalone-proof-corrected.log",
+      "logSha256": "7ee95e1fe70f380e122175d1fc0b8288ad4d3f7c17faa9b89406d72706e8a269",
+      "result": "12 portion acceptance tests and 36 structural-index tests pass; the standalone alias/carrier adversarial test fails its below-work-limit requirement. Negative results remain Unknown, but a conflicting source alias is not rejected early enough.",
+      "archivedInputs": {
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/portion_context.rs": "6c0a57eb75ea7858f10a94b35f41228136afc32e40a11c7eb7f9ccb85c4db6c5",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/feature_type_projection.rs": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/structural_index.rs": "f2a5d6c982cb3a0aa6c67d1da134896df165a26968cd391a47d20ed234ffd415",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/type_relations.rs": "16f26340a0b7467b9cdf4a49263861f7660abb5aa941fc6d1a666c8aaa7fcca9",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/portion_context/acceptance.rs": "b0c34435617e5d70d878cbde6e3c96ee3cb628e8f2f40e3a6f8a863c792d3ac4",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/portion_context/tests.rs": "08d31586cc6ece07a94146bf54dafb760368245bc6d1b9563260f36994825e20",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/feature_type_projection/adapter.rs": "f57453b4cf97533cafe784d6dc36244e2acdf073c37dd3b8228845e0f3521306",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/feature_type_projection/repository_tests.rs": "2466e1c8eb5a567b2eb4757baa9db2622da23bc67778ada3c1b29d4227ec3f85",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/feature_type_projection/semantic_positional_tests.rs": "1c0004d3df2ff04980d3ef927470eadd2b0aa99dc42ef5d04c8c7e24b8404791",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/operations/namespaces/recursive_features.rs": "b0bcbb1aa4cfa4e44609561aaf87b756bd986a1b96b98cf9a1922b5ae6ae51ba",
+        "target/trigger-validation/portion-standalone-proof-corrected-stage/json/type_relations/ordinary_features_tests.rs": "d021098386fb3810640650e66d6933f68425984ab5d110e66062e10ad9e00615"
+      }
+    },
+    "aliasCorrection": {
+      "status": "Completed with one below-budget rejection failure; broader modules pass.",
+      "log": "target/trigger-validation/portion-standalone-alias-proof.log",
+      "implementation": "Retain all FeatureTyping source claims from typed/generic aliases in the same structural scan, mapping contradictory aliases to each possible source. Every referenced foreign row must pass reciprocal carrier and all-endpoint validation before an owned-specialization absence proof can ignore it. Extra scan work is budgeted and preserved in cached logical-work accounting.",
+      "session": 37491,
+      "logSha256": "91cc73b745a6b4eb385831ca630fd02361f34f18326ed2c6cd1046a000fe9cd9",
+      "result": {
+        "portion": {
+          "passed": 12,
+          "failed": 1
+        },
+        "structuralIndex": 36,
+        "typeRelations": 64,
+        "featureTypeProjection": 35,
+        "recursiveVisibility": 8
+      },
+      "finding": "The conflicting specific/typedFeature case returns Unknown after 10000002 logical steps. TypeRelations::specializes refreshes semantic planning before reaching the stored-base reader, so source localization alone does not prevent the redundant work.",
+      "archivedInputs": {
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/portion_context.rs": "6c0a57eb75ea7858f10a94b35f41228136afc32e40a11c7eb7f9ccb85c4db6c5",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/feature_type_projection.rs": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/structural_index.rs": "8b3ac033aaef74baaece8f7be2eac7a78a53a69d3425510f18a76c6e7fd12058",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/type_relations.rs": "16f26340a0b7467b9cdf4a49263861f7660abb5aa941fc6d1a666c8aaa7fcca9",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/portion_context/acceptance.rs": "fcd639c029fbae05f26da2dd5dd1605d78cf494f2dfd8eebb096fd186f0e328f",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/portion_context/tests.rs": "08d31586cc6ece07a94146bf54dafb760368245bc6d1b9563260f36994825e20",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/feature_type_projection/adapter.rs": "f57453b4cf97533cafe784d6dc36244e2acdf073c37dd3b8228845e0f3521306",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/feature_type_projection/repository_tests.rs": "2466e1c8eb5a567b2eb4757baa9db2622da23bc67778ada3c1b29d4227ec3f85",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/feature_type_projection/semantic_positional_tests.rs": "1c0004d3df2ff04980d3ef927470eadd2b0aa99dc42ef5d04c8c7e24b8404791",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/operations/namespaces/recursive_features.rs": "b0bcbb1aa4cfa4e44609561aaf87b756bd986a1b96b98cf9a1922b5ae6ae51ba",
+        "target/trigger-validation/portion-standalone-alias-proof-stage/json/type_relations/ordinary_features_tests.rs": "d021098386fb3810640650e66d6933f68425984ab5d110e66062e10ad9e00615"
+      }
+    },
+    "preflight": {
+      "status": "pass",
+      "log": "target/trigger-validation/portion-preflight-acceptance.log",
+      "implementation": "For a nonreflexive, nonconjugated receiver, use the same stored source/carrier/endpoint certificate before semantic-plan refresh. Contradictions become Unknown immediately. The normal conjugated-receiver and reflexivity rules remain separate. Add exact positive/negative portion-path assertions for direct/inherited/narrowed/non-Class/closed-cycle owner cases.",
+      "logSha256": "8d8f125181afd01b10876f9521ac4053069cd9ce0112ab80d101dd5a09595edf",
+      "result": {
+        "portionAcceptance": 13,
+        "structuralIndex": 36,
+        "typeRelations": 64,
+        "featureTypeProjection": 35,
+        "recursiveVisibility": 8
+      },
+      "archivedInputs": {
+        "target/trigger-validation/portion-preflight-acceptance-stage/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/portion_context.rs": "6c0a57eb75ea7858f10a94b35f41228136afc32e40a11c7eb7f9ccb85c4db6c5",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/feature_type_projection.rs": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/structural_index.rs": "8b3ac033aaef74baaece8f7be2eac7a78a53a69d3425510f18a76c6e7fd12058",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/type_relations.rs": "6540aa4caca201f3565e59a572661e4ae2f2631c802f18b45290da28a5846f79",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/portion_context/acceptance.rs": "405cae08a650f5a306e9b4249e889b1396f490bfcaadd83df6d8b25b76f0e62a",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/portion_context/tests.rs": "08d31586cc6ece07a94146bf54dafb760368245bc6d1b9563260f36994825e20",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/feature_type_projection/adapter.rs": "f57453b4cf97533cafe784d6dc36244e2acdf073c37dd3b8228845e0f3521306",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/feature_type_projection/repository_tests.rs": "2466e1c8eb5a567b2eb4757baa9db2622da23bc67778ada3c1b29d4227ec3f85",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/feature_type_projection/semantic_positional_tests.rs": "1c0004d3df2ff04980d3ef927470eadd2b0aa99dc42ef5d04c8c7e24b8404791",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/operations/namespaces/recursive_features.rs": "b0bcbb1aa4cfa4e44609561aaf87b756bd986a1b96b98cf9a1922b5ae6ae51ba",
+        "target/trigger-validation/portion-preflight-acceptance-stage/json/type_relations/ordinary_features_tests.rs": "d021098386fb3810640650e66d6933f68425984ab5d110e66062e10ad9e00615"
+      }
+    }
+  },
+  "graphFormats": {
+    "source": "target/trigger-validation/portion-broader-corrected.log",
+    "result": "LegacyV2 and CanonicalV3 both expose exact types and complete negative facts for Class-owned portions, explicit owner-base portions and library portions. A LegacyV2 Feature owner without the required occurrences base remains MissingRequiredFamilies/Unknown. CanonicalV3 constructs the base and succeeds. Formal acceptance added; no universal legacy implicit-generation claim."
+  },
+  "publicIntegration": {
+    "status": "pass",
+    "source": "target/trigger-validation/portion-public.rs",
+    "sourceSha256": "3eca0d3882b4df09f00ea09e1a34320e213e06097222843cc59377399a626f14",
+    "log": "target/trigger-validation/portion-public-corrected.log",
+    "candidateInputs": "standaloneSpecializationReview.preflight.archivedInputs",
+    "runner": "target/trigger-validation/test-portion-public.mjs",
+    "initialFailure": {
+      "log": "target/trigger-validation/portion-public-acceptance.log",
+      "logSha256": "e58f1263cfac4605c8e78cbb601940550bad50cbc53173e52d224e67aabab757",
+      "source": "target/trigger-validation/portion-public-invalid-name.rs",
+      "sourceSha256": "da7c490c26a40489c30fa1722771815e186dd0e7a735e7ff75cc84702e96a6d2",
+      "finding": "The test used reserved member as an unquoted Feature name. The parser correctly rejects it; rename the fixture identifier to slot without changing behavior or acceptance."
+    },
+    "logSha256": "8159cc69b100a10236fa5159c9d40b72d4fbd157969ea40711b95a46876ed96b",
+    "result": "One public integration test passes: eight exact portion types, ten exact selected default-result types, separate portionOfLife Feature type, and missing-owner refusal."
+  },
+  "admission": {
+    "recordedAt": "2026-10-18T16:41:29.569906+00:00",
+    "previousQualifiedKernelInputSha256": "f4c0619cc8a3437ecf66adb27ef2523a7344f336932601a058b7f41fd8ab0543",
+    "kernelInputSha256": "73b44bcd0d7606066d5fc8f3187ed5b6fe131d348d572c4bebb190b10cbc6819",
+    "anchorReview": "target/trigger-validation/portion-context-anchor-review.json",
+    "files": {
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs": "0fda120d54cab8bfe9c589f48f252487bd5e48c4b7598474eeec1871202fe188",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs": "6162f88eb9c4274c7053915a158e800ad45bf4abbe44fe395b8a29aa7a944c3e",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/adapter.rs": "f57453b4cf97533cafe784d6dc36244e2acdf073c37dd3b8228845e0f3521306",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/repository_tests.rs": "2466e1c8eb5a567b2eb4757baa9db2622da23bc67778ada3c1b29d4227ec3f85",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection/semantic_positional_tests.rs": "1c0004d3df2ff04980d3ef927470eadd2b0aa99dc42ef5d04c8c7e24b8404791",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/feature_type_projection.rs": "f07528c7f6f41bb6b9f0d94a1e575381c9d832c333e32fe6b5fb0b764d34af39",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/implied.rs": "beedf3a7f44b5fa4f85dcda7678be6165894f9d579104586178445d36678ddb6",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/operations/namespaces/recursive_features.rs": "b0bcbb1aa4cfa4e44609561aaf87b756bd986a1b96b98cf9a1922b5ae6ae51ba",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/portion_context/acceptance.rs": "405cae08a650f5a306e9b4249e889b1396f490bfcaadd83df6d8b25b76f0e62a",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/portion_context.rs": "3bcc0c9ae46a358ad42276c079e56a18d4cb06197529a6dcad637019d4f41836",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/structural_index.rs": "8b3ac033aaef74baaece8f7be2eac7a78a53a69d3425510f18a76c6e7fd12058",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/ordinary_features_tests.rs": "d021098386fb3810640650e66d6933f68425984ab5d110e66062e10ad9e00615",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "6540aa4caca201f3565e59a572661e4ae2f2631c802f18b45290da28a5846f79",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "fcd73017de0faf642ec674c19b9b8b7d0bc74b719bafdc2a76b9d1ad471d6727",
+      "crates/sysml-kernel/tests/portion_feature_types.rs": "3eca0d3882b4df09f00ea09e1a34320e213e06097222843cc59377399a626f14"
+    }
+  }
+}

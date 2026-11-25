@@ -1,0 +1,77 @@
+{
+  "reviewedAt": "2026-10-18T05:31:56.935854+00:00",
+  "status": "open dependency review; neither a normative erratum nor a completed obligation",
+  "kernelInputSha256": "d17988cd460565556362d678171054f6f31fc41b8d4ac392378c575d4926549a",
+  "inputs": {
+    "target/standards/kerml.xmi": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "target/standards/kerml.txt": "c838e109913913769c4949ed3cd151fbc2e0cd3b1b31d037844c5b6c9e6d7ae1",
+    "target/standards/sysml.txt": "cca9c554b828ad61b505040b258106b7105d5072fdbf1aba6e25c4b8ec5b88d2",
+    "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Performances.kerml": "fd965e184b300737a192530de0c800cdbee236cb6220612f370400da21dfb327",
+    "target/trigger-validation/when-result-domain-probe.rs": "be62bc645fa8211ee8190b8963642a00c211ba336bb34413334c6b564b939673",
+    "target/trigger-validation/when-result-domain-probe": "3d067cbc11152c36421cf4d173a1eab06449aa4f978b99a8f1a63e9e52faeaef",
+    "target/trigger-validation/when-result-domain-probe.log": "36c44edf15a5a9fcca83a0f4065e9380b9f48b9ce3e6cfae10e702b24485220e",
+    "target/release/deps/libsysmlv2_model-efca4c1af2efa1a8.rlib": "79a61663c24808ec5cafe79c2e70cc330228d54ed04f0a01e1691624511a2aa6"
+  },
+  "normativeAnchors": [
+    {
+      "owner": "Step",
+      "name": "checkStepSubperformanceSpecialization",
+      "expressions": [
+        "owningType <> null and     (owningType.oclIsKindOf(Behavior) or      owningType.oclIsKindOf(Step)) and     self.isComposite implies     specializesFromLibrary('Performances::Performance::subperformance')"
+      ]
+    },
+    {
+      "owner": "Step",
+      "name": "checkStepEnclosedPerformanceSpecialization",
+      "expressions": [
+        "owningType <> null and     (owningType.oclIsKindOf(Behavior) or      owningType.oclIsKindOf(Step)) implies     specializesFromLibrary('Performances::Performance::enclosedPerformance')"
+      ]
+    },
+    {
+      "owner": "Step",
+      "name": "checkStepOwnedPerformanceSpecialization",
+      "expressions": [
+        "isComposite and owningType <> null and (owningType.oclIsKindOf(Structure) or  owningType.oclIsKindOf(Feature) and  owningType.oclAsType(Feature).type->     exists(oclIsKindOf(Structure)) implies     specializesFromLibrary('Objects::Object::ownedPerformance')"
+      ]
+    },
+    {
+      "owner": "Predicate",
+      "name": "checkPredicateSpecialization",
+      "expressions": [
+        "specializesFromLibrary('Performances::BooleanEvaluation')"
+      ]
+    }
+  ],
+  "sourceConflict": {
+    "ruleBoundary": "KerML 1.0 8.3.4.6.3 and 8.4.4.7.2 use singular enclosedPerformance, subperformance and ownedPerformance names.",
+    "libraryBoundary": "The pinned Performances library and KerML 9.2.6.2.14 declare enclosedPerformances and subperformances. SysML action semantics also use the plural paths.",
+    "reportedIssue": {
+      "url": "https://issues.omg.org/issues/KERML11-207",
+      "title": "Step OCL Issues",
+      "observedStatus": "open",
+      "finding": "The OMG issue reports singular/plural target-name discrepancies for the enclosed and owned performance constraints. It is corroborating evidence, not an adopted resolution."
+    },
+    "relatedSemanticsIssue": {
+      "url": "https://issues.omg.org/issues/KERML11-21",
+      "title": "Steps are not always time enclosed",
+      "observedStatus": "open",
+      "finding": "A separate issue questions the temporal meaning of the Step specialization constraints; correcting a target spelling does not resolve that broader semantics issue."
+    },
+    "disposition": "Keep this obligation open. Any use of the declared plural library identity needs an explicit interpretation record and positive/negative construction evidence; do not invent singular library members or claim an approved OMG correction."
+  },
+  "probe": {
+    "command": [
+      "target/trigger-validation/when-result-domain-probe"
+    ],
+    "exitCode": 0,
+    "sourceCode": "use std::path::Path;\nuse sysmlv2_model::{model::{Model, GraphFormat}, json::{Derived, ResolvedModel}};\nfn library(model: &mut Model, path: &Path) {\n    let mut entries: Vec<_> = std::fs::read_dir(path).unwrap().map(|e| e.unwrap().path()).collect();\n    entries.sort();\n    for entry in entries {\n        if entry.is_dir() { library(model, &entry); }\n        else if matches!(entry.extension().and_then(|x|x.to_str()), Some(\"sysml\"|\"kerml\")) {\n            model.add_library_source(entry.to_string_lossy(), &std::fs::read_to_string(&entry).unwrap());\n        }\n    }\n}\nfn main() { std::thread::Builder::new().stack_size(16*1024*1024).spawn(|| {\n let mut model=Model::with_graph_format(GraphFormat::CanonicalV3);\n library(&mut model,Path::new(\"vendor/sysml-library/sources\"));\n model.add_source(\"triggers.sysml\",&std::fs::read_to_string(\"tests/conformance/fixtures/trigger-arguments-positive.sysml\").unwrap());\n let mut r=ResolvedModel::build(&model);\n r.set_closure_policy(sysmlv2_model::json::ClosurePolicy::Closure{include_implied:true});\n let package=r.resolve_qualified(\"TriggerArguments\").unwrap();r.implied_relationships(package);\n for name in [\"conditional\",\"literal\"] {\n  let accept=r.resolve_qualified(&format!(\"TriggerArguments::Reception::{name}\")).unwrap();\n  let Derived::Value(v)=r.derived(accept,\"payloadArgument\") else{panic!()};let trigger=v.element().unwrap();\n  let bindings=r.invocation_binding_report(trigger).arguments.unwrap();\n  let outer=bindings.bindings[0].value;\n  let Derived::Value(v)=r.derived(outer,\"referent\") else{panic!()};let inner=v.element().unwrap();\n  let Derived::Value(v)=r.derived(inner,\"result\") else{panic!()};let result=v.element().unwrap();\n  let singular=r.resolve_qualified(\"Performances::Performance::enclosedPerformance\");\n  let enclosed=r.resolve_qualified(\"Performances::Performance::enclosedPerformances\").unwrap();\n  let result_owner=r.owner(result).unwrap();\n  println!(\"{name}: result owner kind={}, singular target present={}, plural target specialization={}\",r.element_type(result_owner),singular.is_some(),r.conforms_with_implied(inner,enclosed));\n  println!(\"{name}: outer={} inner={} inner owner={:?} result_owner={:?} domain={:?}\",r.element_type(outer),r.element_type(inner),r.owner(inner),r.owner(result),r.type_feature_report(result));\n }\n }).unwrap().join().unwrap();}\n",
+    "output": "conditional: result owner kind=FeatureReferenceExpression, singular target present=false, plural target specialization=false\nconditional: outer=FeatureReferenceExpression inner=FeatureReferenceExpression inner owner=Some(ElementRef(91656)) result_owner=Some(ElementRef(91658)) domain=TypeFeatureReport { projections: Err(IncompleteProvider), steps: 284958 }\nliteral: result owner kind=Predicate, singular target present=false, plural target specialization=false\nliteral: outer=FeatureReferenceExpression inner=LiteralBoolean inner owner=Some(ElementRef(91671)) result_owner=Some(ElementRef(81942)) domain=TypeFeatureReport { projections: Err(UnsupportedConfiguration), steps: 261993 }\n",
+    "interpretation": "Compatibility result selection locates the candidate result. The checked Type.feature report remains incomplete for the nested reference result and unsupported for the Boolean literal result owned by a Predicate. The compatibility specialization result is not itself a complete negative proof."
+  },
+  "nextAcceptancePartitions": [
+    "Certify Predicate and its return Features using required BooleanEvaluation heritage, inherited/owned result membership, complete positional redefinitions and missing-library/cycle/mutation counterexamples.",
+    "Audit nested reference and literal expression construction against Step enclosed-performance requirements. Resolve the recorded target-name discrepancy before complete source heritage is certified.",
+    "Provide checked expression-result selection for direct references, deferred when wrappers, literals and invocations; retain explicit unknown on missing/malformed/wrong-order result evidence.",
+    "Only then replace the three trigger validators using complete argument/result/wrapper and quantity-reference facts with canonical diagnostic names."
+  ]
+}

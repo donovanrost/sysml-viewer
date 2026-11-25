@@ -1,0 +1,329 @@
+{
+  "recordedAt": "2026-10-18T12:30:31.976276+00:00",
+  "status": "All 945 vendor model tests, 99 native workspace tests, 39 public Node tests and 16 provenance/evidence tests pass. Clippy, native/WASM builds, contract, 133 conformance cases and the source-matched requirements execution report pass on macOS arm64. No package or complete semantic obligation closes.",
+  "kernelInputSha256": "c88a2fa55ad625f118b30c4f4bb9d6d44bcf63b0f8e0d9c8bfee17acb6522e43",
+  "previousKernelInputSha256": "e690037352d766a8bb37b5e70f322f84c854a9a834fd3feabbd6d6c5dad3cbcb",
+  "problem": "The first cold cardinality query for CoalescingValues::rationalPresent in the unchanged combined 31-document corpus exceeds the 10,000,000-step allowance instead of returning exact 7. The existing public test also checks its 32-document unresolved-import variant.",
+  "profile": {
+    "log": {
+      "path": "target/trigger-validation/mixed-eligibility-profile.log",
+      "sha256": "6037d0c8b84850309d0f3a119331adf2285e22fcdb149227fc72eeb8cd919a64"
+    },
+    "firstFailureSteps": 10008721,
+    "finding": "Each nested/repeated operator call repeats the designated Function eligibility identity check, charging 454776 model rows. Checked binding/topology evidence is already shared; repeated identity work dominates the second complete-expression proof."
+  },
+  "disposablePrototype": {
+    "log": {
+      "path": "target/trigger-validation/mixed-eligibility-reuse.log",
+      "sha256": "d5c0c0759ef81da990ebe79f6f77e6e14eeb4e7b2cd0885f3c0c2235d947c057"
+    },
+    "steps": {
+      "31Documents": 6141221,
+      "32DocumentsWithUnresolvedImport": 6142860
+    },
+    "expectedAndObserved": {
+      "lower": 7,
+      "upper": 7
+    },
+    "method": "Logging and identity-reuse changes compiled only in a disposable vendor workspace. Both requests are extracted from the existing public test workspace construction. These prototype results are separate from final production qualification."
+  },
+  "repair": {
+    "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
+    "design": "Retain successful designated Function identities in RepositoryEvidence and the existing query-local EligibilityBatch. Every call still obtains checked supplied bindings and checks the current structural graph. Every expression still uses a fresh path-sensitive proof. The existing batch stamp, post-proof freshness checks and cumulative allowance guard reuse. Failed/unknown Function identities are not cached.",
+    "limits": "No new expression families, execution semantics, public API fields or work-limit changes. No whole-expression classification or cross-query/global cache is introduced."
+  },
+  "newRegressionTests": [
+    "shared_function_identity_does_not_certify_another_calls_arguments",
+    "shared_function_identity_is_revoked_after_library_name_configuration_changes"
+  ],
+  "existingRequiredGuards": [
+    "changed signature and argument rows",
+    "semantic/publication generation changes",
+    "cumulative work cannot be reset on retry",
+    "fresh retries after exhaustion",
+    "path-local visited referents and owning-expression cycles"
+  ],
+  "anchorReview": {
+    "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/model_level_evaluability/adapter.rs",
+    "previousSha256": "08f521867657bed8204154c271036b5fdf12db1ea4f71f31e6e256a3dd77f3f3",
+    "currentSha256": "ae2f7350291639170ca2f70e1f537571fc1f8e90b37a4248b8910e1467775caa",
+    "anchors": [
+      "pub fn model_level_evaluability(",
+      "pub(in crate::json) struct EligibilityBatch"
+    ],
+    "review": "Compared the complete HEAD diff: adds snapshot-scoped successful designated Function identity reuse and two argument/configuration regressions; fresh call mapping, path-sensitive expression proofs, Unknown and cumulative work limits remain unchanged. Existing bounded assessment scope is unchanged."
+  },
+  "qualification": {
+    "record": "target/trigger-validation/eligibility-identity-qualification.json",
+    "status": "passed",
+    "vendorLog": "target/trigger-validation/eligibility-identity-full-model.log",
+    "provenanceAndEvidence": {
+      "passed": 16,
+      "log": {
+        "path": "target/trigger-validation/eligibility-identity-provenance-evidence.log",
+        "sha256": "032c95d6090df07870cf52d2940bbc193263368c627d18f046c545076a4a41c9"
+      }
+    },
+    "contract": {
+      "status": "passed",
+      "log": {
+        "path": "target/trigger-validation/eligibility-identity-contract.log",
+        "sha256": "f8e366d3ec5f65c542ba7942fdc6eadc5330662841269dea6f602ee79564acbd"
+      }
+    },
+    "vendor": {
+      "status": "pass",
+      "passed": 945,
+      "libraryFiles": 94,
+      "corpusFiles": 251,
+      "log": "target/trigger-validation/eligibility-identity-full-model.log",
+      "sha256": "040b12cc5c560bd2578bd8ed8a3c016c5118b2256fa7e7f186004eaed5392a6f",
+      "kernelInputSha256": "c88a2fa55ad625f118b30c4f4bb9d6d44bcf63b0f8e0d9c8bfee17acb6522e43"
+    },
+    "coldProductionProbe": {
+      "status": "pass",
+      "steps": {
+        "31Documents": 6141221,
+        "32DocumentsWithUnresolvedImport": 6142860
+      },
+      "expectedAndObserved": {
+        "lower": 7,
+        "upper": 7
+      },
+      "log": "target/trigger-validation/identity-and-sort-probes.log",
+      "sha256": "ece2ac567b6bd9367f3a26224d4aca0c86f5793db7d2c9d32332b744cc1cfa4b",
+      "kernelInputSha256": "c88a2fa55ad625f118b30c4f4bb9d6d44bcf63b0f8e0d9c8bfee17acb6522e43",
+      "method": "Diagnostic tests appended in a disposable workspace to unchanged production source; the cold query executes before other proof queries. This runner also repeated the endpoint baseline; its intended additional sort tracing was not installed due to a diagnostic-runner path replacement error. A corrected separate trace is running.",
+      "inputs": [
+        {
+          "path": "tests/kernel.test.ts",
+          "sha256": "0ccece0e36e4ecf22e1c2c79c41cac3b7e913bfc589fd53448cca099593d76cb"
+        },
+        {
+          "path": "target/trigger-validation/mixed-cardinality-requests.mjs",
+          "sha256": "2ff9833a0ed80f514b81a424ec06cb31488f44c3d407f62c3ba12097a56b406c"
+        },
+        {
+          "path": "target/trigger-validation/mixed-cardinality-request.json",
+          "sha256": "7a6fe9c3e929c6d79c2291f562a6a9a05f08d1282aabe0b6f59883269b0601ba",
+          "documents": 31
+        },
+        {
+          "path": "target/trigger-validation/mixed-cardinality-guard-request.json",
+          "sha256": "cc83153283c50c73f55b5e58a6cb8dd2d1c03f0acc8e9d10954b5cec34699f5e",
+          "documents": 32
+        },
+        {
+          "path": "target/trigger-validation/mixed-cardinality-probe.rs",
+          "sha256": "95a85bc09d4ef23a41facbcfea2670ee9e037f510b1f182a6546312d8696e26c"
+        }
+      ],
+      "constructionComparison": "Exact source-block comparison with tests/kernel.test.ts, with only the module URL rebased for its disposable location, passed."
+    },
+    "native": {
+      "status": "pass",
+      "passed": 99,
+      "log": "target/trigger-validation/eligibility-identity-qualification-workspace.log",
+      "sha256": "78664c0ae4c05aae95f6f043361fb722d79dda5c76c3e6a89278dfdb5041e495"
+    },
+    "clippy": {
+      "status": "pass",
+      "log": "target/trigger-validation/eligibility-identity-qualification-clippy.log",
+      "sha256": "9d0d5400accdd0ce1ca731d268c16e7ab98e0e22b00195d1635ba22c2bbfd516"
+    },
+    "pipeline": {
+      "kernelInputSha256": "c88a2fa55ad625f118b30c4f4bb9d6d44bcf63b0f8e0d9c8bfee17acb6522e43",
+      "startedAt": "2026-10-18T12:29:09.750Z",
+      "status": "failed",
+      "phases": [
+        {
+          "name": "workspace",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--workspace"
+          ],
+          "startedAt": "2026-10-18T12:29:09.751Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T12:37:59.364Z"
+        },
+        {
+          "name": "clippy",
+          "args": [
+            "tools/rust.mjs",
+            "clippy",
+            "--locked",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "startedAt": "2026-10-18T12:37:59.366Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T12:38:02.242Z"
+        },
+        {
+          "name": "wasm",
+          "args": [
+            "tools/build-kernel.mjs"
+          ],
+          "startedAt": "2026-10-18T12:38:02.243Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T12:38:36.451Z"
+        },
+        {
+          "name": "cli",
+          "args": [
+            "tools/rust.mjs",
+            "build",
+            "--locked",
+            "--release",
+            "-p",
+            "sysml-cli"
+          ],
+          "startedAt": "2026-10-18T12:38:36.451Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T12:39:13.610Z"
+        },
+        {
+          "name": "public",
+          "args": [
+            "--experimental-strip-types",
+            "--test",
+            "--test-concurrency=1",
+            "tests/accept-actions.test.ts",
+            "tests/families.test.ts",
+            "tests/kernel.test.ts",
+            "tests/state-subactions.test.ts",
+            "tests/kernel-client.test.ts",
+            "tests/conformance-runner.test.mjs"
+          ],
+          "startedAt": "2026-10-18T12:39:13.610Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T12:42:31.357Z"
+        },
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs",
+            "--no-build"
+          ],
+          "startedAt": "2026-10-18T12:42:31.357Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T12:52:20.077Z"
+        },
+        {
+          "name": "requirements",
+          "args": [
+            "tools/requirements.mjs",
+            "--conformance",
+            "target/conformance/report.json"
+          ],
+          "startedAt": "2026-10-18T12:52:20.078Z",
+          "status": "fail",
+          "exitCode": 1,
+          "finishedAt": "2026-10-18T12:52:21.014Z"
+        }
+      ]
+    },
+    "wasm": {
+      "status": "pass",
+      "log": "target/trigger-validation/eligibility-identity-qualification-wasm.log",
+      "sha256": "8924147fdd4b2433bd97988c5adf7f2ed3d421ee94e13142daaaea0f40c19774"
+    },
+    "cli": {
+      "status": "pass",
+      "log": "target/trigger-validation/eligibility-identity-qualification-cli.log",
+      "sha256": "c27caa62931583a0768ccc7dd508c609935aeb451a9fa92d0568fd5a29fc0b09"
+    },
+    "public": {
+      "status": "pass",
+      "log": "target/trigger-validation/eligibility-identity-qualification-public.log",
+      "sha256": "41621d815e6a79f0df95428efd8894ca080ed98a70f22aebe7e7c108c7859028",
+      "passed": 39
+    },
+    "conformance": {
+      "status": "pass",
+      "report": {
+        "path": "docs/evidence/eligibility-identity-conformance-macos-arm64.json",
+        "sha256": "d8c48986f6a7817f964823fce5828ba701ed0b30ef752aa8e5cbe100893d8439"
+      },
+      "log": "target/trigger-validation/eligibility-identity-evidence-qualification-conformance.log",
+      "sha256": "d417e290b5b43e9a273458e39e3c7e45f948c6e83f3efa4e8adc043d45b74926",
+      "passed": 133
+    },
+    "requirements": {
+      "status": "pass",
+      "report": {
+        "path": "docs/evidence/eligibility-identity-requirements-macos-arm64.json",
+        "sha256": "0b8fa83e498086ccbaf158047a301f55f0f4c776d9be1aa053bd3913fa3315bd"
+      },
+      "log": "target/trigger-validation/eligibility-identity-evidence-qualification-requirements.log",
+      "sha256": "6904639596c3daa757f7a484a69605637db642429540c9c699f090e8fc4d4f76",
+      "boundedAssessments": 77,
+      "executableCases": 133
+    },
+    "evidenceRerun": {
+      "record": "target/trigger-validation/eligibility-identity-evidence-qualification.json",
+      "kernelInputSha256": "c88a2fa55ad625f118b30c4f4bb9d6d44bcf63b0f8e0d9c8bfee17acb6522e43",
+      "startedAt": "2026-10-18T12:53:13.956Z",
+      "status": "passed",
+      "phases": [
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-18T12:53:13.957Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:03:47.880Z"
+        },
+        {
+          "name": "requirements",
+          "args": [
+            "tools/requirements.mjs",
+            "--conformance",
+            "target/conformance/report.json"
+          ],
+          "startedAt": "2026-10-18T13:03:47.882Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T13:03:48.871Z"
+        }
+      ],
+      "finishedAt": "2026-10-18T13:03:49.628Z"
+    },
+    "rejectedRequirements": {
+      "status": "fail",
+      "log": "target/trigger-validation/eligibility-identity-qualification-requirements.log",
+      "sha256": "58e094f41ff50134b10fd746b502afcfb7051fc23170734f8c57310477061e3c",
+      "reason": "Qualification evidence must build the native CLI: tools/conformance.mjs was invoked with --no-build.",
+      "repair": "Rerun tools/conformance.mjs without --no-build, then the requirements report. Keep the rejected report unchanged; do not edit buildPerformed or weaken validation.",
+      "runnerCorrection": "The ignored full-pipeline helpers now invoke conformance without --no-build. Their original scripts are preserved with -original-no-build suffixes, and the failed pipeline record retains the actual original argument list."
+    },
+    "noBuildConformance": {
+      "status": "pass",
+      "log": "target/trigger-validation/eligibility-identity-qualification-conformance.log",
+      "sha256": "ac451ae8010a130dba7d39f26ab09b329829708478dc2bfa954e4610cd045bf5",
+      "passed": 133,
+      "boundary": "Executed cases pass on the current source and separately built CLI; this no-build run is rejected as requirements qualification evidence."
+    },
+    "binarySha256": "5da3ae183d9185d3b2e4567a4ba310c3f77c78ddb7ca54bb12710079d3b4eab3",
+    "platform": "darwin",
+    "arch": "arm64",
+    "sourceVerifiedAtEnd": "c88a2fa55ad625f118b30c4f4bb9d6d44bcf63b0f8e0d9c8bfee17acb6522e43"
+  },
+  "coverageCountsChanged": false,
+  "next": "Review and implement namespace-owned foreign Step/Expression member admission through the shared provider, with replay and source-matched tests. Then complete directed-valuation typing and contextual default value/result-chain binding. The prototypes and their limits are recorded in invocation-obligation-decomposition-review.json.",
+  "qualifiedAt": "2026-10-18T13:04:51.021453+00:00"
+}

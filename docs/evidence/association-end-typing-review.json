@@ -1,0 +1,1223 @@
+{
+  "reviewedAt": "2026-10-18T23:10:31.646030+00:00",
+  "status": "Open dependency review from pinned sources and code inspection. Execution baseline and implementation remain pending; no new conformance claim.",
+  "sources": [
+    {
+      "path": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466"
+    },
+    {
+      "path": "target/standards/kerml.pdf",
+      "sha256": "3bcc96f989bfa9d05cd28e026df3351b795fe8d494187b87bff3db7d96373697"
+    },
+    {
+      "path": "target/standards/sysml.pdf",
+      "sha256": "46e6c0476a6f1f34f367d57e039d56659bff75e41d2e4b3d37ca4cadea84a83a"
+    }
+  ],
+  "anchors": [
+    {
+      "id": "Core-Features-Feature-isOwnedCrossFeature_",
+      "name": "isOwnedCrossFeature",
+      "sourceExpressions": [
+        "owningNamespace <> null and owningNamespace.oclIsKindOf(Feature) and owningNamespace.oclAsType(Feature).ownedCrossFeature() = self"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-ownedCrossFeature_",
+      "name": "ownedCrossFeature",
+      "sourceExpressions": [
+        "if not isEnd or owningType = null then null else     let ownedMemberFeatures: Sequence(Feature) =         ownedMember->selectByKind(Feature)->             reject(oclIsKindOf(Multiplicity) or                     oclIsKindOf(MetadataFeature) or                    oclIsKindOf(FeatureValue))->             reject(owningMembership.oclIsKindOf(FeatureMembership)) in     if ownedMemberFeatures.isEmpty() then null     else ownedMemberFeatures->first()     endif"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-checkFeatureCrossingSpecialization",
+      "name": "checkFeatureCrossingSpecialization",
+      "sourceExpressions": [
+        "ownedCrossFeature() <> null implies crossFeature = ownedCrossFeature()"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-checkFeatureEndRedefinition",
+      "name": "checkFeatureEndRedefinition",
+      "sourceExpressions": [
+        "isEnd and owningType <> null implies     let i : Integer =          owningType.ownedEndFeature->indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |              supertype.endFeature->size() >= i implies                 redefines(supertype.endFeature->at(i))"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-checkFeatureOwnedCrossFeatureSpecialization",
+      "name": "checkFeatureOwnedCrossFeatureSpecialization",
+      "sourceExpressions": [
+        "isOwnedCrossFeature() implies owner.oclAsType(Feature).type->forAll(t | self.specializes(t))"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-validateFeatureCrossFeatureType",
+      "name": "validateFeatureCrossFeatureType",
+      "sourceExpressions": [
+        "crossFeature <> null implies crossFeature.type->asSet() = type->asSet()"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-deriveFeatureCrossFeature",
+      "name": "deriveFeatureCrossFeature",
+      "sourceExpressions": [
+        "crossFeature =     if ownedCrossSubsetting = null then null     else          let chainingFeatures: Sequence(Feature) =              ownedCrossSubsetting.crossedFeature.chainingFeature in         if chainingFeatures->size() < 2 then null         else chainingFeatures->at(2)     endif"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-deriveFeatureOwnedCrossSubsetting",
+      "name": "deriveFeatureOwnedCrossSubsetting",
+      "sourceExpressions": [
+        "ownedCrossSubsetting =     let crossSubsettings: Sequence(CrossSubsetting) =          ownedSubsetting->selectByKind(CrossSubsetting) in     if crossSubsettings->isEmpty() then null     else crossSubsettings->first()     endif"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-deriveFeatureType",
+      "name": "deriveFeatureType",
+      "sourceExpressions": [
+        "type =      let types : OrderedSet(Types) = OrderedSet{self}->         -- Note: The closure operation automatically handles circular relationships.         closure(typingFeatures()).typing.type->asOrderedSet() in     types->reject(t1 | types->exist(t2 | t2 <> t1 and t2.specializes(t1)))"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-validateFeatureOwnedCrossSubsetting",
+      "name": "validateFeatureOwnedCrossSubsetting",
+      "sourceExpressions": [
+        "ownedSubsetting->selectByKind(CrossSubsetting)->size() <= 1"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-validateFeatureCrossFeatureSpecialization",
+      "name": "validateFeatureCrossFeatureSpecialization",
+      "sourceExpressions": [
+        "crossFeature <> null implies     ownedRedefinition.redefinedFeature.crossFeature->             forAll(f | f <> null implies crossFeature.specializes(f))"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-checkFeatureOwnedCrossFeatureTypeFeaturing",
+      "name": "checkFeatureOwnedCrossFeatureTypeFeaturing",
+      "sourceExpressions": [
+        "isOwnedCrossFeature() implies     let otherEnds : OrderedSet(Feature) =          owner.oclAsType(Feature).owningType.endFeature->excluding(self) in     if (otherEnds->size() = 1) then         featuringType = otherEnds->first().type     else         featuringType->size() = 1 and         featuringType->first().isCartesianProduct() and         featuringType->first().asCartesianProduct() = otherEnds.type and         featuringType->first().allSupertypes()->includesAll(             owner.oclAsType(Feature).ownedRedefinition.redefinedFeature->                select(crossFeature() <> null).crossFeature().featuringType)           endif"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-checkFeatureOwnedCrossFeatureRedefinitionSpecialization",
+      "name": "checkFeatureOwnedCrossFeatureRedefinitionSpecialization",
+      "sourceExpressions": [
+        "isOwnedCrossFeature() implies     ownedSubsetting.subsettedFeature->includesAll(         owner.oclAsType(Feature).ownedRedefinition.redefinedFeature->             select(crossFeature <> null).crossFeature)"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-CrossSubsetting-validateCrossSubsettingCrossedFeature",
+      "name": "validateCrossSubsettingCrossedFeature",
+      "sourceExpressions": [
+        "crossingFeature.isEnd and crossingFeature.owningType <> null implies     let endFeatures: Sequence(Feature) = crossingFeature.owningType.endFeature in     let chainingFeatures: Sequence(Feature) = crossedFeature.chainingFeature in     chainingFeatures->size() = 2 and     endFeatures->size() = 2 implies          chainingFeatures->at(1) = endFeatures->excluding(crossingFeature)->at(1)"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-CrossSubsetting-validateCrossSubsettingCrossingFeature",
+      "name": "validateCrossSubsettingCrossingFeature",
+      "sourceExpressions": [
+        "crossingFeature.isEnd and crossingFeature.owningType<>null and crossingFeature.owningType.endFeature ->size() > 1"
+      ],
+      "status": "open"
+    }
+  ],
+  "grammarBoundary": {
+    "KerML": "8.2.4.3: OwnedCrossFeatureMember : OwningMembership owns OwnedCrossFeature : Feature; BasicFeaturePrefix and FeatureDeclaration apply. const assigns both isConstant and isVariable.",
+    "SysML": "8.2.2.6: OwnedCrossFeature : ReferenceUsage uses BasicUsagePrefix and UsageDeclaration; preserve SysML metaclass semantics."
+  },
+  "codeFindings": [
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs",
+      "finding": "feature_requirements excludes isEnd Features from ordinary_feature and its enclosing type guard has no ordinary-end admission. The later positional-end proof cannot make that earlier rejected root admissible. Association owner kinds also need the same complete membership/required-family proof.",
+      "evidence": "static code inspection; runtime probe pending"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+      "finding": "build_usage_element constructs every inline cross member as ReferenceUsage and unconditionally writes isVariation, including KerML sources. This disagrees with the pinned KerML OwnedCrossFeature grammar; SysML requires ReferenceUsage.",
+      "evidence": "static code inspection against both grammar productions; runtime regression pending",
+      "subsequentEvidence": "docs/evidence/owned-cross-construction-baseline-macos-arm64.json; original static observation retained above, gaps now executed in the68partition baseline."
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+      "finding": "Inline cross prefix copies is_constant but sets isVariable only from cross.is_variable; the KerML parser stores const solely in is_constant. The outer KerML Feature constructor correctly uses is_variable || is_constant. Inline cross isSufficient and SysML variation-implies-abstract also require explicit review.",
+      "evidence": "static parser/constructor inspection; no executed finding yet",
+      "subsequentEvidence": "docs/evidence/owned-cross-construction-baseline-macos-arm64.json; original static observation retained above, gaps now executed in the68partition baseline."
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/derived.rs",
+      "finding": "d_cross_feature selects a stored CrossSubsetting and its second chain feature without a completeness certificate. It cannot be reused as proof of absence when relationships or chain dependencies are unavailable.",
+      "evidence": "static inspection"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+      "finding": "owned_cross_features is used by diagnostics but no semantic construction pass consumes this map. It is syntax bookkeeping, not evidence that required crossing chains, typing or featuring relationships exist.",
+      "evidence": "complete symbol search in model crate"
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs",
+      "finding": "The inline cross branch bypasses register and does not create a cross-feature body scope. It also bypasses the normal isOrdered/isUnique and KerML isSufficient assignments. The queued baseline now checks public A::e::x resolution against the exact owned cross identity, in addition to metaclass/prefix/ownership facts.",
+      "evidence": "static constructor comparison; runtime baseline not executed",
+      "subsequentEvidence": "docs/evidence/owned-cross-construction-baseline-macos-arm64.json; original static observation retained above, gaps now executed in the68partition baseline."
+    },
+    {
+      "path": "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs",
+      "finding": "The KerML optional-cross lookahead enumerates basic prefixes and some declaration starters but omits all. at_name rejects reserved words; parse_feature_declaration itself supports all. A dedicated sufficient-cross baseline is queued to distinguish grammar admission from flag lowering.",
+      "evidence": "static parser comparison with KerML 8.2.4.3.1; runtime baseline not executed",
+      "subsequentEvidence": "docs/evidence/owned-cross-construction-baseline-macos-arm64.json; original static observation retained above, gaps now executed in the68partition baseline."
+    }
+  ],
+  "constructionObligations": [
+    "Derive ownedCrossFeature from the complete current reciprocal ownership domain and first eligible owned Feature; the syntax map is not semantic authority. Keep absence distinct from incomplete evidence.",
+    "Type the owned cross feature from every complete effective type of its owning end. Preserve generic Feature/Type targets and exact identities; do not guess from a written type or spelling.",
+    "For a binary owner, feature the owned cross feature by the other end type. For n-ary owners construct the required Cartesian product and inherited featuring specializations.",
+    "Construct the crossed chain with correct relationship ownership: implied CrossSubsetting owns the chain; its first FeatureChaining owns a contextual prefix Feature, with exact typing and TypeFeaturing; the second chain position references the owned cross Feature. Cartesian product ownership follows the implied TypeFeaturing rule.",
+    "Validate and construct inherited cross-feature redefinition/subsetting obligations with the same checked end/Feature.type and specialization operations.",
+    "Publish coupled end/base/typing/featuring/chain results atomically from stable prerequisites; preserve refusal on cycles, metadata, changed source identities, partial libraries and work exhaustion."
+  ],
+  "acceptancePartitions": [
+    "Both graph formats and dialects: exact inline cross metaclass, owning membership/namespace, names and independent basic-prefix flags. No enclosing feature role is invented for an ordinary OwningMembership.",
+    "Plain Class, Association and AssociationStructure ends with explicit/inherited/multiple/redundant types; first checked query, edited query and damaged membership. End enumeration alone does not certify valid end typing.",
+    "Links::BinaryLink source/target, Links::SelfLink thisThing/sameThing and sameThing owned self2, plus links/binaryLinks/selfLinks consumers in the full library.",
+    "Explicit crossing versus inline owned cross feature, absent/one/multiple CrossSubsettings, short/long/malformed chains, inherited cross features and exact source/target aliases.",
+    "Binary and n-ary cross-feature featuring, Cartesian-product order and identity, repeated end types, unknown end types and inherited product dependencies.",
+    "Raw/prepared/serialized library replay, source edits, opposite declaration orders, cold/warm reads, work-limit retry and no partial generated rows on failure."
+  ],
+  "sourceConflicts": [
+    "checkFeatureOwnedCrossFeatureTypeFeaturing OCL excludes self from the owning end owner endFeature set. For an owned cross feature, self is not its owning end. KerML 8.4.3.1.1 note3 explicitly excludes the owning end. Record and review this discrepancy; do not silently treat the literal OCL as a complete correct algorithm.",
+    "KerML 8.4.3.1.1 note2 describes an owned contextual first chain Feature; 8.4.4.5.1 binary exposition describes the other end as the first Feature. The following text and n-ary abstract ownership diagram require reviewing semantic identity and ownership together before a public conformance claim."
+  ],
+  "dependencies": [
+    "docs/evidence/association-end-domain-review.json",
+    "docs/evidence/connector-endpoint-obligation-review.json",
+    "docs/evidence/default-endpoint-context-review.json"
+  ],
+  "next": [
+    "Complete current Association domain qualification and production baseline first.",
+    "Execute a focused raw construction/type baseline and preserve the pre-fix results.",
+    "Repair syntax metaclasses/prefix facts and implement the shared checked cross-feature dependency boundary before claiming complete connector or default binding semantics."
+  ],
+  "constructionDesignReview": {
+    "reviewedAt": "2026-10-18T23:36:19.989936+00:00",
+    "direction": "Prefer lowering the inline cross declaration through the existing build_usage_element constructor with an explicit OwningMembership, dialect-correct reference-feature metaclass and independent basic prefix, rather than duplicating name/scope/flag/specialization construction.",
+    "requiredChecks": [
+      "Preserve the existing crossFeature identity path and reciprocal ownership.",
+      "Reset pending featuring/direction context for the non-feature OwningMembership; do not inherit the enclosing end role.",
+      "Register the cross declaration in the owning end body scope with its own scope; resolve declared/short and inherited names.",
+      "Preserve all explicit prefix and declaration flags using the same ordinary Feature/Usage paths, including KerML const=>variable, sufficient, ordering/uniqueness and SysML variation=>abstract.",
+      "Preserve specialization and multiplicity ownership, source spans and both graph formats; replay raw/prepared/serialized libraries.",
+      "This syntax construction does not supply required CrossSubsetting/chaining, inherited typing or featuring semantics."
+    ],
+    "status": "Original isolated shared constructor/lookahead passed all 68 partitions. Expanded reviewed candidate adds observed dialect rejection repair and public/replay tests; not admitted.",
+    "additionalReview": {
+      "reviewedAt": "2026-10-19T00:07:52.305631+00:00",
+      "finding": "The outer usage constructor captures featuring, forced direction and owner kind before entering the cross branch, so a shared constructor can establish independent OwningMembership context. Its normal register, specialization/body-scope and multiplicity paths supply lookup behavior currently bypassed by inline construction. finish_usage_element has no cross-specific value/body work to retain. No construction patch has been applied.",
+      "syntaxBoundary": "KerML BasicFeaturePrefix and FeatureDeclaration include direction/derived/abstract/composite-or-portion/var-or-const, sufficient all, and multiplicity ordering/uniqueness. SysML BasicUsagePrefix and UsageDeclaration include direction/derived/abstract-or-variation/constant/ref and identification/specialization. Do not project KerML-only flags into SysML."
+    }
+  },
+  "queuedRawBaseline": {
+    "path": "target/trigger-validation/owned-cross-prefix-baseline.rs",
+    "sha256": "bee6a19cbd6a3319a6bb76bfe57a52937d2754547b3e8fb36c30d5694c11b3a7",
+    "status": "Executed on admitted frozen Association source:60failing partitions and8passing ordinary-end controls. Initial fixture compile failure remains separate.",
+    "correction": "Relationship carrier is owningRelatedElement plus owner.owned_relationships and relationship.children; owning_relationship is the ordinary element backlink, not the relationship carrier.",
+    "stage": "target/trigger-validation/end-construction-baseline-stage",
+    "productionKernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+    "inputs": {
+      "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_declaration_baseline.rs": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+      "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_lookahead_baseline.rs": "de778bad1c22784f1daa65e61625a1230b9add8d847869d55fd221c53f4d9ba4",
+      "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_prefix_baseline.rs": "bee6a19cbd6a3319a6bb76bfe57a52937d2754547b3e8fb36c30d5694c11b3a7",
+      "target/trigger-validation/end-construction-baseline-stage/json.rs": "1b19529b380881b4d1469403a640b4e70f660e0f6ee14ab006a79ce953c046fb"
+    },
+    "scope": "Current admitted source plus private baseline modules only. No owned-cross constructor/parser repair or new semantic certificate is present.",
+    "previousInputs": [
+      {
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_prefix_baseline.rs": "39056434d24fef1fed3fc86e1e4ee977b82a2a6b0dac4f39c54d0b5255ac5a89",
+        "target/trigger-validation/end-construction-baseline-stage/json.rs": "29c00ce3ced9ad04d6d0da5cb505518ae68c77f57e131d49f9e13998bf9bd25e"
+      },
+      {
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_declaration_baseline.rs": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_prefix_baseline.rs": "39056434d24fef1fed3fc86e1e4ee977b82a2a6b0dac4f39c54d0b5255ac5a89",
+        "target/trigger-validation/end-construction-baseline-stage/json.rs": "fa7a342a3c1f0080a482996f5a916fcf2c9081a7a195e317ca54b294379a216c"
+      },
+      {
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_declaration_baseline.rs": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_lookahead_baseline.rs": "de778bad1c22784f1daa65e61625a1230b9add8d847869d55fd221c53f4d9ba4",
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_prefix_baseline.rs": "39056434d24fef1fed3fc86e1e4ee977b82a2a6b0dac4f39c54d0b5255ac5a89",
+        "target/trigger-validation/end-construction-baseline-stage/json.rs": "6ecf3a4c579d17f1f672fa276e68c8e5557710ff752caa3781559a7070fc7dd4"
+      },
+      {
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_declaration_baseline.rs": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_lookahead_baseline.rs": "de778bad1c22784f1daa65e61625a1230b9add8d847869d55fd221c53f4d9ba4",
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_prefix_baseline.rs": "39056434d24fef1fed3fc86e1e4ee977b82a2a6b0dac4f39c54d0b5255ac5a89",
+        "target/trigger-validation/end-construction-baseline-stage/json.rs": "1b19529b380881b4d1469403a640b4e70f660e0f6ee14ab006a79ce953c046fb"
+      }
+    ],
+    "additionalBaseline": {
+      "path": "target/trigger-validation/owned-cross-declaration-baseline.rs",
+      "sha256": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+      "partitions": 6,
+      "covers": [
+        "Independent combined prefix flags in each dialect and both graph formats.",
+        "Ordered/nonunique declaration modifiers, declared and short-name resolution, inherited member lookup through the cross-feature scope.",
+        "KerML sufficient all declaration admission and isSufficient lowering.",
+        "Cross modifiers do not leak onto the owning end."
+      ]
+    },
+    "totalPartitions": 68,
+    "lookaheadBaseline": {
+      "path": "target/trigger-validation/owned-cross-lookahead-baseline.rs",
+      "sha256": "de778bad1c22784f1daa65e61625a1230b9add8d847869d55fd221c53f4d9ba4",
+      "partitions": 52,
+      "scope": "44 unnamed cross-declaration partitions: symbol and keyword spellings of typing, subsetting, reference subsetting, crossing and redefinition in both dialects/formats, plus KerML conjugation. Eight ordinary named-end controls require no invented cross feature. Exact authored relationship targets and independent end typing are checked; semantic legality of those raw models remains separate."
+    },
+    "firstAttempt": {
+      "status": "compile failure; no assertions executed",
+      "state": "target/trigger-validation/owned-cross-baseline.json",
+      "finding": "The carrier assertion used an unavailable as_slice method on flat::Row. Replaced it with an ordered iterator comparison; no production change or semantic assertion weakened.",
+      "inputs": {
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_declaration_baseline.rs": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_lookahead_baseline.rs": "de778bad1c22784f1daa65e61625a1230b9add8d847869d55fd221c53f4d9ba4",
+        "target/trigger-validation/end-construction-baseline-stage/json/owned_cross_prefix_baseline.rs": "39056434d24fef1fed3fc86e1e4ee977b82a2a6b0dac4f39c54d0b5255ac5a89",
+        "target/trigger-validation/end-construction-baseline-stage/json.rs": "1b19529b380881b4d1469403a640b4e70f660e0f6ee14ab006a79ce953c046fb"
+      },
+      "phases": [
+        {
+          "name": "owned_cross_prefix_baseline",
+          "filter": "json::owned_cross_prefix_baseline",
+          "status": "fail",
+          "startedAt": "2026-10-19T02:18:42.765Z",
+          "exitCode": 1,
+          "finishedAt": "2026-10-19T02:18:55.222Z",
+          "log": "target/trigger-validation/owned-cross-baseline-owned_cross_prefix_baseline.log",
+          "logSha256": "ff6b14b0e1d66edb8b1a66b99e8063ed05037a22510d0c7f935505ca5d569452"
+        },
+        {
+          "name": "owned_cross_declaration_baseline",
+          "filter": "json::owned_cross_declaration_baseline",
+          "status": "fail",
+          "startedAt": "2026-10-19T02:18:55.223Z",
+          "exitCode": 1,
+          "finishedAt": "2026-10-19T02:19:03.835Z",
+          "log": "target/trigger-validation/owned-cross-baseline-owned_cross_declaration_baseline.log",
+          "logSha256": "75c947065f6fea88d6dda588a338fa79726dd8b6cc84b95a1989421096287cb1"
+        },
+        {
+          "name": "owned_cross_lookahead_baseline",
+          "filter": "json::owned_cross_lookahead_baseline",
+          "status": "fail",
+          "startedAt": "2026-10-19T02:19:03.835Z",
+          "exitCode": 1,
+          "finishedAt": "2026-10-19T02:19:12.183Z",
+          "log": "target/trigger-validation/owned-cross-baseline-owned_cross_lookahead_baseline.log",
+          "logSha256": "d2b1f332e6285d887ab92023a8ca2acb6556fe8489353c7c58459d1a15262da4"
+        }
+      ]
+    },
+    "executedEvidence": {
+      "path": "docs/evidence/owned-cross-construction-baseline-macos-arm64.json",
+      "sha256": "d0c867278f7795598fc11a43d6b4219685fe0af4875483353b494041345ca303"
+    }
+  },
+  "additionalGrammarReview": {
+    "reviewedAt": "2026-10-19T02:09:54.171260+00:00",
+    "sources": [
+      "KerML 1.0 8.2.4.3.1 FeatureDeclaration and FeatureSpecializationPart; 8.2.3.1 Identification",
+      "SysML 2.0 8.2.2.6.2 OwnedCrossFeature/UsageDeclaration; 8.2.2.6.5 FeatureSpecializationPart; 8.2.2.2 Identification"
+    ],
+    "finding": "Both optional-cross lookaheads duplicate only a subset of the existing at_feature_declaration_start predicate. They omit unnamed specialization token/keyword starts; KerML also omits all and conjugation. The shared declaration parser already handles these forms. Candidate change should share declaration-start recognition, preserve prefix-specific modifiers and speculative rollback, and test ordinary end declarations independently.",
+    "status": "Static review and expanded pre-fix baseline only; execution and repair pending.",
+    "negativeFollowUp": {
+      "finding": "The shared feature-specialization parser accepts defined by without a dialect guard, while the pinned KerML TYPED_BY token is colon or typed by and SysML DEFINED_BY is colon or defined by. This is a separate static acceptance gap; a broader declaration-start lookahead must not be presented as full dialect grammar validation.",
+      "sources": [
+        "target/standards/kerml.txt:5193",
+        "target/standards/sysml.txt:10505",
+        "vendor/sysml-toolkit/crates/sysmlv2-syntax/src/parser.rs:4683"
+      ],
+      "next": "Execute ordinary and owned-cross wrong-dialect keyword negatives, malformed prefixes and rollback/recovery cases before claiming complete syntax acceptance. Review shared-parser changes against the full source corpus.",
+      "status": "Static finding; negative baseline and repair pending."
+    }
+  },
+  "updatedAt": "2026-10-19T02:34:40.884358+00:00",
+  "constructionCandidate": {
+    "status": "isolated candidate prepared; not executed or admitted",
+    "productionKernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+    "baseline": "target/trigger-validation/owned-cross-baseline-corrected.json",
+    "inputs": {
+      "target/trigger-validation/owned-cross-construction-stage/crates/sysmlv2-model/src/json/owned_cross_declaration_baseline.rs": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+      "target/trigger-validation/owned-cross-construction-stage/crates/sysmlv2-model/src/json/owned_cross_lookahead_baseline.rs": "de778bad1c22784f1daa65e61625a1230b9add8d847869d55fd221c53f4d9ba4",
+      "target/trigger-validation/owned-cross-construction-stage/crates/sysmlv2-model/src/json/owned_cross_prefix_baseline.rs": "bee6a19cbd6a3319a6bb76bfe57a52937d2754547b3e8fb36c30d5694c11b3a7",
+      "target/trigger-validation/owned-cross-construction-stage/crates/sysmlv2-model/src/json.rs": "24c16e5cda1431090bbf07085e22ecf3941f822843812460d5787c6691f01d96",
+      "target/trigger-validation/owned-cross-construction-stage/crates/sysmlv2-syntax/src/parser.rs": "6b1fe243a945e05d065b302869962e714edca98f40e9e747e53a8b349e614928"
+    },
+    "scope": "Shared dialect-aware raw construction and full declaration-start lookahead with speculative rollback. No new semantic cross-feature, crossed-feature, typing/featuring or conditional-base certificate.",
+    "review": "Outer featuring/direction/owner context is captured before recursion. The synthetic ordinary declaration uses OwningMembership, no invented featuring/parameter role, the existing crossFeature identity segment, and the dialect reference-feature metaclass. Shared construction supplies flags, scope, names, inherited lookups, declared relations and multiplicity. Parser uses shared declaration-start recognition and retains rollback; general dialect-specific rejection remains a separate pending negative review."
+  },
+  "syntaxGuardBaseline": {
+    "status": "Executed: 22 passing and 2 failing partitions. One test passes and one fails.",
+    "startedAt": "2026-10-19T02:47:25.022Z",
+    "productionKernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+    "workspace": "/Users/donovanrost/Documents/ChatGPT/SysML/target/vendor-tests/source-cross-baseline-9HyPCP",
+    "inputs": {
+      "target/trigger-validation/owned-cross-syntax-baseline-stage/crates/sysmlv2-syntax/src/parser/cross_grammar_tests.rs": "980e565d3b1b62de16f0a83a9f5761fc04b493968ad13d54d4b6b4026bc09e97",
+      "target/trigger-validation/owned-cross-syntax-baseline-stage/crates/sysmlv2-syntax/src/parser.rs": "446c1424820cc2c3aedcc11f3bacacb4ce9553451be5fb4fd2f6558d75cd2699"
+    },
+    "partitions": 24,
+    "phases": [
+      {
+        "name": "cross_grammar_tests",
+        "filter": "parser::cross_grammar_tests",
+        "status": "fail",
+        "startedAt": "2026-10-19T02:47:25.071Z",
+        "exitCode": 1,
+        "finishedAt": "2026-10-19T02:47:28.514Z",
+        "log": "target/trigger-validation/owned-cross-syntax-baseline-cross_grammar_tests.log",
+        "logSha256": "d4bd0656d0e99d277322986ee2c95ea70924b535242f4b1e37e6ba2b50b0b3b9"
+      }
+    ],
+    "finishedAt": "2026-10-19T02:47:29.424Z",
+    "tests": 2,
+    "passedPartitions": 22,
+    "failedPartitions": 2,
+    "failures": [
+      "KerML ordinary Feature accepts SysML defined by typing.",
+      "KerML owned cross Feature accepts SysML defined by typing."
+    ],
+    "controls": "All eight valid typing/name controls, both SysML wrong-dialect negatives and all twelve malformed-prefix/recovery cases pass."
+  },
+  "externalIssueReview": {
+    "reviewedAt": "2026-10-19T02:27:43.339941+00:00",
+    "authority": "OMG issue reports are supporting context, not amendments to the pinned normative sources. Open issues do not certify an implementation choice.",
+    "issues": [
+      {
+        "id": "KERML11-3",
+        "url": "https://issues.omg.org/issues/KERML11-3",
+        "observedStatus": "open",
+        "updated": "2026-08-02",
+        "finding": "Reports disagreement between the ordinary multiplicity featuring rule and expected lookup context for cross-feature bounds.",
+        "impact": "Keep lexical resolution tests separate from claimed multiplicity featuring semantics; test association versus opposite-end contexts explicitly."
+      },
+      {
+        "id": "KERML11-1",
+        "url": "https://issues.omg.org/issues/KERML11-1",
+        "observedStatus": "open",
+        "updated": "2026-04-21",
+        "finding": "Reports that the current owned-cross selector can return a generated binding for an end value.",
+        "impact": "Complete checked owned-cross selection needs a recorded interpretation and valued-end counterexamples. The syntax bookkeeping map cannot supply semantic absence or justify silently skipping candidates."
+      },
+      {
+        "id": "KERML11-2",
+        "url": "https://issues.omg.org/issues/KERML11-2",
+        "observedStatus": "open",
+        "finding": "Reports that a standard-library surroundingSpace declaration contains one end with a cross multiplicity inconsistent with the required multi-end crossing domain.",
+        "impact": "Distinguish the reported historical library revision from our current pin, which already lacks that end prefix. This is not a reproduced defect in our pinned declaration.",
+        "currentPinnedLibraryComparison": {
+          "path": "vendor/sysml-library/sources/Kernel Libraries/Kernel Semantic Library/Occurrences.kerml",
+          "sha256": "b3a62ce0bc3a4f7e667102b4c2f68a4928ca8efeda425c6a4c8bdeadfbc9bbc1",
+          "revision": "cd99f7ca70b96abb38f09dfd25725e3cf259baa3",
+          "finding": "The current2026-03pin declares surroundingSpace as an ordinary Feature with[1]multiplicity and no end/cross prefix. The historical issue pattern is absent from this declaration; whole-library validation remains separate."
+        }
+      }
+    ],
+    "searchLimit": "Targeted searches did not locate a specific resolution of the already recorded self-versus-owning-end OCL discrepancy. That absence is not evidence that no issue or resolution exists."
+  },
+  "selectionReview": {
+    "path": "docs/evidence/owned-cross-selection-review.json",
+    "status": "Six selection-operation obligations and a FeatureValue membership discrepancy recorded; runtime selection baseline pending."
+  },
+  "publicAcceptancePrepared": {
+    "path": "target/trigger-validation/owned-cross-public.rs",
+    "sha256": "c52682d9c49b388eec839a6716378c7e3c5e8493efac6f668054d6643923baad",
+    "status": "Prepared, not executed.",
+    "scope": "Both formats/dialects: public declared/short/inherited lookup, membership versus feature roles, prefix flags, typing endpoints, multiplicity ownership, outer-context separation and deterministic rebuild identities."
+  },
+  "replayAcceptancePrepared": {
+    "status": "prepared, not executed",
+    "path": "target/trigger-validation/owned-cross-replay-tests.rs",
+    "sha256": "25e42fc308f71031e25ed31dbffe1f44c8c9dfe24e15fdf75539621222f99d72",
+    "tests": 2,
+    "scope": "Both graph formats; all 94 pinned library files plus KerML/SysML authored libraries; raw/prepared/serialized installation; declared/short/inherited names; exact identities and flags; real Links::SelfLink::sameThing::self2 ownership; supported model rebuild drops stale names, inherited scopes and prefix flags without mutating old snapshots."
+  },
+  "constructionFocusedAcceptance": {
+    "status": "passed in isolation; not admitted",
+    "startedAt": "2026-10-19T02:46:09.898Z",
+    "productionKernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+    "workspace": "/Users/donovanrost/Documents/ChatGPT/SysML/target/vendor-tests/source-cross-baseline-RBz11w",
+    "inputs": {
+      "target/trigger-validation/owned-cross-construction-stage/crates/sysmlv2-model/src/json/owned_cross_declaration_baseline.rs": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+      "target/trigger-validation/owned-cross-construction-stage/crates/sysmlv2-model/src/json/owned_cross_lookahead_baseline.rs": "de778bad1c22784f1daa65e61625a1230b9add8d847869d55fd221c53f4d9ba4",
+      "target/trigger-validation/owned-cross-construction-stage/crates/sysmlv2-model/src/json/owned_cross_prefix_baseline.rs": "bee6a19cbd6a3319a6bb76bfe57a52937d2754547b3e8fb36c30d5694c11b3a7",
+      "target/trigger-validation/owned-cross-construction-stage/crates/sysmlv2-model/src/json.rs": "24c16e5cda1431090bbf07085e22ecf3941f822843812460d5787c6691f01d96",
+      "target/trigger-validation/owned-cross-construction-stage/crates/sysmlv2-syntax/src/parser.rs": "6b1fe243a945e05d065b302869962e714edca98f40e9e747e53a8b349e614928"
+    },
+    "partitions": 68,
+    "phases": [
+      {
+        "name": "owned_cross_prefix_baseline",
+        "filter": "json::owned_cross_prefix_baseline",
+        "status": "pass",
+        "startedAt": "2026-10-19T02:46:09.956Z",
+        "exitCode": 0,
+        "finishedAt": "2026-10-19T02:47:01.114Z",
+        "log": "target/trigger-validation/owned-cross-construction-focused-owned_cross_prefix_baseline.log",
+        "logSha256": "7ce7fe85673190361e61a574f9e9d3abfe41af37c8028af345e7407dbc002dbb"
+      },
+      {
+        "name": "owned_cross_declaration_baseline",
+        "filter": "json::owned_cross_declaration_baseline",
+        "status": "pass",
+        "startedAt": "2026-10-19T02:47:01.114Z",
+        "exitCode": 0,
+        "finishedAt": "2026-10-19T02:47:01.234Z",
+        "log": "target/trigger-validation/owned-cross-construction-focused-owned_cross_declaration_baseline.log",
+        "logSha256": "a74fb4d8ae5c67248cffb6a2fdd1c987560207d569e5f8ceeb11eddb922aa2a5"
+      },
+      {
+        "name": "owned_cross_lookahead_baseline",
+        "filter": "json::owned_cross_lookahead_baseline",
+        "status": "pass",
+        "startedAt": "2026-10-19T02:47:01.234Z",
+        "exitCode": 0,
+        "finishedAt": "2026-10-19T02:47:01.310Z",
+        "log": "target/trigger-validation/owned-cross-construction-focused-owned_cross_lookahead_baseline.log",
+        "logSha256": "eb19e4b22a4c9a0eb4c821d7e3f0ff2fdef01fcc66d3f03a56e467551be0c8d6"
+      }
+    ],
+    "finishedAt": "2026-10-19T02:47:02.282Z",
+    "tests": 5,
+    "passedPartitions": 68,
+    "failedPartitions": 0
+  },
+  "reviewedConstructionCandidate": {
+    "status": "prepared; not executed or admitted",
+    "preparedAt": "2026-10-19T02:48:11.475147+00:00",
+    "productionKernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+    "constructionFocused": "target/trigger-validation/owned-cross-construction-focused.json",
+    "syntaxBaseline": "target/trigger-validation/owned-cross-syntax-baseline.json",
+    "changes": [
+      "Shared constructor and declaration lookahead already passed all 68 baseline partitions.",
+      "Restrict defined by in ordinary/cross feature specialization parsing to SysML; KerML typed by and other-dialect words used as names remain accepted.",
+      "Add replay/rebuild and public API acceptance; preserve original 68 assertions and add 24 syntax controls."
+    ],
+    "limits": "No complete semantic cross-feature selection, derived crossing, end typing or featuring proof. Metadata typing grammar not changed by this ordinary feature specialization fix.",
+    "inputs": {
+      "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_declaration_tests.rs": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+      "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_lookahead_tests.rs": "de778bad1c22784f1daa65e61625a1230b9add8d847869d55fd221c53f4d9ba4",
+      "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_prefix_tests.rs": "bee6a19cbd6a3319a6bb76bfe57a52937d2754547b3e8fb36c30d5694c11b3a7",
+      "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_replay_tests.rs": "7056c581a364aaed75e1c2f7173c2b6ab3dce2e8f311891aa90d494518b13f25",
+      "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json.rs": "c97c93fa62bf8244af8bf4efe4f864240b7e84628ff8e734b0fcbcbc447cfc5a",
+      "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/tests/owned_cross_features.rs": "c52682d9c49b388eec839a6716378c7e3c5e8493efac6f668054d6643923baad",
+      "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-syntax/src/parser/cross_grammar_tests.rs": "980e565d3b1b62de16f0a83a9f5761fc04b493968ad13d54d4b6b4026bc09e97",
+      "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-syntax/src/parser.rs": "4ad5f24d94051aea6b85be750452dd42ebc67bd44812bda0317d1096e4ea5edb"
+    },
+    "fixtureCorrection": {
+      "initialRun": "target/trigger-validation/owned-cross-expanded.json",
+      "failedStage": "target/trigger-validation/owned-cross-expanded-initial-stage",
+      "diagnostic": "target/trigger-validation/owned-cross-rebuild-fixture-diagnostic.log",
+      "finding": "The fixture used reserved new as an unquoted short name. Both dialects reject it; quoting the same name yields clean syntax. Correct the fixture while preserving every rebuild assertion."
+    }
+  },
+  "constructionExpandedAcceptance": {
+    "status": "passed in isolation; not admitted",
+    "initialRun": {
+      "status": "failed",
+      "startedAt": "2026-10-19T02:48:13.338Z",
+      "productionKernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+      "workspace": "/Users/donovanrost/Documents/ChatGPT/SysML/target/vendor-tests/source-cross-reviewed-qOf7Gu",
+      "inputs": {
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_declaration_tests.rs": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_lookahead_tests.rs": "de778bad1c22784f1daa65e61625a1230b9add8d847869d55fd221c53f4d9ba4",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_prefix_tests.rs": "bee6a19cbd6a3319a6bb76bfe57a52937d2754547b3e8fb36c30d5694c11b3a7",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_replay_tests.rs": "25e42fc308f71031e25ed31dbffe1f44c8c9dfe24e15fdf75539621222f99d72",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json.rs": "c97c93fa62bf8244af8bf4efe4f864240b7e84628ff8e734b0fcbcbc447cfc5a",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/tests/owned_cross_features.rs": "c52682d9c49b388eec839a6716378c7e3c5e8493efac6f668054d6643923baad",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-syntax/src/parser/cross_grammar_tests.rs": "980e565d3b1b62de16f0a83a9f5761fc04b493968ad13d54d4b6b4026bc09e97",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-syntax/src/parser.rs": "4ad5f24d94051aea6b85be750452dd42ebc67bd44812bda0317d1096e4ea5edb"
+      },
+      "corpusRevision": "cd99f7ca70b96abb38f09dfd25725e3cf259baa3",
+      "corpusFiles": {
+        "sysml/src/examples/Analysis Examples/AnalysisAnnotation.sysml": "c7654db1f5406300514648b960bfd859a4ca0b2a809545e895d6f4965fb0c165",
+        "sysml/src/examples/Analysis Examples/Dynamics.sysml": "ed5c0c0b23f75bcddd853797ab8e97c394689652e0fef7214aa80baf4452818a",
+        "sysml/src/examples/Analysis Examples/Turbojet Stage Analysis.sysml": "a7c04ba7f34884333923ac27509f94027f5612e5b2af40e75a6f16caf7d14752",
+        "sysml/src/examples/Analysis Examples/Vehicle Analysis Demo.sysml": "d5c73158eb4fb8da08819fb4b20b06fe0153ec017355c40996a56fca550dd612",
+        "sysml/src/examples/Arrowhead Framework Example/AHFCoreLib.sysml": "08c81e862f96e1799a7e1ced4abc6171105c546de208d4fc309e1d8e1011e102",
+        "sysml/src/examples/Arrowhead Framework Example/AHFNorwayTopics.sysml": "a7b02539744dd06758b5bde8b0a3047749d61d69d4d1d102483907a7eadec30b",
+        "sysml/src/examples/Arrowhead Framework Example/AHFProfileLib.sysml": "ad560b0ecbfe615c500d8884307e3676666ae3fe1fcc7bcb213d392b97519cd6",
+        "sysml/src/examples/Arrowhead Framework Example/AHFSequences.sysml": "33ccdda01ec89aab46f02610e495924e3842b8745e44447b9f4b9997cc01ab9d",
+        "sysml/src/examples/Association Examples/ProductSelection_N_ary.sysml": "71b73c389b7826c5c435f50c63f1b8fd17d6dae6788b3c0d3b82ce6571c4e6d9",
+        "sysml/src/examples/Association Examples/ProductSelection_OwnedEnds.sysml": "f826636f63fd9e3d78b6f173e668f09a11f159d20fda264dc8d32eed5c61d857",
+        "sysml/src/examples/Association Examples/ProductSelection_UnownedEnds.sysml": "b4fb425c73770ecf2569b98886b021354ed96baf25c04564d782a85c7156a0d3",
+        "sysml/src/examples/Camera Example/Camera.sysml": "6ad1fad43c0fee8ca64ce01f7efb7b0477984711f4e59db85f801a8e56bd33bf",
+        "sysml/src/examples/Camera Example/PictureTaking.sysml": "355a83a27952516c71ff6eb5a4a56354cf2ae9433f0e2ae5cc272bf27c6656ed",
+        "sysml/src/examples/Cause and Effect Examples/CauseAndEffectExample.sysml": "cea13bb56e7e25fac50f49ddd8f7a6b25c00921df71a9642d339b74a55cf12d5",
+        "sysml/src/examples/Cause and Effect Examples/MedicalDeviceFailure.sysml": "3e1e7a586016266015c25b2695b0c892b56adb2a7fc7cf0832dc6d5bccb895e7",
+        "sysml/src/examples/Comment Examples/Comments.sysml": "de15fe494f97ea705fd70c00957c0b93d569fa372b2b85771276a8eab74a9d5b",
+        "sysml/src/examples/Flashlight Example/Flashlight Example.sysml": "0b90c2fa75f7ff82495418c3bc366802c6646f8618878845af0bc3975286f8f9",
+        "sysml/src/examples/Geometry Examples/CarWithEnvelopingShape.sysml": "570301dc80454a8520ba205c31ef438b7e054614e7366562d208fc206b7df6f1",
+        "sysml/src/examples/Geometry Examples/CarWithShapeAndCSG.sysml": "2c6477586699165c00aa0f0ed4ce0f97478d1aa35ff72de5aa6225217cc2e4e2",
+        "sysml/src/examples/Geometry Examples/ExternalShapeRefExample.sysml": "666ab593484b975a36be6e6e33cbcb36d46f5729f445c6cff5e7637bf7249477",
+        "sysml/src/examples/Geometry Examples/SimpleQuadcopter.sysml": "82e2de737e7ac1580a7f73cdebb81841a5f72851921c606059f41eaabd5af46e",
+        "sysml/src/examples/Geometry Examples/VehicleGeometryAndCoordinateFrames.sysml": "e097b0f8a2094ed5b53275e5b1324a828d8769d7f4f4db41dabf9f643e462c24",
+        "sysml/src/examples/Import Tests/AliasImport.sysml": "b243243ba39ca49c9ad53521418513ea3111b4e6be864023dfa1bb921baf96e2",
+        "sysml/src/examples/Import Tests/CircularImport.sysml": "3ed6813e219e43b737251c69aaa421d0e993219cbf35d3f78819de8b6eef70d4",
+        "sysml/src/examples/Import Tests/PrivateImportTest.sysml": "5111a800ab20f0018277bef5b4ed9d055327d03ac8afbdea2c2d3e5713113007",
+        "sysml/src/examples/Import Tests/QualifiedNameImportTest.sysml": "2720d3539f24ebfc294bec9dad4c7537af099e46df8b02b31a197aca51d7a1ed",
+        "sysml/src/examples/Individuals Examples/AnalysisIndividualExample.sysml": "e4ef422422cc2c6f49aa950a215c11ae83a73649cef2553c2adca8fae8f5ca24",
+        "sysml/src/examples/Individuals Examples/JohnIndividualExample.sysml": "4a1c63acaa2f68177ba71936e7110a692b56bcc5acf240befc0b3124a4fbf4ad",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceModel.sysml": "32d2847af1ee7eae4e1eba8431673e54e469cd893f9b9a7d8fcb56cdb404ff88",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceModelOutside.sysml": "9e77acbd7479aabaf309f0f5e01cada6859b38b582dec5335fd6d707f1a9e6bd",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceOutsideRealization-2.sysml": "1c66e402fab39f0825b6b55f6ce2fcf346dfdbdf92a395cee45cb3fc91692145",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceOutsideRealization-3.sysml": "9c0f256fd896b3e14e4641677b6c0090dc59336d3649be8d4996a5712767868d",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceRealization-2.sysml": "791b64162fb088a5a3ba1d7913c4d7bea6e5906b4b3230dd587aae98a0ea3f51",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceRealization-3.sysml": "415b2ac9e58d906039c420d366fa98c88dd03f2c0981c9a18a28520ad0dee25e",
+        "sysml/src/examples/Mass Roll-up Example/MassConstraintExample.sysml": "2c09d516aba3653a210b8f99d509f392a9aeb46441a21e7c8ac62af7d3201b3d",
+        "sysml/src/examples/Mass Roll-up Example/MassRollup.sysml": "380aab83552f64ed52a92d73c518d6b78aa227e1a6a2d7f60bad4583dcc9879d",
+        "sysml/src/examples/Mass Roll-up Example/Vehicles.sysml": "f5de0deb796dc8628a6e4036edf9d6480c46c84278012b75250dcf7887f8a7b4",
+        "sysml/src/examples/Metadata Examples/IssueMetadataExample.sysml": "873d5de264c3f7c7f5df84a3b589d07fc6c5d59e99db0a3e8e73e7c2f0f3e696",
+        "sysml/src/examples/Metadata Examples/RationaleMetadataExample.sysml": "f780fdd76f6aeee7208a3f1a73634b8bc2290c6ecfb1838efdc5af9878ab72e9",
+        "sysml/src/examples/Metadata Examples/RequirementMetadataExample.sysml": "dd1a5577b2b2a4ee435c882b8f1c533fa3968104148bcd28014fb1baac55869e",
+        "sysml/src/examples/Metadata Examples/RiskMetadataExample.sysml": "cd50bcde1413b13e5aaee6854e4d42200dc2ca7d6c865ea868a4e5f9c5076799",
+        "sysml/src/examples/Metadata Examples/VerificationMetadataExample.sysml": "0c9ccc86dd459227164e54e6cb866795b1ef7ff212905ac9ba152fb3eb9bd631",
+        "sysml/src/examples/Packet Example/PacketUsage.sysml": "571a03119991b8e385cfaf99d93fa8c84fc5f71a07bd0c130f210951104dfbaf",
+        "sysml/src/examples/Packet Example/Packets.sysml": "101eb4e3c9163d0aacaeb293fd03b16d94616abb79cc04f63a7b94eb9242403d",
+        "sysml/src/examples/Requirements Examples/HSUVRequirements.sysml": "6058165ce64aca5aab73b9a09eaeec7519942510c91fe71b3990f7bf612cdcae",
+        "sysml/src/examples/Requirements Examples/RequirementDerivationExample.sysml": "1575a8e09c008145ff619ef7d0ce7622d9e88c77811a6984578ef393d99e26c7",
+        "sysml/src/examples/Requirements Examples/VehicleRequirementDerivation.sysml": "aa7dcf0498eb967f539fc81ef63c6f924c691edfe26c279a875c1a3a0729a8e8",
+        "sysml/src/examples/Room Model/RoomModel.sysml": "da4c197311bfcb7b40c670a28dc8289adcc147bf0b1f9c4533a6803c213b7fa1",
+        "sysml/src/examples/Simple Tests/ActionTest.sysml": "f25839d6ed3237bbe454d71533646a0a6748384455d9870995299ed4149c38b8",
+        "sysml/src/examples/Simple Tests/AliasTest.sysml": "c919d53cfe77577ef1483a66d117533dfdc1a6c7bd769d616bc7f56c5c2835fb",
+        "sysml/src/examples/Simple Tests/AllocationTest.sysml": "0affe4f7d051a20476834783039e93ca9d77708a36b56d7428ebdddf6ffaa8be",
+        "sysml/src/examples/Simple Tests/AnalysisTest.sysml": "2bbbd6da0943b4204f84c495944b79a2b9f7a173c3a8a2ab93d1cf8fb3ffac73",
+        "sysml/src/examples/Simple Tests/AssignmentTest.sysml": "7d4b3e64602856f6e7f9ce142f2e15535e1ae3d6e96852a50f86d838877e8976",
+        "sysml/src/examples/Simple Tests/CalculationTest.sysml": "7b174ccf61882a28d25fec84a4a48631556b6af38ce8e84731e85273ff50737c",
+        "sysml/src/examples/Simple Tests/CommentTest.sysml": "385dc71179075e64044e17ca0af4a4f81ca0ac96528a045ed8678d6bf2e52e7a",
+        "sysml/src/examples/Simple Tests/ConjugationTest.sysml": "68f8ce99b28425e0963dac05a35959d8e38b11a4a0b76a0aa40f7d335cdf80aa",
+        "sysml/src/examples/Simple Tests/ConnectionTest.sysml": "8b0046d8d2e221923adba78cbed8359fbdacb85e623cf9ed1abd5ba3c0e3c2a7",
+        "sysml/src/examples/Simple Tests/ConstraintTest.sysml": "1a4aa4b5bc29e17c88dc5c2a5bec99960c40fe1633f96fd5591531b1ee291c77",
+        "sysml/src/examples/Simple Tests/ControlNodeTest.sysml": "050aa194cc74842aa286896db589ddbba00745ea799fb4bfcd987ff53ea6be75",
+        "sysml/src/examples/Simple Tests/DecisionTest.sysml": "9eac0766eb700d67cddf2c14b7379373c4774e6d7fa6c1eb0ef9e17d9adb67c6",
+        "sysml/src/examples/Simple Tests/DefaultValueTest.sysml": "43100bb21269c18d5cec91f4c18617124a14282c5c23f2384a858d5ff6521f1e",
+        "sysml/src/examples/Simple Tests/DependencyTest.sysml": "4fa7f0c7cc12999db50d15ede2aff38d2a049a62cff9503e66d0b3d7b7b54e01",
+        "sysml/src/examples/Simple Tests/EnumerationTest.sysml": "f2c666064fcb7ac6bd1f32aef63982e4b2f17a85494878c37a3e1c23edb83e55",
+        "sysml/src/examples/Simple Tests/FeaturePathTest.sysml": "19d83b371973d6dcaa01b5dbde574415a968a69aa8016d4d1577e4a076bc595f",
+        "sysml/src/examples/Simple Tests/ImportTest.sysml": "a03a2e8a669ef2383a5e1246c465cc81979f1bc740d490dce840262cbf01d883",
+        "sysml/src/examples/Simple Tests/IndividualTest.sysml": "00aff4e95c78e1148bd366a446e4cb0380741373cfd822ef833e3ccc8ec4a1af",
+        "sysml/src/examples/Simple Tests/ItemTest.sysml": "0d6e175435b71d0cbebf2eabaadee50e068688542742c7786305d2652f13b410",
+        "sysml/src/examples/Simple Tests/MetadataTest.sysml": "db29263ceb3d7df48a96653dcbd981baf4e0ab20e73c253172477c9f09046edd",
+        "sysml/src/examples/Simple Tests/MultiplicityTest.sysml": "71f079792d466a7f31cdb4bb3b019455beb3c6086a7ce68fb181a3260a92126f",
+        "sysml/src/examples/Simple Tests/OccurrenceTest.sysml": "21841d0d2604b54a6a90cd8735b48ee2726166da824630a29680244e35ba82ae",
+        "sysml/src/examples/Simple Tests/ParameterTest.sysml": "70e48bc2d2a98dc6e53c0ec6122136fa90ced0b881bb7064ab8c627bacf4de36",
+        "sysml/src/examples/Simple Tests/PartTest.sysml": "488b1646e0233a93a41147c7b3ecfd7f73f377517c86c71c8a005b5615230904",
+        "sysml/src/examples/Simple Tests/RequirementTest.sysml": "1cb52b8dc4129084b98c906061516cfb4c7a9f4e445d866a55b443ee17d87997",
+        "sysml/src/examples/Simple Tests/RootPackageTest.sysml": "216198b63ebd9e7e9ff0b96b63a21d3efac19a628c4adce5bb7e14b6eedcc65a",
+        "sysml/src/examples/Simple Tests/StateTest.sysml": "c1e55572d8366b744c14cc66dba8e484f0037369d975fc4e675ccfdc7709bfd4",
+        "sysml/src/examples/Simple Tests/StructuredControlTest.sysml": "f423bf9c9453714041ff969a3ec8e47e07cbec54a3878b15c7d1504d7fb92b52",
+        "sysml/src/examples/Simple Tests/TextualRepresentationTest.sysml": "25e576f71a09111faf1aa77d340b525fdd4f7fc809e3716e4a777c0e7a059f2a",
+        "sysml/src/examples/Simple Tests/TradeStudyTest.sysml": "20c36d1fb7d3bc3af2b36bdba30197946376750fa65238075aa657147630669b",
+        "sysml/src/examples/Simple Tests/UseCaseTest.sysml": "7059bbf738d26b673231af8f02dad7f83fd0fd6a56256b4b681f558e7c14231a",
+        "sysml/src/examples/Simple Tests/VariabilityTest.sysml": "1426e577c0980ed68b2cd34434936df1a59e894fdbb71f8890b0ee1e1f136633",
+        "sysml/src/examples/Simple Tests/VerificationTest.sysml": "502f31d3dd2dde0f0a2c1fac3351b699ece175decc3508ed2e270a2aa3d02000",
+        "sysml/src/examples/Simple Tests/ViewTest.sysml": "053035ec20c48f38e316be9a4d37235d5ef4420c9b59cd4f92e8e30744e605a6",
+        "sysml/src/examples/State Space Representation Examples/CartSample.sysml": "285823caa3f6193e296fb9686e02f7b261f149c481b4475bc94c3fe180608a19",
+        "sysml/src/examples/State Space Representation Examples/EVSample.sysml": "4834675f798fb275b847887b53661bc351be8094b2f320ee4819d2bb4b71d3db",
+        "sysml/src/examples/Timeslice and Snapshot Examples/TimeVaryingAttribute.sysml": "0f67453cd6604c15764d061da3c33bca1ac35a2f78c51c011f1220080c389c7d",
+        "sysml/src/examples/Variability Examples/VehicleVariabilityModel.sysml": "14664c9e34155062f97bbbfef32bdb60ae7a8d35ce8fd19051882fd5fc222dcc",
+        "sysml/src/examples/Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml": "77d7ee54951e01c885d69d19d7359242baf22c69dcfe2d4088b0b59d56ea578d",
+        "sysml/src/examples/Vehicle Example/VehicleDefinitions.sysml": "26aaac35d37d7298157ac6cbad7d4dbad5f638389561f4d0216975ff3ca0ffbd",
+        "sysml/src/examples/Vehicle Example/VehicleIndividuals.sysml": "e77520c0faa9d8e2b54118c894593456419a83b39a9d6cf86992e03daae639a4",
+        "sysml/src/examples/Vehicle Example/VehicleUsages.sysml": "895344628a0a5c74147aba9a32acc143efda109bae3947e16a44e43cb623983d",
+        "sysml/src/examples/v1 Spec Examples/8.4.1 Wheel Hub Assembly/Wheel Package - Updated.sysml": "62b1dbc8f228745b552e6435e4ce425400be232a2326120fe63ee31a07749498",
+        "sysml/src/examples/v1 Spec Examples/8.4.1 Wheel Hub Assembly/Wheel Package.sysml": "480f4c74503436b67a2a2b64e89f74ac91ae9bf5b21327a276b603f8028a637e",
+        "sysml/src/examples/v1 Spec Examples/8.4.5 Constraining Decomposition/Vehicle Decomposition - Updated.sysml": "239730f56667232e7ac77e8e0739c96158166109aadc37f125b898352b246648",
+        "sysml/src/examples/v1 Spec Examples/8.4.5 Constraining Decomposition/Vehicle Decomposition.sysml": "1058cbc3cf7c947c99e20a70606cec85290733caf4e8eea5d7bbe1fa7afd7517",
+        "sysml/src/examples/v1 Spec Examples/D.4.7.8 Dynamics/HSUVDynamics.sysml": "6ed6d95856f3e7eb7d0b51f9db6725040d3450b999a5b676a07ba2b7d54bced5",
+        "sysml/src/training/01. Packages/Comment Example.sysml": "54a68a8df67c40693c5be341df3fceaed6714f7912eabc78b53ad01ba0ddec61",
+        "sysml/src/training/01. Packages/Documentation Example.sysml": "eb3c50cf3ac9cc4a90192688d103a2696cc2f912ead6c5a3c55b81f161e43ecf",
+        "sysml/src/training/01. Packages/Package Example.sysml": "0d9011a7a0c393d434734fa3c615515ef0f12f70f5252856a4815e0c5df235ed",
+        "sysml/src/training/02. Part Definitions/Part Definition Example.sysml": "521913a10985b6f0d8862f4e387ff844e9f2e862258e6f0bceeec1381da212b1",
+        "sysml/src/training/03. Generalization/Generalization Example.sysml": "876c1fc34d0d6cc4c95e3401ab15fd98e6cee5290ac83b70348e521621d911b8",
+        "sysml/src/training/04. Subsetting/Subsetting Example.sysml": "3e984c2497701a640a18c27d98270f10bf91fdc5fd039acd7be61fd9c85529a6",
+        "sysml/src/training/05. Redefinition/Redefinition Example.sysml": "2a58dadc33f5a752bd4601db23fad1c0396067dff9d0c48c69ea80e6eb8c7e8d",
+        "sysml/src/training/06. Enumeration Definitions/Enumeration Definitions-1.sysml": "d293a343a8957fbddcd4437fe7b576e10091a9d0c6a4c3cb718fbbd05a7f4149",
+        "sysml/src/training/06. Enumeration Definitions/Enumeration Definitions-2.sysml": "30c8dd20e140e8e2c4d1e27e75e74f1cda233cd5c815da739b09963525bc25ec",
+        "sysml/src/training/07. Parts/Parts Example-1.sysml": "390a2751034ecf5f75d7ebb5cf65119ce103e092c13114a80b15d2029afa3b89",
+        "sysml/src/training/07. Parts/Parts Example-2.sysml": "9cf9a4c1c0d98cd972dcdc2f74f7a1703816cb69605114e5caf88cf6cd1fa215",
+        "sysml/src/training/08. Items/Items Example.sysml": "a8f8cc4321933101c86bbc3651b4225b8a3f24a100a988f27bbef1d1738d68ca",
+        "sysml/src/training/09. Connections/Connections Example.sysml": "b7e709dc11084c488177317dd04d95885b2d779f85efce0ad4c286c865796aad",
+        "sysml/src/training/10. Ports/Port Conjugation Example.sysml": "0c7b995b29cc65d45817073688c73b4ac7004ab8000887311222d2b164082974",
+        "sysml/src/training/10. Ports/Port Example.sysml": "3676915bf0f659529710c70cec5b404d95da03979d3dac951583932182d314f7",
+        "sysml/src/training/11. Interfaces/Interface Decomposition Example.sysml": "c0d2e8cbbc99607647548c2f769a598a845d411787402aaeb5e8ded9157fe492",
+        "sysml/src/training/11. Interfaces/Interface Example.sysml": "81c8f2930bd1bb6fef3162fb5ff01480c59af34a9f959ab646c4b91621771426",
+        "sysml/src/training/12. Binding Connectors/Binding Connectors Example-1.sysml": "21108e56525e40539423821935378bba01e001a0cbd34ef8b67ddff7de22e919",
+        "sysml/src/training/12. Binding Connectors/Binding Connectors Example-2.sysml": "c17da7fade4c5c1f6040f7fc8375bee5b9af3827a69e889bcfbec263e4fe0c4e",
+        "sysml/src/training/13. Flows/Flow Definition Example.sysml": "4953942240e572a0bced3e6a481e7a0078ec5f1911f5d8d34c0e287037da224f",
+        "sysml/src/training/13. Flows/Flow Interface Example.sysml": "1b2f2d51dd2bca13e5a20548080f6cab21a3862ba0d7850ac9e86489d10d6633",
+        "sysml/src/training/13. Flows/Flow Usage Example.sysml": "3545248d2433ffdeef47d18b8b26ec06329c52b1dbfa4f19be4684b283118456",
+        "sysml/src/training/14. Action Definitions/Action Definition Example.sysml": "6ba1e3a81b50e75330a5011eff2b48fc69e8b1db93d92caa7263d302f95ed9df",
+        "sysml/src/training/14. Action Definitions/Action Shorthand Example.sysml": "40b3cc083d4e300526f4f4c11e5f416a34564ec4f42ee296ed89ca08d13256cd",
+        "sysml/src/training/14. Action Definitions/Action Succession Example-1.sysml": "85b068216d5edf0b5ce0e2de30d2a928a46c5572a732f7c8f787199947d54ca9",
+        "sysml/src/training/14. Action Definitions/Action Succession Example-2.sysml": "0fdb44f0efd3ae9f5c853652b2327d6f11f004fec90f605ad661001955ee64a6",
+        "sysml/src/training/15. Actions/Action Decomposition.sysml": "f9245d4c83cb9dba2778f83e686bdb65f29615550bc29a264a99283cf71901e9",
+        "sysml/src/training/16. Conditional Succession/Conditional Succession Example-1.sysml": "7c998f285cc6ab602898fba85dacabcff0f5be7ef81ef9168fdd0b86a8f7259a",
+        "sysml/src/training/16. Conditional Succession/Conditional Succession Example-2.sysml": "14bccb577348cae5fe1b1773e1369243b44407b93419928d4610966f98bdaf63",
+        "sysml/src/training/17. Control/Camera.sysml": "cd59a9c6fc168afd3784e338367dfbd36bc1cc08a66b7a6c6884766ee048b6a9",
+        "sysml/src/training/17. Control/Control Structures Example.sysml": "70fa8b06ad95b75e404a10b4b9284667333b511eff9832514c72e2022f9b3171",
+        "sysml/src/training/17. Control/Decision Example.sysml": "b8c23e53e8e0f8042861955fe90f1929f00763e913dbb8758e6ef9d7dc6a0fd7",
+        "sysml/src/training/17. Control/Fork Join Example.sysml": "ea5b086aaf26c14ca1f9dc03262d4b0d92e746d914f157d08c67dc20337c64b4",
+        "sysml/src/training/17. Control/Merge Example.sysml": "26d52bf0415681390c96022df5badfe925d603e98abc6d0e7481589b645d1deb",
+        "sysml/src/training/18. Action Performance/Action Performance Example.sysml": "9cfed0dda2bd2cb1c1d775a2520abe8155725c5f159f9de45f531da45648c62c",
+        "sysml/src/training/19. Terminate Actions/Terminate Actions Example-1.sysml": "68a22b8826dde8a1699c5357464dc060de22bb461d2bd2745ed5953fb82d7a79",
+        "sysml/src/training/19. Terminate Actions/Terminate Actions Example-2.sysml": "518bd633e5987133c8a0ef7ab2a7ccdeb3da4f9c4b17ddc13b5093e59bb9d7a6",
+        "sysml/src/training/20. Assignment Actions/Assignment Example.sysml": "e042634df4719f3e1b0c27950625557d5d243ad49710242a9fe227e005d4b1f9",
+        "sysml/src/training/21. Asynchronous Messaging/Messaging Example.sysml": "d977f1412a23475f45985227fda677da0223e80191043a4fe3900b5f0a373b2b",
+        "sysml/src/training/21. Asynchronous Messaging/Messaging with Ports.sysml": "9afc396b62e3be85888f35feabb3327bfc068b1f95da2fd7f97f681840fcf582",
+        "sysml/src/training/22. Opaque Actions/Opaque Action Example.sysml": "989053be5cba648732bb1f02412a63e50c2b4a621f3adb22ef19367b0ad42472",
+        "sysml/src/training/23. State Definitions/State Definition Example-1.sysml": "bb96a947ac4f3648c75cb74ee36d3bf3b120ce80a833ae9791a877051d6c2dd0",
+        "sysml/src/training/23. State Definitions/State Definition Example-2.sysml": "52c1ac545553470358affce66a40de21a51876ae10718a1a086419c2b0e6ef40",
+        "sysml/src/training/24. States/State Actions.sysml": "38d8c51cde9cdf0aa774864e6dcc65d98aeb89e23ebe097704dfe8896bb36dd6",
+        "sysml/src/training/24. States/State Decomposition-1.sysml": "ee8f049bfd5bb23e324f7f08faead640419122b7f909e36ce281ce8342557f58",
+        "sysml/src/training/24. States/State Decomposition-2.sysml": "197be1fb0cc100b13c9daa41e25450076779fb6edcb2b54cd09c93bbe7b78cc6",
+        "sysml/src/training/25. Transitions/Change and Time Triggers.sysml": "3633b959ba8b0c39f7bf22ff0bfcd8f5afdb133f444bf693423bbc6f30a708c6",
+        "sysml/src/training/25. Transitions/Local Clock Example.sysml": "7c4652c10baeeeeea932071346b5297aed4cb09b1073d01d1a0f78f13586e3dc",
+        "sysml/src/training/25. Transitions/Transition Actions.sysml": "0c2e7db0d37ca8489f911b567e1a41ed8a7a21216b4b5646db99d370562742ba",
+        "sysml/src/training/26. State Exhibition/State Exhibition Example.sysml": "c37cca84071070eae990d6f4733b789e22042a986cbc8a2616f04300d343e09d",
+        "sysml/src/training/27. Occurrences/Event Occurrence Example.sysml": "a0711b453e25f88d39383ba74dca22edf8e6fd3e08ca4b3d96abf9546e5dc7c3",
+        "sysml/src/training/27. Occurrences/Interaction Example-1.sysml": "d0fcda6e4b48ed7b0b57ee13152008d1fb4ee89343f48b0cc33fc484b4e3f39a",
+        "sysml/src/training/27. Occurrences/Interaction Example-2.sysml": "001245283d57f289a673c87e973c834d357dfcf819d251145649595a0dc70ad0",
+        "sysml/src/training/27. Occurrences/Interaction Realization-1.sysml": "c7abccdd482f6001056d080562e1f5ce9a983c7d93ece5496f7e847e1d2bbebd",
+        "sysml/src/training/27. Occurrences/Interaction Realization-2.sysml": "fee96e42ba9bdd7c31c79fcf5057ded0008a5e6a7a12c5b4ba4463d9b9e61d94",
+        "sysml/src/training/27. Occurrences/Message Payload Example.sysml": "cb4a16abdc6e60f570b30ba2d838999f933d0efd9348cf4bf8404019fc9f1fe2",
+        "sysml/src/training/27. Occurrences/Time Slice and Snapshot Example.sysml": "5ba8953e347346861fc549f871a41177d64409666424c23a69da92da8162cad3",
+        "sysml/src/training/28. Individuals/Individuals and Roles-1.sysml": "60f6402e35fa411dff29755d441cc6f6954e647a41e225e80fedd892317379df",
+        "sysml/src/training/28. Individuals/Individuals and Snapshots Example.sysml": "bc98281dd2d2b3066b936f13f77657237ddd30be6ff5f31f03ae79d76054a4a5",
+        "sysml/src/training/28. Individuals/Individuals and Time Slices.sysml": "5768954807af2247983855032f5eb1adb3fda9c46ff3f98460b92bb0cc96deb0",
+        "sysml/src/training/29. Expressions/Car Mass Rollup Example 1.sysml": "7f101db8137b93ae093870f23db4e7ede0a3912ff12bd170686db3836dd28f0f",
+        "sysml/src/training/29. Expressions/Car Mass Rollup Example 2.sysml": "c83b5e531c4854406d9606f605fd911fb8159ca6273364583466bf5e2b70578d",
+        "sysml/src/training/29. Expressions/MassRollup1.sysml": "289228badcbd9fd227ad6b0607cbcb5c351f58731d6747b1c0f08b40c592a7b6",
+        "sysml/src/training/29. Expressions/MassRollup2.sysml": "da017e7651de908cd723278e2b454d41d1695509886905c219ac64b90a63ff53",
+        "sysml/src/training/30. Calculations/Calculation Definitions.sysml": "c8b300bc5a70262107d067df1e868a59ecda60343ed6ebd36e780919ef635b77",
+        "sysml/src/training/30. Calculations/Calculation Usages-1.sysml": "50d3f3d82c5eaa65f37c40a9462ea544ac44aa9dccd256667d54bd3bd9e91c24",
+        "sysml/src/training/30. Calculations/Calculation Usages-2.sysml": "8b5b296fb4f4af5c7126264b20cac05b81242820c21e090bcbd5c78c90b4e7bc",
+        "sysml/src/training/31. Constraints/Analytical Constraints.sysml": "8d4d3f3184a508f975e1e07a075ec5885024f7136a69a7a79b236d8a520582f3",
+        "sysml/src/training/31. Constraints/Constraint Assertions-1.sysml": "e74f69c3b8f4dd0011fd1799bf9f3450e7ad10cdec5875df0ff1eda20400e839",
+        "sysml/src/training/31. Constraints/Constraint Assertions-2.sysml": "905418655ca8f68497ca2ff72a53ee4c5d67c975b451cce2dd2566110923fb26",
+        "sysml/src/training/31. Constraints/Constraints Example-1.sysml": "7ef69d5f949ae62c9305410cf56a06f0ff72dd780f46c746bea9f31b62f6530e",
+        "sysml/src/training/31. Constraints/Constraints Example-2.sysml": "96627a47273a5762e6e1571517d67a6731b7b09b5c56b9d92574654fee38f39a",
+        "sysml/src/training/31. Constraints/Derivation Constraints.sysml": "aa73335f565d75f468997d843e60560df14279c92ad02a347ae0e4caf53ee799",
+        "sysml/src/training/31. Constraints/Time Constraints.sysml": "3acc92ed706c8c1a352929df9b2eee27b7bb2459a49a19838121dade80bc1108",
+        "sysml/src/training/32. Requirements/Requirement Definitions.sysml": "bbf6164994aed96f962710105ec6be8ce97022b3e627a64ffcf9e39c2785bf6d",
+        "sysml/src/training/32. Requirements/Requirement Groups.sysml": "a4946e78a8602eac6eef372575636cfadd26c4e5228ed4f90510918fc7267c56",
+        "sysml/src/training/32. Requirements/Requirement Satisfaction.sysml": "bf4f3f309b20a4e82c5f72ef4f4740de226142190a906d2d078e82b8b1f36032",
+        "sysml/src/training/32. Requirements/Requirement Usages.sysml": "cf926c7f8a7f2d8ffa70f2f8ed0c1f0ade16c7cbc1fa06a2dff7e6146df9ae70",
+        "sysml/src/training/33. Analysis/Analysis Case Definition Example.sysml": "58c782d8502c4d659c4c3000bc2831dc9abcaa823b3116cc80a52cfcf20d10a2",
+        "sysml/src/training/33. Analysis/Analysis Case Usage Example.sysml": "8061f236770a23a365026fa3565bdad1af381058deca50486d03d5efbe4fe93e",
+        "sysml/src/training/33. Analysis/Trade Study Analysis Example.sysml": "c4708fca54c75cdff1e054c152fd50a9109773bfb267d54c57b9bcf841953070",
+        "sysml/src/training/34. Verification/Verification Case Definition Example.sysml": "6c947e54087a4e5ab1719e4043e0480211112a2ee6fc62d9b18814f3ee8f0b5c",
+        "sysml/src/training/34. Verification/Verification Case Usage Example.sysml": "f18e2dbdd9078aa3b9a3c223e2ea0251d90f7b0d64aee1dea22546cdc0977a38",
+        "sysml/src/training/35. Use Cases/Use Case Definition Example.sysml": "46d70e36666f54f5025de1d60c976ef24b56126a4a4a8f913cda8dacb1d7ad13",
+        "sysml/src/training/35. Use Cases/Use Case Usage Example.sysml": "abaaebced5d4f1d137ad5d8e7307a5d159a04d08a926e1ce11d59ee4f7ee1252",
+        "sysml/src/training/36. Variability/Variation Configuration.sysml": "00475547ef422bd1264740ba8e281d39968af27d6e640be592e9b63f82dab3f1",
+        "sysml/src/training/36. Variability/Variation Definitions.sysml": "d175901cc5f3c382e2e0bd894c3bf433b055b7a62203c14f097423dad584b7bf",
+        "sysml/src/training/36. Variability/Variation Usages.sysml": "00a622b19bd0c0f0199e7a281676ea7dba1ac9f31276fe3f394d4859f90c86cd",
+        "sysml/src/training/37. Dependencies/Dependency Example.sysml": "a67c6c5d00849b16f6a4f5f0a6867c94833fad77be9cf9afb28cdd4395dbcd9c",
+        "sysml/src/training/38. Allocation/Allocation Definition Example.sysml": "01b3fd07fd12885dda5f7af570db6f52a60dbd4a891fc2c5de53183e3ddba741",
+        "sysml/src/training/38. Allocation/Allocation Usage Example.sysml": "b3ffeaefc73bf13ae8f9c56e19e95a30e7e4140e1fa26aa6f1557a31c6bc4312",
+        "sysml/src/training/39. Metadata/Metadata Example-1.sysml": "7854ed2310900fb26ba5422d79e10b8fccc784fa3f012b75e2ddbf86c85dbf5e",
+        "sysml/src/training/39. Metadata/Metadata Example-2.sysml": "ab8f3ccc569c562876187629b7486207ff1a2aded1d2a35b88df599e78ce45b5",
+        "sysml/src/training/40. Filtering/Filtering Example-1.sysml": "6e8dc71d4f3bf124d78300aebda432dfb48617d36442137edb0aa131bc7689bd",
+        "sysml/src/training/40. Filtering/Filtering Example-2.sysml": "95fc48884d4b7baaa421692146126a6955e376d2337770e93663a0661bdf2c8f",
+        "sysml/src/training/41. Language Extension/Model Library Example.sysml": "0e994cf5d207ca1bcb6832956504f807fde3ac976f2325f7e983290446743b1a",
+        "sysml/src/training/41. Language Extension/Semantic Metadata Example.sysml": "3dee1f7403f9e8a9c7e450032ce66d85734fd1cd78a08d2d2e3dec4fa928030b",
+        "sysml/src/training/41. Language Extension/User Keyword Example.sysml": "e0d44dbd4fdeb997810ab18fc8bff5c447a32334242efdbaf09646af5f83be7a",
+        "sysml/src/training/42. Views/Viewpoint Example.sysml": "93dac2797ea78074199d9b7956e01f7ef0456c85fa2000f5a3b99a3cba4a96ad",
+        "sysml/src/training/42. Views/Views Example.sysml": "ad1e0b92f7084f8b864b852aa4938f01d4676ab31733e60088d4117f30a90f99",
+        "sysml/src/validation/01-Parts Tree/1a-Parts Tree.sysml": "68adac5f5b2a0f7d8d2ca2bb6ce4aca3d636317b74a3d2036f1df95379e3e514",
+        "sysml/src/validation/01-Parts Tree/1c-Parts Tree Redefinition.sysml": "ee3fd9b693eee0eda5543ba146b1c672dacc06ec913bd3da5da12c240ef6f13e",
+        "sysml/src/validation/01-Parts Tree/1d-Parts Tree with Reference.sysml": "f2762576cfb1564605ce162a2326f2b5e00f9a6eb25879831adbf854db3e4689",
+        "sysml/src/validation/02-Parts Interconnection/2a-Parts Interconnection.sysml": "9fc597156787d6bfa04c6c06b30026b0a6b99240e43320aeb0b4b1c5d5f7ed8f",
+        "sysml/src/validation/02-Parts Interconnection/2c-Parts Interconnection-Multiple Decompositions.sysml": "2d6e1789531ef65d4a7e221eae51fff7adafd739abe47c073f9f3cc7c27f187f",
+        "sysml/src/validation/03-Function-based Behavior/3a-Function-based Behavior-1.sysml": "e4093071e6c613cb5e66e79be116cc90e2732c141ef85ffd10ada7fc71dd4ce1",
+        "sysml/src/validation/03-Function-based Behavior/3a-Function-based Behavior-2.sysml": "1fd798b584fcf8294bb179e6ad09bb231a860b7f06c0ac3ebf7d5c326b81355b",
+        "sysml/src/validation/03-Function-based Behavior/3a-Function-based Behavior-3.sysml": "ee405fc045e2325625d2ab7d242f1852c4ca9d36a40d8919ad22d4bcc97fbbe0",
+        "sysml/src/validation/03-Function-based Behavior/3c-Function-based Behavior-structure mod-1.sysml": "a195aa08ccc55b28611590bf8318e68dc743a80bbab067f9e501223e4cf28a3d",
+        "sysml/src/validation/03-Function-based Behavior/3c-Function-based Behavior-structure mod-2.sysml": "d4c3a58f64733407d8f55882bb422abeba6a56071a381fa81c7e0cecefb3a37c",
+        "sysml/src/validation/03-Function-based Behavior/3c-Function-based Behavior-structure mod-3.sysml": "b06f8ff7362015304b73339a3444c3bb2b7b0f3ab367bf390cc849dd7ae10397",
+        "sysml/src/validation/03-Function-based Behavior/3d-Function-based Behavior-item.sysml": "53a4dbd7dd39c808582e6fe3c791fbf642a9d17fc1775c2796d2c7fd359ad456",
+        "sysml/src/validation/03-Function-based Behavior/3e-Function-based Behavior-item.sysml": "53076ded62ac7995f3bba8365c635e725894074faf3b19787bec711136b781ba",
+        "sysml/src/validation/04-Functional Allocation/4a-Functional Allocation.sysml": "5606db54345e6a79c90c948f7d71a86222110422f90ad7b5f5e30bdee93d7638",
+        "sysml/src/validation/05-State-based Behavior/5-State-based Behavior-1.sysml": "09d33ca09f9121193374b09215f6a3fffe5654cdfde8c794a4f8637b71825485",
+        "sysml/src/validation/05-State-based Behavior/5-State-based Behavior-1a.sysml": "22bfc1ae2dbcb94db9844eddc16dda325645d2b0eb622bbfcfefe93bd6433ef8",
+        "sysml/src/validation/05-State-based Behavior/5-State-based Behavior-2.sysml": "218835c9dbefdc8f76098c342aa6bb3db66b85c9a298fabed8e518920d36f32f",
+        "sysml/src/validation/06-Individual and Snapshots/6-Individual and Snapshots.sysml": "31efc993fd2ead88e2edb0130fde4051c64a86dce7c31c1057b4131de507a848",
+        "sysml/src/validation/07-Variant Configuration/7a-Variant Configuration - General Concept.sysml": "a4e94ee32045fe6250ec8ca932405d53d16e2a6b89b14621b4de8aa86a45f8af",
+        "sysml/src/validation/07-Variant Configuration/7a1-Variant Configuration - General Concept-a.sysml": "9d5321f0c569f5d36657b81b0c129138001939efecf8cb87c528f3eea629b0ab",
+        "sysml/src/validation/07-Variant Configuration/7b-Variant Configurations.sysml": "c0f5d9fc230789e6b4326d554a05e38cd4db48c2081d8d8a627eef52a5574fd7",
+        "sysml/src/validation/08-Requirements/8-Requirements.sysml": "be660d2f7935c481d4ab39fb68231a00d830489ef9365b68e8213e50015323c1",
+        "sysml/src/validation/09-Verification/9-Verification-simplified.sysml": "877d2ae9cfc2e51a37b0217ae94be7df0f810ecf36eddf31c9a27d14dc2a0356",
+        "sysml/src/validation/10-Analysis and Trades/10a-Analysis.sysml": "e24ec15d535a3bfbf8aaeb57e599503ce57de51bcc07790c77435b44501fc138",
+        "sysml/src/validation/10-Analysis and Trades/10b-Trade-off Among Alternative Configurations.sysml": "b64991322decd492c6bb14ea32ad8282499d66e9dc8f9be66da9f283c74f6c80",
+        "sysml/src/validation/10-Analysis and Trades/10c-Fuel Economy Analysis.sysml": "3bea4bbe7b04ba3572b3f7ccebd211897ad0521ef73009f31c32eed7296d3749",
+        "sysml/src/validation/10-Analysis and Trades/10d-Dynamics Analysis.sysml": "600106d6e2874f810ebb4c98f6fafd6b96b6f79842a9fdb7b42fd269aeb56c40",
+        "sysml/src/validation/11-View and Viewpoint/11a-View-Viewpoint.sysml": "f89e97e5a9a49c6c3f2fc59162f99a60d1cf6faa5599ecdf1db398c72f8e3514",
+        "sysml/src/validation/11-View and Viewpoint/11b-Safety and Security Feature Views.sysml": "d098663519952d3be7ded36d7fbd39ffdb21dd52c03448230d02b3e5f5b9ba27",
+        "sysml/src/validation/12-Dependency Relationships/12a-Dependency.sysml": "69966550379ca490de4dffa7b284be83983d0deaa565c073aec79c603f019bac",
+        "sysml/src/validation/12-Dependency Relationships/12b-Allocation-1.sysml": "1a65dcbc5a7f0086111744d6d0f640a36c2721ee9156fbab34b09cfede1e7d24",
+        "sysml/src/validation/12-Dependency Relationships/12b-Allocation.sysml": "458ffde07b81f5ee23392c3ec2f57066f4e9e83b3329c1614663c41dfd48c733",
+        "sysml/src/validation/13-Model Containment/13a-Model Containment.sysml": "0a7f5cb3d280ca39a6b657a1c2ccc9a87515722936bddbfcbbb86d0d77796687",
+        "sysml/src/validation/13-Model Containment/13b-Safety and Security Features Element Group-1.sysml": "9b8409690b432b74d05236e9642b8633ed6ac6c137b1ea25e29b994b90b3ba4e",
+        "sysml/src/validation/13-Model Containment/13b-Safety and Security Features Element Group-2.sysml": "592626e07a3c95392439f3a3f0ce91d44f8d6ef03d9cced3451bbdeabe91707f",
+        "sysml/src/validation/13-Model Containment/13b-Safety and Security Features Element Group.sysml": "f72bc1e710bd77742eb371d63b466987b3d6ceae7f37a266e0245c6565878cab",
+        "sysml/src/validation/14-Language Extensions/14a-Language Extensions.sysml": "fbe9aaa70532d3303fd6fb39bc725cc9299e52c33a4960a97723a1f4154ecb82",
+        "sysml/src/validation/14-Language Extensions/14b-Language Extensions.sysml": "9fd6886fe63e328c9cca645d137e1413ed93068f56ed05e3be0e837832e705a8",
+        "sysml/src/validation/14-Language Extensions/14c-Language Extensions.sysml": "7760e8264bfa7b2ab6ecf4985110459c959d5c971712acd3f1f945317b3d92f4",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_01-Constants.sysml": "e88230f7825608a153977c07b16bd48dbdd41dadbcf2c0d4ecdb001a91dddbe7",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_02-Basic Value Properties.sysml": "fe562529159fc94cf23b1fc827cd3590dc3946265680a3d9324f79125637138b",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_03-Value Expression.sysml": "156b04676dd45d985aafaa04cd98cbc70727a5ff8b395444471e37abfc23eb07",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_04-Logical Expressions.sysml": "be7c568cf296df8e4bd866ce604cdb1e2cef3223f3c7c7a8d74863fd3fe82554",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_05-Unification of Expression and Constraint Definition.sysml": "c62afbf670da4a4fc2f337e5eca84e7b8f1790113fdad7cf5c21757c2b98e9a8",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_06-System of Quantities.sysml": "876f29fc5476b05f9fa908d69176e00825d996ba9b5c622cd2fbb95867a004a8",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_07-System of Units and Scales.sysml": "359274cb936c12607ffb487a01b30c89359ab75b6b4328f9393d8d5745b4c1d0",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_08-Range Restriction.sysml": "21be841080c23b55243365352b93b11094977555ea0b8f417107c7316eb52a1a",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_10-Primitive Data Types.sysml": "25ff6e37d7090c1f16e24a0fe644ab69dde4745977afb3dae5f7161182bb2090",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_11-Variable Length Collection Types.sysml": "28ea6f6aa4b222fdeead4b5f3bb5c1180a6d655d07b9fdeee2f285fd420d2408",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_12-Compound Value Type.sysml": "6d7232008b6d7522ae4e1b1cb9fa15c856e67054849696924594a7f4f2b0515c",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_13-Discretely Sampled Function Value.sysml": "72dedb9af384da9948e1e9e9a1e6b8ffe1bb970bcb277588147f93efa9bf853e",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_19-Materials with Properties.sysml": "a8c4d8571ad672de9e300c7de2cac8c684bf6b403bc16fcf3a896a350b0218b3",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_19a-Materials with Properties.sysml": "7d848239c6012cc15d04d4bd58b9d0e935972991cee7a9bb4569e9a7536fdd30",
+        "sysml/src/validation/17-Sequence Modeling/17a-Sequence-Modeling.sysml": "52c79bd6c698ee26840a9246b0fd4294d05e59b11f38f9f5a980535bb0d0761c",
+        "sysml/src/validation/17-Sequence Modeling/17b-Sequence-Modeling.sysml": "df9b1f3a76f0a0fb30bbf6f30705d64ac26cbe50b9143dcea5a877c7d69cdc1c",
+        "sysml/src/validation/18-Use Case/18-Use Case.sysml": "debd6b83bb60278f6c8d160d0fb8ad31b9107295461d8070cbd8069db9b9e457"
+      },
+      "phases": [
+        {
+          "name": "syntax",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--manifest-path",
+            "/Users/donovanrost/Documents/ChatGPT/SysML/target/vendor-tests/source-cross-reviewed-qOf7Gu/Cargo.toml",
+            "-p",
+            "sysmlv2-syntax",
+            "--lib",
+            "--",
+            "--test-threads=1",
+            "--nocapture"
+          ],
+          "status": "pass",
+          "startedAt": "2026-10-19T02:48:13.426Z",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:48:16.940Z",
+          "log": "target/trigger-validation/owned-cross-expanded-syntax.log",
+          "logSha256": "726079a721a6951874d94b85e78f025a740a188ceea9cd3d9f7263429244897b"
+        },
+        {
+          "name": "cross-model",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--manifest-path",
+            "/Users/donovanrost/Documents/ChatGPT/SysML/target/vendor-tests/source-cross-reviewed-qOf7Gu/Cargo.toml",
+            "-p",
+            "sysmlv2-model",
+            "--lib",
+            "json::owned_cross_",
+            "--",
+            "--test-threads=1",
+            "--nocapture"
+          ],
+          "status": "fail",
+          "startedAt": "2026-10-19T02:48:16.941Z",
+          "exitCode": 1,
+          "finishedAt": "2026-10-19T02:49:14.900Z",
+          "log": "target/trigger-validation/owned-cross-expanded-cross-model.log",
+          "logSha256": "51e0d43b17c4dceeafb91bc7efa8ccedc51a8a3d6fffbcb452ec4d8409a4aa15"
+        }
+      ],
+      "finishedAt": "2026-10-19T02:49:15.876Z"
+    },
+    "correctedRun": {
+      "status": "passed",
+      "startedAt": "2026-10-19T02:50:32.203Z",
+      "productionKernelInputSha256": "d2a3fa60686f56a6ff0b4016b8f876d6cfd050352b162f1318cfdb7e2043f2bf",
+      "workspace": "/Users/donovanrost/Documents/ChatGPT/SysML/target/vendor-tests/source-cross-reviewed-MrZ7m6",
+      "inputs": {
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_declaration_tests.rs": "3f584e32355a0553d44b4fd803a255212f16f0b78ae356caa988bac5e174f328",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_lookahead_tests.rs": "de778bad1c22784f1daa65e61625a1230b9add8d847869d55fd221c53f4d9ba4",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_prefix_tests.rs": "bee6a19cbd6a3319a6bb76bfe57a52937d2754547b3e8fb36c30d5694c11b3a7",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json/owned_cross_replay_tests.rs": "7056c581a364aaed75e1c2f7173c2b6ab3dce2e8f311891aa90d494518b13f25",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/src/json.rs": "c97c93fa62bf8244af8bf4efe4f864240b7e84628ff8e734b0fcbcbc447cfc5a",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-model/tests/owned_cross_features.rs": "c52682d9c49b388eec839a6716378c7e3c5e8493efac6f668054d6643923baad",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-syntax/src/parser/cross_grammar_tests.rs": "980e565d3b1b62de16f0a83a9f5761fc04b493968ad13d54d4b6b4026bc09e97",
+        "target/trigger-validation/owned-cross-reviewed-stage/crates/sysmlv2-syntax/src/parser.rs": "4ad5f24d94051aea6b85be750452dd42ebc67bd44812bda0317d1096e4ea5edb"
+      },
+      "corpusRevision": "cd99f7ca70b96abb38f09dfd25725e3cf259baa3",
+      "corpusFiles": {
+        "sysml/src/examples/Analysis Examples/AnalysisAnnotation.sysml": "c7654db1f5406300514648b960bfd859a4ca0b2a809545e895d6f4965fb0c165",
+        "sysml/src/examples/Analysis Examples/Dynamics.sysml": "ed5c0c0b23f75bcddd853797ab8e97c394689652e0fef7214aa80baf4452818a",
+        "sysml/src/examples/Analysis Examples/Turbojet Stage Analysis.sysml": "a7c04ba7f34884333923ac27509f94027f5612e5b2af40e75a6f16caf7d14752",
+        "sysml/src/examples/Analysis Examples/Vehicle Analysis Demo.sysml": "d5c73158eb4fb8da08819fb4b20b06fe0153ec017355c40996a56fca550dd612",
+        "sysml/src/examples/Arrowhead Framework Example/AHFCoreLib.sysml": "08c81e862f96e1799a7e1ced4abc6171105c546de208d4fc309e1d8e1011e102",
+        "sysml/src/examples/Arrowhead Framework Example/AHFNorwayTopics.sysml": "a7b02539744dd06758b5bde8b0a3047749d61d69d4d1d102483907a7eadec30b",
+        "sysml/src/examples/Arrowhead Framework Example/AHFProfileLib.sysml": "ad560b0ecbfe615c500d8884307e3676666ae3fe1fcc7bcb213d392b97519cd6",
+        "sysml/src/examples/Arrowhead Framework Example/AHFSequences.sysml": "33ccdda01ec89aab46f02610e495924e3842b8745e44447b9f4b9997cc01ab9d",
+        "sysml/src/examples/Association Examples/ProductSelection_N_ary.sysml": "71b73c389b7826c5c435f50c63f1b8fd17d6dae6788b3c0d3b82ce6571c4e6d9",
+        "sysml/src/examples/Association Examples/ProductSelection_OwnedEnds.sysml": "f826636f63fd9e3d78b6f173e668f09a11f159d20fda264dc8d32eed5c61d857",
+        "sysml/src/examples/Association Examples/ProductSelection_UnownedEnds.sysml": "b4fb425c73770ecf2569b98886b021354ed96baf25c04564d782a85c7156a0d3",
+        "sysml/src/examples/Camera Example/Camera.sysml": "6ad1fad43c0fee8ca64ce01f7efb7b0477984711f4e59db85f801a8e56bd33bf",
+        "sysml/src/examples/Camera Example/PictureTaking.sysml": "355a83a27952516c71ff6eb5a4a56354cf2ae9433f0e2ae5cc272bf27c6656ed",
+        "sysml/src/examples/Cause and Effect Examples/CauseAndEffectExample.sysml": "cea13bb56e7e25fac50f49ddd8f7a6b25c00921df71a9642d339b74a55cf12d5",
+        "sysml/src/examples/Cause and Effect Examples/MedicalDeviceFailure.sysml": "3e1e7a586016266015c25b2695b0c892b56adb2a7fc7cf0832dc6d5bccb895e7",
+        "sysml/src/examples/Comment Examples/Comments.sysml": "de15fe494f97ea705fd70c00957c0b93d569fa372b2b85771276a8eab74a9d5b",
+        "sysml/src/examples/Flashlight Example/Flashlight Example.sysml": "0b90c2fa75f7ff82495418c3bc366802c6646f8618878845af0bc3975286f8f9",
+        "sysml/src/examples/Geometry Examples/CarWithEnvelopingShape.sysml": "570301dc80454a8520ba205c31ef438b7e054614e7366562d208fc206b7df6f1",
+        "sysml/src/examples/Geometry Examples/CarWithShapeAndCSG.sysml": "2c6477586699165c00aa0f0ed4ce0f97478d1aa35ff72de5aa6225217cc2e4e2",
+        "sysml/src/examples/Geometry Examples/ExternalShapeRefExample.sysml": "666ab593484b975a36be6e6e33cbcb36d46f5729f445c6cff5e7637bf7249477",
+        "sysml/src/examples/Geometry Examples/SimpleQuadcopter.sysml": "82e2de737e7ac1580a7f73cdebb81841a5f72851921c606059f41eaabd5af46e",
+        "sysml/src/examples/Geometry Examples/VehicleGeometryAndCoordinateFrames.sysml": "e097b0f8a2094ed5b53275e5b1324a828d8769d7f4f4db41dabf9f643e462c24",
+        "sysml/src/examples/Import Tests/AliasImport.sysml": "b243243ba39ca49c9ad53521418513ea3111b4e6be864023dfa1bb921baf96e2",
+        "sysml/src/examples/Import Tests/CircularImport.sysml": "3ed6813e219e43b737251c69aaa421d0e993219cbf35d3f78819de8b6eef70d4",
+        "sysml/src/examples/Import Tests/PrivateImportTest.sysml": "5111a800ab20f0018277bef5b4ed9d055327d03ac8afbdea2c2d3e5713113007",
+        "sysml/src/examples/Import Tests/QualifiedNameImportTest.sysml": "2720d3539f24ebfc294bec9dad4c7537af099e46df8b02b31a197aca51d7a1ed",
+        "sysml/src/examples/Individuals Examples/AnalysisIndividualExample.sysml": "e4ef422422cc2c6f49aa950a215c11ae83a73649cef2553c2adca8fae8f5ca24",
+        "sysml/src/examples/Individuals Examples/JohnIndividualExample.sysml": "4a1c63acaa2f68177ba71936e7110a692b56bcc5acf240befc0b3124a4fbf4ad",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceModel.sysml": "32d2847af1ee7eae4e1eba8431673e54e469cd893f9b9a7d8fcb56cdb404ff88",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceModelOutside.sysml": "9e77acbd7479aabaf309f0f5e01cada6859b38b582dec5335fd6d707f1a9e6bd",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceOutsideRealization-2.sysml": "1c66e402fab39f0825b6b55f6ce2fcf346dfdbdf92a395cee45cb3fc91692145",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceOutsideRealization-3.sysml": "9c0f256fd896b3e14e4641677b6c0090dc59336d3649be8d4996a5712767868d",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceRealization-2.sysml": "791b64162fb088a5a3ba1d7913c4d7bea6e5906b4b3230dd587aae98a0ea3f51",
+        "sysml/src/examples/Interaction Sequencing Examples/ServerSequenceRealization-3.sysml": "415b2ac9e58d906039c420d366fa98c88dd03f2c0981c9a18a28520ad0dee25e",
+        "sysml/src/examples/Mass Roll-up Example/MassConstraintExample.sysml": "2c09d516aba3653a210b8f99d509f392a9aeb46441a21e7c8ac62af7d3201b3d",
+        "sysml/src/examples/Mass Roll-up Example/MassRollup.sysml": "380aab83552f64ed52a92d73c518d6b78aa227e1a6a2d7f60bad4583dcc9879d",
+        "sysml/src/examples/Mass Roll-up Example/Vehicles.sysml": "f5de0deb796dc8628a6e4036edf9d6480c46c84278012b75250dcf7887f8a7b4",
+        "sysml/src/examples/Metadata Examples/IssueMetadataExample.sysml": "873d5de264c3f7c7f5df84a3b589d07fc6c5d59e99db0a3e8e73e7c2f0f3e696",
+        "sysml/src/examples/Metadata Examples/RationaleMetadataExample.sysml": "f780fdd76f6aeee7208a3f1a73634b8bc2290c6ecfb1838efdc5af9878ab72e9",
+        "sysml/src/examples/Metadata Examples/RequirementMetadataExample.sysml": "dd1a5577b2b2a4ee435c882b8f1c533fa3968104148bcd28014fb1baac55869e",
+        "sysml/src/examples/Metadata Examples/RiskMetadataExample.sysml": "cd50bcde1413b13e5aaee6854e4d42200dc2ca7d6c865ea868a4e5f9c5076799",
+        "sysml/src/examples/Metadata Examples/VerificationMetadataExample.sysml": "0c9ccc86dd459227164e54e6cb866795b1ef7ff212905ac9ba152fb3eb9bd631",
+        "sysml/src/examples/Packet Example/PacketUsage.sysml": "571a03119991b8e385cfaf99d93fa8c84fc5f71a07bd0c130f210951104dfbaf",
+        "sysml/src/examples/Packet Example/Packets.sysml": "101eb4e3c9163d0aacaeb293fd03b16d94616abb79cc04f63a7b94eb9242403d",
+        "sysml/src/examples/Requirements Examples/HSUVRequirements.sysml": "6058165ce64aca5aab73b9a09eaeec7519942510c91fe71b3990f7bf612cdcae",
+        "sysml/src/examples/Requirements Examples/RequirementDerivationExample.sysml": "1575a8e09c008145ff619ef7d0ce7622d9e88c77811a6984578ef393d99e26c7",
+        "sysml/src/examples/Requirements Examples/VehicleRequirementDerivation.sysml": "aa7dcf0498eb967f539fc81ef63c6f924c691edfe26c279a875c1a3a0729a8e8",
+        "sysml/src/examples/Room Model/RoomModel.sysml": "da4c197311bfcb7b40c670a28dc8289adcc147bf0b1f9c4533a6803c213b7fa1",
+        "sysml/src/examples/Simple Tests/ActionTest.sysml": "f25839d6ed3237bbe454d71533646a0a6748384455d9870995299ed4149c38b8",
+        "sysml/src/examples/Simple Tests/AliasTest.sysml": "c919d53cfe77577ef1483a66d117533dfdc1a6c7bd769d616bc7f56c5c2835fb",
+        "sysml/src/examples/Simple Tests/AllocationTest.sysml": "0affe4f7d051a20476834783039e93ca9d77708a36b56d7428ebdddf6ffaa8be",
+        "sysml/src/examples/Simple Tests/AnalysisTest.sysml": "2bbbd6da0943b4204f84c495944b79a2b9f7a173c3a8a2ab93d1cf8fb3ffac73",
+        "sysml/src/examples/Simple Tests/AssignmentTest.sysml": "7d4b3e64602856f6e7f9ce142f2e15535e1ae3d6e96852a50f86d838877e8976",
+        "sysml/src/examples/Simple Tests/CalculationTest.sysml": "7b174ccf61882a28d25fec84a4a48631556b6af38ce8e84731e85273ff50737c",
+        "sysml/src/examples/Simple Tests/CommentTest.sysml": "385dc71179075e64044e17ca0af4a4f81ca0ac96528a045ed8678d6bf2e52e7a",
+        "sysml/src/examples/Simple Tests/ConjugationTest.sysml": "68f8ce99b28425e0963dac05a35959d8e38b11a4a0b76a0aa40f7d335cdf80aa",
+        "sysml/src/examples/Simple Tests/ConnectionTest.sysml": "8b0046d8d2e221923adba78cbed8359fbdacb85e623cf9ed1abd5ba3c0e3c2a7",
+        "sysml/src/examples/Simple Tests/ConstraintTest.sysml": "1a4aa4b5bc29e17c88dc5c2a5bec99960c40fe1633f96fd5591531b1ee291c77",
+        "sysml/src/examples/Simple Tests/ControlNodeTest.sysml": "050aa194cc74842aa286896db589ddbba00745ea799fb4bfcd987ff53ea6be75",
+        "sysml/src/examples/Simple Tests/DecisionTest.sysml": "9eac0766eb700d67cddf2c14b7379373c4774e6d7fa6c1eb0ef9e17d9adb67c6",
+        "sysml/src/examples/Simple Tests/DefaultValueTest.sysml": "43100bb21269c18d5cec91f4c18617124a14282c5c23f2384a858d5ff6521f1e",
+        "sysml/src/examples/Simple Tests/DependencyTest.sysml": "4fa7f0c7cc12999db50d15ede2aff38d2a049a62cff9503e66d0b3d7b7b54e01",
+        "sysml/src/examples/Simple Tests/EnumerationTest.sysml": "f2c666064fcb7ac6bd1f32aef63982e4b2f17a85494878c37a3e1c23edb83e55",
+        "sysml/src/examples/Simple Tests/FeaturePathTest.sysml": "19d83b371973d6dcaa01b5dbde574415a968a69aa8016d4d1577e4a076bc595f",
+        "sysml/src/examples/Simple Tests/ImportTest.sysml": "a03a2e8a669ef2383a5e1246c465cc81979f1bc740d490dce840262cbf01d883",
+        "sysml/src/examples/Simple Tests/IndividualTest.sysml": "00aff4e95c78e1148bd366a446e4cb0380741373cfd822ef833e3ccc8ec4a1af",
+        "sysml/src/examples/Simple Tests/ItemTest.sysml": "0d6e175435b71d0cbebf2eabaadee50e068688542742c7786305d2652f13b410",
+        "sysml/src/examples/Simple Tests/MetadataTest.sysml": "db29263ceb3d7df48a96653dcbd981baf4e0ab20e73c253172477c9f09046edd",
+        "sysml/src/examples/Simple Tests/MultiplicityTest.sysml": "71f079792d466a7f31cdb4bb3b019455beb3c6086a7ce68fb181a3260a92126f",
+        "sysml/src/examples/Simple Tests/OccurrenceTest.sysml": "21841d0d2604b54a6a90cd8735b48ee2726166da824630a29680244e35ba82ae",
+        "sysml/src/examples/Simple Tests/ParameterTest.sysml": "70e48bc2d2a98dc6e53c0ec6122136fa90ced0b881bb7064ab8c627bacf4de36",
+        "sysml/src/examples/Simple Tests/PartTest.sysml": "488b1646e0233a93a41147c7b3ecfd7f73f377517c86c71c8a005b5615230904",
+        "sysml/src/examples/Simple Tests/RequirementTest.sysml": "1cb52b8dc4129084b98c906061516cfb4c7a9f4e445d866a55b443ee17d87997",
+        "sysml/src/examples/Simple Tests/RootPackageTest.sysml": "216198b63ebd9e7e9ff0b96b63a21d3efac19a628c4adce5bb7e14b6eedcc65a",
+        "sysml/src/examples/Simple Tests/StateTest.sysml": "c1e55572d8366b744c14cc66dba8e484f0037369d975fc4e675ccfdc7709bfd4",
+        "sysml/src/examples/Simple Tests/StructuredControlTest.sysml": "f423bf9c9453714041ff969a3ec8e47e07cbec54a3878b15c7d1504d7fb92b52",
+        "sysml/src/examples/Simple Tests/TextualRepresentationTest.sysml": "25e576f71a09111faf1aa77d340b525fdd4f7fc809e3716e4a777c0e7a059f2a",
+        "sysml/src/examples/Simple Tests/TradeStudyTest.sysml": "20c36d1fb7d3bc3af2b36bdba30197946376750fa65238075aa657147630669b",
+        "sysml/src/examples/Simple Tests/UseCaseTest.sysml": "7059bbf738d26b673231af8f02dad7f83fd0fd6a56256b4b681f558e7c14231a",
+        "sysml/src/examples/Simple Tests/VariabilityTest.sysml": "1426e577c0980ed68b2cd34434936df1a59e894fdbb71f8890b0ee1e1f136633",
+        "sysml/src/examples/Simple Tests/VerificationTest.sysml": "502f31d3dd2dde0f0a2c1fac3351b699ece175decc3508ed2e270a2aa3d02000",
+        "sysml/src/examples/Simple Tests/ViewTest.sysml": "053035ec20c48f38e316be9a4d37235d5ef4420c9b59cd4f92e8e30744e605a6",
+        "sysml/src/examples/State Space Representation Examples/CartSample.sysml": "285823caa3f6193e296fb9686e02f7b261f149c481b4475bc94c3fe180608a19",
+        "sysml/src/examples/State Space Representation Examples/EVSample.sysml": "4834675f798fb275b847887b53661bc351be8094b2f320ee4819d2bb4b71d3db",
+        "sysml/src/examples/Timeslice and Snapshot Examples/TimeVaryingAttribute.sysml": "0f67453cd6604c15764d061da3c33bca1ac35a2f78c51c011f1220080c389c7d",
+        "sysml/src/examples/Variability Examples/VehicleVariabilityModel.sysml": "14664c9e34155062f97bbbfef32bdb60ae7a8d35ce8fd19051882fd5fc222dcc",
+        "sysml/src/examples/Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml": "77d7ee54951e01c885d69d19d7359242baf22c69dcfe2d4088b0b59d56ea578d",
+        "sysml/src/examples/Vehicle Example/VehicleDefinitions.sysml": "26aaac35d37d7298157ac6cbad7d4dbad5f638389561f4d0216975ff3ca0ffbd",
+        "sysml/src/examples/Vehicle Example/VehicleIndividuals.sysml": "e77520c0faa9d8e2b54118c894593456419a83b39a9d6cf86992e03daae639a4",
+        "sysml/src/examples/Vehicle Example/VehicleUsages.sysml": "895344628a0a5c74147aba9a32acc143efda109bae3947e16a44e43cb623983d",
+        "sysml/src/examples/v1 Spec Examples/8.4.1 Wheel Hub Assembly/Wheel Package - Updated.sysml": "62b1dbc8f228745b552e6435e4ce425400be232a2326120fe63ee31a07749498",
+        "sysml/src/examples/v1 Spec Examples/8.4.1 Wheel Hub Assembly/Wheel Package.sysml": "480f4c74503436b67a2a2b64e89f74ac91ae9bf5b21327a276b603f8028a637e",
+        "sysml/src/examples/v1 Spec Examples/8.4.5 Constraining Decomposition/Vehicle Decomposition - Updated.sysml": "239730f56667232e7ac77e8e0739c96158166109aadc37f125b898352b246648",
+        "sysml/src/examples/v1 Spec Examples/8.4.5 Constraining Decomposition/Vehicle Decomposition.sysml": "1058cbc3cf7c947c99e20a70606cec85290733caf4e8eea5d7bbe1fa7afd7517",
+        "sysml/src/examples/v1 Spec Examples/D.4.7.8 Dynamics/HSUVDynamics.sysml": "6ed6d95856f3e7eb7d0b51f9db6725040d3450b999a5b676a07ba2b7d54bced5",
+        "sysml/src/training/01. Packages/Comment Example.sysml": "54a68a8df67c40693c5be341df3fceaed6714f7912eabc78b53ad01ba0ddec61",
+        "sysml/src/training/01. Packages/Documentation Example.sysml": "eb3c50cf3ac9cc4a90192688d103a2696cc2f912ead6c5a3c55b81f161e43ecf",
+        "sysml/src/training/01. Packages/Package Example.sysml": "0d9011a7a0c393d434734fa3c615515ef0f12f70f5252856a4815e0c5df235ed",
+        "sysml/src/training/02. Part Definitions/Part Definition Example.sysml": "521913a10985b6f0d8862f4e387ff844e9f2e862258e6f0bceeec1381da212b1",
+        "sysml/src/training/03. Generalization/Generalization Example.sysml": "876c1fc34d0d6cc4c95e3401ab15fd98e6cee5290ac83b70348e521621d911b8",
+        "sysml/src/training/04. Subsetting/Subsetting Example.sysml": "3e984c2497701a640a18c27d98270f10bf91fdc5fd039acd7be61fd9c85529a6",
+        "sysml/src/training/05. Redefinition/Redefinition Example.sysml": "2a58dadc33f5a752bd4601db23fad1c0396067dff9d0c48c69ea80e6eb8c7e8d",
+        "sysml/src/training/06. Enumeration Definitions/Enumeration Definitions-1.sysml": "d293a343a8957fbddcd4437fe7b576e10091a9d0c6a4c3cb718fbbd05a7f4149",
+        "sysml/src/training/06. Enumeration Definitions/Enumeration Definitions-2.sysml": "30c8dd20e140e8e2c4d1e27e75e74f1cda233cd5c815da739b09963525bc25ec",
+        "sysml/src/training/07. Parts/Parts Example-1.sysml": "390a2751034ecf5f75d7ebb5cf65119ce103e092c13114a80b15d2029afa3b89",
+        "sysml/src/training/07. Parts/Parts Example-2.sysml": "9cf9a4c1c0d98cd972dcdc2f74f7a1703816cb69605114e5caf88cf6cd1fa215",
+        "sysml/src/training/08. Items/Items Example.sysml": "a8f8cc4321933101c86bbc3651b4225b8a3f24a100a988f27bbef1d1738d68ca",
+        "sysml/src/training/09. Connections/Connections Example.sysml": "b7e709dc11084c488177317dd04d95885b2d779f85efce0ad4c286c865796aad",
+        "sysml/src/training/10. Ports/Port Conjugation Example.sysml": "0c7b995b29cc65d45817073688c73b4ac7004ab8000887311222d2b164082974",
+        "sysml/src/training/10. Ports/Port Example.sysml": "3676915bf0f659529710c70cec5b404d95da03979d3dac951583932182d314f7",
+        "sysml/src/training/11. Interfaces/Interface Decomposition Example.sysml": "c0d2e8cbbc99607647548c2f769a598a845d411787402aaeb5e8ded9157fe492",
+        "sysml/src/training/11. Interfaces/Interface Example.sysml": "81c8f2930bd1bb6fef3162fb5ff01480c59af34a9f959ab646c4b91621771426",
+        "sysml/src/training/12. Binding Connectors/Binding Connectors Example-1.sysml": "21108e56525e40539423821935378bba01e001a0cbd34ef8b67ddff7de22e919",
+        "sysml/src/training/12. Binding Connectors/Binding Connectors Example-2.sysml": "c17da7fade4c5c1f6040f7fc8375bee5b9af3827a69e889bcfbec263e4fe0c4e",
+        "sysml/src/training/13. Flows/Flow Definition Example.sysml": "4953942240e572a0bced3e6a481e7a0078ec5f1911f5d8d34c0e287037da224f",
+        "sysml/src/training/13. Flows/Flow Interface Example.sysml": "1b2f2d51dd2bca13e5a20548080f6cab21a3862ba0d7850ac9e86489d10d6633",
+        "sysml/src/training/13. Flows/Flow Usage Example.sysml": "3545248d2433ffdeef47d18b8b26ec06329c52b1dbfa4f19be4684b283118456",
+        "sysml/src/training/14. Action Definitions/Action Definition Example.sysml": "6ba1e3a81b50e75330a5011eff2b48fc69e8b1db93d92caa7263d302f95ed9df",
+        "sysml/src/training/14. Action Definitions/Action Shorthand Example.sysml": "40b3cc083d4e300526f4f4c11e5f416a34564ec4f42ee296ed89ca08d13256cd",
+        "sysml/src/training/14. Action Definitions/Action Succession Example-1.sysml": "85b068216d5edf0b5ce0e2de30d2a928a46c5572a732f7c8f787199947d54ca9",
+        "sysml/src/training/14. Action Definitions/Action Succession Example-2.sysml": "0fdb44f0efd3ae9f5c853652b2327d6f11f004fec90f605ad661001955ee64a6",
+        "sysml/src/training/15. Actions/Action Decomposition.sysml": "f9245d4c83cb9dba2778f83e686bdb65f29615550bc29a264a99283cf71901e9",
+        "sysml/src/training/16. Conditional Succession/Conditional Succession Example-1.sysml": "7c998f285cc6ab602898fba85dacabcff0f5be7ef81ef9168fdd0b86a8f7259a",
+        "sysml/src/training/16. Conditional Succession/Conditional Succession Example-2.sysml": "14bccb577348cae5fe1b1773e1369243b44407b93419928d4610966f98bdaf63",
+        "sysml/src/training/17. Control/Camera.sysml": "cd59a9c6fc168afd3784e338367dfbd36bc1cc08a66b7a6c6884766ee048b6a9",
+        "sysml/src/training/17. Control/Control Structures Example.sysml": "70fa8b06ad95b75e404a10b4b9284667333b511eff9832514c72e2022f9b3171",
+        "sysml/src/training/17. Control/Decision Example.sysml": "b8c23e53e8e0f8042861955fe90f1929f00763e913dbb8758e6ef9d7dc6a0fd7",
+        "sysml/src/training/17. Control/Fork Join Example.sysml": "ea5b086aaf26c14ca1f9dc03262d4b0d92e746d914f157d08c67dc20337c64b4",
+        "sysml/src/training/17. Control/Merge Example.sysml": "26d52bf0415681390c96022df5badfe925d603e98abc6d0e7481589b645d1deb",
+        "sysml/src/training/18. Action Performance/Action Performance Example.sysml": "9cfed0dda2bd2cb1c1d775a2520abe8155725c5f159f9de45f531da45648c62c",
+        "sysml/src/training/19. Terminate Actions/Terminate Actions Example-1.sysml": "68a22b8826dde8a1699c5357464dc060de22bb461d2bd2745ed5953fb82d7a79",
+        "sysml/src/training/19. Terminate Actions/Terminate Actions Example-2.sysml": "518bd633e5987133c8a0ef7ab2a7ccdeb3da4f9c4b17ddc13b5093e59bb9d7a6",
+        "sysml/src/training/20. Assignment Actions/Assignment Example.sysml": "e042634df4719f3e1b0c27950625557d5d243ad49710242a9fe227e005d4b1f9",
+        "sysml/src/training/21. Asynchronous Messaging/Messaging Example.sysml": "d977f1412a23475f45985227fda677da0223e80191043a4fe3900b5f0a373b2b",
+        "sysml/src/training/21. Asynchronous Messaging/Messaging with Ports.sysml": "9afc396b62e3be85888f35feabb3327bfc068b1f95da2fd7f97f681840fcf582",
+        "sysml/src/training/22. Opaque Actions/Opaque Action Example.sysml": "989053be5cba648732bb1f02412a63e50c2b4a621f3adb22ef19367b0ad42472",
+        "sysml/src/training/23. State Definitions/State Definition Example-1.sysml": "bb96a947ac4f3648c75cb74ee36d3bf3b120ce80a833ae9791a877051d6c2dd0",
+        "sysml/src/training/23. State Definitions/State Definition Example-2.sysml": "52c1ac545553470358affce66a40de21a51876ae10718a1a086419c2b0e6ef40",
+        "sysml/src/training/24. States/State Actions.sysml": "38d8c51cde9cdf0aa774864e6dcc65d98aeb89e23ebe097704dfe8896bb36dd6",
+        "sysml/src/training/24. States/State Decomposition-1.sysml": "ee8f049bfd5bb23e324f7f08faead640419122b7f909e36ce281ce8342557f58",
+        "sysml/src/training/24. States/State Decomposition-2.sysml": "197be1fb0cc100b13c9daa41e25450076779fb6edcb2b54cd09c93bbe7b78cc6",
+        "sysml/src/training/25. Transitions/Change and Time Triggers.sysml": "3633b959ba8b0c39f7bf22ff0bfcd8f5afdb133f444bf693423bbc6f30a708c6",
+        "sysml/src/training/25. Transitions/Local Clock Example.sysml": "7c4652c10baeeeeea932071346b5297aed4cb09b1073d01d1a0f78f13586e3dc",
+        "sysml/src/training/25. Transitions/Transition Actions.sysml": "0c2e7db0d37ca8489f911b567e1a41ed8a7a21216b4b5646db99d370562742ba",
+        "sysml/src/training/26. State Exhibition/State Exhibition Example.sysml": "c37cca84071070eae990d6f4733b789e22042a986cbc8a2616f04300d343e09d",
+        "sysml/src/training/27. Occurrences/Event Occurrence Example.sysml": "a0711b453e25f88d39383ba74dca22edf8e6fd3e08ca4b3d96abf9546e5dc7c3",
+        "sysml/src/training/27. Occurrences/Interaction Example-1.sysml": "d0fcda6e4b48ed7b0b57ee13152008d1fb4ee89343f48b0cc33fc484b4e3f39a",
+        "sysml/src/training/27. Occurrences/Interaction Example-2.sysml": "001245283d57f289a673c87e973c834d357dfcf819d251145649595a0dc70ad0",
+        "sysml/src/training/27. Occurrences/Interaction Realization-1.sysml": "c7abccdd482f6001056d080562e1f5ce9a983c7d93ece5496f7e847e1d2bbebd",
+        "sysml/src/training/27. Occurrences/Interaction Realization-2.sysml": "fee96e42ba9bdd7c31c79fcf5057ded0008a5e6a7a12c5b4ba4463d9b9e61d94",
+        "sysml/src/training/27. Occurrences/Message Payload Example.sysml": "cb4a16abdc6e60f570b30ba2d838999f933d0efd9348cf4bf8404019fc9f1fe2",
+        "sysml/src/training/27. Occurrences/Time Slice and Snapshot Example.sysml": "5ba8953e347346861fc549f871a41177d64409666424c23a69da92da8162cad3",
+        "sysml/src/training/28. Individuals/Individuals and Roles-1.sysml": "60f6402e35fa411dff29755d441cc6f6954e647a41e225e80fedd892317379df",
+        "sysml/src/training/28. Individuals/Individuals and Snapshots Example.sysml": "bc98281dd2d2b3066b936f13f77657237ddd30be6ff5f31f03ae79d76054a4a5",
+        "sysml/src/training/28. Individuals/Individuals and Time Slices.sysml": "5768954807af2247983855032f5eb1adb3fda9c46ff3f98460b92bb0cc96deb0",
+        "sysml/src/training/29. Expressions/Car Mass Rollup Example 1.sysml": "7f101db8137b93ae093870f23db4e7ede0a3912ff12bd170686db3836dd28f0f",
+        "sysml/src/training/29. Expressions/Car Mass Rollup Example 2.sysml": "c83b5e531c4854406d9606f605fd911fb8159ca6273364583466bf5e2b70578d",
+        "sysml/src/training/29. Expressions/MassRollup1.sysml": "289228badcbd9fd227ad6b0607cbcb5c351f58731d6747b1c0f08b40c592a7b6",
+        "sysml/src/training/29. Expressions/MassRollup2.sysml": "da017e7651de908cd723278e2b454d41d1695509886905c219ac64b90a63ff53",
+        "sysml/src/training/30. Calculations/Calculation Definitions.sysml": "c8b300bc5a70262107d067df1e868a59ecda60343ed6ebd36e780919ef635b77",
+        "sysml/src/training/30. Calculations/Calculation Usages-1.sysml": "50d3f3d82c5eaa65f37c40a9462ea544ac44aa9dccd256667d54bd3bd9e91c24",
+        "sysml/src/training/30. Calculations/Calculation Usages-2.sysml": "8b5b296fb4f4af5c7126264b20cac05b81242820c21e090bcbd5c78c90b4e7bc",
+        "sysml/src/training/31. Constraints/Analytical Constraints.sysml": "8d4d3f3184a508f975e1e07a075ec5885024f7136a69a7a79b236d8a520582f3",
+        "sysml/src/training/31. Constraints/Constraint Assertions-1.sysml": "e74f69c3b8f4dd0011fd1799bf9f3450e7ad10cdec5875df0ff1eda20400e839",
+        "sysml/src/training/31. Constraints/Constraint Assertions-2.sysml": "905418655ca8f68497ca2ff72a53ee4c5d67c975b451cce2dd2566110923fb26",
+        "sysml/src/training/31. Constraints/Constraints Example-1.sysml": "7ef69d5f949ae62c9305410cf56a06f0ff72dd780f46c746bea9f31b62f6530e",
+        "sysml/src/training/31. Constraints/Constraints Example-2.sysml": "96627a47273a5762e6e1571517d67a6731b7b09b5c56b9d92574654fee38f39a",
+        "sysml/src/training/31. Constraints/Derivation Constraints.sysml": "aa73335f565d75f468997d843e60560df14279c92ad02a347ae0e4caf53ee799",
+        "sysml/src/training/31. Constraints/Time Constraints.sysml": "3acc92ed706c8c1a352929df9b2eee27b7bb2459a49a19838121dade80bc1108",
+        "sysml/src/training/32. Requirements/Requirement Definitions.sysml": "bbf6164994aed96f962710105ec6be8ce97022b3e627a64ffcf9e39c2785bf6d",
+        "sysml/src/training/32. Requirements/Requirement Groups.sysml": "a4946e78a8602eac6eef372575636cfadd26c4e5228ed4f90510918fc7267c56",
+        "sysml/src/training/32. Requirements/Requirement Satisfaction.sysml": "bf4f3f309b20a4e82c5f72ef4f4740de226142190a906d2d078e82b8b1f36032",
+        "sysml/src/training/32. Requirements/Requirement Usages.sysml": "cf926c7f8a7f2d8ffa70f2f8ed0c1f0ade16c7cbc1fa06a2dff7e6146df9ae70",
+        "sysml/src/training/33. Analysis/Analysis Case Definition Example.sysml": "58c782d8502c4d659c4c3000bc2831dc9abcaa823b3116cc80a52cfcf20d10a2",
+        "sysml/src/training/33. Analysis/Analysis Case Usage Example.sysml": "8061f236770a23a365026fa3565bdad1af381058deca50486d03d5efbe4fe93e",
+        "sysml/src/training/33. Analysis/Trade Study Analysis Example.sysml": "c4708fca54c75cdff1e054c152fd50a9109773bfb267d54c57b9bcf841953070",
+        "sysml/src/training/34. Verification/Verification Case Definition Example.sysml": "6c947e54087a4e5ab1719e4043e0480211112a2ee6fc62d9b18814f3ee8f0b5c",
+        "sysml/src/training/34. Verification/Verification Case Usage Example.sysml": "f18e2dbdd9078aa3b9a3c223e2ea0251d90f7b0d64aee1dea22546cdc0977a38",
+        "sysml/src/training/35. Use Cases/Use Case Definition Example.sysml": "46d70e36666f54f5025de1d60c976ef24b56126a4a4a8f913cda8dacb1d7ad13",
+        "sysml/src/training/35. Use Cases/Use Case Usage Example.sysml": "abaaebced5d4f1d137ad5d8e7307a5d159a04d08a926e1ce11d59ee4f7ee1252",
+        "sysml/src/training/36. Variability/Variation Configuration.sysml": "00475547ef422bd1264740ba8e281d39968af27d6e640be592e9b63f82dab3f1",
+        "sysml/src/training/36. Variability/Variation Definitions.sysml": "d175901cc5f3c382e2e0bd894c3bf433b055b7a62203c14f097423dad584b7bf",
+        "sysml/src/training/36. Variability/Variation Usages.sysml": "00a622b19bd0c0f0199e7a281676ea7dba1ac9f31276fe3f394d4859f90c86cd",
+        "sysml/src/training/37. Dependencies/Dependency Example.sysml": "a67c6c5d00849b16f6a4f5f0a6867c94833fad77be9cf9afb28cdd4395dbcd9c",
+        "sysml/src/training/38. Allocation/Allocation Definition Example.sysml": "01b3fd07fd12885dda5f7af570db6f52a60dbd4a891fc2c5de53183e3ddba741",
+        "sysml/src/training/38. Allocation/Allocation Usage Example.sysml": "b3ffeaefc73bf13ae8f9c56e19e95a30e7e4140e1fa26aa6f1557a31c6bc4312",
+        "sysml/src/training/39. Metadata/Metadata Example-1.sysml": "7854ed2310900fb26ba5422d79e10b8fccc784fa3f012b75e2ddbf86c85dbf5e",
+        "sysml/src/training/39. Metadata/Metadata Example-2.sysml": "ab8f3ccc569c562876187629b7486207ff1a2aded1d2a35b88df599e78ce45b5",
+        "sysml/src/training/40. Filtering/Filtering Example-1.sysml": "6e8dc71d4f3bf124d78300aebda432dfb48617d36442137edb0aa131bc7689bd",
+        "sysml/src/training/40. Filtering/Filtering Example-2.sysml": "95fc48884d4b7baaa421692146126a6955e376d2337770e93663a0661bdf2c8f",
+        "sysml/src/training/41. Language Extension/Model Library Example.sysml": "0e994cf5d207ca1bcb6832956504f807fde3ac976f2325f7e983290446743b1a",
+        "sysml/src/training/41. Language Extension/Semantic Metadata Example.sysml": "3dee1f7403f9e8a9c7e450032ce66d85734fd1cd78a08d2d2e3dec4fa928030b",
+        "sysml/src/training/41. Language Extension/User Keyword Example.sysml": "e0d44dbd4fdeb997810ab18fc8bff5c447a32334242efdbaf09646af5f83be7a",
+        "sysml/src/training/42. Views/Viewpoint Example.sysml": "93dac2797ea78074199d9b7956e01f7ef0456c85fa2000f5a3b99a3cba4a96ad",
+        "sysml/src/training/42. Views/Views Example.sysml": "ad1e0b92f7084f8b864b852aa4938f01d4676ab31733e60088d4117f30a90f99",
+        "sysml/src/validation/01-Parts Tree/1a-Parts Tree.sysml": "68adac5f5b2a0f7d8d2ca2bb6ce4aca3d636317b74a3d2036f1df95379e3e514",
+        "sysml/src/validation/01-Parts Tree/1c-Parts Tree Redefinition.sysml": "ee3fd9b693eee0eda5543ba146b1c672dacc06ec913bd3da5da12c240ef6f13e",
+        "sysml/src/validation/01-Parts Tree/1d-Parts Tree with Reference.sysml": "f2762576cfb1564605ce162a2326f2b5e00f9a6eb25879831adbf854db3e4689",
+        "sysml/src/validation/02-Parts Interconnection/2a-Parts Interconnection.sysml": "9fc597156787d6bfa04c6c06b30026b0a6b99240e43320aeb0b4b1c5d5f7ed8f",
+        "sysml/src/validation/02-Parts Interconnection/2c-Parts Interconnection-Multiple Decompositions.sysml": "2d6e1789531ef65d4a7e221eae51fff7adafd739abe47c073f9f3cc7c27f187f",
+        "sysml/src/validation/03-Function-based Behavior/3a-Function-based Behavior-1.sysml": "e4093071e6c613cb5e66e79be116cc90e2732c141ef85ffd10ada7fc71dd4ce1",
+        "sysml/src/validation/03-Function-based Behavior/3a-Function-based Behavior-2.sysml": "1fd798b584fcf8294bb179e6ad09bb231a860b7f06c0ac3ebf7d5c326b81355b",
+        "sysml/src/validation/03-Function-based Behavior/3a-Function-based Behavior-3.sysml": "ee405fc045e2325625d2ab7d242f1852c4ca9d36a40d8919ad22d4bcc97fbbe0",
+        "sysml/src/validation/03-Function-based Behavior/3c-Function-based Behavior-structure mod-1.sysml": "a195aa08ccc55b28611590bf8318e68dc743a80bbab067f9e501223e4cf28a3d",
+        "sysml/src/validation/03-Function-based Behavior/3c-Function-based Behavior-structure mod-2.sysml": "d4c3a58f64733407d8f55882bb422abeba6a56071a381fa81c7e0cecefb3a37c",
+        "sysml/src/validation/03-Function-based Behavior/3c-Function-based Behavior-structure mod-3.sysml": "b06f8ff7362015304b73339a3444c3bb2b7b0f3ab367bf390cc849dd7ae10397",
+        "sysml/src/validation/03-Function-based Behavior/3d-Function-based Behavior-item.sysml": "53a4dbd7dd39c808582e6fe3c791fbf642a9d17fc1775c2796d2c7fd359ad456",
+        "sysml/src/validation/03-Function-based Behavior/3e-Function-based Behavior-item.sysml": "53076ded62ac7995f3bba8365c635e725894074faf3b19787bec711136b781ba",
+        "sysml/src/validation/04-Functional Allocation/4a-Functional Allocation.sysml": "5606db54345e6a79c90c948f7d71a86222110422f90ad7b5f5e30bdee93d7638",
+        "sysml/src/validation/05-State-based Behavior/5-State-based Behavior-1.sysml": "09d33ca09f9121193374b09215f6a3fffe5654cdfde8c794a4f8637b71825485",
+        "sysml/src/validation/05-State-based Behavior/5-State-based Behavior-1a.sysml": "22bfc1ae2dbcb94db9844eddc16dda325645d2b0eb622bbfcfefe93bd6433ef8",
+        "sysml/src/validation/05-State-based Behavior/5-State-based Behavior-2.sysml": "218835c9dbefdc8f76098c342aa6bb3db66b85c9a298fabed8e518920d36f32f",
+        "sysml/src/validation/06-Individual and Snapshots/6-Individual and Snapshots.sysml": "31efc993fd2ead88e2edb0130fde4051c64a86dce7c31c1057b4131de507a848",
+        "sysml/src/validation/07-Variant Configuration/7a-Variant Configuration - General Concept.sysml": "a4e94ee32045fe6250ec8ca932405d53d16e2a6b89b14621b4de8aa86a45f8af",
+        "sysml/src/validation/07-Variant Configuration/7a1-Variant Configuration - General Concept-a.sysml": "9d5321f0c569f5d36657b81b0c129138001939efecf8cb87c528f3eea629b0ab",
+        "sysml/src/validation/07-Variant Configuration/7b-Variant Configurations.sysml": "c0f5d9fc230789e6b4326d554a05e38cd4db48c2081d8d8a627eef52a5574fd7",
+        "sysml/src/validation/08-Requirements/8-Requirements.sysml": "be660d2f7935c481d4ab39fb68231a00d830489ef9365b68e8213e50015323c1",
+        "sysml/src/validation/09-Verification/9-Verification-simplified.sysml": "877d2ae9cfc2e51a37b0217ae94be7df0f810ecf36eddf31c9a27d14dc2a0356",
+        "sysml/src/validation/10-Analysis and Trades/10a-Analysis.sysml": "e24ec15d535a3bfbf8aaeb57e599503ce57de51bcc07790c77435b44501fc138",
+        "sysml/src/validation/10-Analysis and Trades/10b-Trade-off Among Alternative Configurations.sysml": "b64991322decd492c6bb14ea32ad8282499d66e9dc8f9be66da9f283c74f6c80",
+        "sysml/src/validation/10-Analysis and Trades/10c-Fuel Economy Analysis.sysml": "3bea4bbe7b04ba3572b3f7ccebd211897ad0521ef73009f31c32eed7296d3749",
+        "sysml/src/validation/10-Analysis and Trades/10d-Dynamics Analysis.sysml": "600106d6e2874f810ebb4c98f6fafd6b96b6f79842a9fdb7b42fd269aeb56c40",
+        "sysml/src/validation/11-View and Viewpoint/11a-View-Viewpoint.sysml": "f89e97e5a9a49c6c3f2fc59162f99a60d1cf6faa5599ecdf1db398c72f8e3514",
+        "sysml/src/validation/11-View and Viewpoint/11b-Safety and Security Feature Views.sysml": "d098663519952d3be7ded36d7fbd39ffdb21dd52c03448230d02b3e5f5b9ba27",
+        "sysml/src/validation/12-Dependency Relationships/12a-Dependency.sysml": "69966550379ca490de4dffa7b284be83983d0deaa565c073aec79c603f019bac",
+        "sysml/src/validation/12-Dependency Relationships/12b-Allocation-1.sysml": "1a65dcbc5a7f0086111744d6d0f640a36c2721ee9156fbab34b09cfede1e7d24",
+        "sysml/src/validation/12-Dependency Relationships/12b-Allocation.sysml": "458ffde07b81f5ee23392c3ec2f57066f4e9e83b3329c1614663c41dfd48c733",
+        "sysml/src/validation/13-Model Containment/13a-Model Containment.sysml": "0a7f5cb3d280ca39a6b657a1c2ccc9a87515722936bddbfcbbb86d0d77796687",
+        "sysml/src/validation/13-Model Containment/13b-Safety and Security Features Element Group-1.sysml": "9b8409690b432b74d05236e9642b8633ed6ac6c137b1ea25e29b994b90b3ba4e",
+        "sysml/src/validation/13-Model Containment/13b-Safety and Security Features Element Group-2.sysml": "592626e07a3c95392439f3a3f0ce91d44f8d6ef03d9cced3451bbdeabe91707f",
+        "sysml/src/validation/13-Model Containment/13b-Safety and Security Features Element Group.sysml": "f72bc1e710bd77742eb371d63b466987b3d6ceae7f37a266e0245c6565878cab",
+        "sysml/src/validation/14-Language Extensions/14a-Language Extensions.sysml": "fbe9aaa70532d3303fd6fb39bc725cc9299e52c33a4960a97723a1f4154ecb82",
+        "sysml/src/validation/14-Language Extensions/14b-Language Extensions.sysml": "9fd6886fe63e328c9cca645d137e1413ed93068f56ed05e3be0e837832e705a8",
+        "sysml/src/validation/14-Language Extensions/14c-Language Extensions.sysml": "7760e8264bfa7b2ab6ecf4985110459c959d5c971712acd3f1f945317b3d92f4",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_01-Constants.sysml": "e88230f7825608a153977c07b16bd48dbdd41dadbcf2c0d4ecdb001a91dddbe7",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_02-Basic Value Properties.sysml": "fe562529159fc94cf23b1fc827cd3590dc3946265680a3d9324f79125637138b",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_03-Value Expression.sysml": "156b04676dd45d985aafaa04cd98cbc70727a5ff8b395444471e37abfc23eb07",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_04-Logical Expressions.sysml": "be7c568cf296df8e4bd866ce604cdb1e2cef3223f3c7c7a8d74863fd3fe82554",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_05-Unification of Expression and Constraint Definition.sysml": "c62afbf670da4a4fc2f337e5eca84e7b8f1790113fdad7cf5c21757c2b98e9a8",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_06-System of Quantities.sysml": "876f29fc5476b05f9fa908d69176e00825d996ba9b5c622cd2fbb95867a004a8",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_07-System of Units and Scales.sysml": "359274cb936c12607ffb487a01b30c89359ab75b6b4328f9393d8d5745b4c1d0",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_08-Range Restriction.sysml": "21be841080c23b55243365352b93b11094977555ea0b8f417107c7316eb52a1a",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_10-Primitive Data Types.sysml": "25ff6e37d7090c1f16e24a0fe644ab69dde4745977afb3dae5f7161182bb2090",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_11-Variable Length Collection Types.sysml": "28ea6f6aa4b222fdeead4b5f3bb5c1180a6d655d07b9fdeee2f285fd420d2408",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_12-Compound Value Type.sysml": "6d7232008b6d7522ae4e1b1cb9fa15c856e67054849696924594a7f4f2b0515c",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_13-Discretely Sampled Function Value.sysml": "72dedb9af384da9948e1e9e9a1e6b8ffe1bb970bcb277588147f93efa9bf853e",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_19-Materials with Properties.sysml": "a8c4d8571ad672de9e300c7de2cac8c684bf6b403bc16fcf3a896a350b0218b3",
+        "sysml/src/validation/15-Properties-Values-Expressions/15_19a-Materials with Properties.sysml": "7d848239c6012cc15d04d4bd58b9d0e935972991cee7a9bb4569e9a7536fdd30",
+        "sysml/src/validation/17-Sequence Modeling/17a-Sequence-Modeling.sysml": "52c79bd6c698ee26840a9246b0fd4294d05e59b11f38f9f5a980535bb0d0761c",
+        "sysml/src/validation/17-Sequence Modeling/17b-Sequence-Modeling.sysml": "df9b1f3a76f0a0fb30bbf6f30705d64ac26cbe50b9143dcea5a877c7d69cdc1c",
+        "sysml/src/validation/18-Use Case/18-Use Case.sysml": "debd6b83bb60278f6c8d160d0fb8ad31b9107295461d8070cbd8069db9b9e457"
+      },
+      "phases": [
+        {
+          "name": "syntax",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--manifest-path",
+            "/Users/donovanrost/Documents/ChatGPT/SysML/target/vendor-tests/source-cross-reviewed-MrZ7m6/Cargo.toml",
+            "-p",
+            "sysmlv2-syntax",
+            "--lib",
+            "--",
+            "--test-threads=1",
+            "--nocapture"
+          ],
+          "status": "pass",
+          "startedAt": "2026-10-19T02:50:32.291Z",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:50:35.551Z",
+          "log": "target/trigger-validation/owned-cross-expanded-corrected-syntax.log",
+          "logSha256": "c61b99b3faa667989f34a16e7ed86b67b294f92c8403bcc3062640c79a2fda83"
+        },
+        {
+          "name": "cross-model",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--manifest-path",
+            "/Users/donovanrost/Documents/ChatGPT/SysML/target/vendor-tests/source-cross-reviewed-MrZ7m6/Cargo.toml",
+            "-p",
+            "sysmlv2-model",
+            "--lib",
+            "json::owned_cross_",
+            "--",
+            "--test-threads=1",
+            "--nocapture"
+          ],
+          "status": "pass",
+          "startedAt": "2026-10-19T02:50:35.552Z",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:51:32.647Z",
+          "log": "target/trigger-validation/owned-cross-expanded-corrected-cross-model.log",
+          "logSha256": "7b0d650fa56eb138c88b18473b74edfa90ab8ccca8a4e606c791affc14573b13"
+        },
+        {
+          "name": "public",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--manifest-path",
+            "/Users/donovanrost/Documents/ChatGPT/SysML/target/vendor-tests/source-cross-reviewed-MrZ7m6/Cargo.toml",
+            "-p",
+            "sysmlv2-model",
+            "--test",
+            "owned_cross_features",
+            "--",
+            "--test-threads=1",
+            "--nocapture"
+          ],
+          "status": "pass",
+          "startedAt": "2026-10-19T02:51:32.648Z",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T02:52:05.607Z",
+          "log": "target/trigger-validation/owned-cross-expanded-corrected-public.log",
+          "logSha256": "b9b710f2a86c0f77dd6da18093748b14463bc5d9e694daff49c909e6cd2740d0"
+        }
+      ],
+      "finishedAt": "2026-10-19T02:52:06.602Z"
+    },
+    "counts": {
+      "syntaxUnitTests": 16,
+      "crossModelTests": 7,
+      "publicIntegrationTests": 1
+    },
+    "fixtureCorrection": {
+      "diagnostic": "target/trigger-validation/owned-cross-rebuild-fixture-diagnostic.log",
+      "logSha256": "93b78a4a1426ffdd9dbfd50b86d4fb0ec10a374ebcf4f0ec54f7af808b8dd104",
+      "finding": "An unquoted reserved new short-name made the rebuild fixture syntactically invalid in both dialects. Quoting the same name fixes syntax without changing the rebuild assertions. The diagnostic demonstrates invalid versus quoted valid forms in both dialects."
+    }
+  },
+  "constructionFullQualification": {
+    "status": "passed in isolation; not admitted",
+    "session": 32934,
+    "report": "target/trigger-validation/owned-cross-full.json",
+    "counts": {
+      "syntax": 16,
+      "model": 1034,
+      "public": 1
+    },
+    "finishedAt": "2026-10-19T03:03:35.166Z",
+    "scope": "All model unit tests, all syntax unit tests and public integration with all 94 library files and 251 pinned corpus sources. Production unchanged. Application exploration is now the user\u2019s priority."
+  }
+}

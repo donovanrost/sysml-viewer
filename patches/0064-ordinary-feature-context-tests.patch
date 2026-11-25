@@ -1,0 +1,392 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/ordinary_features_tests.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/ordinary_features_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/ordinary_features_tests.rs
+@@ -0,0 +1,387 @@
++use crate::{
++    json::{
++        ClosurePolicy, ElementRef, FeatureTypeIssue, ResolvedModel,
++        type_relations::{RelationFact, TypeRelations},
++    },
++    model::{GraphFormat, Model},
++    prepared::PreparedLibrary,
++};
++use serde_json::json;
++use std::sync::{Arc, OnceLock};
++
++fn raw_library() -> Model {
++    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
++        .join("../../spec-refs/SysML-v2-Release/sysml.library");
++    let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
++    assert_eq!(model.load_library_dir(&root).unwrap(), 94);
++    model
++}
++fn library() -> Arc<PreparedLibrary> {
++    static LIBRARY: OnceLock<Arc<PreparedLibrary>> = OnceLock::new();
++    Arc::clone(LIBRARY.get_or_init(|| raw_library().prepare_library().unwrap()))
++}
++fn resolved(mut model: Model, source: &str) -> ResolvedModel {
++    let parsed = model.add_source("ordinary-features.kerml", source);
++    assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
++    ResolvedModel::build(&model)
++}
++fn fixture(source: &str) -> ResolvedModel {
++    let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
++    library().install(&mut model).unwrap();
++    resolved(model, source)
++}
++fn ready(r: &mut ResolvedModel) {
++    r.ensure_implied();
++    r.set_closure_policy(ClosurePolicy::Closure {
++        include_implied: true,
++    });
++}
++fn exact(r: &mut ResolvedModel, name: &str, expected: &str) -> uuid::Uuid {
++    let feature = r.resolve_qualified(name).unwrap();
++    let expected = r.resolve_qualified(expected).unwrap();
++    let rows = r.b.elements.len();
++    let report = r.feature_type_report(feature);
++    assert_eq!(report.types, Ok(vec![expected]), "{name}: {report:?}");
++    assert_eq!(
++        r.property(feature, "type").unwrap(),
++        json!([{"@id":r.element_id(expected)}])
++    );
++    assert_eq!(r.b.elements.len(), rows);
++    r.element_id(feature)
++}
++const MATRIX: &str = r#"
++ feature namespaceControl:ScalarValues::Integer;
++ feature namespaceValue:ScalarValues::Integer default=1;
++ classifier C {feature control:ScalarValues::Integer;feature valued:ScalarValues::Integer default=1;}
++ behavior B {feature control:ScalarValues::Integer;feature valued:ScalarValues::Integer default=1;}
++ function F {feature control:ScalarValues::Integer;feature valued:ScalarValues::Integer default=1;return result;}
++ predicate P {feature control:ScalarValues::Integer;feature valued:ScalarValues::Integer default=1;return result:ScalarValues::Boolean;}
++ step s {feature control:ScalarValues::Integer;feature valued:ScalarValues::Integer default=1;}
++ expr e {feature control:ScalarValues::Integer;feature valued:ScalarValues::Integer default=1;return result;}
++ feature outer:Base::Anything {feature control:ScalarValues::Integer;feature valued:ScalarValues::Integer default=1;}
++ classifier A {feature forward:A;feature backward:A inverse of forward;}
++"#;
++#[test]
++fn ordinary_members_keep_declared_types_without_acquiring_parameter_roles() {
++    let mut r = fixture(MATRIX);
++    ready(&mut r);
++    for name in [
++        "namespaceControl",
++        "namespaceValue",
++        "C::control",
++        "C::valued",
++        "B::control",
++        "B::valued",
++        "F::control",
++        "F::valued",
++        "P::control",
++        "P::valued",
++        "s::control",
++        "s::valued",
++        "e::control",
++        "e::valued",
++        "outer::control",
++        "outer::valued",
++    ] {
++        exact(&mut r, name, "ScalarValues::Integer");
++    }
++    for name in ["A::forward", "A::backward"] {
++        exact(&mut r, name, "A");
++    }
++    for owner in ["B", "F", "P", "s", "e"] {
++        let feature = r.resolve_qualified(&format!("{owner}::valued")).unwrap();
++        let owner = r.resolve_qualified(owner).unwrap();
++        let projection = r.type_feature_report(owner).projections.unwrap();
++        assert!(projection.features.contains(&feature));
++        assert!(!projection.inputs.contains(&feature));
++        assert!(!projection.outputs.contains(&feature));
++    }
++}
++#[test]
++fn inherited_types_and_inverse_endpoints_preserve_independent_declared_types() {
++    let mut r = fixture(
++        r#"
++      datatype Small specializes ScalarValues::Integer;
++      behavior Parent {feature original:Small;}
++      behavior Child specializes Parent {feature replaced redefines Parent::original default=1;}
++      feature container {feature inherited subsets Child::replaced;}
++      datatype Other specializes ScalarValues::Boolean;
++      feature forward:Other;
++      feature backward:Small inverse of forward;
++      feature query=backward;
++    "#,
++    );
++    ready(&mut r);
++    for name in [
++        "Parent::original",
++        "Child::replaced",
++        "container::inherited",
++        "backward",
++    ] {
++        exact(&mut r, name, "Small");
++    }
++    exact(&mut r, "forward", "Other");
++    let source = r
++        .user_elements()
++        .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
++        .unwrap();
++    let result = r.expression_result_report(source).result.unwrap().unwrap();
++    let small = r.resolve_qualified("Small").unwrap();
++    assert_eq!(r.feature_type_report(result).types, Ok(vec![small]));
++}
++const OWNER_SOURCE: &str = "behavior Owner {feature control:ScalarValues::Integer;feature selected:ScalarValues::Integer default=1;}";
++#[derive(Debug, Clone, Copy)]
++enum OwnerDamage {
++    MissingOwner,
++    ForeignCarrier,
++    MissingMember,
++    Direction,
++    End,
++    Composite,
++    MalformedPortion,
++    Variable,
++    MalformedEnd,
++    Metadata,
++    FlowEnd,
++    NonType,
++    NonOwningMembership,
++}
++const OWNER_DAMAGE: [OwnerDamage; 13] = [
++    OwnerDamage::MissingOwner,
++    OwnerDamage::ForeignCarrier,
++    OwnerDamage::MissingMember,
++    OwnerDamage::Direction,
++    OwnerDamage::End,
++    OwnerDamage::Composite,
++    OwnerDamage::MalformedPortion,
++    OwnerDamage::Variable,
++    OwnerDamage::MalformedEnd,
++    OwnerDamage::Metadata,
++    OwnerDamage::FlowEnd,
++    OwnerDamage::NonType,
++    OwnerDamage::NonOwningMembership,
++];
++fn owner_damage(r: &mut ResolvedModel, feature: ElementRef, change: OwnerDamage) {
++    let membership = r.b.elements[feature.0].owning_relationship.unwrap();
++    let owner = r.resolve_qualified("Owner").unwrap();
++    let control = r.resolve_qualified("Owner::control").unwrap();
++    let wrong = r.element_id(control);
++    match change {
++        OwnerDamage::MissingOwner => r.b.elements[feature.0].owning_relationship = None,
++        OwnerDamage::ForeignCarrier => {
++            r.b.set(membership, "owningRelatedElement", json!({"@id":wrong}))
++        }
++        OwnerDamage::MissingMember => r.b.set(
++            membership,
++            "memberElement",
++            json!({"@id":"00000000-0000-0000-0000-000000000000"}),
++        ),
++        OwnerDamage::Direction => r.b.set(feature.0, "direction", json!("invalid")),
++        OwnerDamage::End => r.b.set(feature.0, "isEnd", json!(true)),
++        OwnerDamage::Composite => r.b.set(feature.0, "isComposite", json!(true)),
++        OwnerDamage::MalformedPortion => r.b.set(feature.0, "isPortion", json!("invalid")),
++        OwnerDamage::Variable => r.b.set(feature.0, "isVariable", json!(true)),
++        OwnerDamage::MalformedEnd => r.b.set(feature.0, "isEnd", json!("invalid")),
++        OwnerDamage::Metadata => r.b.metadata_associations_incomplete = true,
++        OwnerDamage::FlowEnd => r.b.elements[owner.0].ty = "FlowEnd",
++        OwnerDamage::NonType => r.b.elements[owner.0].ty = "Comment",
++        OwnerDamage::NonOwningMembership => r.b.elements[membership].ty = "Membership",
++    }
++}
++#[test]
++fn fresh_owner_and_conditional_family_failures_do_not_become_complete_types() {
++    for change in OWNER_DAMAGE {
++        let mut r = fixture(OWNER_SOURCE);
++        let feature = r.resolve_qualified("Owner::selected").unwrap();
++        owner_damage(&mut r, feature, change);
++        ready(&mut r);
++        let report = r.feature_type_report(feature);
++        assert!(report.types.is_err(), "{change:?}: {report:?}");
++        assert_ne!(report.types, Err(FeatureTypeIssue::WorkLimit), "{change:?}");
++    }
++}
++#[test]
++fn owner_edits_revoke_previously_checked_types() {
++    for change in OWNER_DAMAGE {
++        let mut r = fixture(OWNER_SOURCE);
++        ready(&mut r);
++        exact(&mut r, "Owner::selected", "ScalarValues::Integer");
++        let feature = r.resolve_qualified("Owner::selected").unwrap();
++        owner_damage(&mut r, feature, change);
++        assert!(r.feature_type_report(feature).types.is_err(), "{change:?}");
++    }
++}
++const INVERSE_SOURCE: &str = "classifier A {feature forward:A;feature backward:A inverse of forward;} feature unrelated:ScalarValues::String;";
++#[derive(Debug, Clone, Copy)]
++enum InverseDamage {
++    Carrier,
++    DuplicateCarrier,
++    Source,
++    MissingTarget,
++    WrongTargetKind,
++    NullTarget,
++    SourceArray,
++    TargetArray,
++    RelatedOrder,
++    DuplicateTarget,
++    OwnedChild,
++}
++const INVERSE_DAMAGE: [InverseDamage; 11] = [
++    InverseDamage::Carrier,
++    InverseDamage::DuplicateCarrier,
++    InverseDamage::Source,
++    InverseDamage::MissingTarget,
++    InverseDamage::WrongTargetKind,
++    InverseDamage::NullTarget,
++    InverseDamage::SourceArray,
++    InverseDamage::TargetArray,
++    InverseDamage::RelatedOrder,
++    InverseDamage::DuplicateTarget,
++    InverseDamage::OwnedChild,
++];
++fn inverse_damage(r: &mut ResolvedModel, feature: ElementRef, change: InverseDamage) {
++    let relation = r
++        .owned_relationships(feature)
++        .into_iter()
++        .find(|&e| r.element_type(e) == "FeatureInverting")
++        .unwrap();
++    let forward = r.resolve_qualified("A::forward").unwrap();
++    let classifier = r.resolve_qualified("A").unwrap();
++    let source = r.element_id(feature);
++    let target = r.element_id(forward);
++    let class_id = r.element_id(classifier);
++    match change {
++        InverseDamage::Carrier => {
++            r.b.set(relation.0, "owningRelatedElement", json!({"@id":target}))
++        }
++        InverseDamage::DuplicateCarrier => {
++            r.b.elements[forward.0].owned_relationships.push(relation.0);
++        }
++        InverseDamage::Source => {
++            r.b.set(relation.0, "featureInverted", json!({"@id":target}))
++        }
++        InverseDamage::MissingTarget => r.b.set(
++            relation.0,
++            "invertingFeature",
++            json!({"@id":"00000000-0000-0000-0000-000000000000"}),
++        ),
++        InverseDamage::WrongTargetKind => {
++            r.b.set(relation.0, "invertingFeature", json!({"@id":class_id}))
++        }
++        InverseDamage::NullTarget => r.b.set(relation.0, "invertingFeature", json!(null)),
++        InverseDamage::SourceArray => r.b.set(relation.0, "source", json!([{"@id":target}])),
++        InverseDamage::TargetArray => r.b.set(relation.0, "target", json!([{"@id":source}])),
++        InverseDamage::RelatedOrder => r.b.set(
++            relation.0,
++            "relatedElement",
++            json!([{"@id":target},{"@id":source}]),
++        ),
++        InverseDamage::DuplicateTarget => {
++            r.b.set(relation.0, "target", json!([{"@id":target},{"@id":target}]))
++        }
++        InverseDamage::OwnedChild => {
++            r.b.set(relation.0, "ownedRelatedElement", json!([{"@id":target}]))
++        }
++    }
++}
++#[test]
++fn inverse_aliases_are_checked_for_typing_and_negative_specialization() {
++    let mut r = fixture(INVERSE_SOURCE);
++    ready(&mut r);
++    exact(&mut r, "A::backward", "A");
++    let feature = r.resolve_qualified("A::backward").unwrap();
++    let unrelated = r.resolve_qualified("ScalarValues::String").unwrap();
++    assert_eq!(
++        TypeRelations::default().specializes(&mut r.b, feature.0, unrelated.0, &mut 0),
++        RelationFact::No
++    );
++    for change in INVERSE_DAMAGE {
++        let mut r = fixture(INVERSE_SOURCE);
++        let feature = r.resolve_qualified("A::backward").unwrap();
++        inverse_damage(&mut r, feature, change);
++        ready(&mut r);
++        let report = r.feature_type_report(feature);
++        assert!(report.types.is_err(), "{change:?}: {report:?}");
++        assert_ne!(report.types, Err(FeatureTypeIssue::WorkLimit), "{change:?}");
++        let unrelated = r.resolve_qualified("ScalarValues::String").unwrap();
++        let mut steps = 0;
++        assert_eq!(
++            TypeRelations::default().specializes(&mut r.b, feature.0, unrelated.0, &mut steps),
++            RelationFact::Unknown,
++            "{change:?}"
++        );
++        assert!(steps <= crate::eval::MAX_STEPS, "{change:?}: {steps}");
++    }
++}
++#[test]
++fn inverse_edits_cannot_reuse_type_success() {
++    for change in INVERSE_DAMAGE {
++        let mut r = fixture(INVERSE_SOURCE);
++        ready(&mut r);
++        exact(&mut r, "A::backward", "A");
++        let feature = r.resolve_qualified("A::backward").unwrap();
++        inverse_damage(&mut r, feature, change);
++        assert!(r.feature_type_report(feature).types.is_err(), "{change:?}");
++    }
++}
++#[test]
++fn owner_and_inverse_types_preserve_budgets_and_library_replay() {
++    let prepared = library();
++    let decoded =
++        Arc::new(PreparedLibrary::from_bytes(&prepared.to_bytes(148).unwrap(), 148).unwrap());
++    let mut expected = None;
++    for replay in [None, Some(prepared), Some(decoded)] {
++        let model = if let Some(replay) = replay {
++            let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++            replay.install(&mut m).unwrap();
++            m
++        } else {
++            raw_library()
++        };
++        let mut r = resolved(model, MATRIX);
++        ready(&mut r);
++        let ids = [
++            exact(&mut r, "B::valued", "ScalarValues::Integer"),
++            exact(&mut r, "outer::valued", "ScalarValues::Integer"),
++            exact(&mut r, "A::backward", "A"),
++        ];
++        if let Some(expected) = expected {
++            assert_eq!(ids, expected)
++        } else {
++            expected = Some(ids)
++        }
++        let feature = r.resolve_qualified("A::backward").unwrap();
++        let classifier = r.resolve_qualified("A").unwrap();
++        let rows = r.b.elements.len();
++        assert_eq!(
++            r.feature_type_report_with_budget(feature, crate::eval::MAX_STEPS)
++                .types,
++            Err(FeatureTypeIssue::WorkLimit)
++        );
++        let retry = r.feature_type_report_with_budget(feature, 100);
++        assert_eq!(retry.types, Ok(vec![classifier]));
++        assert!(retry.steps > 100);
++        assert_eq!(r.b.elements.len(), rows);
++    }
++}
++
++#[test]
++fn portion_flag_on_data_typed_default_does_not_require_occurrence_portion_bases() {
++    let mut r = fixture(OWNER_SOURCE);
++    let feature = r.resolve_qualified("Owner::selected").unwrap();
++    r.b.set(feature.0, "isPortion", json!(true));
++    ready(&mut r);
++    exact(&mut r, "Owner::selected", "ScalarValues::Integer");
++}
++
++#[test]
++fn valid_membership_role_change_removes_owning_type_without_erasing_declared_type() {
++    let mut r = fixture(OWNER_SOURCE);
++    ready(&mut r);
++    exact(&mut r, "Owner::selected", "ScalarValues::Integer");
++    let f = r.resolve_qualified("Owner::selected").unwrap();
++    let membership = r.b.elements[f.0].owning_relationship.unwrap();
++    r.b.elements[membership].ty = "OwningMembership";
++    exact(&mut r, "Owner::selected", "ScalarValues::Integer");
++    assert_eq!(r.property(f, "owningType"), Ok(json!(null)));
++}

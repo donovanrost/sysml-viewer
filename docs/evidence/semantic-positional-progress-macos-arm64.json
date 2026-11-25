@@ -1,0 +1,123 @@
+{
+  "generatedAt": "2026-10-18T07:47:34.852535+00:00",
+  "platform": "macOS-15.8-arm64-arm-64bit",
+  "status": "verified shared-planner dependency progress; not complete reference-result or trigger conformance",
+  "baselineCommit": "4ee0776",
+  "scope": "Let the shared positional algorithm consume complete current semantic membership nodes, including generated return memberships, while retaining construction-time input gathering and caching.",
+  "kernelInputSha256": "dc17c0da80d9499ad2d24445a20ed1aadefa25c6682a7221391a80c43730aa91",
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional.rs": "910938d2973f55748a5ce93bf60adaa68ac0b84dd266c3acb326b3532b66121e",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/checked.rs": "8bb26e28d6eb262e56eee1f0504c2bbaf00cac4ed03a58bedf7ca439b4712daf",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "2cf88440e1c209028b5e3340298ada9abf0466dc4172541c258b47e246750abc",
+    "tools/test-vendor.mjs": "689993d5468540ae997a15127a449450f7b5cceb5183e91efc28ce5899659ca7",
+    "patches/manifest.json": "9795e8e7acf7a9c59ec2f859929e626e628761187176f0860436ae85bcda5c42",
+    "patches/0002-package-attribute-featuring.patch": "53fd12035d4eaa92cbca49efe8be6a17b4e96540910802742ec1257d9406f8d0",
+    "patches/0003-checked-conditional-bindings.patch": "8d3ca1ea49c2f5bb6e962e599ff6a2ce4334e9600385aba4eb187e017b939ef5",
+    "patches/0004-designated-operator-cache.patch": "74933e6f3ea7da3ed508b40a51a4b8a3d93e0d724c6aeaba52f9d25666d9aed5",
+    "patches/0008-isolate-unresolved-specializations.patch": "36e7f00ac84c87730a3c99dc9a75cb3174fbdd63b9cba99f16d4b65ffa79ab75",
+    "patches/0010-reuse-static-prefix.patch": "ea444fe5ec6cf8c23492e0f4d3c37dbc359a6f994f96ff2a3f03ffd39ea9a4db",
+    "patches/0011-atomic-dynamic-staging.patch": "d72a5f7bb9bafdc274c9eeb0aa742b9358bdd49a9a44ab35fb333b66f7d4d853",
+    "patches/0019-preserve-distinct-view-renderings.patch": "3a76b5eb85592effe52678edad632212e9764c533118f8147bef2e16fc75295c",
+    "patches/0027-generated-result-inheritance.patch": "b55675b3e6600f2df5adf33eff705fe93cdbab378a5c1f6f3960fa898a078be3",
+    "patches/0028-partial-result-heritage.patch": "bd0adec56613f6d52960f0623bc8d02a795b6b172f03b86894ff4e51d6fe1d43",
+    "patches/0029-assertion-member-evidence.patch": "7c56a62d3eff0fce925c16b9e171e3cd4751f25129b0a07e9c035ca59e8985fc",
+    "patches/0030-attribute-feature-domains.patch": "1cdcebdeb8f83942a707444e471293c4641e4de5778af10cee629dd6584df9e6",
+    "patches/0031-generated-result-domain-witnesses.patch": "080b3ce6a9710cd454f80da0e592c0302e2dc12eca7107516157403aecfb6fcc",
+    "patches/0032-predicate-result-properties.patch": "2358db9f79054bd4fc80d5b1a0e2e3fc4ae8ed2dde35c5bbbd3cc3450756a413",
+    "patches/0034-contextual-step-ownership.patch": "d3112a025df1c2b90817b8ed6358063b45a2b3c73520bd7798772479277c55df",
+    "patches/0035-stable-step-type-projection.patch": "80ffdb19bdc343a7a52683b9fd6ffae29ee3119719783cebf71a48988c050ccf",
+    "patches/0036-stable-step-type-adapter.patch": "d81d13c6714f0219d15f460b2ddc180dff1fa7715b389b0f6c8b065bd390ae62",
+    "patches/0037-checked-expression-results.patch": "c456868fa5b2d932564b94fef5d2bd6fe59d67b7faeedec784a9a26b8e02a208",
+    "patches/0038-expression-result-errors.patch": "ca596b21c8320d8d4afd9af455c2515dcb35095c9e6dff7a14b00adf4bb8dbac",
+    "patches/0039-expression-owned-type-proof.patch": "e10319165ba62d18fb0ede1fbc68a58437cc4a2c0ef95b7a8a60b61b89f0ccc1",
+    "patches/0040-shared-positional-reduction.patch": "9d518fdc522babf238237ec9bd54f383c4e42f56bcc49994077d147e211bff60",
+    "patches/0041-checked-semantic-positional-inputs.patch": "063403bea0f226b47d879c33c3dd9e4705c4e56f65232978e51a7ff7805a42e9"
+  },
+  "nativeTestBinaries": {
+    "target/release/deps/step_contexts-1f9a6ad347f7125e": "e8e3b1cb099a36a4e94b33f0f687c33b238fa718ff0700f82fbf6983532556a0",
+    "target/release/deps/trigger_result_features-193bdccb12600a29": "faec113875931cc4fdc238c0f70e60a69da81fe1c75806288f53ede2471c5c5a"
+  },
+  "sourceReview": "reference-result-membership-review.json",
+  "observations": [
+    "Construction and checked queries now share one prerequisite/ancestry ordering and one positional reduction algorithm. The checked adapter consumes the complete nodes already established by the Type provider instead of rebuilding stored-source membership selectors that omit generated rows.",
+    "The checked adapter admits only a current proof stamp, complete node domains, matching base lists and available base nodes. Visibility-specific imported membership selectors and foreign import prerequisites still have to match the central planner.",
+    "Only the exact authored redefinition closure seeds checked reduction. Stored bootstrap selectors must match it, including unresolved targets. Previously generated positional edges are recomputed rather than accepted as evidence for their own omission.",
+    "A real materialized reference-result fixture has no return in its stored source ownership list but has a generated return in the semantic view. Both graph formats now recompute the exact Evaluation.result redefinition through this planner seam, without publishing rows.",
+    "Five new private tests cover generated memberships, work-limit retry, stale membership rows, missing domains, cyclic ancestry, recorded-target edits without row changes, and prepared/serialized library replay with stable generated identities.",
+    "The vendor runner now includes all positional tests: eleven existing construction/cache/import regressions plus five new checked-input regressions. The selected count rises from 522 to 538; this is not sixteen newly implemented normative rules.",
+    "All 95 native workspace tests pass. The unchanged 10,000-declaration, 10,000,000-step cold query remains within its budget. Existing expression results, imports, generated result domains, argument bindings and static/dynamic construction tests pass.",
+    "The complete vendor model suite also passes all 891 tests after supplying its pinned example/training/validation corpus. The initial two missing-fixture failures, identical replayed binary, exact corpus revision and all 251 file hashes are recorded separately."
+  ],
+  "review": {
+    "method": "Manual extraction/diff review and executed acceptance partitions by the implementing agent; no independent second review is claimed.",
+    "checkedInvariants": [
+      "The extracted reduction keeps the same role pairing, subject rules, redefinition suppression, exported membership order, cycle handling and prepared-library state as the construction path.",
+      "The input adapter is internal. Its membership and ancestry completeness authority remains the shared Type provider; accepting a Node does not by itself certify a new metaclass family.",
+      "The existing Type provider keeps its StaleEvidence error boundary. The planner also rechecks recorded authored edges because those can change without a row revision.",
+      "Checked reduction uses an uncached workspace and does not publish graph nodes or relations. Construction memoization still requires equality of every consumed input.",
+      "No feature-reference applicability gate or negative owned-feature-completeness flag is relaxed by this refactor."
+    ]
+  },
+  "verification": [
+    {
+      "command": [
+        "node",
+        "tools/test-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "passed": 538,
+      "log": "target/trigger-validation/semantic-positional-vendor-verified.log",
+      "logSha256": "fefb89ee9abb052bdb8527eaad064aad679d12d91182dc0cc6e51d11677428b6"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "test",
+        "--locked",
+        "--release",
+        "--workspace"
+      ],
+      "exitCode": 0,
+      "passed": 95,
+      "log": "target/trigger-validation/semantic-positional-workspace-verified.log",
+      "logSha256": "c4fb89ac0831ff470326db1280ad6dbfbf9dd74e8c8f8cef25f47613c9fd8282"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "log": "target/trigger-validation/semantic-positional-clippy-verified.log",
+      "logSha256": "c56d5db7a4cdabb43100318abbbb5ee4f095b420f87dd29118441a7bb435c47c"
+    },
+    {
+      "command": [
+        "python3",
+        "target/trigger-validation/replay-all-model-with-corpus.py"
+      ],
+      "exitCode": 0,
+      "passed": 891,
+      "log": "target/trigger-validation/semantic-positional-all-model-with-corpus.log",
+      "logSha256": "3f6bbf0cfcf366671b882fb8b5895648de8ca375c39d5ac0985211ca61ecc960",
+      "evidence": "semantic-positional-full-model-macos-arm64.json",
+      "boundary": "All vendor model unit tests with all 94 standard library files and 251 pinned corpus files. This overlaps the selected vendor run; counts must not be added."
+    }
+  ],
+  "remaining": [
+    "The reference-source Type provider still needs complete foreign-member and generated binding redefinition evidence, including dependencies owned by unrelated Types.",
+    "Existing-result references, additional bases and member-producing expression obligations need complete source admission before ExpressionResultReport accepts reference expressions.",
+    "General invocation/operator results, complete trigger argument validators and coupled Step construction remain open.",
+    "No conformance matrix, native/WASM parity, benchmark or desktop release qualification is claimed for this increment. The installed app remains KERNEL-023, and Windows/Linux qualification remains pending.",
+    "All fifteen completion packages remain open; no whole-specification percentage is inferred."
+  ]
+}

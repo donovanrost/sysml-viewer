@@ -221,12 +221,14 @@ source trees of the syntax library, model library and public kernel, fingerprint
 each file, and joins only direct assessment source edges. `requirements:check`
 rejects generated drift and registry names outside the pinned catalogue.
 
-After KERNEL-022, the registries name 97 rules and source text mentions 98. The
-other 82 names were not located by this search. Sixteen rules have direct bounded
+In the current worktree, the registries name 100 rules and source text mentions
+101. The other 79 names were not located by this search. Sixteen rules have direct bounded
 assessments; 164 still need direct obligation review. These are separate measures:
 comments, private tests and registration lists are search hints, and a missing
-name does not establish missing behavior. The 36 labels outside the catalogue
+name does not establish missing behavior. The 33 labels outside the catalogue
 include deliberate compatibility aliases and checks needing further classification.
+The three added canonical trigger rule identifiers do not add direct assessments
+or establish complete trigger-rule coverage.
 
 The first behavioral review found two concrete issues:
 

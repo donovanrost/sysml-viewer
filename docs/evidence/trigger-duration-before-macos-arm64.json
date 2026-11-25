@@ -1,0 +1,79 @@
+{
+  "generatedAt": "2026-10-18T04:08:26.063647+00:00",
+  "scope": "Reproduce false rejection of two custom duration types by the KERNEL-023 public validator; neither type specializes ISQ::DurationValue. This record is diagnostic evidence, not complete trigger-rule qualification.",
+  "engineVersion": "open-mbee/0.10.2@821221767c3c+sysml-kernel.24",
+  "binarySha256": "ef435421b502b83aa7296c44d0eb04bf5785fc6ba3f26c3dd33ecae98d587c19",
+  "qualifiedKernelInputSha256": "bffa7b01dabed05b04397c8d9f92db9520069cd7556f5a6349da288f1c0f62b4",
+  "sourceFixture": "tests/conformance/fixtures/trigger-arguments-positive.sysml",
+  "sourceSha256": "c4cb205b98c6128e9fca1fead8c84c6edffc41bfba9e17d7a0f9727d37db1a1f",
+  "request": {
+    "revision": 1,
+    "documents": [
+      {
+        "id": "tests/conformance/fixtures/trigger-arguments-positive.sysml",
+        "name": "tests/conformance/fixtures/trigger-arguments-positive.sysml",
+        "text": "package TriggerArguments {\n    attribute def CustomDuration :> Quantities::ScalarQuantityValue {\n        attribute :>> mRef : ISQBase::DurationUnit[1];\n    }\n    attribute def InheritedDuration :> CustomDuration;\n    attribute def CustomInstant :> Time::TimeInstantValue;\n    attribute def CustomBoolean :> ScalarValues::Boolean;\n    attribute delay : CustomDuration;\n    attribute inheritedDelay : InheritedDuration;\n    attribute ordinaryDelay : ISQ::DurationValue;\n    attribute moment : CustomInstant;\n    attribute ready : CustomBoolean;\n    action def Reception {\n        action independent accept after delay;\n        action inherited accept after inheritedDelay;\n        action ordinary accept after ordinaryDelay;\n        action absolute accept at moment;\n        action conditional accept when ready;\n        action literal accept when true;\n    }\n}\n"
+      }
+    ]
+  },
+  "requestSha256": "f67af5dd847d4bb46a74d8c8e7a6286f18da3e07178d2d54c56f9dcf6253d2b7",
+  "responseSha256": "331c37af5a4b40c81f2f6f069d62da107868e3a1f67221b7a06172a8de501b83",
+  "command": [
+    "target/release/sysml-inspect",
+    "--request-json"
+  ],
+  "exitCode": 0,
+  "normativeSource": "https://www.omg.org/spec/SysML/20250201/SysML.xmi#Systems-Actions-TriggerInvocationExpression-validateTriggerInvocationExpressionAfterArgument",
+  "normativeSourceSha256": "caa65d54f56798bf7582d173f7567e1eea37a49c45984f8bd7df145011cf8c6f",
+  "review": "The pinned rule requires a ScalarQuantityValue result with a feature redefining TensorQuantityValue::mRef and specializing DurationUnit. CustomDuration declares those conditions, and InheritedDuration inherits them. Requiring the narrower nominal DurationValue type incorrectly rejects both. Generated result.feature was separately found empty, which must be repaired before validating the actual result graph.",
+  "expectedDiagnosticCountForTheseDeclarations": 0,
+  "diagnostics": [
+    {
+      "code": "validateTriggerInvocationActionAfterArgument",
+      "severity": "error",
+      "stage": "semantic",
+      "message": "A 'after' trigger argument must conform to ISQ::DurationValue [validateTriggerInvocationActionAfterArgument]",
+      "source": {
+        "documentId": "tests/conformance/fixtures/trigger-arguments-positive.sysml",
+        "start": {
+          "byteOffset": 610,
+          "utf16Offset": 610,
+          "line": 14,
+          "column": 41
+        },
+        "end": {
+          "byteOffset": 615,
+          "utf16Offset": 615,
+          "line": 14,
+          "column": 46
+        }
+      }
+    },
+    {
+      "code": "validateTriggerInvocationActionAfterArgument",
+      "severity": "error",
+      "stage": "semantic",
+      "message": "A 'after' trigger argument must conform to ISQ::DurationValue [validateTriggerInvocationActionAfterArgument]",
+      "source": {
+        "documentId": "tests/conformance/fixtures/trigger-arguments-positive.sysml",
+        "start": {
+          "byteOffset": 655,
+          "utf16Offset": 655,
+          "line": 15,
+          "column": 39
+        },
+        "end": {
+          "byteOffset": 669,
+          "utf16Offset": 669,
+          "line": 15,
+          "column": 53
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "The unmodified .24 CLI remains deliberately in use for this before-record.",
+    "The worktree result-inheritance repair has a native graph regression but has not yet changed this validator.",
+    "Complete expression result typing, argument ordering and inherited-library obligations remain open."
+  ]
+}

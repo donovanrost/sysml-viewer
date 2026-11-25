@@ -1,0 +1,599 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/namespace_member_tests.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/namespace_member_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/namespace_member_tests.rs
+@@ -0,0 +1,594 @@
++use crate::{
++    json::{
++        ClosurePolicy, ElementRef, FeatureTypeIssue, ResolvedModel,
++        type_relations::{RelationFact, TypeRelations},
++    },
++    model::{GraphFormat, Model},
++    prepared::PreparedLibrary,
++};
++use serde_json::json;
++use std::sync::{Arc, OnceLock};
++
++fn raw_library() -> Model {
++    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
++        .join("../../spec-refs/SysML-v2-Release/sysml.library");
++    let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
++    assert_eq!(model.load_library_dir(&root).unwrap(), 94);
++    model
++}
++fn library() -> Arc<PreparedLibrary> {
++    static LIBRARY: OnceLock<Arc<PreparedLibrary>> = OnceLock::new();
++    Arc::clone(LIBRARY.get_or_init(|| raw_library().prepare_library().unwrap()))
++}
++fn resolve(mut model: Model, source: &str) -> ResolvedModel {
++    let parsed = model.add_source("namespace-feature-members.kerml", source);
++    assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
++    ResolvedModel::build(&model)
++}
++fn fixture(source: &str) -> ResolvedModel {
++    let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
++    library().install(&mut model).unwrap();
++    resolve(model, source)
++}
++fn ready(r: &mut ResolvedModel) {
++    r.ensure_implied();
++    r.set_closure_policy(ClosurePolicy::Closure {
++        include_implied: true,
++    });
++}
++fn exact(r: &mut ResolvedModel, name: &str, expected: &str) -> ElementRef {
++    let f = r.resolve_qualified(name).unwrap();
++    let t = r.resolve_qualified(expected).unwrap();
++    let rows = r.b.elements.len();
++    let report = r.feature_type_report(f);
++    assert_eq!(report.types, Ok(vec![t]), "{name}: {report:?}");
++    assert_eq!(
++        r.property(f, "type").unwrap(),
++        json!([{"@id":r.element_id(t)}])
++    );
++    assert_eq!(rows, r.b.elements.len());
++    f
++}
++fn default_identities(r: &mut ResolvedModel, call: ElementRef, first: &str) {
++    let report = r.invocation_default_report(call);
++    let defaults = report.selection.unwrap().defaults;
++    let expected = [
++        first,
++        "Performances::Performance::isDispatch",
++        "Performances::Performance::dispatchScope",
++        "Performances::Performance::thisPerformance",
++        "Occurrences::Occurrence::portionOfLife",
++        "Occurrences::Occurrence::this",
++        "Occurrences::Occurrence::localClock",
++        "Occurrences::Occurrence::isRunToCompletion",
++        "Occurrences::Occurrence::runToCompletionScope",
++        "Occurrences::Occurrence::incomingTransferSort",
++    ];
++    let actual: Vec<_> = defaults
++        .iter()
++        .map(|d| r.element_qualified_name(d.feature).unwrap())
++        .collect();
++    assert_eq!(actual, expected);
++    assert_eq!(
++        defaults[0].feature_with_value,
++        r.resolve_qualified(first).unwrap()
++    );
++}
++const SOURCE: &str = r#"
++function F {
++ member expr e : Performances::LiteralIntegerEvaluation;
++ member feature typedSlot : ScalarValues::Integer default=2;
++ feature ordinarySlot : ScalarValues::Integer;
++ member feature valuePath chains e.result;
++ feature ordinaryPath chains e.result;
++ in x : ScalarValues::Integer default=1;
++ return result : ScalarValues::Integer;
++}
++feature call=F();
++"#;
++#[test]
++fn type_namespace_members_preserve_types_results_and_omitted_defaults() {
++    let mut r = fixture(SOURCE);
++    ready(&mut r);
++    let e = exact(&mut r, "F::e", "Performances::LiteralIntegerEvaluation");
++    for name in [
++        "F::typedSlot",
++        "F::valuePath",
++        "F::ordinaryPath",
++        "F::ordinarySlot",
++    ] {
++        exact(&mut r, name, "ScalarValues::Integer");
++    }
++    let result = r.expression_result_report(e).result.unwrap().unwrap();
++    let integer = r.resolve_qualified("ScalarValues::Integer").unwrap();
++    assert_eq!(r.feature_type_report(result).types, Ok(vec![integer]));
++    let f = r.resolve_qualified("F").unwrap();
++    let members = r.type_feature_report(f).projections.unwrap();
++    for name in ["F::e", "F::typedSlot", "F::valuePath"] {
++        let member = r.resolve_qualified(name).unwrap();
++        assert_eq!(r.property(member, "owningType"), Ok(json!(null)));
++        assert!(
++            members.members.as_ref().unwrap().contains(&member),
++            "{name}"
++        );
++        assert!(!members.features.contains(&member), "{name}");
++        assert!(!members.inputs.contains(&member), "{name}");
++        assert!(!members.outputs.contains(&member), "{name}");
++    }
++    let x = r.resolve_qualified("F::x").unwrap();
++    assert_eq!(members.inputs, [x]);
++    let call = r
++        .user_elements()
++        .find(|&e| r.element_type(e) == "InvocationExpression")
++        .unwrap();
++    default_identities(&mut r, call, "F::x");
++    let boolean = r.resolve_qualified("ScalarValues::Boolean").unwrap();
++    let mut relations = TypeRelations::default();
++    let mut steps = 0;
++    assert_eq!(
++        relations.specializes(&mut r.b, e.0, boolean.0, &mut steps),
++        RelationFact::No
++    );
++}
++#[test]
++fn nested_type_namespace_members_and_foreign_aliases_keep_separate_roles() {
++    let mut r = fixture(
++        r#"
++        classifier C {member feature scalar:ScalarValues::Integer;}
++        behavior B {member feature scalar:ScalarValues::Integer;}
++        feature outer {member feature scalar:ScalarValues::Integer;}
++        step s {member expr value:Performances::LiteralIntegerEvaluation;}
++        function F {alias borrowed for C::scalar;return result:ScalarValues::Integer;}
++        feature use=C::scalar;
++    "#,
++    );
++    ready(&mut r);
++    for name in ["C::scalar", "B::scalar", "outer::scalar"] {
++        exact(&mut r, name, "ScalarValues::Integer");
++    }
++    exact(&mut r, "s::value", "Performances::LiteralIntegerEvaluation");
++    let scalar = r.resolve_qualified("C::scalar").unwrap();
++    let f = r.resolve_qualified("F").unwrap();
++    let p = r.type_feature_report(f).projections.unwrap();
++    assert!(p.members.unwrap().contains(&scalar));
++    assert!(!p.features.contains(&scalar));
++    let source = r
++        .user_elements()
++        .find(|&e| r.element_type(e) == "FeatureReferenceExpression")
++        .unwrap();
++    let result = r.expression_result_report(source).result.unwrap().unwrap();
++    let integer = r.resolve_qualified("ScalarValues::Integer").unwrap();
++    assert_eq!(r.feature_type_report(result).types, Ok(vec![integer]));
++}
++#[derive(Clone, Copy, Debug)]
++enum Damage {
++    MissingOwner,
++    MissingChild,
++    ForeignCarrier,
++    WrongMember,
++    DuplicateCarrier,
++    Source,
++    Target,
++    OwnedArray,
++    Direction,
++    End,
++    Composite,
++    Variable,
++    Metadata,
++    NonNamespace,
++    CrossFeature,
++}
++const DAMAGES: [Damage; 15] = [
++    Damage::MissingOwner,
++    Damage::MissingChild,
++    Damage::ForeignCarrier,
++    Damage::WrongMember,
++    Damage::DuplicateCarrier,
++    Damage::Source,
++    Damage::Target,
++    Damage::OwnedArray,
++    Damage::Direction,
++    Damage::End,
++    Damage::Composite,
++    Damage::Variable,
++    Damage::Metadata,
++    Damage::NonNamespace,
++    Damage::CrossFeature,
++];
++const DAMAGE_SOURCE: &str = "feature outer {member feature selected:ScalarValues::Integer;feature control:ScalarValues::Integer;}";
++fn damage(r: &mut ResolvedModel, f: ElementRef, d: Damage) {
++    let m = r.b.elements[f.0].owning_relationship.unwrap();
++    let o = r.resolve_qualified("outer").unwrap();
++    let control = r.resolve_qualified("outer::control").unwrap();
++    let wrong = r.element_id(control);
++    match d {
++        Damage::MissingOwner => r.b.elements[f.0].owning_relationship = None,
++        Damage::MissingChild => r.b.elements[m].children.make_mut().clear(),
++        Damage::ForeignCarrier => r.b.set(m, "owningRelatedElement", json!({"@id":wrong})),
++        Damage::WrongMember => r.b.set(m, "memberElement", json!({"@id":wrong})),
++        Damage::DuplicateCarrier => r.b.elements[control.0].owned_relationships.push(m),
++        Damage::Source => r.b.set(m, "source", json!([{"@id":wrong}])),
++        Damage::Target => r.b.set(m, "target", json!([{"@id":wrong}])),
++        Damage::OwnedArray => r.b.set(m, "ownedRelatedElement", json!([])),
++        Damage::Direction => r.b.set(f.0, "direction", json!("invalid")),
++        Damage::End => r.b.set(f.0, "isEnd", json!(true)),
++        Damage::Composite => r.b.set(f.0, "isComposite", json!(true)),
++        Damage::Variable => r.b.set(f.0, "isVariable", json!(true)),
++        Damage::Metadata => r.b.metadata_associations_incomplete = true,
++        Damage::NonNamespace => r.b.elements[o.0].ty = "Comment",
++        Damage::CrossFeature => r.b.set(o.0, "isEnd", json!(true)),
++    }
++}
++#[test]
++fn malformed_namespace_ownership_never_certifies_types_or_negative_paths() {
++    for d in DAMAGES {
++        let mut r = fixture(DAMAGE_SOURCE);
++        let f = r.resolve_qualified("outer::selected").unwrap();
++        damage(&mut r, f, d);
++        ready(&mut r);
++        let report = r.feature_type_report(f);
++        assert!(report.types.is_err(), "{d:?}: {report:?}");
++        assert_ne!(report.types, Err(FeatureTypeIssue::WorkLimit), "{d:?}");
++        let boolean = r.resolve_qualified("ScalarValues::Boolean").unwrap();
++        let mut relations = TypeRelations::default();
++        let mut steps = 0;
++        assert_eq!(
++            relations.specializes(&mut r.b, f.0, boolean.0, &mut steps),
++            RelationFact::Unknown,
++            "{d:?}"
++        );
++    }
++}
++#[test]
++fn namespace_owner_edits_revoke_previous_complete_types() {
++    for d in DAMAGES {
++        let mut r = fixture(DAMAGE_SOURCE);
++        ready(&mut r);
++        let f = exact(&mut r, "outer::selected", "ScalarValues::Integer");
++        damage(&mut r, f, d);
++        assert!(r.feature_type_report(f).types.is_err(), "{d:?}");
++    }
++}
++#[test]
++fn namespace_members_replay_exact_identities_and_retry_budgets() {
++    let prepared = library();
++    let decoded =
++        Arc::new(PreparedLibrary::from_bytes(&prepared.to_bytes(151).unwrap(), 151).unwrap());
++    let mut expected = None;
++    for replay in [None, Some(prepared), Some(decoded)] {
++        let model = if let Some(replay) = replay {
++            let mut m = Model::with_graph_format(GraphFormat::CanonicalV3);
++            replay.install(&mut m).unwrap();
++            m
++        } else {
++            raw_library()
++        };
++        let mut r = resolve(model, SOURCE);
++        ready(&mut r);
++        let f = exact(&mut r, "F::valuePath", "ScalarValues::Integer");
++        assert_eq!(
++            r.feature_type_report_with_budget(f, crate::eval::MAX_STEPS)
++                .types,
++            Err(FeatureTypeIssue::WorkLimit)
++        );
++        exact(&mut r, "F::valuePath", "ScalarValues::Integer");
++        let owner = r.resolve_qualified("F").unwrap();
++        let p = r.type_feature_report(owner).projections.unwrap();
++        let ids: Vec<_> = p
++            .members
++            .unwrap()
++            .into_iter()
++            .chain(p.features)
++            .map(|e| r.element_id(e))
++            .collect();
++        if let Some(expected) = &expected {
++            assert_eq!(&ids, expected);
++        } else {
++            expected = Some(ids);
++        }
++    }
++}
++
++#[test]
++fn inherited_namespace_members_use_shared_redefinition_and_visibility() {
++    let mut r = fixture(
++        r#"
++      function Parent {
++        member feature original:ScalarValues::Integer;
++        member expr evaluation:Performances::LiteralIntegerEvaluation;
++        private member feature hidden:ScalarValues::String;
++        in x:ScalarValues::Integer default=1;
++        return result:ScalarValues::Integer;
++      }
++      function Child specializes Parent {
++        member feature replacement redefines Parent::original;
++        member expr current redefines Parent::evaluation;
++        member feature path chains current.result;
++      }
++      function Grandchild specializes Child;
++      function FeatureChild specializes Parent {feature replacement redefines Parent::original;}
++      feature call=Child();
++    "#,
++    );
++    ready(&mut r);
++    for name in ["Child::replacement", "Child::path"] {
++        exact(&mut r, name, "ScalarValues::Integer");
++    }
++    exact(
++        &mut r,
++        "Child::current",
++        "Performances::LiteralIntegerEvaluation",
++    );
++    let child = r.resolve_qualified("Child").unwrap();
++    let projection = r.type_feature_report(child).projections.unwrap();
++    let original = r.resolve_qualified("Parent::original").unwrap();
++    let replacement = r.resolve_qualified("Child::replacement").unwrap();
++    let hidden = r.resolve_qualified("Parent::hidden").unwrap();
++    let members = projection.members.unwrap();
++    assert!(members.contains(&replacement));
++    // removeRedefinedFeatures compares local ownedFeature targets, not all
++    // owned namespace members. Child keeps the original inherited member.
++    assert!(members.contains(&original));
++    assert!(!members.contains(&hidden));
++    assert!(!projection.features.contains(&replacement));
++    // On the next level both members are inherited; their redefinition closure
++    // suppresses the original. A local FeatureMembership suppresses it directly.
++    for name in ["Grandchild", "FeatureChild"] {
++        let descendant = r.resolve_qualified(name).unwrap();
++        let actual = r.type_feature_report(descendant).projections.unwrap();
++        assert!(!actual.members.unwrap().contains(&original), "{name}");
++    }
++    let call = r
++        .user_elements()
++        .find(|&e| r.element_type(e) == "InvocationExpression")
++        .unwrap();
++    default_identities(&mut r, call, "Parent::x");
++}
++#[test]
++fn namespace_member_typing_does_not_require_unrelated_owner_heritage() {
++    for source in [
++        "function Owner specializes Missing {member feature selected:ScalarValues::Integer;}",
++        "function Owner specializes Other {member feature selected:ScalarValues::Integer;} function Other specializes Owner;",
++    ] {
++        let mut r = fixture(source);
++        ready(&mut r);
++        exact(&mut r, "Owner::selected", "ScalarValues::Integer");
++        let owner = r.resolve_qualified("Owner").unwrap();
++        assert!(r.type_feature_report(owner).projections.is_err());
++    }
++}
++#[test]
++fn namespace_member_graph_formats_preserve_the_same_ownership_distinction() {
++    for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
++        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
++            .join("../../spec-refs/SysML-v2-Release/sysml.library");
++        let mut model = Model::with_graph_format(format);
++        assert_eq!(model.load_library_dir(&root).unwrap(), 94);
++        let mut r = resolve(
++            model,
++            r#"
++          classifier Owner {
++            member feature selected:ScalarValues::Integer subsets Base::dataValues;
++            feature actual:ScalarValues::Integer;
++          }
++        "#,
++        );
++        ready(&mut r);
++        let f = exact(&mut r, "Owner::selected", "ScalarValues::Integer");
++        assert_eq!(r.property(f, "owningType"), Ok(json!(null)));
++        let owner = r.resolve_qualified("Owner").unwrap();
++        let projection = r.type_feature_report(owner).projections.unwrap();
++        assert!(projection.members.unwrap().contains(&f));
++        assert!(!projection.features.contains(&f));
++    }
++}
++
++fn binding_fixture(source: &str, format: GraphFormat) -> ResolvedModel {
++    static LEGACY: OnceLock<Arc<PreparedLibrary>> = OnceLock::new();
++    let prepared = match format {
++        GraphFormat::CanonicalV3 => library(),
++        GraphFormat::LegacyV2 => Arc::clone(LEGACY.get_or_init(|| {
++            let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
++                .join("../../spec-refs/SysML-v2-Release/sysml.library");
++            let mut model = Model::with_graph_format(format);
++            assert_eq!(model.load_library_dir(&root).unwrap(), 94);
++            model.prepare_library().unwrap()
++        })),
++    };
++    let mut model = Model::with_graph_format(format);
++    prepared.install(&mut model).unwrap();
++    resolve(model, source)
++}
++
++#[test]
++fn authored_namespace_bindings_preserve_enclosing_inputs_and_parameter_types() {
++    for body in [
++        "",
++        "member binding factored of local = right;",
++        "member binding inlineChain of local = F::e.result;",
++    ] {
++        let source = format!(
++            "function F {{member expr e : Performances::LiteralIntegerEvaluation; in x : ScalarValues::Integer; return result : ScalarValues::Integer;}} expr actual : F {{in local redefines F::x; member feature right chains F::e.result; {body}}}"
++        );
++        let mut r = fixture(&source);
++        ready(&mut r);
++        let actual = r.resolve_qualified("actual").unwrap();
++        let local = r.resolve_qualified("actual::local").unwrap();
++        let report = r.type_input_report(actual);
++        assert_eq!(report.inputs, Ok(vec![local]), "body={body}: {report:?}");
++        exact(&mut r, "actual::local", "ScalarValues::Integer");
++        exact(&mut r, "actual::right", "ScalarValues::Integer");
++        let features = r.type_feature_report(actual).projections.unwrap();
++        for name in ["actual::factored", "actual::inlineChain"] {
++            if let Some(binding) = r.resolve_qualified(name) {
++                assert!(features.members.as_ref().unwrap().contains(&binding));
++                assert!(!features.features.contains(&binding));
++                assert!(!features.inputs.contains(&binding));
++                assert!(!features.outputs.contains(&binding));
++                assert_eq!(r.property(binding, "owningType"), Ok(json!(null)));
++                // Outer membership evidence is not complete connector typing.
++                assert!(r.feature_type_report(binding).types.is_err());
++            }
++        }
++    }
++}
++
++#[test]
++fn authored_binding_namespace_roles_require_current_reciprocal_evidence() {
++    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++        for warm in [false, true] {
++            for damage in 0..9 {
++                let mut r = binding_fixture(
++                    "function Owner {in x; in y; member binding link of x=y; return z;}",
++                    format,
++                );
++                ready(&mut r);
++                let owner = r.resolve_qualified("Owner").unwrap();
++                let x = r.resolve_qualified("Owner::x").unwrap();
++                let y = r.resolve_qualified("Owner::y").unwrap();
++                let binding = r.resolve_qualified("Owner::link").unwrap();
++                let membership = r.b.elements[binding.0].owning_relationship.unwrap();
++                if warm {
++                    assert_eq!(r.type_input_report(owner).inputs, Ok(vec![x, y]));
++                }
++                match damage {
++                    0 => r.b.set(binding.0, "direction", json!("in")),
++                    1 => r.b.set(binding.0, "isEnd", json!(true)),
++                    2 => r.b.set(binding.0, "isComposite", json!(true)),
++                    3 => r.b.set(binding.0, "isPortion", json!(true)),
++                    4 => r.b.set(binding.0, "isVariable", json!(true)),
++                    5 => r.b.elements[membership].ty = "Membership",
++                    6 => {
++                        let id = r.element_id(x);
++                        r.b.set(membership, "owningRelatedElement", json!({"@id":id}));
++                    }
++                    7 => {
++                        let id = r.element_id(x);
++                        r.b.set(membership, "memberElement", json!({"@id":id}));
++                    }
++                    8 => r.b.elements[binding.0].owning_relationship = None,
++                    _ => unreachable!(),
++                }
++                let report = r.type_input_report(owner);
++                assert!(
++                    report.inputs.is_err(),
++                    "{format:?}, warm={warm}, damage={damage}: {report:?}"
++                );
++                assert!(
++                    report.steps < crate::eval::MAX_STEPS,
++                    "{format:?}, warm={warm}, damage={damage}: malformed evidence should refuse before work exhaustion: {report:?}"
++                );
++            }
++        }
++    }
++}
++
++#[test]
++fn authored_binding_members_follow_shared_alias_and_redefinition_rules() {
++    let source = "class Root {feature left; feature right; member binding original of left=right;} class Child specializes Root {member binding replacement redefines Root::original of left=right;} class Grand specializes Child; class Local specializes Root {binding local redefines Root::original of left=right;} class Aliased {alias foreign for Root::original;}";
++    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++        let mut r = binding_fixture(source, format);
++        ready(&mut r);
++        let original = r.resolve_qualified("Root::original").unwrap();
++        let replacement = r.resolve_qualified("Child::replacement").unwrap();
++        for (owner, present, absent) in [
++            ("Child", vec![original, replacement], vec![]),
++            ("Grand", vec![replacement], vec![original]),
++            ("Local", vec![], vec![original]),
++            ("Aliased", vec![original], vec![]),
++        ] {
++            let owner = r.resolve_qualified(owner).unwrap();
++            let report = r.type_feature_report(owner);
++            let features = report
++                .projections
++                .clone()
++                .unwrap_or_else(|_| panic!("{format:?} owner={owner:?}: {report:?}"));
++            let members = features.members.unwrap();
++            for member in present {
++                assert!(members.contains(&member));
++                assert!(!features.features.contains(&member));
++                assert!(!features.inputs.contains(&member));
++            }
++            for member in absent {
++                assert!(!members.contains(&member));
++            }
++        }
++    }
++}
++
++#[test]
++fn authored_binding_members_replay_identities_and_retry_limited_queries() {
++    let source = "function Owner {in x; in y; member binding link of x=y; return z;}";
++    let prepared = library();
++    let decoded =
++        Arc::new(PreparedLibrary::from_bytes(&prepared.to_bytes(152).unwrap(), 152).unwrap());
++    let mut expected = None;
++    for replay in [None, Some(prepared), Some(decoded)] {
++        let model = if let Some(replay) = replay {
++            let mut model = Model::with_graph_format(GraphFormat::CanonicalV3);
++            replay.install(&mut model).unwrap();
++            model
++        } else {
++            raw_library()
++        };
++        let mut r = resolve(model, source);
++        ready(&mut r);
++        let owner = r.resolve_qualified("Owner").unwrap();
++        let x = r.resolve_qualified("Owner::x").unwrap();
++        let y = r.resolve_qualified("Owner::y").unwrap();
++        let link = r.resolve_qualified("Owner::link").unwrap();
++        let row_count = r.b.elements.len();
++        assert_eq!(
++            r.type_input_report_with_budget(owner, crate::eval::MAX_STEPS)
++                .inputs,
++            Err(crate::json::TypeInputIssue::WorkLimit)
++        );
++        assert_eq!(r.type_input_report(owner).inputs, Ok(vec![x, y]));
++        let projection = r.type_feature_report(owner).projections.unwrap();
++        assert!(projection.members.as_ref().unwrap().contains(&link));
++        assert!(!projection.features.contains(&link));
++        let ids: Vec<_> = projection
++            .members
++            .unwrap()
++            .into_iter()
++            .chain(projection.features)
++            .chain(projection.inputs)
++            .map(|e| r.element_id(e))
++            .collect();
++        if let Some(expected) = &expected {
++            assert_eq!(&ids, expected);
++        } else {
++            expected = Some(ids);
++        }
++        assert_eq!(r.b.elements.len(), row_count);
++    }
++    // A missing library cannot establish complete empty inputs. These are the
++    // deliberately incomplete controls for the full-library fixtures above.
++    for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
++        let mut r = resolve(Model::with_graph_format(format), source);
++        ready(&mut r);
++        let owner = r.resolve_qualified("Owner").unwrap();
++        assert!(r.type_input_report(owner).inputs.is_err());
++    }
++}
++
++#[test]
++fn uncertified_generated_binding_members_cannot_borrow_authored_admission() {
++    for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
++        let mut r = binding_fixture("function Owner {in x; return z;}", format);
++        ready(&mut r);
++        let owner = r.resolve_qualified("Owner").unwrap();
++        let x = r.resolve_qualified("Owner::x").unwrap();
++        assert_eq!(r.type_input_report(owner).inputs, Ok(vec![x]));
++        let membership =
++            r.b.new_relationship("OwningMembership", owner.0, "uncertified-member");
++        let binding =
++            r.b.new_owned_element("BindingConnector", membership, "uncertified-binding");
++        assert!(binding >= r.b.explicit_len());
++        r.b.set(membership, "isImplied", json!(true));
++        r.b.set(binding, "isImplied", json!(true));
++        let report = r.type_input_report(owner);
++        assert!(report.inputs.is_err(), "{format:?}: {report:?}");
++        assert!(report.steps < crate::eval::MAX_STEPS);
++    }
++}

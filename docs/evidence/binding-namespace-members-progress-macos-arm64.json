@@ -1,0 +1,470 @@
+{
+  "recordedAt": "2026-10-18T19:12:30.273967+00:00",
+  "status": "Binding namespace-member source is admitted and qualified on macOS arm64. The complete unchanged-source rerun passes all133conformance cases and matching requirements evidence; prior native, Clippy, native/WASM, public and provenance gates pass for the same kernel input hash. No family or package closes.",
+  "kernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+  "previousQualifiedKernelInputSha256": "52813ee85839cef183e993ed155113272e72bc60f22c815a2563df6a4b85d2bf",
+  "admission": {
+    "recordedAt": "2026-10-18T19:12:30.272059+00:00",
+    "previousQualifiedKernelInputSha256": "52813ee85839cef183e993ed155113272e72bc60f22c815a2563df6a4b85d2bf",
+    "kernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+    "files": {
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "e0a3dcd26cb1d904e7f597cccb8b283d7c6a6350717b354cb3f0346fd938f210",
+      "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations/namespace_member_tests.rs": "9047cd5301ac9cd62761084669586f1f4983977e6482c2b57ed74bbddaf311bb",
+      "crates/sysml-kernel/tests/binding_namespace_members.rs": "1c3ee61d343c3c98864df47169ebd5cfdffd49ccf21080cc8a8b68fc024ef30a",
+      "patches/manifest.json": "6b0f787883d3e8990dd83f55a59f3955b9c360a2257cb1d36099c500d5015b20"
+    },
+    "review": "The shared local preflight repeats only required structural guards from the complete reader. Positive queries still run all prior membership, inheritance, positional and redefinition checks. Exact BindingConnector admission is restricted to the construction prefix; generated rows retain their independent recipe certificate. No assessment source anchors point to the two changed vendor files, and existing assessment assertions and limits are unchanged."
+  },
+  "acceptance": {
+    "private": {
+      "status": "pass",
+      "tests": 1013,
+      "log": "target/trigger-validation/binding-members-full-model.log",
+      "logSha256": "1108c2b7ff3130315adef99a6219b8ef55fed4e6bd9a4f86b022dcb866eaa2a1",
+      "inputs": {
+        "target/trigger-validation/binding-member-reviewed-stage/json/type_inputs.rs": "e0a3dcd26cb1d904e7f597cccb8b283d7c6a6350717b354cb3f0346fd938f210",
+        "target/trigger-validation/binding-member-reviewed-stage/json/type_relations/namespace_member_tests.rs": "9047cd5301ac9cd62761084669586f1f4983977e6482c2b57ed74bbddaf311bb"
+      }
+    },
+    "public": {
+      "status": "pass",
+      "tests": 1,
+      "log": "target/trigger-validation/binding-members-public-complete-signature.log",
+      "logSha256": "956699b2f023690be67762de4b3f98c1875bd7d4c268f3563028b334303ffddf",
+      "source": "crates/sysml-kernel/tests/binding_namespace_members.rs",
+      "sourceSha256": "1c3ee61d343c3c98864df47169ebd5cfdffd49ccf21080cc8a8b68fc024ef30a"
+    }
+  },
+  "fullQualification": {
+    "status": "pass",
+    "startedAt": "2026-10-18T19:13:50.682921+00:00",
+    "sessions": {},
+    "pipelineState": "target/trigger-validation/binding-members-qualification.json",
+    "provenance": {
+      "status": "pass",
+      "tests": 16,
+      "session": 70188,
+      "exitCode": 0,
+      "log": "target/trigger-validation/binding-members-provenance.log",
+      "logSha256": "2f5824bda9e815ab37a71804315b960bc7e9e748d446d2355b00386f3f54f7f5"
+    },
+    "contract": {
+      "status": "pass",
+      "session": 4620,
+      "exitCode": 0,
+      "log": "target/trigger-validation/binding-members-contract.log",
+      "logSha256": "819bf0f01e998856458a3ddfc28b96b03c2ca5ee834040b8a45c11e639af516c"
+    },
+    "pipeline": {
+      "kernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+      "startedAt": "2026-10-18T19:12:45.499Z",
+      "status": "failed",
+      "phases": [
+        {
+          "name": "workspace",
+          "args": [
+            "tools/rust.mjs",
+            "test",
+            "--locked",
+            "--release",
+            "--workspace"
+          ],
+          "startedAt": "2026-10-18T19:12:45.500Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T19:22:51.987Z"
+        },
+        {
+          "name": "clippy",
+          "args": [
+            "tools/rust.mjs",
+            "clippy",
+            "--locked",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "startedAt": "2026-10-18T19:22:51.988Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T19:22:55.506Z"
+        },
+        {
+          "name": "wasm",
+          "args": [
+            "tools/build-kernel.mjs"
+          ],
+          "startedAt": "2026-10-18T19:22:55.506Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T19:23:33.530Z"
+        },
+        {
+          "name": "cli",
+          "args": [
+            "tools/rust.mjs",
+            "build",
+            "--locked",
+            "--release",
+            "-p",
+            "sysml-cli"
+          ],
+          "startedAt": "2026-10-18T19:23:33.531Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T19:24:22.432Z"
+        },
+        {
+          "name": "public",
+          "args": [
+            "--experimental-strip-types",
+            "--test",
+            "--test-concurrency=1",
+            "tests/accept-actions.test.ts",
+            "tests/families.test.ts",
+            "tests/kernel.test.ts",
+            "tests/state-subactions.test.ts",
+            "tests/kernel-client.test.ts",
+            "tests/conformance-runner.test.mjs"
+          ],
+          "startedAt": "2026-10-18T19:24:22.433Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-18T19:28:04.869Z"
+        },
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-18T19:28:04.870Z",
+          "status": "fail",
+          "exitCode": 1,
+          "finishedAt": "2026-10-18T19:39:56.831Z"
+        }
+      ]
+    },
+    "conformanceAttempt": {
+      "counts": {
+        "pass": 132,
+        "fail": 1,
+        "known-gap": 0,
+        "planned": 0
+      },
+      "failure": "ACCEPT-003 process exceeded the unchanged 30000ms timeout. No semantic assertion result was produced for that case.",
+      "report": "target/trigger-validation/binding-members-conformance-initial-failure.json",
+      "reportSha256": "057465be3f2f369dc8439d1f71aee4e3cdce0af93595ac306bb0f6d8f44978fd",
+      "next": "Fresh complete conformance/requirements run at unchanged 30000ms timeout with no overlapping task builds. Preserve both failed attempts; no source repair or proven regression cause."
+    },
+    "isolatedRecheck": {
+      "id": "ACCEPT-003",
+      "kernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+      "binarySha256": "31136175c7080871b57a30ec7fac64eb34f629145904a2e1ce6fbeace3f6fcfe",
+      "matrixSha256": "5ace27ad88813fe5c1cb67fcba2b36e416f34c3d073bee1e539491c22040d888",
+      "files": {
+        "tests/conformance/fixtures/accept-receiver-bindings.sysml": "fc49e2278900acff6c7be90a95905bb078e9a704bbd7d9c81fac69c1dbac25b5"
+      },
+      "startedAt": "2026-10-18T21:13:39.923Z",
+      "timeoutMs": 30000,
+      "status": "fail",
+      "message": "Error: spawnSync /Users/donovanrost/Documents/ChatGPT/SysML/target/release/sysml-inspect ETIMEDOUT",
+      "elapsedMs": 30021
+    },
+    "isolatedRecheckSecond": {
+      "id": "ACCEPT-003",
+      "kernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+      "binarySha256": "31136175c7080871b57a30ec7fac64eb34f629145904a2e1ce6fbeace3f6fcfe",
+      "matrixSha256": "5ace27ad88813fe5c1cb67fcba2b36e416f34c3d073bee1e539491c22040d888",
+      "files": {
+        "tests/conformance/fixtures/accept-receiver-bindings.sysml": "fc49e2278900acff6c7be90a95905bb078e9a704bbd7d9c81fac69c1dbac25b5"
+      },
+      "startedAt": "2026-10-18T21:15:54.199Z",
+      "timeoutMs": 30000,
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "absolute-element",
+          "status": "pass"
+        },
+        {
+          "id": "absolute-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "absolute-payload",
+          "status": "pass"
+        },
+        {
+          "id": "relative-element",
+          "status": "pass"
+        },
+        {
+          "id": "relative-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "relative-payload",
+          "status": "pass"
+        },
+        {
+          "id": "conditional-element",
+          "status": "pass"
+        },
+        {
+          "id": "conditional-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "conditional-payload",
+          "status": "pass"
+        },
+        {
+          "id": "atTime-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "atTime-accepter",
+          "status": "pass"
+        },
+        {
+          "id": "afterDelay-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "afterDelay-accepter",
+          "status": "pass"
+        },
+        {
+          "id": "onCondition-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "onCondition-accepter",
+          "status": "pass"
+        },
+        {
+          "id": "state-subactions",
+          "status": "pass"
+        },
+        {
+          "id": "plain-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "value-parameters",
+          "status": "pass"
+        }
+      ],
+      "status": "pass",
+      "elapsedMs": 8533
+    },
+    "profile": {
+      "purpose": "Sampled diagnostic, not replacement conformance qualification.",
+      "elapsedSeconds": 18.924443500116467,
+      "exitCode": 0,
+      "checks": [
+        {
+          "id": "clean",
+          "status": "pass"
+        },
+        {
+          "id": "absolute-element",
+          "status": "pass"
+        },
+        {
+          "id": "absolute-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "absolute-payload",
+          "status": "pass"
+        },
+        {
+          "id": "relative-element",
+          "status": "pass"
+        },
+        {
+          "id": "relative-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "relative-payload",
+          "status": "pass"
+        },
+        {
+          "id": "conditional-element",
+          "status": "pass"
+        },
+        {
+          "id": "conditional-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "conditional-payload",
+          "status": "pass"
+        },
+        {
+          "id": "atTime-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "atTime-accepter",
+          "status": "pass"
+        },
+        {
+          "id": "afterDelay-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "afterDelay-accepter",
+          "status": "pass"
+        },
+        {
+          "id": "onCondition-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "onCondition-accepter",
+          "status": "pass"
+        },
+        {
+          "id": "state-subactions",
+          "status": "pass"
+        },
+        {
+          "id": "plain-parameters",
+          "status": "pass"
+        },
+        {
+          "id": "value-parameters",
+          "status": "pass"
+        }
+      ],
+      "status": "pass",
+      "sample": "target/trigger-validation/binding-accept-sample.txt",
+      "finding": "During the sampled interval, build_model/resolve_pending/name lookup dominates. No type_inputs/preflight frame was observed. This single sample does not identify a causal regression."
+    },
+    "requalificationState": "target/trigger-validation/binding-members-requalification.json",
+    "requalification": {
+      "kernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+      "startedAt": "2026-10-18T21:19:22.914Z",
+      "status": "failed",
+      "originalAttempt": "target/trigger-validation/binding-members-qualification.json",
+      "rationale": "Identical-source ACCEPT-003 passed all 19 assertions in 8533 ms after two timeouts; rerun the complete matrix without overlapping task builds, preserving the original failures and unchanged 30000 ms limit.",
+      "phases": [
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-18T21:19:24.196Z",
+          "status": "fail",
+          "exitCode": 1,
+          "finishedAt": "2026-10-18T22:40:14.827Z"
+        }
+      ],
+      "finishedAt": "2026-10-18T22:40:14.832Z"
+    },
+    "sleepAffectedAttempt": {
+      "report": "target/trigger-validation/binding-members-requalification-conformance.json",
+      "counts": {
+        "pass": 128,
+        "known-gap": 0,
+        "planned": 0,
+        "fail": 5
+      },
+      "powerEvents": "target/trigger-validation/binding-members-sleep-events.json",
+      "powerEventsSha256": "5d17456c34c78293c84f7b9d113543e0581f7e29a7b0d16b2cabe6120ff5786a",
+      "finding": "Five sequential failures span clamshell sleep at 15:31:18 MDT, maintenance dark wakes and return to sleep, ending with lid/HID wake at 16:38:16 MDT. The four longest cases report 929899,983618,962640,1032410ms; TYPE-005 reports111871ms. ACCEPT-003 passes in4954ms. This environmental failure does not establish a semantic regression or erase the earlier independent ACCEPT-003 timeouts.",
+      "requirements": "target/trigger-validation/binding-members-sleep-affected-requirements.json",
+      "requirementsStatus": "Provenance joins successfully after generated audit refresh; exit1 reflects the five recorded execution failures."
+    },
+    "generatedAuditRefresh": {
+      "reason": "Two scanned file hashes were stale after binding admission: type_inputs.rs and namespace_member_tests.rs. Review confirmed exactly those two JSON hashes changed; counts, mappings and other generated documents are unchanged.",
+      "backup": "target/trigger-validation/pre-binding-audit-refresh",
+      "status": "regenerated and inspected"
+    },
+    "successfulConformanceRerun": {
+      "kernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+      "startedAt": "2026-10-18T23:58:50.608Z",
+      "status": "passed",
+      "originalAttempt": "target/trigger-validation/binding-members-qualification.json",
+      "rationale": "Previous full retry had five timeouts spanning recorded clamshell/system sleep. Re-run the unchanged complete matrix with scoped caffeinate -is and no overlapping builds; preserve all previous failures and unchanged 30000 ms limit. Idle-sleep prevention does not override deliberate lid closure.",
+      "phases": [
+        {
+          "name": "conformance",
+          "args": [
+            "tools/conformance.mjs"
+          ],
+          "startedAt": "2026-10-18T23:58:51.533Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T00:08:22.245Z"
+        },
+        {
+          "name": "requirements",
+          "args": [
+            "tools/requirements.mjs",
+            "--conformance",
+            "target/conformance/report.json"
+          ],
+          "startedAt": "2026-10-19T00:08:23.172Z",
+          "status": "pass",
+          "exitCode": 0,
+          "finishedAt": "2026-10-19T00:08:24.286Z"
+        }
+      ],
+      "finishedAt": "2026-10-19T00:08:25.218Z"
+    },
+    "finalSourceEvidence": {
+      "kernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+      "conformance": {
+        "path": "docs/evidence/binding-namespace-members-conformance-macos-arm64.json",
+        "sha256": "d40c9ad1cfc39218ff3f561527ba3deb56e6f1da7871ea6f281e467fbb7f485c"
+      },
+      "requirements": {
+        "path": "docs/evidence/binding-namespace-members-requirements-macos-arm64.json",
+        "sha256": "75430b8943ce4241996a7e70898183da34c47d7fcc0d2dea7fae78a7e2a83ae2"
+      },
+      "nativeTests": 106,
+      "publicRegressions": 39,
+      "privateModelTests": 1013,
+      "provenanceTests": 16,
+      "basis": "Previously completed workspace/Clippy/native/WASM/public/contract/provenance gates retained above and the new full133case conformance+requirements rerun have the identical frozen kernel input hash. Prior failed attempts are preserved; no process timeout or work budget was changed."
+    }
+  },
+  "limits": [
+    "This repairs enclosing namespace/input/type queries, not complete Connector endpoint, ancestry or featuring semantics.",
+    "Canonical public acceptance uses ordinary source. Legacy exact typing uses a complete authored signature; original incomplete literal-result controls remain explicit.",
+    "Full legacy implicit construction and literal-result dependency closure remain open.",
+    "All C01-C15 remain open. No version bump, release or installation."
+  ],
+  "updatedAt": "2026-10-19T00:09:14.899016+00:00",
+  "awakeRequalification": {
+    "status": "pass",
+    "session": 59634,
+    "state": "target/trigger-validation/binding-members-awake-qualification.json",
+    "log": "target/trigger-validation/binding-members-awake-qualification.log",
+    "sourceHash": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+    "observedAt": "2026-10-19T00:09:14.899016+00:00",
+    "scope": "Complete existing 133-case conformance matrix followed by requirements integrity; unchanged per-process timeout and scoped caffeinate -is; no overlapping builds. Prior failed attempts preserved.",
+    "exitCode": 0,
+    "finishedAt": "2026-10-19T00:08:25.218Z",
+    "reports": {
+      "conformance": {
+        "path": "docs/evidence/binding-namespace-members-conformance-macos-arm64.json",
+        "sha256": "d40c9ad1cfc39218ff3f561527ba3deb56e6f1da7871ea6f281e467fbb7f485c"
+      },
+      "requirements": {
+        "path": "docs/evidence/binding-namespace-members-requirements-macos-arm64.json",
+        "sha256": "75430b8943ce4241996a7e70898183da34c47d7fcc0d2dea7fae78a7e2a83ae2"
+      }
+    },
+    "accept003ElapsedMs": 4272
+  }
+}

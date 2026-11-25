@@ -145,6 +145,70 @@ fn local(
         owner = parent;
     }
 }
+// Shared path traversal for the operation and composite semantic predicates.
+#[allow(clippy::too_many_arguments)]
+fn qualified(
+    r: &mut ResolvedModel,
+    raw: &StoredStructure,
+    receiver: ElementRef,
+    name: &str,
+    is_global: bool,
+    signature: &OperationExecutionSignature,
+    steps: &mut usize,
+    effective: &'static str,
+) -> Result<Option<Membership>, OperationError> {
+    let (explicit_global, names) = qualified_names(name, effective, signature, steps)?;
+    let is_global = explicit_global || is_global;
+    let mut names = names.into_iter();
+    let name = names.next().expect("qualified syntax has a name");
+    let mut selected = if is_global {
+        global(r, raw, &name, steps, effective)?
+    } else {
+        local(r, raw, receiver.0, &name, steps, effective)?
+    };
+    for name in names {
+        let Some(namespace) = selected else { break };
+        if !conforms(r.b.elements[namespace.member].ty, "Namespace") {
+            selected = None;
+            break;
+        }
+        let visible = imports::visible(
+            r,
+            raw,
+            namespace.member,
+            &[],
+            false,
+            false,
+            steps,
+            effective,
+            0,
+        )?;
+        selected = find(r, visible, &name, steps, effective)?;
+    }
+    Ok(selected)
+}
+
+/// Resolve through the same normative operation implementation while charging
+/// one enclosing query's work allowance. Does not use compatibility lookup.
+pub(in crate::json) fn checked_global(
+    r: &mut ResolvedModel,
+    name: &str,
+    steps: &mut usize,
+) -> Result<Option<Membership>, OperationError> {
+    const ID: &str = "Root-Namespaces-Namespace-resolveGlobal_String";
+    let signature = crate::json::operations::operation_execution_signature(ID).unwrap();
+    let root =
+        r.b.unit_starts
+            .first()
+            .map(|&(root, _)| ElementRef(root))
+            .ok_or(OperationError::Incomplete { effective: ID })?;
+    let (_, _, result) = super::with_stable_evidence(r, root, steps, ID, |r, raw, steps| {
+        charge(steps, name.len(), ID)?;
+        qualified(r, raw, root, name, true, signature, steps, ID)
+    })?;
+    Ok(result)
+}
+
 pub(super) fn invoke(
     r: &mut ResolvedModel,
     receiver: ElementRef,
@@ -162,38 +226,16 @@ pub(super) fn invoke(
             charge(steps, name.len(), effective)?;
             let result = match body {
                 Body::ResolveLocal => local(r, raw, receiver.0, name, steps, effective)?,
-                Body::Resolve | Body::ResolveGlobal => {
-                    let (explicit_global, names) =
-                        qualified_names(name, effective, signature, steps)?;
-                    let is_global = explicit_global || matches!(body, Body::ResolveGlobal);
-                    let mut names = names.into_iter();
-                    let name = names.next().expect("qualified syntax has a name");
-                    let mut selected = if is_global {
-                        global(r, raw, &name, steps, effective)?
-                    } else {
-                        local(r, raw, receiver.0, &name, steps, effective)?
-                    };
-                    for name in names {
-                        let Some(namespace) = selected else { break };
-                        if !conforms(r.b.elements[namespace.member].ty, "Namespace") {
-                            selected = None;
-                            break;
-                        }
-                        let visible = imports::visible(
-                            r,
-                            raw,
-                            namespace.member,
-                            &[],
-                            false,
-                            false,
-                            steps,
-                            effective,
-                            0,
-                        )?;
-                        selected = find(r, visible, &name, steps, effective)?;
-                    }
-                    selected
-                }
+                Body::Resolve | Body::ResolveGlobal => qualified(
+                    r,
+                    raw,
+                    receiver,
+                    name,
+                    matches!(body, Body::ResolveGlobal),
+                    signature,
+                    steps,
+                    effective,
+                )?,
                 _ => unreachable!("resolution body"),
             };
             Ok(result)

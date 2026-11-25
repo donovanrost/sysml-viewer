@@ -1,0 +1,453 @@
+{
+  "reviewedAt": "2026-10-18T18:49:38.521762+00:00",
+  "status": "Open decomposition. All 13 directly owned Connector/BindingConnector constraints are listed; this does not close inherited Feature/Type obligations or all connector requirements.",
+  "sources": [
+    {
+      "path": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466"
+    },
+    {
+      "path": "target/standards/kerml.pdf",
+      "sha256": "3bcc96f989bfa9d05cd28e026df3351b795fe8d494187b87bff3db7d96373697"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "Kernel-Connectors-Connector-checkConnectorBinarySpecialization",
+      "name": "checkConnectorBinarySpecialization",
+      "requirement": "A binary Connector must directly or indirectly specialize the base Connector Links::binaryLinks from the Kernel Semantic Library.",
+      "sourceExpressions": [
+        "connectorEnd->size() = 2 implies specializesFromLibrary('Links::binaryLinks')"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Exactly two connector ends versus fewer/more; exact Links::binaryLinks identity; missing or ambiguous library base; direct and inherited specialization."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-Connector-deriveConnectorSourceFeature",
+      "name": "deriveConnectorSourceFeature",
+      "requirement": "The sourceFeature of a Connector is its first relatedFeature (if any).",
+      "sourceExpressions": [
+        "sourceFeature = if relatedFeature->isEmpty() then null else relatedFeature->first() endif"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Empty, singleton and multiple complete related features; first identity and order; incomplete endpoint evidence is not null."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-Connector-checkConnectorTypeFeaturing",
+      "name": "checkConnectorTypeFeaturing",
+      "requirement": "Each relatedFeature of a Connector must have each featuringType of the Connector as a direct or indirect featuringType (where a Feature with no featuringType is treated as if the Classifier Base::Anything was its featuringType).",
+      "sourceExpressions": [
+        "relatedFeature->forAll(f |      if featuringType->isEmpty() then f.isFeaturedWithin(null)     else featuringType->forAll(t | f.isFeaturedWithin(t))     endif)"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Empty connector featuring types and Base::Anything convention; one/multiple featuring types; every related feature; chained endpoints and incomplete isFeaturedWithin evidence."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-Connector-deriveConnectorTargetFeature",
+      "name": "deriveConnectorTargetFeature",
+      "requirement": "The targetFeatures of a Connector are the relatedFeatures other than the sourceFeature.",
+      "sourceExpressions": [
+        "targetFeature =     if relatedFeature->size() < 2 then OrderedSet{}     else          relatedFeature->             subSequence(2, relatedFeature->size())->             asOrderedSet()     endif"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Zero/one/two/many related features; exclude first position, preserve remaining ordered-set identities; repeated endpoint identities."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-Connector-checkConnectorObjectSpecialization",
+      "name": "checkConnectorObjectSpecialization",
+      "requirement": "A Connector for an AssociationStructure must directly or indirectly specialize the base Connector Objects::linkObjects from the Kernel Semantic Library.",
+      "sourceExpressions": [
+        "association->exists(oclIsKindOf(AssociationStructure)) implies specializesFromLibrary('Objects::linkObjects')"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Association versus AssociationStructure typing, including inherited/intersection typing; exact Objects::linkObjects base; unavailable association evidence."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-Connector-validateConnectorBinarySpecialization",
+      "name": "validateConnectorBinarySpecialization",
+      "requirement": "If a Connector has more than two connectorEnds, then it must not specialize, directly or indirectly, the Association BinaryLink from the Kernel Semantic Library.",
+      "sourceExpressions": [
+        "connectorEnds->size() > 2 implies not specializesFromLibrary('Links::BinaryLink')"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "More than two connector ends with and without Links::BinaryLink specialization; incomplete negative specialization evidence; review connectorEnds spelling in the pinned expression."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-Connector-deriveConnectorRelatedFeature",
+      "name": "deriveConnectorRelatedFeature",
+      "requirement": "The relatedFeatures of a Connector are the referenced Features of its connectorEnds.",
+      "sourceExpressions": [
+        "relatedFeature = connectorEnd.ownedReferenceSubsetting-> select(s | s <> null).subsettedFeature"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Ordered effective connector ends, including inherited/redefined ends; absent/one/malformed ReferenceSubsetting; exact target sequence with duplicates retained; invalid ownership; current edits."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-Connector-checkConnectorSpecialization",
+      "name": "checkConnectorSpecialization",
+      "requirement": "A Connector must directly or indirectly specialize the base Connector Links::links from the Kernel Semantic Library.",
+      "sourceExpressions": [
+        "specializesFromLibrary('Links::links')"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Exact Links::links identity through direct or indirect paths; absent library, malformed paths, cycles and metadata-sensitive changes."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-Connector-validateConnectorRelatedFeatures",
+      "name": "validateConnectorRelatedFeatures",
+      "requirement": "If a Connector is concrete (not abstract), then it must have at least two relatedFeatures.",
+      "sourceExpressions": [
+        "not isAbstract implies relatedFeature->size() >= 2"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Concrete versus abstract; zero/one/two/many related features; end count distinct from related-feature count; incomplete derivation cannot justify validity."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-Connector-deriveConnectorDefaultFeaturingType",
+      "name": "deriveConnectorDefaultFeaturingType",
+      "requirement": "The defaultFeaturingType of a Connector is the innermost common direct or indirect featuringType of the relatedFeatures of the Connector, so that each relatedElement is featured within the defaultFeaturingType, if such exists.",
+      "sourceExpressions": [
+        "let commonFeaturingTypes : OrderedSet(Type) =      relatedFeature->closure(featuringType)->select(t |          relatedFeature->forAll(f | f.isFeaturedWithin(t))     ) in let nearestCommonFeaturingTypes : OrderedSet(Type) =     commonFeaturingTypes->reject(t1 |          commonFeaturingTypes->exists(t2 |              t2 <> t1 and t2->closure(featuringType)->contains(t1)     )) in if nearestCommonFeaturingTypes->isEmpty() then null else nearestCommonFeaturingTypes->first() endif"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "No common featuring type, one, nested and incomparable candidates; exact first nearest candidate in source order; cycles and incomplete featuring closure; source edits."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-Connector-checkConnectorBinaryObjectSpecialization",
+      "name": "checkConnectorBinaryObjectSpecialization",
+      "requirement": "A binary Connector for an AssociationStructure  must directly or indirectly specialize the base Connector Objects::binaryLinkObjects from the Kernel Semantic Library.",
+      "sourceExpressions": [
+        "connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure)) implies     specializesFromLibrary('Objects::binaryLinkObjects')"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Cross-product of binary end count and AssociationStructure association; exact Objects::binaryLinkObjects base; unknown antecedents cannot prove inapplicability."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-BindingConnector-validateBindingConnectorIsBinary",
+      "name": "validateBindingConnectorIsBinary",
+      "requirement": "A BindingConnector must be binary.",
+      "sourceExpressions": [
+        "relatedFeature->size() = 2"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Exactly two related-feature sequence positions versus zero/one/many; preserve repeated target identities (x=x); distinguish related-feature count from stored-end count."
+      ]
+    },
+    {
+      "id": "Kernel-Connectors-BindingConnector-checkBindingConnectorSpecialization",
+      "name": "checkBindingConnectorSpecialization",
+      "requirement": "A BindingConnector must directly or indirectly specialize the base BindingConnector Links::selfLinks from the Kernel Semantic Library.",
+      "sourceExpressions": [
+        "specializesFromLibrary('Links::selfLinks')"
+      ],
+      "status": "open",
+      "acceptancePartitions": [
+        "Exact Links::selfLinks path; inherited base closure; missing, wrong or stale library identity."
+      ]
+    }
+  ],
+  "crossingAndChainingDependencies": [
+    {
+      "id": "Core-Features-Feature-checkFeatureCrossingSpecialization",
+      "name": "checkFeatureCrossingSpecialization",
+      "sourceExpressions": [
+        "ownedCrossFeature() <> null implies crossFeature = ownedCrossFeature()"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-deriveFeatureOwnedFeatureChaining",
+      "name": "deriveFeatureOwnedFeatureChaining",
+      "sourceExpressions": [
+        "ownedFeatureChaining = ownedRelationship->selectByKind(FeatureChaining)"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-validateFeatureChainingFeatureNotOne",
+      "name": "validateFeatureChainingFeatureNotOne",
+      "sourceExpressions": [
+        "chainingFeature->size() <> 1"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-deriveFeatureChainingFeature",
+      "name": "deriveFeatureChainingFeature",
+      "sourceExpressions": [
+        "chainingFeature = ownedFeatureChaining.chainingFeature"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-checkFeatureOwnedCrossFeatureSpecialization",
+      "name": "checkFeatureOwnedCrossFeatureSpecialization",
+      "sourceExpressions": [
+        "isOwnedCrossFeature() implies owner.oclAsType(Feature).type->forAll(t | self.specializes(t))"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-validateFeatureCrossFeatureType",
+      "name": "validateFeatureCrossFeatureType",
+      "sourceExpressions": [
+        "crossFeature <> null implies crossFeature.type->asSet() = type->asSet()"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-validateFeatureChainingFeatureConformance",
+      "name": "validateFeatureChainingFeatureConformance",
+      "sourceExpressions": [
+        "Sequence{2..chainingFeature->size()}->forAll(i | chainingFeature->at(i).isFeaturedWithin(chainingFeature->at(i-1))) "
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-deriveFeatureCrossFeature",
+      "name": "deriveFeatureCrossFeature",
+      "sourceExpressions": [
+        "crossFeature =     if ownedCrossSubsetting = null then null     else          let chainingFeatures: Sequence(Feature) =              ownedCrossSubsetting.crossedFeature.chainingFeature in         if chainingFeatures->size() < 2 then null         else chainingFeatures->at(2)     endif"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-validateFeatureChainingFeaturesNotSelf",
+      "name": "validateFeatureChainingFeaturesNotSelf",
+      "sourceExpressions": [
+        "chainingFeature->excludes(self)"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-deriveFeatureOwnedCrossSubsetting",
+      "name": "deriveFeatureOwnedCrossSubsetting",
+      "sourceExpressions": [
+        "ownedCrossSubsetting =     let crossSubsettings: Sequence(CrossSubsetting) =          ownedSubsetting->selectByKind(CrossSubsetting) in     if crossSubsettings->isEmpty() then null     else crossSubsettings->first()     endif"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-validateFeatureOwnedCrossSubsetting",
+      "name": "validateFeatureOwnedCrossSubsetting",
+      "sourceExpressions": [
+        "ownedSubsetting->selectByKind(CrossSubsetting)->size() <= 1"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-validateFeatureCrossFeatureSpecialization",
+      "name": "validateFeatureCrossFeatureSpecialization",
+      "sourceExpressions": [
+        "crossFeature <> null implies     ownedRedefinition.redefinedFeature.crossFeature->             forAll(f | f <> null implies crossFeature.specializes(f))"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-checkFeatureOwnedCrossFeatureTypeFeaturing",
+      "name": "checkFeatureOwnedCrossFeatureTypeFeaturing",
+      "sourceExpressions": [
+        "isOwnedCrossFeature() implies     let otherEnds : OrderedSet(Feature) =          owner.oclAsType(Feature).owningType.endFeature->excluding(self) in     if (otherEnds->size() = 1) then         featuringType = otherEnds->first().type     else         featuringType->size() = 1 and         featuringType->first().isCartesianProduct() and         featuringType->first().asCartesianProduct() = otherEnds.type and         featuringType->first().allSupertypes()->includesAll(             owner.oclAsType(Feature).ownedRedefinition.redefinedFeature->                select(crossFeature() <> null).crossFeature().featuringType)           endif"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-Feature-checkFeatureOwnedCrossFeatureRedefinitionSpecialization",
+      "name": "checkFeatureOwnedCrossFeatureRedefinitionSpecialization",
+      "sourceExpressions": [
+        "isOwnedCrossFeature() implies     ownedSubsetting.subsettedFeature->includesAll(         owner.oclAsType(Feature).ownedRedefinition.redefinedFeature->             select(crossFeature <> null).crossFeature)"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-CrossSubsetting-validateCrossSubsettingCrossedFeature",
+      "name": "validateCrossSubsettingCrossedFeature",
+      "sourceExpressions": [
+        "crossingFeature.isEnd and crossingFeature.owningType <> null implies     let endFeatures: Sequence(Feature) = crossingFeature.owningType.endFeature in     let chainingFeatures: Sequence(Feature) = crossedFeature.chainingFeature in     chainingFeatures->size() = 2 and     endFeatures->size() = 2 implies          chainingFeatures->at(1) = endFeatures->excluding(crossingFeature)->at(1)"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Core-Features-CrossSubsetting-validateCrossSubsettingCrossingFeature",
+      "name": "validateCrossSubsettingCrossingFeature",
+      "sourceExpressions": [
+        "crossingFeature.isEnd and crossingFeature.owningType<>null and crossingFeature.owningType.endFeature ->size() > 1"
+      ],
+      "status": "open"
+    }
+  ],
+  "implementationBoundary": "owned_results::binary_binding_targets reads one exact two-end construction recipe. It does not implement the effective connectorEnd/relatedFeature derivations, featuring closure, library-specialization obligations or complete validation. Public relatedFeature/defaultFeaturingType presently return Approximate in the explicit default-binding diagnostic.",
+  "constructionDecision": "Qualify a named namespace-owned chain and its enclosing bindings first. Inline endpoint chains are owned cross features and bring separate crossing-specialization, typing, featuring and redefinition obligations; substituting the expression result identity alone does not preserve contextual meaning.",
+  "remainingDependencies": [
+    "Exact effective connector ends and their inheritance/redefinition order.",
+    "ReferenceSubsetting property/inverse ownership and complete Feature type/featuring operations.",
+    "Association and AssociationStructure effective typing and library specialization.",
+    "Ordered Expression/result chaining and its isFeaturedWithin validation.",
+    "Applicability of initial FeatureValues and startShot contexts.",
+    "Per-effective-feature versus per-valuation default construction; no change is assumed justified by a successful raw endpoint read."
+  ],
+  "next": [
+    "Implement the checked end/related-feature dependency boundary with explicit incomplete results, separate from constructor provenance.",
+    "Use these acceptance partitions for public positive/negative and deliberate raw-graph cases; preserve declared normative ambiguities instead of normalizing them silently.",
+    "Complete inherited obligations and a second review before any connector-family closure."
+  ],
+  "updatedAt": "2026-10-18T19:19:47.682635+00:00",
+  "propertyShapeReview": {
+    "relatedFeature": {
+      "sourceId": "Kernel-Connectors-Connector-relatedFeature",
+      "ordered": true,
+      "unique": false,
+      "finding": "Preserve repeated endpoint identities. A binding x=x has two relatedFeature positions and must not be deduplicated before binary validation."
+    },
+    "connectorEnd": {
+      "sourceId": "Kernel-Connectors-Connector-connectorEnd",
+      "redefines": "Core-Types-Type-endFeature",
+      "finding": "Use the complete effective endFeature domain, including inheritance/redefinition, not only two stored end memberships."
+    },
+    "association": {
+      "sourceId": "Kernel-Connectors-Connector-association",
+      "redefines": "Core-Features-Feature-type",
+      "finding": "Association typing must come from the complete checked Feature.type provider."
+    },
+    "targetFeature": {
+      "sourceId": "Kernel-Connectors-Connector-deriveConnectorTargetFeature",
+      "finding": "Drop the first related-feature position, then preserve first occurrence order in the remaining ordered set."
+    }
+  },
+  "compatibilityBoundary": "derived.rs::d_related_feature_positions preserves raw end positions for compatibility projections. A fully checked sourceFeature must instead use the first element of the derived relatedFeature sequence, even when an earlier complete end has no ReferenceSubsetting. Keep per-end display positions separate from this normative projection.",
+  "constructionReview": {
+    "status": "Baseline physical graph diagnostic passed; missing paths and incomplete checked domains reproduced. Semantic implementation remains open.",
+    "anchors": [
+      "json.rs::implicit_usage_bases",
+      "json.rs::build_usage_element",
+      "implied.rs::required_implied_plan",
+      "owned_results.rs::stage_binding",
+      "type_features.rs::supported_root",
+      "type_relations.rs::required_bases"
+    ],
+    "findings": [
+      "The materialized diagnostic confirms absent Links::links/selfLinks paths for the tested plain Connector, authored BindingConnectors and eleven generated reference/default bindings.",
+      "Generated binding factory stages its own endpoints but no unconditional connector-base specialization. Adding a base alone may expose inherited end features unless its end positional redefinitions are qualified in the same construction.",
+      "Complete Association/AssociationStructure and Connector feature projections are outside the current supported-root boundary; do not certify complete connectorEnd from a raw stored-end count."
+    ],
+    "diagnostic": {
+      "source": "target/trigger-validation/connector-baseline.rs",
+      "sourceSha256": "cea91c86cc9a631e52022f729eb1135d82dc665333374680d8e685cfc89308ee",
+      "runner": "target/trigger-validation/test-connector-baseline.mjs",
+      "status": "pass",
+      "session": 46169,
+      "kernelInputSha256": "de53460bcef3361902dd2247987b5c7e1d0e36ce64cc0aa554a0819262c4bb3f",
+      "log": "target/trigger-validation/connector-baseline.log",
+      "exitCode": 0,
+      "tests": 1,
+      "logSha256": "351ee7e1f0d5d24d26a8330a4faa886880f190e76271f4257ad6d7179fb83daf",
+      "observedAt": "2026-10-18T19:19:47.682635+00:00",
+      "results": {
+        "authoredPlainConnectorAndBindings": "c, b and same have no inspected path to Links::links, Links::binaryLinks or Links::selfLinks.",
+        "explicitSpecializationControl": "declared subsets Links::selfLinks has all three paths; checked connectorEnd remains Approximate and checked type reports AmbiguousSpecialization. Cause of that type result is not yet isolated.",
+        "generatedBindings": {
+          "count": 11,
+          "families": {
+            "FeatureReferenceExpression": 1,
+            "InvocationExpression": 10
+          },
+          "finding": "All eleven lack the three inspected specialization paths."
+        },
+        "libraryProjections": {
+          "names": [
+            "Links::Link",
+            "Links::BinaryLink",
+            "Links::SelfLink",
+            "Links::links",
+            "Links::binaryLinks",
+            "Links::selfLinks"
+          ],
+          "result": "UnsupportedConfiguration"
+        },
+        "repeatedEndpoint": "same retains two endpoint positions with the same identity."
+      },
+      "limits": "The path walk inspects owned and projected implied specialization relationships. Absence is bounded to that graph, not a complete negative semantic proof. One fixture does not cover all connector or generated-binding families."
+    }
+  },
+  "coupledConstructionAcceptance": [
+    "Confirm materialized unconditional Links::links and Links::selfLinks paths for authored and every generated binding family.",
+    "Qualify complete Association/AssociationStructure feature/end domains and exact ordered end positional targets; do not add a base while leaving duplicate inherited ends visible.",
+    "Plan base relationships and required end redefinitions against one immutable source, admit all generated identities before append, then validate that final effective ends match the planning evidence.",
+    "Missing/ambiguous library identities, partial library inheritance, malformed inverse claims and exhausted work must not publish a partial coupled family.",
+    "Exercise source edits, warm queries, raw/prepared/serialized libraries, collision refusal, retries and interaction with existing reference-result, constructor, invocation-default and accept receiver factories."
+  ],
+  "projectionAcceptanceExamples": [
+    {
+      "relatedFeature": [
+        "x",
+        "x"
+      ],
+      "sourceFeature": "x",
+      "targetFeature": [
+        "x"
+      ],
+      "bindingBinaryRule": true,
+      "meaning": "Repeated identities are two sequence positions, so x=x remains a binary binding."
+    },
+    {
+      "relatedFeature": [
+        "x",
+        "y",
+        "x",
+        "y"
+      ],
+      "sourceFeature": "x",
+      "targetFeature": [
+        "y",
+        "x"
+      ],
+      "bindingBinaryRule": false,
+      "meaning": "Remove the first position only; target uniqueness preserves first occurrence order and may include the source identity."
+    },
+    {
+      "ends": [
+        "no-reference",
+        "references-x",
+        "references-y"
+      ],
+      "relatedFeature": [
+        "x",
+        "y"
+      ],
+      "sourceFeature": "x",
+      "meaning": "A complete absent ReferenceSubsetting contributes no related position; the normative source is the first resulting related feature, independently of display end slots."
+    },
+    {
+      "endCount": 3,
+      "relatedFeature": [
+        "x",
+        "y"
+      ],
+      "bindingBinaryRule": true,
+      "meaning": "This individual rule passes its sequence-size condition, but broader binary-specialization/end constraints can still reject the model. Do not collapse these obligations."
+    }
+  ]
+}

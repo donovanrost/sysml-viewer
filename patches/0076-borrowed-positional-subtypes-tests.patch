@@ -1,0 +1,100 @@
+diff --git a/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/borrowed_role_subtypes.rs b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/borrowed_role_subtypes.rs
+new file mode 100644
+--- /dev/null
++++ b/vendor/sysml-toolkit/crates/sysmlv2-model/src/json/positional/borrowed_role_subtypes.rs
+@@ -0,0 +1,95 @@
++use crate::{
++    json::ResolvedModel,
++    model::{GraphFormat, Model},
++};
++
++#[test]
++fn borrowed_feature_subtypes_keep_foreign_redefinitions_out_of_local_slots() {
++    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
++        for (extension, source, expected_kind, own_target) in [
++            (
++                "kerml",
++                "behavior Base {in step alpha; in step beta;} behavior Foreign specializes Base {in step replacement;} behavior Aliases {alias selected for Foreign::replacement;} behavior Middle specializes Base,Aliases; behavior Consumer specializes Middle {in step own;}",
++                "Step",
++                Some("Base::beta"),
++            ),
++            (
++                "kerml",
++                "class Base {end expr alpha; end expr beta;} class Foreign specializes Base {end expr replacement;} class Aliases {alias selected for Foreign::replacement;} class Middle specializes Base,Aliases; class Consumer specializes Middle {end expr own;}",
++                "Expression",
++                Some("Base::beta"),
++            ),
++            (
++                "sysml",
++                "calc def Base {return alpha;} calc def Foreign :> Base {return replacement;} calc def Aliases {alias selected for Foreign::replacement;} calc def Middle :> Base,Aliases; calc def Consumer :> Middle {return own;}",
++                "ReferenceUsage",
++                None,
++            ),
++        ] {
++            let mut m = Model::with_graph_format(format);
++            let parsed = m.add_source(&format!("borrowed-roles.{extension}"), source);
++            assert!(
++                parsed.diagnostics.is_empty(),
++                "{format:?} {source}: {:?}",
++                parsed.diagnostics
++            );
++            let mut r = ResolvedModel::build(&m);
++            let foreign = r.resolve_qualified("Foreign::replacement").unwrap().0;
++            let alpha = r.resolve_qualified("Base::alpha").unwrap().0;
++            let middle = r.resolve_qualified("Middle").unwrap().0;
++            let consumer = r.resolve_qualified("Consumer").unwrap().0;
++            let own = r.resolve_qualified("Consumer::own").unwrap().0;
++            let expected = own_target.map(|name| r.resolve_qualified(name).unwrap().0);
++            assert_eq!(r.b.elements[foreign].ty, expected_kind);
++            let (bases, incomplete) = r.b.positional_direct_bases();
++            let plan =
++                r.b.plan_positional_redefinitions_with_bases_and_budget(
++                    &bases,
++                    &incomplete,
++                    Some(&mut 0),
++                )
++                .unwrap();
++            assert!(
++                !plan.incomplete.contains(&middle),
++                "{format:?} {expected_kind}"
++            );
++            assert!(
++                !plan.incomplete.contains(&consumer),
++                "{format:?} {expected_kind}"
++            );
++            assert_eq!(plan.targets.get(&foreign), Some(&vec![alpha]));
++            assert_eq!(
++                plan.targets.get(&own).cloned().unwrap_or_default(),
++                expected.into_iter().collect::<Vec<_>>(),
++                "{format:?} {expected_kind}"
++            );
++            assert!(
++                !plan
++                    .targets
++                    .get(&own)
++                    .is_some_and(|targets| targets.contains(&foreign))
++            );
++            let mut exhausted = crate::eval::MAX_STEPS;
++            assert!(
++                r.b.plan_positional_redefinitions_with_bases_and_budget(
++                    &bases,
++                    &incomplete,
++                    Some(&mut exhausted)
++                )
++                .is_none()
++            );
++            // The same proof must refuse a formerly successful foreign member
++            // once its reciprocal ownership is damaged.
++            r.b.elements[foreign].owning_relationship = None;
++            let damaged =
++                r.b.plan_positional_redefinitions_with_bases_and_budget(
++                    &bases,
++                    &incomplete,
++                    Some(&mut 0),
++                )
++                .unwrap();
++            assert!(damaged.incomplete.contains(&consumer));
++            assert!(!damaged.targets.contains_key(&own));
++        }
++    }
++}

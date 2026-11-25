@@ -44,24 +44,64 @@ pub(super) struct MembershipSequence {
     pub non_private: Vec<Membership>,
     pub root_import: bool,
     pub required_positional: std::collections::HashMap<usize, Vec<usize>>,
+    // Complete current owned-redefinition edges, including required positional edges.
+    pub redefinitions: std::collections::HashMap<usize, Vec<usize>>,
+}
+impl MembershipSequence {
+    /// The trigger duration rule starts at ownedRedefinition.redefinedFeature;
+    /// unlike allRedefinedFeatures, identity alone is not a positive witness.
+    pub(super) fn transitively_redefines(
+        &self,
+        feature: usize,
+        target: usize,
+        steps: &mut usize,
+    ) -> Result<bool, TypeInputIssue> {
+        let direct = self
+            .redefinitions
+            .get(&feature)
+            .ok_or(TypeInputIssue::IncompleteProvider)?;
+        charge(steps, direct.len())?;
+        let mut todo = direct.clone();
+        let mut seen = HashSet::new();
+        while let Some(current) = todo.pop() {
+            charge(steps, 1)?;
+            if current == target {
+                return Ok(true);
+            }
+            if seen.insert(current) {
+                let next = self
+                    .redefinitions
+                    .get(&current)
+                    .ok_or(TypeInputIssue::IncompleteProvider)?;
+                charge(steps, next.len())?;
+                todo.extend(next.iter().copied());
+            }
+        }
+        Ok(false)
+    }
 }
 pub(super) fn supported_root(ty: &str) -> bool {
-    matches!(
-        ty,
-        "Type"
-            | "Feature"
-            | "Classifier"
-            | "Class"
-            | "Structure"
-            | "DataType"
-            | "Behavior"
-            | "Function"
-            | "Definition"
-            | "AttributeDefinition"
-            | "OccurrenceDefinition"
-            | "ItemDefinition"
-            | "PartDefinition"
-    )
+    super::step_context::supports_membership_domain(ty)
+        || matches!(
+            ty,
+            "Type"
+                | "Feature"
+                | "Classifier"
+                | "Class"
+                | "Structure"
+                | "DataType"
+                | "Association"
+                | "AssociationStructure"
+                | "Behavior"
+                | "Function"
+                | "Predicate"
+                | "Definition"
+                | "AttributeDefinition"
+                | "AttributeUsage"
+                | "OccurrenceDefinition"
+                | "ItemDefinition"
+                | "PartDefinition"
+        )
 }
 fn charge(steps: &mut usize, n: usize) -> Result<(), TypeInputIssue> {
     *steps = steps.saturating_add(n);
@@ -72,9 +112,13 @@ fn charge(steps: &mut usize, n: usize) -> Result<(), TypeInputIssue> {
     }
 }
 impl ResolvedModel {
-    /// Prove feature and membership projections for ordinary Kernel Types and
+    /// Prove feature and membership projections for ordinary Kernel Types, including
+    /// Predicates with checked BooleanEvaluation heritage, and
     /// nonindividual, nonvariation Definition, AttributeDefinition,
-    /// OccurrenceDefinition, ItemDefinition and PartDefinition receivers.
+    /// OccurrenceDefinition, ItemDefinition and PartDefinition receivers, and
+    /// AttributeUsage receivers whose inherited feature requirements are complete.
+    /// Materialized reference-expression results require current construction,
+    /// complete result-base evidence and a source without an owning Type.
     /// Required library roles, complete ancestry and inverse ownership are checked.
     /// Public/protected leaf-package imports share the central positional proof.
     /// Conjugation, broader import dependencies and contextual subclasses stay qualified.
@@ -118,6 +162,13 @@ impl super::Builder {
         relations: &mut TypeRelations,
     ) -> Result<TypeFeatures, TypeInputIssue> {
         let sequence = self.checked_type_memberships_with_relations(receiver, steps, relations)?;
+        self.project_type_features(&sequence, steps)
+    }
+    pub(super) fn project_type_features(
+        &mut self,
+        sequence: &MembershipSequence,
+        steps: &mut usize,
+    ) -> Result<TypeFeatures, TypeInputIssue> {
         let raw =
             StoredStructure::for_query(self, steps).ok_or(TypeInputIssue::IncompleteProvider)?;
         let stamp = Stamp::capture_builder(self);
@@ -245,15 +296,18 @@ mod tests {
         model::{GraphFormat, Model},
     };
     use serde_json::json;
-    const LIB: &str = "standard library package Base { classifier Anything; datatype DataValue specializes Anything; feature things:Anything; } standard library package Occurrences { class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things; } standard library package Objects { struct Object specializes Occurrences::Occurrence; } standard library package Performances { behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance { return result; } step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances; }";
+    const LIB: &str = "standard library package Base { classifier Anything; datatype DataValue specializes Anything; feature things:Anything; feature dataValues:DataValue subsets things; } standard library package Occurrences { class Occurrence specializes Base::Anything; feature occurrences:Occurrence subsets Base::things; } standard library package Objects { struct Object specializes Occurrences::Occurrence; } standard library package Performances { behavior Performance specializes Occurrences::Occurrence; function Evaluation specializes Performance { return result; } step performances:Performance subsets Occurrences::occurrences; expr evaluations:Evaluation subsets performances; }";
     fn fixture(source: &str, format: GraphFormat) -> ResolvedModel {
+        fixture_named(source, format, "types.kerml")
+    }
+    fn fixture_named(source: &str, format: GraphFormat, name: &str) -> ResolvedModel {
         let mut m = Model::with_graph_format(format);
         assert!(
             m.add_library_source("types-library.kerml", LIB)
                 .diagnostics
                 .is_empty()
         );
-        let unit = m.add_source("types.kerml", source);
+        let unit = m.add_source(name, source);
         assert!(unit.diagnostics.is_empty(), "{:?}", unit.diagnostics);
         ResolvedModel::build(&m)
     }
@@ -265,7 +319,9 @@ mod tests {
     }
     fn complete(r: &mut ResolvedModel, name: &str) -> TypeFeatures {
         let e = r.resolve_qualified(name).unwrap();
-        r.type_feature_report(e).projections.unwrap()
+        r.type_feature_report(e)
+            .projections
+            .unwrap_or_else(|issue| panic!("{name}: {issue:?}"))
     }
     fn full(r: &mut ResolvedModel) {
         r.set_closure_policy(ClosurePolicy::Closure {
@@ -514,7 +570,7 @@ mod tests {
         // namespace projection. The same-ID kind edit must revalidate it.
         r.b.elements[e.0].ty = "Feature";
         assert_eq!(r.type_feature_report(e).projections, Ok(complete));
-        for kind in ["Association", "Expression", "PartUsage", "Predicate"] {
+        for kind in ["PartUsage"] {
             r.b.elements[e.0].ty = kind;
             assert_eq!(
                 r.type_feature_report(e).projections,
@@ -522,6 +578,30 @@ mod tests {
                 "{kind}"
             );
         }
+        r.b.elements[e.0].ty = "Association";
+        assert_eq!(
+            r.type_feature_report(e).projections,
+            Err(TypeInputIssue::IncompleteProvider)
+        );
+        // An ordinary Expression now has a complete inherited return domain.
+        // The same-ID edit must derive that domain, not reuse Class emptiness.
+        r.b.elements[e.0].ty = "Expression";
+        let result = r
+            .resolve_qualified("Performances::Evaluation::result")
+            .unwrap();
+        assert_eq!(
+            r.type_feature_report(e).projections.unwrap().features,
+            [result]
+        );
+        assert_eq!(r.expression_result_report(e).result, Ok(Some(result)));
+        // Predicate is supported only with its complete canonical heritage.
+        // A kind edit cannot reuse the earlier empty Class certificate when
+        // the BooleanEvaluation role is absent from this fixture's library.
+        r.b.elements[e.0].ty = "Predicate";
+        assert_eq!(
+            r.type_feature_report(e).projections,
+            Err(TypeInputIssue::IncompleteProvider)
+        );
         assert_eq!(
             r.type_feature_report(ElementRef(usize::MAX)).projections,
             Err(TypeInputIssue::InvalidElement)
@@ -560,5 +640,372 @@ mod tests {
         );
         r.set_closure_policy(ClosurePolicy::Passthrough);
         assert_eq!(r.property(a, "feature"), Err(PropertyError::Approximate));
+    }
+
+    #[test]
+    fn assertion_members_inherit_and_redefine_by_identity_in_structural_types() {
+        for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
+            let mut r = fixture_named(
+                "attribute def A :> Base::DataValue {assert constraint positive {true} assert not constraint negative {false}} \
+                 attribute def B :> A; \
+                 attribute def C :> A {assert constraint replacement :>> A::positive {true}}",
+                format,
+                "assertions.sysml",
+            );
+            let positive = refs(&mut r, &["A::positive"])[0];
+            let negative = refs(&mut r, &["A::negative"])[0];
+            let replacement = refs(&mut r, &["C::replacement"])[0];
+            assert_eq!(r.element_type(positive), "AssertConstraintUsage");
+            assert_eq!(complete(&mut r, "B").features, [positive, negative]);
+            assert_eq!(complete(&mut r, "C").features, [replacement, negative]);
+            let owner = r.resolve_qualified("B").unwrap();
+            assert_eq!(
+                r.type_feature_report_with_budget(owner, crate::eval::MAX_STEPS)
+                    .projections,
+                Err(TypeInputIssue::WorkLimit)
+            );
+            assert_eq!(complete(&mut r, "B").features, [positive, negative]);
+        }
+    }
+
+    #[test]
+    fn assertion_member_admission_preserves_role_and_relationship_guards() {
+        for change in 0..6 {
+            let mut r = fixture_named(
+                "attribute def A :> Base::DataValue {assert constraint rule {true}} attribute def B :> A; attribute def Other;",
+                GraphFormat::CanonicalV3,
+                "assertions.sysml",
+            );
+            let owner = r.resolve_qualified("B").unwrap();
+            let rule = r.resolve_qualified("A::rule").unwrap();
+            let other = r.resolve_qualified("Other").unwrap();
+            let membership = r.b.elements[rule.0].owning_relationship.unwrap();
+            assert!(r.type_feature_report(owner).projections.is_ok());
+            match change {
+                0 => r.b.set(rule.0, "direction", json!("in")),
+                1 => r.b.set(rule.0, "isEnd", json!(true)),
+                2 => {
+                    r.b.elements[membership].ty = "ParameterMembership";
+                }
+                3 => {
+                    r.b.elements[rule.0].owning_relationship = None;
+                }
+                4 => r.b.set(
+                    membership,
+                    "ownedMemberFeature",
+                    json!({"@id":r.element_id(other)}),
+                ),
+                5 => r.b.set(
+                    membership,
+                    "owningRelatedElement",
+                    json!({"@id":r.element_id(other)}),
+                ),
+                _ => unreachable!(),
+            }
+            assert!(
+                r.type_feature_report(owner).projections.is_err(),
+                "change {change}"
+            );
+        }
+    }
+
+    #[test]
+    fn attribute_usage_roots_require_complete_type_and_usage_dependencies() {
+        for format in [GraphFormat::CanonicalV3, GraphFormat::LegacyV2] {
+            // Canonical construction supplies typed-feature library bases. The
+            // legacy graph deliberately preserves its earlier recipe set; an
+            // absent required edge must remain incomplete, not be invented by
+            // this reader. Explicit heritage makes the same query certifiable.
+            let source =
+                "attribute def T :> Base::DataValue {attribute field;} attribute measurement:T;";
+            let mut r = fixture_named(source, format, "attributes.sysml");
+            if format == GraphFormat::LegacyV2 {
+                let value = r.resolve_qualified("measurement").unwrap();
+                assert_eq!(
+                    r.type_feature_report(value).projections,
+                    Err(TypeInputIssue::IncompleteProvider)
+                );
+                r = fixture_named(
+                    "attribute def T :> Base::DataValue {attribute field;} attribute measurement:T :> Base::dataValues;",
+                    format,
+                    "attributes.sysml",
+                );
+            }
+            let value = r.resolve_qualified("measurement").unwrap();
+            let member = r.resolve_qualified("T::field").unwrap();
+            let report = r.type_feature_report(value).projections.unwrap();
+            assert_eq!(report.features, [member]);
+            let original = r.b.elements[value.0].props.clone();
+            r.b.set(value.0, "isVariation", json!(true));
+            assert!(r.type_feature_report(value).projections.is_err());
+            r.b.elements[value.0].props = original;
+            assert_eq!(r.type_feature_report(value).projections, Ok(report));
+            full(&mut r);
+            assert_eq!(
+                r.property(value, "feature").unwrap(),
+                json!([{"@id":r.element_id(member)}])
+            );
+            for source in [
+                "attribute measurement:Missing;",
+                "attribute def T; attribute measurement:T = missing;",
+            ] {
+                let mut r = fixture_named(source, format, "attributes.sysml");
+                let value = r.resolve_qualified("measurement").unwrap();
+                assert!(
+                    r.type_feature_report(value).projections.is_err(),
+                    "{source}"
+                );
+            }
+        }
+    }
+    #[test]
+    fn authored_parameter_feature_domains_require_the_owning_signature() {
+        let mut r = fixture(
+            "datatype T {feature field;} function F {in p:T; return r:T;} function G specializes F {in q:T; return s:T;}",
+            GraphFormat::CanonicalV3,
+        );
+        let field = refs(&mut r, &["T::field"])[0];
+        for name in ["F::p", "F::r", "G::q", "G::s"] {
+            assert_eq!(complete(&mut r, name).features, [field], "{name}");
+        }
+        assert!(
+            complete(&mut r, "Performances::Evaluation::result")
+                .features
+                .is_empty()
+        );
+        let result = refs(&mut r, &["G::s"])[0];
+        assert_eq!(
+            r.type_feature_report_with_budget(result, crate::eval::MAX_STEPS)
+                .projections,
+            Err(TypeInputIssue::WorkLimit)
+        );
+        assert_eq!(
+            r.type_feature_report(result).projections.unwrap().features,
+            [field]
+        );
+        let membership = r.b.elements[result.0].owning_relationship.unwrap();
+        r.b.elements[membership].ty = "OwningMembership";
+        assert!(r.type_feature_report(result).projections.is_err());
+    }
+    #[test]
+    fn parameter_domains_refuse_incomplete_or_changed_owning_signatures() {
+        for source in [
+            "datatype T {feature field;} function F specializes Missing {in p:T; return r:T;}",
+            "datatype T {feature field;} function F specializes G {in p:T; return r:T;} function G specializes F;",
+        ] {
+            let mut r = fixture(source, GraphFormat::CanonicalV3);
+            for name in ["F::p", "F::r"] {
+                let feature = refs(&mut r, &[name])[0];
+                assert!(
+                    r.type_feature_report(feature).projections.is_err(),
+                    "{source} {name}"
+                );
+            }
+        }
+        for change in 0..4 {
+            let mut r = fixture(
+                "datatype T {feature field;} function F {in p:T; return r:T;} function G specializes F {in q:T; return s:T;}",
+                GraphFormat::CanonicalV3,
+            );
+            let result = refs(&mut r, &["G::s"])[0];
+            assert!(r.type_feature_report(result).projections.is_ok());
+            let owner = refs(&mut r, &["G"])[0];
+            let parameter = refs(&mut r, &["G::q"])[0];
+            let membership = r.b.elements[parameter.0].owning_relationship.unwrap();
+            match change {
+                0 => r.b.set(parameter.0, "direction", json!("bad")),
+                1 => r.b.set(
+                    membership,
+                    "ownedMemberFeature",
+                    json!({"@id":r.element_id(result)}),
+                ),
+                2 => r.b.elements[owner.0].ty = "Behavior",
+                3 => r.b.elements[parameter.0].owning_relationship = None,
+                _ => unreachable!(),
+            }
+            assert!(
+                r.type_feature_report(result).projections.is_err(),
+                "change {change}"
+            );
+        }
+    }
+    fn predicate_fixture(source: &str, format: GraphFormat, role: &str) -> ResolvedModel {
+        let mut m = Model::with_graph_format(format);
+        let library = LIB.replace("step performances:", &format!("{role} step performances:"));
+        assert!(
+            m.add_library_source("predicate-base.kerml", &library)
+                .diagnostics
+                .is_empty()
+        );
+        assert!(m.add_library_source("predicate-scalars.kerml", "standard library package ScalarValues {datatype Boolean specializes Base::DataValue {feature bit;}}").diagnostics.is_empty());
+        assert!(
+            m.add_source("predicate-user.kerml", source)
+                .diagnostics
+                .is_empty()
+        );
+        ResolvedModel::build(&m)
+    }
+    const BOOLEAN_EVALUATION: &str =
+        "predicate BooleanEvaluation specializes Evaluation {return truth:ScalarValues::Boolean;}";
+    #[test]
+    fn predicate_signatures_and_return_feature_domains_share_the_function_proof() {
+        for (format, explicit_data_base) in [
+            (GraphFormat::CanonicalV3, false),
+            (GraphFormat::LegacyV2, false),
+            (GraphFormat::LegacyV2, true),
+        ] {
+            let mut source = "datatype T {feature field;} predicate P {in p:T;return r:ScalarValues::Boolean;} predicate Q specializes P {in q:T;return s:ScalarValues::Boolean;} predicate R specializes Q; predicate Empty;".to_owned();
+            let mut role = BOOLEAN_EVALUATION.to_owned();
+            if explicit_data_base {
+                // Legacy construction omits the typed-feature dataValues base.
+                // The shared reader requires actual heritage in either format.
+                for ty in ["T", "ScalarValues::Boolean"] {
+                    let typed = format!(":{ty};");
+                    let explicit = format!(":{ty} subsets Base::dataValues;");
+                    source = source.replace(&typed, &explicit);
+                    role = role.replace(&typed, &explicit);
+                }
+            }
+            let mut r = predicate_fixture(&source, format, &role);
+            let input = refs(&mut r, &["Q::q"])[0];
+            let result = refs(&mut r, &["Q::s"])[0];
+            let bit = refs(&mut r, &["ScalarValues::Boolean::bit"])[0];
+            let field = refs(&mut r, &["T::field"])[0];
+            for name in ["Q", "R"] {
+                let owner = refs(&mut r, &[name])[0];
+                let count = r.b.elements.len();
+                let features = r.type_feature_report(owner).projections.unwrap();
+                assert_eq!(features.inputs, [input]);
+                assert_eq!(features.outputs, [result]);
+                assert_eq!(r.function_result_report(owner).result, Ok(Some(result)));
+                assert_eq!(r.b.elements.len(), count);
+                full(&mut r);
+                assert_eq!(
+                    r.property(owner, "result"),
+                    Ok(json!({"@id":r.element_id(result)}))
+                );
+                assert_eq!(
+                    r.property(owner, "input"),
+                    Ok(json!([{"@id":r.element_id(input)}]))
+                );
+            }
+            for (name, member) in [
+                ("P::r", bit),
+                ("Q::s", bit),
+                ("Performances::BooleanEvaluation::truth", bit),
+                ("Q::q", field),
+            ] {
+                let feature = refs(&mut r, &[name])[0];
+                let report = r.type_feature_report(feature);
+                if format == GraphFormat::LegacyV2 && !explicit_data_base {
+                    let data_values = refs(&mut r, &["Base::dataValues"])[0];
+                    assert!(!r.conforms_with_implied(feature, data_values));
+                    assert_eq!(report.projections, Err(TypeInputIssue::IncompleteProvider));
+                    continue;
+                }
+                assert_eq!(
+                    report
+                        .projections
+                        .unwrap_or_else(|issue| panic!("{format:?}: {name}: {issue:?}"))
+                        .features,
+                    [member],
+                    "{format:?}: {name}"
+                );
+            }
+            let empty = refs(&mut r, &["Empty"])[0];
+            let inherited = refs(&mut r, &["Performances::BooleanEvaluation::truth"])[0];
+            assert_eq!(r.function_result_report(empty).result, Ok(Some(inherited)));
+            assert_eq!(
+                r.function_result_report_with_budget(empty, crate::eval::MAX_STEPS)
+                    .result,
+                Err(TypeInputIssue::WorkLimit)
+            );
+            assert_eq!(r.function_result_report(empty).result, Ok(Some(inherited)));
+        }
+    }
+    #[test]
+    fn predicate_required_boolean_heritage_cannot_be_inferred_from_an_ordinary_function() {
+        for role in [
+            "",
+            "function BooleanEvaluation specializes Evaluation {return truth:ScalarValues::Boolean;}",
+        ] {
+            let mut r = predicate_fixture(
+                "predicate P {return r:ScalarValues::Boolean;}",
+                GraphFormat::CanonicalV3,
+                role,
+            );
+            for name in ["P", "P::r"] {
+                let e = refs(&mut r, &[name])[0];
+                assert!(
+                    r.type_feature_report(e).projections.is_err(),
+                    "{role}: {name}"
+                );
+            }
+            let p = refs(&mut r, &["P"])[0];
+            assert!(r.function_result_report(p).result.is_err());
+        }
+        let mut r = predicate_fixture(
+            "package Performances {predicate BooleanEvaluation;} predicate P {return r:ScalarValues::Boolean;}",
+            GraphFormat::CanonicalV3,
+            "",
+        );
+        let p = refs(&mut r, &["P"])[0];
+        assert!(r.function_result_report(p).result.is_err());
+    }
+    #[test]
+    fn predicate_results_reject_missing_cyclic_and_mutated_owning_signatures() {
+        for source in [
+            "predicate P specializes Missing {return r:ScalarValues::Boolean;}",
+            "predicate P specializes Q {return r:ScalarValues::Boolean;} predicate Q specializes P;",
+        ] {
+            let mut r = predicate_fixture(source, GraphFormat::CanonicalV3, BOOLEAN_EVALUATION);
+            let p = refs(&mut r, &["P"])[0];
+            let result = refs(&mut r, &["P::r"])[0];
+            assert!(r.function_result_report(p).result.is_err());
+            assert!(r.type_feature_report(result).projections.is_err());
+        }
+        for change in 0..5 {
+            let mut r = predicate_fixture(
+                "predicate P {in p;return r:ScalarValues::Boolean;}",
+                GraphFormat::CanonicalV3,
+                BOOLEAN_EVALUATION,
+            );
+            let p = refs(&mut r, &["P"])[0];
+            let result = refs(&mut r, &["P::r"])[0];
+            let input = refs(&mut r, &["P::p"])[0];
+            assert_eq!(r.function_result_report(p).result, Ok(Some(result)));
+            assert!(r.type_feature_report(result).projections.is_ok());
+            let member = r.b.elements[result.0].owning_relationship.unwrap();
+            match change {
+                0 => r.b.set(input.0, "direction", json!("invalid")),
+                1 => r.b.set(
+                    member,
+                    "ownedMemberFeature",
+                    json!({"@id":r.element_id(input)}),
+                ),
+                2 => r.b.elements[result.0].owning_relationship = None,
+                3 => {
+                    let base = refs(&mut r, &["Performances::BooleanEvaluation"])[0];
+                    r.b.elements[base.0].ty = "Function";
+                }
+                4 => {
+                    r.b.metadata_association_generation = Some(std::sync::Arc::new(()));
+                    // An epoch change alone permits a fresh proof. Incomplete
+                    // current metadata must instead prevent certification.
+                    assert_eq!(r.function_result_report(p).result, Ok(Some(result)));
+                    assert!(r.type_feature_report(result).projections.is_ok());
+                    r.b.metadata_associations_incomplete = true;
+                }
+                _ => unreachable!(),
+            }
+            assert!(
+                r.function_result_report(p).result.is_err(),
+                "change {change}"
+            );
+            assert!(
+                r.type_feature_report(result).projections.is_err(),
+                "change {change}"
+            );
+        }
     }
 }

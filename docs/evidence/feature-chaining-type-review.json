@@ -1,0 +1,404 @@
+{
+  "recordedAt": "2026-10-18T14:49:26.834258+00:00",
+  "status": "Shared chain typing is admitted and fully qualified on the recorded source: vendor978/native103/public39/provenance16, Clippy, native/WASM builds, contract, conformance133 and matching requirements all pass. Named validations and portion dependencies remain open.",
+  "kernelInputSha256": "f755be887904a283eb35301afbe05c03b867ba56ea9195dcf94d4333e6e6ba54",
+  "source": {
+    "kermlXmiSha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "anchors": [
+      {
+        "id": "Core-Features-Feature-deriveFeatureType",
+        "name": "deriveFeatureType",
+        "bodies": [
+          "type =      let types : OrderedSet(Types) = OrderedSet{self}->         -- Note: The closure operation automatically handles circular relationships.         closure(typingFeatures()).typing.type->asOrderedSet() in     types->reject(t1 | types->exist(t2 | t2 <> t1 and t2.specializes(t1)))"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-typingFeatures_",
+        "name": "typingFeatures",
+        "bodies": [
+          "if not isConjugated then     let subsettedFeatures : OrderedSet(Feature) =          subsetting->reject(s | s.oclIsKindOf(CrossSubsetting)).subsettedFeatures in      if chainingFeature->isEmpty() or        subsettedFeature->includes(chainingFeature->last())     then subsettedFeatures     else subsettedFeatures->append(chainingFeature->last())     endif else if conjugator.originalType.oclIsKindOf(Feature) then     OrderedSet{conjugator.originalType.oclAsType(Feature)} else OrderedSet{} endif endif"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-supertypes_Boolean",
+        "name": "supertypes",
+        "bodies": [
+          "let supertypes : OrderedSet(Type) =      self.oclAsType(Type).supertypes(excludeImplied) in if featureTarget = self then supertypes else supertypes->append(featureTarget) endif"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-deriveFeatureOwnedFeatureChaining",
+        "name": "deriveFeatureOwnedFeatureChaining",
+        "bodies": [
+          "ownedFeatureChaining = ownedRelationship->selectByKind(FeatureChaining)"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-deriveFeatureChainingFeature",
+        "name": "deriveFeatureChainingFeature",
+        "bodies": [
+          "chainingFeature = ownedFeatureChaining.chainingFeature"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-deriveFeatureFeatureTarget",
+        "name": "deriveFeatureFeatureTarget",
+        "bodies": [
+          "featureTarget = if chainingFeature->isEmpty() then self else chainingFeature->last() endif"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-validateFeatureChainingFeatureNotOne",
+        "name": "validateFeatureChainingFeatureNotOne",
+        "bodies": [
+          "chainingFeature->size() <> 1"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-validateFeatureChainingFeatureConformance",
+        "name": "validateFeatureChainingFeatureConformance",
+        "bodies": [
+          "Sequence{2..chainingFeature->size()}->forAll(i | chainingFeature->at(i).isFeaturedWithin(chainingFeature->at(i-1))) "
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-validateFeatureChainingFeaturesNotSelf",
+        "name": "validateFeatureChainingFeaturesNotSelf",
+        "bodies": [
+          "chainingFeature->excludes(self)"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-FeatureChaining",
+        "name": "FeatureChaining",
+        "bodies": [],
+        "generalizations": [
+          "Root-Elements-Relationship"
+        ],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-FeatureChaining-featureChained",
+        "name": "featureChained",
+        "bodies": [],
+        "generalizations": [],
+        "redefines": [
+          "Root-Elements-Relationship-source"
+        ],
+        "subsets": [
+          "Root-Elements-Relationship-owningRelatedElement"
+        ]
+      },
+      {
+        "id": "Core-Features-FeatureChaining-chainingFeature",
+        "name": "chainingFeature",
+        "bodies": [],
+        "generalizations": [],
+        "redefines": [
+          "Root-Elements-Relationship-target"
+        ],
+        "subsets": []
+      }
+    ]
+  },
+  "baseline": {
+    "queries": [
+      {
+        "feature": "Holder::next",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 1282977
+      },
+      {
+        "feature": "Nested::leaf",
+        "result": "Ok([Some(\"Small\")])",
+        "steps": 583615
+      },
+      {
+        "feature": "root",
+        "result": "Ok([Some(\"Holder\")])",
+        "steps": 568773
+      },
+      {
+        "feature": "simple",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581672
+      },
+      {
+        "feature": "deep",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 583620
+      },
+      {
+        "feature": "narrow",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 583678
+      },
+      {
+        "feature": "inherited",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581696
+      },
+      {
+        "feature": "BehaviorOwner::scoped",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581672
+      },
+      {
+        "feature": "Base::Anything::self",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 565395
+      },
+      {
+        "feature": "Base::things::that",
+        "result": "Ok([Some(\"Base::Anything\")])",
+        "steps": 565359
+      },
+      {
+        "feature": "Occurrences::Occurrence::self",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569979
+      },
+      {
+        "feature": "Occurrences::Occurrence::portionOf",
+        "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+        "steps": 569389
+      },
+      {
+        "feature": "Occurrences::Occurrence::portions",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569539
+      },
+      {
+        "feature": "Occurrences::Occurrence::timeSlices",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569566
+      },
+      {
+        "feature": "Occurrences::Occurrence::spaceSlices",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569566
+      },
+      {
+        "feature": "Performances::Performance::self",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 572085
+      },
+      {
+        "feature": "queried.result",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 705832
+      }
+    ],
+    "complete": 5,
+    "total": 17,
+    "inputs": {
+      "target/trigger-validation/feature-chaining-type-public-probe.rs": "cb221e007f219390649c0b81bfabe0bb3359f59739236a0c7c452e58313236b7",
+      "target/trigger-validation/feature-chaining-type-public-probe": "4b30ed9c9757145cac00423e541e4a2d35aa59b2013f005fe96bb34ca3ac139b",
+      "target/trigger-validation/feature-chaining-type-public-probe.log": "4796ce20985ec80b678b9cc6d130dbe6d4261bc67f3976d055d55f21ff5b1cd2",
+      "target/trigger-validation/libsysmlv2_model_for_ordinary_feature_probe.rlib": "07a3d05790cce86b339669b0576f91b2ae00aa714813c9c6f9e657549de0f4a4"
+    }
+  },
+  "findings": [
+    "deriveFeatureType follows typingFeatures, which includes the final chaining Feature for nonconjugated Features as well as ordinary subsetting targets. It excludes CrossSubsetting. The closure explicitly handles circular relationships.",
+    "Feature::supertypes appends the final featureTarget when it differs from the Feature itself. The existing shared checked_feature_target validates every owned link and reciprocal carrier; static planning and TypeRelations already consume it.",
+    "The public type adapter independently reads owned chain endpoints, but feature_requirements unconditionally refuses FeatureChaining. This blocks authored two/three-link chains, inherited/refined chains and Base::Anything::self even when the final target has an exact known type.",
+    "The shared helper also accounts for malformed or orphan chaining source rows through StoredStructure::bad_chains; the adapter should consume the same certificate instead of maintaining a second endpoint loop.",
+    "Three named chaining validations have separate cardinality, self-exclusion and adjacent featuring obligations. Computing a statically defined type does not by itself establish those rules or whole-model validity.",
+    "Occurrence self types still depend on portion, time-slice and space-slice feature families; enabling chain typing alone cannot close those dependencies."
+  ],
+  "prototypePlan": [
+    "Have feature_requirements obtain the shared checked one-hop final target and return it with its positional target certificate. Preserve complete identity/ownership checks and all existing family applicability guards.",
+    "Use that target for the type dependency graph and required base evidence; remove the duplicate adapter chain loop. Continue to use the common ordered Feature.type closure and pruning.",
+    "Exercise exact two/three-link and inherited/redefined/narrowed types; malformed first/middle/last links, inverse arrays, orphan/duplicate carriers, unresolved/cyclic dependencies, edits and library replay before any production admission."
+  ],
+  "coverageCountsChanged": false,
+  "prototype": {
+    "status": "Executed in disposable workspace: diagnostic probe and all six acceptance tests pass. Production chaining admission remains unchanged.",
+    "files": {
+      "target/trigger-validation/feature-chaining-type-stage/adapter.rs": "45135920c4aff19626b94ff14b1874d2976a25314ac426c5a1f56c7939ebc1b5",
+      "target/trigger-validation/feature-chaining-type-stage/chaining_type_probe.rs": "248a8ae50446a96a9025d8deff83bafa1446539fdb63e7d3dc890a48171931ce",
+      "target/trigger-validation/feature-chaining-type-stage/type_relations.rs": "e7d4db31175f26088831096c682f22826dc1a6caa5d828f42fe1f3ed81369884",
+      "target/trigger-validation/feature-chaining-type-stage/chaining_types_tests.rs": "d6cc17e7b64622ce687c9a7fcca7addee997ed941235b8be40991e824edd68cb"
+    },
+    "runner": "target/trigger-validation/test-feature-chaining-type-prototype.mjs",
+    "acceptanceTests": 6,
+    "malformedPartitions": 12,
+    "review": "A single checked_feature_target certificate provides the final chain dependency and required path, replacing the separate type-adapter endpoint loop. No recursion or second specialization graph is introduced. Repeated target Features are allowed because the chain is a sequence; duplicate ownership rows remain invalid.",
+    "basedOnKernelInputSha256": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028",
+    "harnessCorrection": "The first disposable test compile used the external sysmlv2_model crate name inside that crate. The fixture import was corrected to crate; no semantic test executed in that failed compile.",
+    "completedAt": "2026-10-18T15:07:25.806562+00:00",
+    "log": "target/trigger-validation/feature-chaining-type-prototype.log",
+    "logSha256": "35ffae54d00de165658fc4dc35a3b508ed4faea7db70a173a4453a723a067dec",
+    "queries": [
+      {
+        "feature": "Holder::next",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 1282990
+      },
+      {
+        "feature": "Nested::leaf",
+        "result": "Ok([Some(\"Small\")])",
+        "steps": 583628
+      },
+      {
+        "feature": "root",
+        "result": "Ok([Some(\"Holder\")])",
+        "steps": 568781
+      },
+      {
+        "feature": "simple",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581733
+      },
+      {
+        "feature": "deep",
+        "result": "Ok([Some(\"Small\")])",
+        "steps": 583682
+      },
+      {
+        "feature": "narrow",
+        "result": "Ok([Some(\"Small\")])",
+        "steps": 583744
+      },
+      {
+        "feature": "inherited",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581774
+      },
+      {
+        "feature": "BehaviorOwner::scoped",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581733
+      },
+      {
+        "feature": "Base::Anything::self",
+        "result": "Ok([Some(\"Base::Anything\")])",
+        "steps": 565445
+      },
+      {
+        "feature": "Base::things::that",
+        "result": "Ok([Some(\"Base::Anything\")])",
+        "steps": 565369
+      },
+      {
+        "feature": "Occurrences::Occurrence::self",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 570078
+      },
+      {
+        "feature": "Occurrences::Occurrence::portionOf",
+        "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+        "steps": 569404
+      },
+      {
+        "feature": "Occurrences::Occurrence::portions",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569581
+      },
+      {
+        "feature": "Occurrences::Occurrence::timeSlices",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569608
+      },
+      {
+        "feature": "Occurrences::Occurrence::spaceSlices",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 569608
+      },
+      {
+        "feature": "Performances::Performance::self",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 572187
+      },
+      {
+        "feature": "queried.result",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 705946
+      }
+    ],
+    "complete": 12,
+    "total": 17,
+    "acceptance": "Exact two/three/nested/repeated chains, inherited/redefined/narrowed types and reference results; twelve fresh and post-query malformed-link/carrier cases, negative specialization unknowns, raw/prepared/serialized identities, cumulative budgets, current target edits and closed circular typing all pass.",
+    "next": "Review broader family interactions and add native API acceptance; admit only after the frozen ordinary Feature source completes all qualification, then qualify the new source.",
+    "archivedInputs": {
+      "target/trigger-validation/feature-chaining-type-initial-stage/adapter.rs": "45135920c4aff19626b94ff14b1874d2976a25314ac426c5a1f56c7939ebc1b5",
+      "target/trigger-validation/feature-chaining-type-initial-stage/chaining_type_probe.rs": "248a8ae50446a96a9025d8deff83bafa1446539fdb63e7d3dc890a48171931ce",
+      "target/trigger-validation/feature-chaining-type-initial-stage/type_relations.rs": "e7d4db31175f26088831096c682f22826dc1a6caa5d828f42fe1f3ed81369884",
+      "target/trigger-validation/feature-chaining-type-initial-stage/chaining_types_tests.rs": "d6cc17e7b64622ce687c9a7fcca7addee997ed941235b8be40991e824edd68cb"
+    }
+  },
+  "validationReview": {
+    "status": "Code candidates only; named validation obligations remain open.",
+    "cardinalityAndSelfExclusion": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/structural.rs",
+    "adjacentFeaturing": "vendor/sysml-toolkit/crates/sysmlv2-model/src/check/relationships.rs",
+    "limits": "Existing Facts::relations filter_map drops unresolved endpoints; featured_within returns Boolean over compatibility facts and treats an empty featuring list as true. These routines require a separate completeness and mutation review before they can qualify all named chaining validations. No change to those validators is claimed here."
+  },
+  "updatedAt": "2026-10-18T15:59:32.158901+00:00",
+  "extension": {
+    "status": "Expanded disposable public integration and all three selected existing module suites pass.",
+    "preparedAt": "2026-10-18T15:11:14.935507+00:00",
+    "acceptance": [
+      "Canonical public integration checks ten exact report/property pairs from unmodified source. Legacy checks incomplete direct/chain reports, exact Base self, and ten exact pairs with explicitly authored required data-value paths. Cumulative work checks remain private.",
+      "The private closure test adds a two-Feature chain cycle without direct self links, alongside the separately invalid direct-self case.",
+      "Run the complete existing typing/specialization modules against the candidate to challenge interactions and old refusal expectations."
+    ],
+    "compileFailure": {
+      "log": "target/trigger-validation/feature-chaining-type-extended-compile-failure.log",
+      "logSha256": "009bf2a6615734aa7b85ef047dbb592efc3f246ba7925a08fcd5afab53a97dc7"
+    },
+    "updatedAt": "2026-10-18T15:27:11.331883+00:00",
+    "legacyFinding": {
+      "log": "target/trigger-validation/feature-chaining-legacy-probe.log",
+      "logSha256": "be82745f73319c872d4ce30d617c74059d28a35d32de5157206a36a91ce23a9a",
+      "failedIntegrationLog": "target/trigger-validation/feature-chaining-type-extended-legacy-failure.log",
+      "finding": "LegacyV2 fails even Holder::next and Nested::leaf before following any chain. Its owned_typing_requirements deliberately omits unconditional data-value/occurrence/object bases, while CanonicalV3 constructs them. Base::Anything::self has complete authored paths and succeeds in LegacyV2. The new common chain reader does not invent missing prerequisites.",
+      "review": "The application builds CanonicalV3. Keep its unmodified source acceptance. Legacy acceptance separately asserts incomplete direct/chain reports, then supplies explicit Base::dataValues paths to test complete chain behavior. This preserves documented legacy construction boundaries; no full legacy semantic-generation claim."
+    },
+    "completedAt": "2026-10-18T15:32:12.272617+00:00",
+    "log": "target/trigger-validation/feature-chaining-type-extended.log",
+    "logSha256": "65b76da38a8448dfd0048252356f6009065a3e1c69d0559b6e2561b797e6e542",
+    "testedFiles": {
+      "target/trigger-validation/feature-chaining-type-stage/type_relations.rs": "f1d916a671e2580d095ed340a84235806d31ae35b247b6400a528aa27a8c9774",
+      "target/trigger-validation/feature-chaining-type-stage/adapter.rs": "b0f4cdaa906e79bd21e6ac611949f84c8c47ae175de96fc5d5230b430e6909ee",
+      "target/trigger-validation/feature-chaining-type-stage/chaining_types_tests.rs": "ed2e58c08de989291bdb145febb535ef4bf76b799c85c567feed9692642a8494",
+      "target/trigger-validation/feature-chaining-type-stage/chained_feature_types.rs": "9079ef05ec1c0af4f5ffa81256578e8702ad18c23dd44972b3eab1901789b53f",
+      "target/trigger-validation/feature-chaining-type-stage/chaining_type_probe.rs": "248a8ae50446a96a9025d8deff83bafa1446539fdb63e7d3dc890a48171931ce"
+    },
+    "suiteTests": {
+      "publicIntegration": 1,
+      "typeRelationsIncludingDiagnostic": 64,
+      "featureTypeProjection": 35,
+      "namedCalleeChainGuards": 3
+    }
+  },
+  "productionKernelInputSha256": "f4c0619cc8a3437ecf66adb27ef2523a7344f336932601a058b7f41fd8ab0543",
+  "qualification": "feature-chaining-type-progress-macos-arm64.json"
+}

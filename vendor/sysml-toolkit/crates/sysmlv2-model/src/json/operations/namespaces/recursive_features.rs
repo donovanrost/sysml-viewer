@@ -288,7 +288,7 @@ fn recursive_feature_visibility_rejects_incomplete_ownership_metadata_and_featur
     }
     for source in [
         "class Outer {feature valued=1;}",
-        "class Outer {feature nested {feature child;}}",
+        "class Outer {feature nested:Occurrences::Occurrence {portion feature child:Occurrences::Occurrence;}}",
     ] {
         let mut r = fixture(GraphFormat::CanonicalV3, source);
         let outer = r.resolve_qualified("Outer").unwrap();
@@ -296,6 +296,23 @@ fn recursive_feature_visibility_rejects_incomplete_ownership_metadata_and_featur
             visible(&mut r, outer, false),
             Err(OperationError::Incomplete { .. })
         ));
+    }
+    // Empty portion typing has no owned Class witness. Typed portions under
+    // Class-typed Feature owners above need the missing library portions role.
+    for format in [GraphFormat::LegacyV2, GraphFormat::CanonicalV3] {
+        for source in [
+            "class Outer {feature nested {feature child;}}",
+            "class Outer {feature nested {portion feature child;}}",
+        ] {
+            let mut r = fixture(format, source);
+            let outer = r.resolve_qualified("Outer").unwrap();
+            let expected = memberships_for(&mut r, &["Outer::nested", "Outer::nested::child"]);
+            assert_eq!(
+                visible(&mut r, outer, false),
+                Ok(expected),
+                "{format:?} {source}"
+            );
+        }
     }
 }
 #[test]

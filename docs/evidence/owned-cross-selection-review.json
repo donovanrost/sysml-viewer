@@ -1,0 +1,161 @@
+{
+  "reviewedAt": "2026-10-19T02:34:40.884358+00:00",
+  "status": "Open obligation decomposition; no operation implementation or conformance claim.",
+  "source": {
+    "path": "target/standards/kerml.xmi",
+    "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466"
+  },
+  "anchors": [
+    {
+      "id": "Core-Features-Feature-ownedCrossFeature_",
+      "name": "ownedCrossFeature",
+      "bodies": [
+        "if not isEnd or owningType = null then null else     let ownedMemberFeatures: Sequence(Feature) =         ownedMember->selectByKind(Feature)->             reject(oclIsKindOf(Multiplicity) or                     oclIsKindOf(MetadataFeature) or                    oclIsKindOf(FeatureValue))->             reject(owningMembership.oclIsKindOf(FeatureMembership)) in     if ownedMemberFeatures.isEmpty() then null     else ownedMemberFeatures->first()     endif"
+      ],
+      "documentation": [
+        "If this Feature is an end Feature of its owningType , then return the first ownedMember of the Feature that is a Feature , but not a Multiplicity or a MetadataFeature , and whose owningMembership is not a FeatureMembership . If this exists, it is the crossFeature of the end Feature ."
+      ],
+      "generalizations": []
+    },
+    {
+      "id": "Core-Features-Feature-isOwnedCrossFeature_",
+      "name": "isOwnedCrossFeature",
+      "bodies": [
+        "owningNamespace <> null and owningNamespace.oclIsKindOf(Feature) and owningNamespace.oclAsType(Feature).ownedCrossFeature() = self"
+      ],
+      "documentation": [
+        "Return whether this Feature is an owned cross Feature of an end Feature ."
+      ],
+      "generalizations": []
+    },
+    {
+      "id": "Kernel-FeatureValues-FeatureValue",
+      "name": "FeatureValue",
+      "bodies": [
+        "isInitial implies featureWithValue.isVariable",
+        "featureWithValue.redefinition.redefinedFeature-> closure(redefinition.redefinedFeature).valuation-> forAll(isDefault)",
+        "not isDefault implies     featureWithValue.ownedMember->         selectByKind(BindingConnector)->exists(b |             b.relatedFeature->includes(featureWithValue) and             b.relatedFeature->exists(f |                  f.chainingFeature = Sequence{value, value.result}) and             if not isInitial then                  b.featuringType = featureWithValue.featuringType             else                  b.featuringType->exists(t |                     t.oclIsKindOf(Feature) and                     t.oclAsType(Feature).chainingFeature =                         Sequence{                             resolveGlobal('Base::things::that').                                 memberElement,                             resolveGlobal('Occurrences::Occurrence::startShot').                                 memberElement                         }                 )             endif)"
+      ],
+      "documentation": [
+        "A FeatureValue is a Membership that identifies a particular member Expression that provides the value of the Feature that owns the FeatureValue . The value is specified as either a bound value or an initial value, and as either a concrete or default value. A Feature can have at most one FeatureValue . The result of the value Expression is bound to the featureWithValue using a BindingConnector . If isInitial = false , then the featuringType of the BindingConnector is the same as the featuringType of the featureWithValue . If isInitial = true , then the featuringType of the BindingConnector is restricted to its startShot . If isDefault = false , then the above semantics of the FeatureValue are realized for the given featureWithValue . Otherwise, the semantics are realized for any individual of the featuringType of the featureWithValue , unless another value is explicitly given for the featureWithValue for that individual."
+      ],
+      "generalizations": [
+        "Root-Namespaces-OwningMembership"
+      ]
+    },
+    {
+      "id": "Core-Features-Feature-checkFeatureCrossingSpecialization",
+      "name": "checkFeatureCrossingSpecialization",
+      "bodies": [
+        "ownedCrossFeature() <> null implies crossFeature = ownedCrossFeature()"
+      ],
+      "documentation": [
+        "If this Feature has isEnd = true and ownedCrossFeature returns a non-null value, then the crossFeature of the Feature must be the Feature returned from ownedCrossFeature (which implies that this Feature has an appropriate ownedCrossSubsetting to realize this)."
+      ],
+      "generalizations": []
+    }
+  ],
+  "obligations": [
+    {
+      "id": "OCF-SEL-01",
+      "statement": "The null antecedent uses isEnd and derived owningType, not the syntax map or a merely Type-valued owning namespace.",
+      "acceptance": [
+        "Non-end and no-owningType controls.",
+        "FeatureMembership versus ordinary namespace OwningMembership.",
+        "Malformed Boolean flags and contradictory ownership cannot certify absence."
+      ],
+      "dependencies": [
+        "Feature::owningType",
+        "reciprocal ownership"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "OCF-SEL-02",
+      "statement": "Select the first eligible Feature from complete ordered ownedMember.",
+      "acceptance": [
+        "Zero, one, multiple and reordered eligible members.",
+        "Feature subtypes, Multiplicity/MetadataFeature exclusions and FeatureMembership-family exclusion.",
+        "Inherited/imported/nonowning alias members do not become owned candidates.",
+        "Missing earlier candidates cannot be skipped to certify a later choice."
+      ],
+      "dependencies": [
+        "Namespace::ownedMember",
+        "Namespace::ownedMembership",
+        "structural index"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "OCF-SEL-03",
+      "statement": "Inline syntax and an equivalent abstract ownership graph have the same selection result.",
+      "acceptance": [
+        "No reliance on owned_cross_features side-table presence.",
+        "Same-length identity, metaclass, role and ordering edits invalidate cached success.",
+        "Both formats and raw/prepared/serialized replay retain exact identities."
+      ],
+      "dependencies": [
+        "OCF-SEL-01",
+        "OCF-SEL-02"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "OCF-SEL-04",
+      "statement": "isOwnedCrossFeature compares identity with complete selection on its Feature-valued owningNamespace.",
+      "acceptance": [
+        "Selected member true, later eligible member false, unrelated namespace false.",
+        "Foreign carrier, wrong-kind namespace, missing selected member and alias ownership.",
+        "Keep absence separate from incomplete input."
+      ],
+      "dependencies": [
+        "Element::owningNamespace",
+        "OCF-SEL-01",
+        "OCF-SEL-02"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "OCF-SEL-05",
+      "statement": "Value expressions and generated bindings require a recorded interpretation of the pinned selector and reported defects.",
+      "acceptance": [
+        "Valued end with/without inline cross, before/after valuation membership.",
+        "Generated binding before/after genuine cross and reordered abstract rows.",
+        "Inspect the FeatureValue carrier separately from the selected Feature metaclass."
+      ],
+      "dependencies": [
+        "KERML11-1",
+        "FeatureValue generalization",
+        "authority discrepancy review"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "OCF-SEL-06",
+      "statement": "Selection supplies an identity, not complete crossing, typing or featuring semantics.",
+      "acceptance": [
+        "Missing required CrossSubsetting/chaining remains separately incomplete.",
+        "Circular end types, work limits and failed atomic publication do not certify missing paths."
+      ],
+      "dependencies": [
+        "checkFeatureCrossingSpecialization",
+        "docs/evidence/association-end-typing-review.json"
+      ],
+      "status": "open"
+    }
+  ],
+  "additionalSourceConflict": {
+    "finding": "The pinned operation filters ownedMember by Feature, then tests oclIsKindOf(FeatureValue) on selected members. FeatureValue generalizes OwningMembership. This test does not exclude an Expression merely because its owning membership is a FeatureValue. The PDF carries the same expression.",
+    "anchors": [
+      "Core-Features-Feature-ownedCrossFeature_-unnamed1",
+      "Kernel-FeatureValues-FeatureValue-_generalization.Root-Namespaces-OwningMembership"
+    ],
+    "interpretation": "Keep this distinct from the generated-binding report. No altered exclusion rule is admitted from this observation alone.",
+    "status": "Static discrepancy; valued-end runtime baseline pending"
+  },
+  "limits": [
+    "Inherited Feature obligations are not closed by this decomposition.",
+    "No assumed complete operation is exposed through the public API.",
+    "Full specification coverage and all C01-C15 remain open."
+  ]
+}

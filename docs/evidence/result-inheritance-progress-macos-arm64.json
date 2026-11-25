@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-10-18T04:16:55.604365+00:00",
+  "platform": "macOS-15.8-arm64-arm-64bit",
+  "status": "worktree progress; not a release qualification or trigger-rule closure",
+  "baselineCommit": "4ee0776",
+  "scope": "Generated FeatureReferenceExpression result inheritance through the existing contextual membership projection. The full-library native test checks custom, inherited custom and standard duration mRef feature identities in CanonicalV3 and LegacyV2. Four new private tests check no-scope/replay behavior, incomplete library heritage, visibility/redefinition, eight malformed graph mutations, and bounded retry.",
+  "kernelInputSha256": "9565a15425649ce7463c767249d0010aa5f57065ff4aad741a98b6a377230f34",
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json.rs": "58cfeca5929da9fe1221c8c32f21f4177e5ea7dbdd4ec71e4fc008425429bc3e",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs": "ba8915e0b09ef3bd462578527ecfd18bc51c412e5dd37a500c53c522ac5411ff",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/membership_context.rs": "82997c8b71aca9a0e5e51fcd1e60b0ed48798b0e02d493b9b7499b698ed31043",
+    "crates/sysml-kernel/tests/trigger_result_features.rs": "e7b8ee2a54f7739dfc3e6edaeec432fca280ba8bee0f56c68ac82f43fe2fad98",
+    "tests/conformance/fixtures/trigger-arguments-positive.sysml": "c4cb205b98c6128e9fca1fead8c84c6edffc41bfba9e17d7a0f9727d37db1a1f",
+    "tools/test-vendor.mjs": "fb545de261e8a54c6425fab0e42309cd3575c7e51f572f7571b2835e547e5991",
+    "patches/manifest.json": "05f5b69b41c88a4b9a49d15c36181680d4e3b0cbfae0f2f513cdb58ba78470aa",
+    "patches/0019-preserve-distinct-view-renderings.patch": "860fd2ba217226a8b526c2238ff3819433774c748fe7ea10433610b6fc4919d4",
+    "patches/0027-generated-result-inheritance.patch": "e6a98b8c2bbe8d073b9983f8d6dd1222aca5a71bc02fa59641b61b53a63a4e7c",
+    "patches/0028-partial-result-heritage.patch": "bd0adec56613f6d52960f0623bc8d02a795b6b172f03b86894ff4e51d6fe1d43",
+    "docs/evidence/trigger-duration-before-macos-arm64.json": "3165dfdd47ecfda2884a0f13cb328bf2a9921c25a47389e5b331d13e4a353161"
+  },
+  "verification": [
+    {
+      "command": [
+        "node",
+        "tools/test-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "passed": 298,
+      "log": "target/trigger-validation/vendor-tests.log",
+      "logSha256": "2d86ba649d10df3e3d01594d5bab3b4be331c664456e2fef37ddccf8f39542af"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "test",
+        "--locked",
+        "--release",
+        "-p",
+        "sysml-kernel",
+        "--test",
+        "trigger_result_features",
+        "--",
+        "--nocapture"
+      ],
+      "exitCode": 0,
+      "passed": 1,
+      "log": "target/trigger-validation/result-test.log",
+      "logSha256": "779afa6a54665be115125c1957cad80dc106130d508861cf1859621669994477"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "log": "target/trigger-validation/clippy.log",
+      "logSha256": "d48337604b4251f16abcbbd781a689a5ecbf4b1c48e3586b9c31362d4d1fc96e"
+    }
+  ],
+  "limitations": [
+    "The compatibility projection is not the checked Type.feature domain certificate; incomplete candidates cannot prove a negative existential condition.",
+    "The three trigger validators and their legacy diagnostic identifiers are unchanged. The two custom-duration false positives still reproduce in the qualified baseline binary.",
+    "The engine version, installed app and previous qualification records remain at KERNEL-023. Full matrix, native/WASM, benchmark and release qualification must run after completing the change.",
+    "Windows and Linux were not executed."
+  ]
+}

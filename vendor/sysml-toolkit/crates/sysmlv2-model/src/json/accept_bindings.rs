@@ -20,6 +20,7 @@ pub(super) struct Plan {
     trigger: usize,
     receiver: usize,
     invocation_receiver: Option<usize>,
+    return_anchor: Option<(usize, usize)>,
     parameter_ids: Option<[Uuid; 2]>,
     binding_ids: [Uuid; 8],
     featuring_ids: Vec<Uuid>,
@@ -190,7 +191,27 @@ fn candidate(
     // The grammar argument must own its value; a missing or inconsistent value
     // is not repaired by inventing the unrelated receiver argument.
     membership::valuation(b, raw, first, steps)??;
-    let invocation_receiver = parameters.get(1).copied();
+    // An owned return does not supply the missing receiver. The new receiver
+    // must precede it so invocation.parameter->at(2) remains the receiver.
+    let mut return_anchor = None;
+    let invocation_receiver = if let Some(&second) = parameters.get(1) {
+        let membership = b.elements[second].owning_relationship?;
+        if conforms(b.elements[membership].ty, "ReturnParameterMembership") {
+            if parameters.len() != 2 {
+                return None;
+            }
+            let ordinal = b.elements[trigger]
+                .owned_relationships
+                .iter()
+                .position(|&r| r == membership)?;
+            return_anchor = Some((ordinal, membership));
+            None
+        } else {
+            Some(second)
+        }
+    } else {
+        None
+    };
     if let Some(second) = invocation_receiver {
         input(b, raw, second, steps)?;
     }
@@ -242,6 +263,7 @@ fn candidate(
         trigger,
         receiver,
         invocation_receiver,
+        return_anchor,
         parameter_ids,
         binding_ids,
         featuring_ids,
@@ -342,6 +364,10 @@ pub(super) fn stage(
             .expect("planned receiver membership");
         view.register(feature, None, plan.accept, false)
             .expect("planned receiver feature");
+        if let Some((ordinal, anchor)) = plan.return_anchor {
+            view.insert_before_source_relationship(b, plan.trigger, ordinal, anchor, member)
+                .expect("planned receiver order");
+        }
         receiver = Some(feature);
     }
     let receiver = receiver.unwrap();
@@ -456,6 +482,17 @@ mod tests {
     fn receiver(b: &mut Builder, trigger: usize) -> usize {
         let feature = owned(b, trigger, "ParameterMembership", "Feature");
         b.elements[feature].props.insert("direction", json!("in"));
+        let membership = b.elements[feature].owning_relationship.unwrap();
+        let before = b.elements[trigger]
+            .owned_relationships
+            .iter()
+            .position(|&r| conforms(b.elements[r].ty, "ReturnParameterMembership"));
+        if let Some(before) = before {
+            let mut relationships = b.elements[trigger].owned_relationships.to_vec();
+            assert_eq!(relationships.pop(), Some(membership));
+            relationships.insert(before, membership);
+            b.elements[trigger].owned_relationships = relationships.into();
+        }
         feature
     }
     fn binding(b: &mut Builder, accept: usize, targets: [usize; 2]) -> usize {
@@ -709,7 +746,18 @@ mod tests {
             let Derived::Value(parameters) = r.derived(ElementRef(p.trigger), "parameter") else {
                 panic!()
             };
-            assert_eq!(parameters.elements().len(), 2);
+            assert_eq!(
+                parameters.elements().len(),
+                if format == GraphFormat::CanonicalV3 {
+                    3
+                } else {
+                    2
+                }
+            );
+            assert_eq!(
+                r.element_id(parameters.elements()[1]),
+                p.parameter_ids.unwrap()[1]
+            );
             r.discard_owned_result_tail();
             r.ensure_implied();
             assert_eq!(snapshot(&r.b, r.b.elements.len()), after);

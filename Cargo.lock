@@ -245,15 +245,16 @@ dependencies = [
 
 [[package]]
 name = "sysml-cli"
-version = "0.4.0"
+version = "0.0.1"
 dependencies = [
+ "serde",
  "serde_json",
  "sysml-kernel",
 ]
 
 [[package]]
 name = "sysml-kernel"
-version = "0.4.0"
+version = "0.0.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -264,7 +265,7 @@ dependencies = [
 
 [[package]]
 name = "sysml-wasm"
-version = "0.4.0"
+version = "0.0.1"
 dependencies = [
  "serde_json",
  "sysml-kernel",

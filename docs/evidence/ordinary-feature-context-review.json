@@ -1,0 +1,582 @@
+{
+  "recordedAt": "2026-10-18T14:24:15.456894+00:00",
+  "status": "Open obligations; reviewed ordinary Feature owner/inverse change admitted to production, with final-source qualification running.",
+  "kernelInputSha256": "85a9e3467da1025df18e4a1368f03d1350ac666429c4ca582c27f898704d3a15",
+  "source": {
+    "kermlXmiSha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+    "featureChecks": [
+      {
+        "id": "Core-Features-Feature-checkFeatureCrossingSpecialization",
+        "name": "checkFeatureCrossingSpecialization",
+        "body": "ownedCrossFeature() <> null implies crossFeature = ownedCrossFeature()"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureObjectSpecialization",
+        "name": "checkFeatureObjectSpecialization",
+        "body": "ownedTyping.type->exists(selectByKind(Structure)) implies specializesFromLibary('Objects::objects')"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureOccurrenceSpecialization",
+        "name": "checkFeatureOccurrenceSpecialization",
+        "body": "ownedTyping.type->exists(selectByKind(Class)) implies specializesFromLibrary('Occurrences::occurrences')"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureParameterRedefinition",
+        "name": "checkFeatureParameterRedefinition",
+        "body": "owningType <> null and not owningFeatureMembership.     oclIsKindOf(ReturnParameterMembership) and (owningType.oclIsKindOf(Behavior) or  owningType.oclIsKindOf(Step) and     (owningType.oclIsKindOf(InvocationExpression) implies       not ownedRedefinition->exists(not isImplied))  implies     let i : Integer =         owningType.ownedFeature->select(direction <> null)->             reject(owningFeatureMembership.                 oclIsKindOf(ReturnParameterMembership))->             indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |             let ownedParameters : Sequence(Feature) =                 supertype.ownedFeature->select(direction <> null)->                      reject(owningFeatureMembership.                          oclIsKindOf(ReturnParameterMembership)) in             ownedParameters->size() >= i implies                 redefines(ownedParameters->at(i))"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureEndRedefinition",
+        "name": "checkFeatureEndRedefinition",
+        "body": "isEnd and owningType <> null implies     let i : Integer =          owningType.ownedEndFeature->indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |              supertype.endFeature->size() >= i implies                 redefines(supertype.endFeature->at(i))"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureValuationSpecialization",
+        "name": "checkFeatureValuationSpecialization",
+        "body": "direction = null and ownedSpecializations->forAll(isImplied) implies     ownedMembership->         selectByKind(FeatureValue)->         forAll(fv | specializes(fv.value.result))"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureOwnedCrossFeatureSpecialization",
+        "name": "checkFeatureOwnedCrossFeatureSpecialization",
+        "body": "isOwnedCrossFeature() implies owner.oclAsType(Feature).type->forAll(t | self.specializes(t))"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureResultRedefinition",
+        "name": "checkFeatureResultRedefinition",
+        "body": "owningType <> null and (owningType.oclIsKindOf(Function) and     self = owningType.oclAsType(Function).result or  owningType.oclIsKindOf(Expression) and     self = owningType.oclAsType(Expression).result) implies     owningType.ownedSpecialization.general->         select(oclIsKindOf(Function) or oclIsKindOf(Expression))->         forAll(supertype |             redefines(                 if superType.oclIsKindOf(Function) then                     superType.oclAsType(Function).result                 else                     superType.oclAsType(Expression).result                 endif)"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeaturePortionSpecialization",
+        "name": "checkFeaturePortionSpecialization",
+        "body": "isPortion and ownedTyping.type->includes(oclIsKindOf(Class)) and owningType <> null and (owningType.oclIsKindOf(Class) or  owningType.oclIsKindOf(Feature) and     owningType.oclAsType(Feature).type->         exists(oclIsKindOf(Class))) implies     specializesFromLibrary('Occurrence::Occurrence::portions')"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureEndSpecialization",
+        "name": "checkFeatureEndSpecialization",
+        "body": "isEnd and owningType <> null and (owningType.oclIsKindOf(Association) or  owningType.oclIsKindOf(Connector)) implies     specializesFromLibrary('Links::Link::participant')"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureSuboccurrenceSpecialization",
+        "name": "checkFeatureSuboccurrenceSpecialization",
+        "body": "isComposite and ownedTyping.type->includes(oclIsKindOf(Class)) and owningType <> null and (owningType.oclIsKindOf(Class) or  owningType.oclIsKindOf(Feature) and     owningType.oclAsType(Feature).type->         exists(oclIsKindOf(Class))) implies     specializesFromLibrary('Occurrence::Occurrence::suboccurrences')"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureSubobjectSpecialization",
+        "name": "checkFeatureSubobjectSpecialization",
+        "body": "isComposite and ownedTyping.type->includes(oclIsKindOf(Structure)) and owningType <> null and (owningType.oclIsKindOf(Structure) or  owningType.type->includes(oclIsKindOf(Structure))) implies     specializesFromLibrary('Occurrence::Occurrence::suboccurrences')"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureDataValueSpecialization",
+        "name": "checkFeatureDataValueSpecialization",
+        "body": "ownedTyping.type->exists(selectByKind(DataType)) implies specializesFromLibrary('Base::dataValues')"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureFlowFeatureRedefinition",
+        "name": "checkFeatureFlowFeatureRedefinition",
+        "body": "owningType <> null and owningType.oclIsKindOf(FlowEnd) and owningType.ownedFeature->at(1) = self implies     let flowType : Type = owningType.owningType in     flowType <> null implies         let i : Integer =              flowType.ownedFeature.indexOf(owningType) in         (i = 1 implies              redefinesFromLibrary('Transfers::Transfer::source::sourceOutput')) and         (i = 2 implies             redefinesFromLibrary('Transfers::Transfer::source::targetInput'))                  "
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureOwnedCrossFeatureTypeFeaturing",
+        "name": "checkFeatureOwnedCrossFeatureTypeFeaturing",
+        "body": "isOwnedCrossFeature() implies     let otherEnds : OrderedSet(Feature) =          owner.oclAsType(Feature).owningType.endFeature->excluding(self) in     if (otherEnds->size() = 1) then         featuringType = otherEnds->first().type     else         featuringType->size() = 1 and         featuringType->first().isCartesianProduct() and         featuringType->first().asCartesianProduct() = otherEnds.type and         featuringType->first().allSupertypes()->includesAll(             owner.oclAsType(Feature).ownedRedefinition.redefinedFeature->                select(crossFeature() <> null).crossFeature().featuringType)           endif"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureOwnedCrossFeatureRedefinitionSpecialization",
+        "name": "checkFeatureOwnedCrossFeatureRedefinitionSpecialization",
+        "body": "isOwnedCrossFeature() implies     ownedSubsetting.subsettedFeature->includesAll(         owner.oclAsType(Feature).ownedRedefinition.redefinedFeature->             select(crossFeature <> null).crossFeature)"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureFeatureMembershipTypeFeaturing",
+        "name": "checkFeatureFeatureMembershipTypeFeaturing",
+        "body": "owningFeatureMembership <> null implies featuringTypes->exists(t | isFeaturingType(t))"
+      },
+      {
+        "id": "Core-Features-Feature-checkFeatureSpecialization",
+        "name": "checkFeatureSpecialization",
+        "body": "specializesFromLibrary('Base::things')"
+      }
+    ],
+    "additionalAnchors": [
+      {
+        "id": "Core-Features-Feature-deriveFeatureType",
+        "name": "deriveFeatureType",
+        "bodies": [
+          "type =      let types : OrderedSet(Types) = OrderedSet{self}->         -- Note: The closure operation automatically handles circular relationships.         closure(typingFeatures()).typing.type->asOrderedSet() in     types->reject(t1 | types->exist(t2 | t2 <> t1 and t2.specializes(t1)))"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-typingFeatures_",
+        "name": "typingFeatures",
+        "bodies": [
+          "if not isConjugated then     let subsettedFeatures : OrderedSet(Feature) =          subsetting->reject(s | s.oclIsKindOf(CrossSubsetting)).subsettedFeatures in      if chainingFeature->isEmpty() or        subsettedFeature->includes(chainingFeature->last())     then subsettedFeatures     else subsettedFeatures->append(chainingFeature->last())     endif else if conjugator.originalType.oclIsKindOf(Feature) then     OrderedSet{conjugator.originalType.oclAsType(Feature)} else OrderedSet{} endif endif"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-isOwnedCrossFeature_",
+        "name": "isOwnedCrossFeature",
+        "bodies": [
+          "owningNamespace <> null and owningNamespace.oclIsKindOf(Feature) and owningNamespace.oclAsType(Feature).ownedCrossFeature() = self"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-Feature-ownedCrossFeature_",
+        "name": "ownedCrossFeature",
+        "bodies": [
+          "if not isEnd or owningType = null then null else     let ownedMemberFeatures: Sequence(Feature) =         ownedMember->selectByKind(Feature)->             reject(oclIsKindOf(Multiplicity) or                     oclIsKindOf(MetadataFeature) or                    oclIsKindOf(FeatureValue))->             reject(owningMembership.oclIsKindOf(FeatureMembership)) in     if ownedMemberFeatures.isEmpty() then null     else ownedMemberFeatures->first()     endif"
+        ],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-FeatureInverting",
+        "name": "FeatureInverting",
+        "bodies": [],
+        "generalizations": [
+          "Root-Elements-Relationship"
+        ],
+        "redefines": [],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-FeatureInverting-featureInverted",
+        "name": "featureInverted",
+        "bodies": [],
+        "generalizations": [],
+        "redefines": [
+          "Root-Elements-Relationship-source"
+        ],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-FeatureInverting-invertingFeature",
+        "name": "invertingFeature",
+        "bodies": [],
+        "generalizations": [],
+        "redefines": [
+          "Root-Elements-Relationship-target"
+        ],
+        "subsets": []
+      },
+      {
+        "id": "Core-Features-FeatureInverting-owningFeature",
+        "name": "owningFeature",
+        "bodies": [],
+        "generalizations": [],
+        "redefines": [],
+        "subsets": [
+          "Core-Features-FeatureInverting-featureInverted",
+          "Root-Elements-Relationship-owningRelatedElement"
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "queries": [
+      {
+        "feature": "namespaceControl",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 1283209
+      },
+      {
+        "feature": "namespaceValue",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 1232387
+      },
+      {
+        "feature": "C::control",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581754
+      },
+      {
+        "feature": "C::valued",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581788
+      },
+      {
+        "feature": "B::control",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581715
+      },
+      {
+        "feature": "B::valued",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581718
+      },
+      {
+        "feature": "F::control",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581715
+      },
+      {
+        "feature": "F::valued",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581718
+      },
+      {
+        "feature": "P::control",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581715
+      },
+      {
+        "feature": "P::valued",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581718
+      },
+      {
+        "feature": "s::control",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581715
+      },
+      {
+        "feature": "s::valued",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581718
+      },
+      {
+        "feature": "e::control",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581715
+      },
+      {
+        "feature": "e::valued",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581718
+      },
+      {
+        "feature": "outer::control",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581715
+      },
+      {
+        "feature": "outer::valued",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 581718
+      },
+      {
+        "feature": "A::forward",
+        "result": "Ok([Some(\"A\")])",
+        "steps": 568854
+      },
+      {
+        "feature": "A::backward",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 568839
+      }
+    ],
+    "complete": 5,
+    "total": 18,
+    "inputs": {
+      "target/trigger-validation/ordinary-feature-context-public-probe.rs": "e9508d9fa7214890e87aa66b36ebe7ab337859430330953d8edce50a5ea63c39",
+      "target/trigger-validation/ordinary-feature-context-public-probe": "0420dd8c12ba8147bc03ee2664f219db523ec90f41762e872dd374bf74466467",
+      "target/trigger-validation/ordinary-feature-context-public-probe.log": "3e5cb852aa4ba658b2eafa258f5b3a7de568aac28530d3b8a8db37ce37dd6e26",
+      "target/trigger-validation/libsysmlv2_model_for_semantic_type_probe.rlib": "2952c6aa80da872c0a360e3c280009ae91bdf446c26662444d7a83fde82ac752"
+    }
+  },
+  "findings": [
+    "Both valued and unvalued ordinary Features fail under Behavior, Function, Predicate, Step, Expression and Feature owners. Namespace and Classifier controls succeed.",
+    "The current exact owner list is narrower than the conditional obligations on plain noncomposite, undirected, non-end Features. All such Features still need complete required library paths and owned-specialization evidence.",
+    "Exact FeatureMembership ownership excludes the owned-cross-feature role: Feature::ownedCrossFeature rejects FeatureMembership members.",
+    "FlowEnd ownership activates checkFeatureFlowFeatureRedefinition even for a plain undirected member and requires a separate positional-context proof. It must not be included by simply accepting every Type owner.",
+    "The checkFeatureParameterRedefinition prose applies to parameters; direction and return-membership roles remain governed by the existing shared positional reducer. Its OCL formulation/indexing must be read with the recorded applicability; an undirected ordinary member is not added to the parameter sequence.",
+    "FeatureInverting extends Relationship, not Subsetting or FeatureTyping. Its source is featureInverted; its target is invertingFeature. It introduces no additional deriveFeatureType dependency by itself. Inverse value semantics and whole-model validity remain separate."
+  ],
+  "nextExperiments": [
+    "Replace the ordinary noncomposite Feature owner whitelist with a reviewed conditional applicability predicate, preserving exact FeatureMembership ownership and excluding FlowEnd until its role proof is implemented.",
+    "Validate complete owned FeatureInverting source/target aliases and reciprocal carrier evidence instead of treating every inverse relationship as an unknown typing family.",
+    "Run owner, role, flag, damaged-endpoint and inherited-default acceptance matrices. Do not conflate this with unresolved chaining/portion construction."
+  ],
+  "coverageCountsChanged": false,
+  "prototypePlan": {
+    "files": [
+      "target/trigger-validation/ordinary-feature-context-type-relations-prototype.rs",
+      "target/trigger-validation/ordinary-feature-context-private-probe.rs",
+      "target/trigger-validation/test-ordinary-feature-context-prototype.mjs"
+    ],
+    "productionChanged": false,
+    "status": "Executed successfully in a disposable copy.",
+    "ownerPredicate": "The candidate requires exact plain Feature, null direction, non-end, noncomposite flags, reciprocal FeatureMembership and a Type owner excluding FlowEnd. Existing metadata, variable/portion, valuation and specialization checks remain.",
+    "inversePredicate": "The candidate validates source featureInverted and target invertingFeature with the common reciprocal endpoint reader; it adds no inverse target to typingFeatures."
+  },
+  "prototype": {
+    "recordedAt": "2026-10-18T14:32:28.725309+00:00",
+    "status": "Diagnostic probes pass. This is not production admission or full acceptance qualification.",
+    "contexts": [
+      {
+        "feature": "namespaceControl",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 1283209
+      },
+      {
+        "feature": "namespaceValue",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 1232387
+      },
+      {
+        "feature": "C::control",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581754
+      },
+      {
+        "feature": "C::valued",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581788
+      },
+      {
+        "feature": "B::control",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581754
+      },
+      {
+        "feature": "B::valued",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581788
+      },
+      {
+        "feature": "F::control",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581754
+      },
+      {
+        "feature": "F::valued",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581788
+      },
+      {
+        "feature": "P::control",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581754
+      },
+      {
+        "feature": "P::valued",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581788
+      },
+      {
+        "feature": "s::control",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581754
+      },
+      {
+        "feature": "s::valued",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581788
+      },
+      {
+        "feature": "e::control",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581754
+      },
+      {
+        "feature": "e::valued",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581788
+      },
+      {
+        "feature": "outer::control",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581754
+      },
+      {
+        "feature": "outer::valued",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 581788
+      },
+      {
+        "feature": "A::forward",
+        "result": "Ok([Some(\"A\")])",
+        "steps": 568854
+      },
+      {
+        "feature": "A::backward",
+        "result": "Ok([Some(\"A\")])",
+        "steps": 568859
+      }
+    ],
+    "defaultTypes": [
+      {
+        "feature": "Some(\"F::x\")",
+        "role": "feature",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 635952
+      },
+      {
+        "feature": "Some(\"F::x\")",
+        "role": "result",
+        "result": "Ok([Some(\"ScalarValues::Integer\")])",
+        "steps": 744510
+      },
+      {
+        "feature": "Some(\"Performances::Performance::isDispatch\")",
+        "role": "feature",
+        "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+        "steps": 572587
+      },
+      {
+        "feature": "Some(\"Performances::Performance::isDispatch\")",
+        "role": "result",
+        "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+        "steps": 792815
+      },
+      {
+        "feature": "Some(\"Performances::Performance::dispatchScope\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+        "steps": 569570
+      },
+      {
+        "feature": "Some(\"Performances::Performance::dispatchScope\")",
+        "role": "result",
+        "result": "Ok([Some(\"Performances::Performance\")])",
+        "steps": 695719
+      },
+      {
+        "feature": "Some(\"Performances::Performance::thisPerformance\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Performances::Performance\")])",
+        "steps": 571585
+      },
+      {
+        "feature": "Some(\"Performances::Performance::thisPerformance\")",
+        "role": "result",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 696318
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::portionOfLife\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Occurrences::Life\")])",
+        "steps": 571577
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::portionOfLife\")",
+        "role": "result",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 694199
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::this\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+        "steps": 569513
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::this\")",
+        "role": "result",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 694199
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::localClock\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Clocks::Clock\")])",
+        "steps": 573691
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::localClock\")",
+        "role": "result",
+        "result": "Ok([Some(\"Clocks::UniversalClockLife\")])",
+        "steps": 699936
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::isRunToCompletion\")",
+        "role": "feature",
+        "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+        "steps": 572521
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::isRunToCompletion\")",
+        "role": "result",
+        "result": "Ok([Some(\"ScalarValues::Boolean\")])",
+        "steps": 792815
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::runToCompletionScope\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Occurrences::Occurrence\")])",
+        "steps": 569504
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::runToCompletionScope\")",
+        "role": "result",
+        "result": "Err(MissingRequiredFamilies)",
+        "steps": 694199
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::incomingTransferSort\")",
+        "role": "feature",
+        "result": "Ok([Some(\"Occurrences::IncomingTransferSort\")])",
+        "steps": 577873
+      },
+      {
+        "feature": "Some(\"Occurrences::Occurrence::incomingTransferSort\")",
+        "role": "result",
+        "result": "Ok([Some(\"Occurrences::IncomingTransferSort\")])",
+        "steps": 702290
+      }
+    ],
+    "valuedFeatureTypesComplete": 10,
+    "selectedResultTypesComplete": 6,
+    "totalDefaults": 10,
+    "finding": "All 18 context queries complete with exact expected types. All ten valued-feature types and six selected default-result types complete. dispatchScope retains its declared Occurrence type while its thisPerformance reference result has Performance. The remaining four default results still depend on chaining and portion families.",
+    "inputs": {
+      "target/trigger-validation/ordinary-feature-context-type-relations-prototype.rs": "14bfc28a7846c153f779b9ba15b2fcfabfbb42378ad375aa9e50909757f20f6c",
+      "target/trigger-validation/ordinary-feature-context-private-probe.rs": "ae7a6b0f10af31358bcbc22d5a78c87ac18f52f56f3c484bdd677c398f61d70b",
+      "target/trigger-validation/test-ordinary-feature-context-prototype.mjs": "ce0dc4e6b186d016aaf22a8038bb86725434e73564168b4a9b7e4d10427cafeb",
+      "target/trigger-validation/default-type-dependency-private-probe.rs": "81364933e16b5349fa468faf4315fe7617ae9ebc56706cd93bf0ebac3d28a515",
+      "target/trigger-validation/ordinary-feature-context-prototype.log": "973bc843329345858e42d2be59ccb2954117faf8a1127ca464d2447312a408bc"
+    }
+  },
+  "requiredBeforeProduction": [
+    "Review all conditional Feature obligations against the ordinary-owner predicate; retain the explicit FlowEnd exception.",
+    "Fresh damaged owner/carrier/membership, direction/end/composite/portion/variable and metadata cases must not be admitted by the general owner predicate.",
+    "Owned inverse relationships require exact source, target kind, identity and generic/scalar alias agreement; malformed endpoints must refuse before WorkLimit.",
+    "Check inherited/subset/redefined ordinary Features and more-specific type pruning through public queries.",
+    "Edits must invalidate earlier success; raw/prepared/serialized identities and cumulative budgets must agree.",
+    "Update the currently bounded default-type regression only for the newly proven dispatchScope result; keep all remaining family dependencies explicit.",
+    "Only admit after the current frozen semantic-positional qualification completes, then run final-source qualification for the new change."
+  ],
+  "acceptanceReview": {
+    "recordedAt": "2026-10-18T14:43:22.108661+00:00",
+    "initialTests": 7,
+    "initialStatus": "pass in disposable workspace; 13 owner/context and 10 inverse damage partitions plus exact positives, edits, budgets and library replay",
+    "initialLog": "target/trigger-validation/ordinary-feature-context-stage.log",
+    "initialLogSha256": "4caada885cfa9c61df0106570b5c7f5310d3942b86fb0f6f9fabdafdfc4f6593",
+    "guardReview": "The public type adapter already validates carriers; negative TypeRelations queries can reach feature_requirements without that adapter. The shared requirements proof now checks the inverse relationship carrier independently before accepting its endpoints.",
+    "secondRun": "pass: all seven tests, including thirteen owner/context and eleven inverse damage partitions",
+    "source": "target/trigger-validation/ordinary-feature-context-stage/type_relations.rs",
+    "sourceSha256": "8c9bd22b67d0d4492a7f71a88863cd9389968c01930c0d70d2743f3d52cd0648",
+    "tests": "target/trigger-validation/ordinary-feature-context-stage/ordinary_features_tests.rs",
+    "testsSha256": "74e1f8c46719267bec9b2a4ab3f79a80a3d11ab3870cb8eb1e701f5a4d27a6aa",
+    "finalStagedLog": "target/trigger-validation/ordinary-feature-context-carrier-stage.log",
+    "finalStagedLogSha256": "0195fd99a538a80941984acc3d680d41619954da0bc58a12834ecf8ca37d2d61",
+    "admittedKernelInputSha256": "f755be887904a283eb35301afbe05c03b867ba56ea9195dcf94d4333e6e6ba54",
+    "anchorReview": "target/trigger-validation/ordinary-feature-context-anchor-review.json"
+  },
+  "legacyExpectationReview": {
+    "recordedAt": "2026-10-18T14:58:42.573380+00:00",
+    "initialFullVendor": {
+      "passed": 970,
+      "failed": 2,
+      "log": "target/trigger-validation/ordinary-feature-context-initial-full-model.log",
+      "logSha256": "bbe435f78bcfcbe6faac5f933e4b06a5c0c20e71bad4f35f3ec16ee479304ef2"
+    },
+    "findings": [
+      "The old ordinary-owned-Feature mutation expected Unknown solely because its owner changed from Class to Function. Plain undirected members now have reviewed applicability independent of that owner kind. The exact old case now asserts No; valid input direction restores parameter obligations and remains Unknown with the incomplete fixture. FlowEnd replaces Function as the unaudited contextual negative.",
+      "The old recursive namespace test expected an ordinary nested child Feature to be incomplete. The replacement positive checks exact nested and child membership identities in both formats; a portion child retains the unaudited-family negative. Inference-only valued features and all malformed ownership/metadata/direction/end cases remain negative."
+    ],
+    "productionBehaviorChangedForCorrections": false,
+    "status": "All ten tests in the two revised modules pass, including exact positive old-source expectations and preserved unknown controls in both graph formats.",
+    "logSha256": "cfb072aa3a70c99dcde9099316f49a5fc2120765d876e3f430e4b43880f87c3b",
+    "finalSource": "c4a7c69215045a64f06c35f00fd64a746479d46287488b482f4650390b99e028"
+  }
+}

@@ -41,7 +41,10 @@ mod generated_defaults;
 mod implied;
 mod import_memberships;
 mod library_plans;
+mod portion_context;
+mod step_context;
 pub(crate) use library_plans::{LibraryEnumTypes, LibraryPlans};
+mod expression_results;
 mod local_featuring;
 mod membership_evidence;
 mod membership_projection;
@@ -54,10 +57,13 @@ mod parameter_context;
 mod parameters;
 mod positional;
 mod positional_delta;
+mod positional_names;
 pub(crate) mod provider_completeness;
 mod publication;
 mod recorded_lookup;
 mod redefinition_provenance;
+mod reference_memberships;
+mod result_inheritance;
 mod result_redefinition;
 mod runtime_frames;
 mod scope_table;
@@ -67,14 +73,24 @@ mod semantic_ownership;
 pub mod settled;
 mod structural_index;
 mod succession_endpoints;
+mod trigger_arguments;
 mod type_features;
 mod type_inputs;
+pub use expression_results::ExpressionResultReport;
+pub use trigger_arguments::{TriggerArgumentIssue, TriggerArgumentReport};
 mod type_relations;
 pub use type_features::{TypeFeatureReport, TypeFeatures};
 pub use type_inputs::{FunctionResultReport, TypeInputIssue, TypeInputReport};
 mod invocation_bindings;
+mod invocation_results;
 pub use invocation_bindings::{
     InvocationBinding, InvocationBindingIssue, InvocationBindingReport, InvocationBindings,
+};
+mod effective_defaults;
+pub use effective_defaults::{EffectiveDefaultBinding, EffectiveDefaultIssue};
+mod invocation_defaults;
+pub use invocation_defaults::{
+    InvocationDefaultIssue, InvocationDefaultReport, InvocationDefaults,
 };
 mod constructor_bindings;
 pub use constructor_bindings::{
@@ -822,6 +838,10 @@ pub(crate) struct Builder {
     /// materialization. External name-table overrides bypass this cache.
     #[serde(skip)]
     supported_implied: Option<Arc<implied::SupportedImpliedSpecializations>>,
+    /// Raw joined library names, bound only to the exact name-table revision.
+    /// This index carries no role, ownership or specialization certificate.
+    #[serde(skip)]
+    planning_names: Option<implied::PlanningNames>,
     /// The prepared library this build stands on: the planners extend its
     /// own rows' plans with this build's rows instead of planning every row
     /// (see [`library_plans`]). `None` for a library's own build and a
@@ -1082,6 +1102,10 @@ pub(crate) struct Builder {
     /// operators).
     #[serde(skip)]
     pub(crate) spec_index: Option<crate::layered::LayeredMap<usize, Vec<usize>>>,
+    /// Lookup-only source rows; never records resolution outcomes. Revision
+    /// checks allow reuse across walks while source rows are still growing.
+    #[serde(skip)]
+    lookup_redefinition_rows: Option<Arc<positional_names::RecordedRedefinitionRows>>,
     /// Lazily built interchange-id → element index map (the inverse of
     /// id assignment) — resolves id-valued relationship properties like
     /// `referencedFeature` without a [`ResolvedModel`] at hand. Rebuilt
@@ -5258,6 +5282,7 @@ impl Builder {
                     } else {
                         self.param_wrapped_expr(am, &t.expr, scope, false);
                     }
+                    self.construct_invocation_result(te);
                 }
                 // The receiver is the second owned input even when `via`
                 // is omitted. That missing grammar slot is constructed
@@ -5469,6 +5494,12 @@ impl Builder {
     /// Build the abstract-syntax element tree for `expr`, owned via
     /// relationship `rel`. Returns the expression element index.
     fn build_expr(&mut self, expr: &Expr, rel: usize, scope: usize, seg: &str) -> usize {
+        let expression = self.build_expr_inner(expr, rel, scope, seg);
+        self.construct_invocation_result(expression);
+        expression
+    }
+
+    fn build_expr_inner(&mut self, expr: &Expr, rel: usize, scope: usize, seg: &str) -> usize {
         /// The wire value of a real literal. A JSON number is a double,
         /// which holds neither more significant digits than its
         /// precision nor an exponent that overflows it — and in-memory
@@ -7923,23 +7954,19 @@ impl Builder {
         false
     }
 
-    /// The recorded-outcome Redefinition targets of `e`, by direct scan —
-    /// no index, no resolution. [`Self::drop_redefined_hits`] runs inside
-    /// `lookup_body`, so it must never re-enter resolution (a fallback
-    /// resolve of an unrecorded target recurses through the same lookup)
-    /// nor build the permanent `spec_index` mid-lowering while
-    /// `spec_targets` is still growing. The scan is linear but only runs
-    /// on the rare multi-candidate merges.
-    /// The entries whose outcomes it read are added to `read`.
-    fn recorded_redefinition_targets(&self, e: usize, read: &mut Vec<usize>) -> Vec<usize> {
+    /// Recorded Redefinition targets without recursive resolution or the
+    /// permanent specialization index. A revision-bound source-row index can
+    /// be reused across lookup walks and is rebuilt after any row mutation,
+    /// including same-length edits. Resolution outcomes are always read afresh.
+    /// Every consumed row, including an unresolved one, is added to `read`.
+    fn recorded_redefinition_targets(&mut self, e: usize, read: &mut Vec<usize>) -> Vec<usize> {
+        self.ensure_lookup_redefinition_rows();
         let mut out = Vec::new();
-        for (i, (owner, kind, _, _)) in self.spec_targets.iter().enumerate() {
-            if *owner == e && *kind == "Redefinition" {
-                read.push(i);
-                if let Some(t) = self.spec_resolved.get(i).copied().flatten() {
-                    if t != e && !out.contains(&t) {
-                        out.push(t);
-                    }
+        for &i in self.lookup_redefinition_rows.as_ref().unwrap().rows(e) {
+            read.push(i);
+            if let Some(t) = self.spec_resolved.get(i).copied().flatten() {
+                if t != e && !out.contains(&t) {
+                    out.push(t);
                 }
             }
         }
@@ -8123,6 +8150,8 @@ impl Builder {
                 self.exclude,
                 semantic_names,
             );
+            let positional = self.lookup_owned_positional_name(s, name, access);
+            let effective = self.merge_lookup(effective, positional);
             if effective != LookupResult::Missing {
                 return effective;
             }
@@ -8250,6 +8279,7 @@ impl Builder {
             ));
         }
         self.drop_redefined_hits(&mut hits);
+        self.reduce_owned_lookup_redefinitions(s, &mut hits);
         let mut inherited = LookupResult::Missing;
         for hit in hits {
             inherited = self.merge_lookup(inherited, hit);
@@ -9380,7 +9410,24 @@ impl Builder {
         owner: Option<usize>,
         include_implied: bool,
         candidates: MembershipProjection,
+        steps: Option<&mut usize>,
+    ) -> MembershipProjection {
+        self.reduce_membership_projection_with_lookup(
+            owner,
+            include_implied,
+            candidates,
+            steps,
+            false,
+        )
+    }
+
+    fn reduce_membership_projection_with_lookup(
+        &mut self,
+        owner: Option<usize>,
+        include_implied: bool,
+        candidates: MembershipProjection,
         mut steps: Option<&mut usize>,
+        construction_lookup: bool,
     ) -> MembershipProjection {
         let MembershipProjection {
             mut membership_order,
@@ -9462,9 +9509,15 @@ impl Builder {
             .map(|owner| self.owned_member_elems(owner, true))
             .unwrap_or_default();
         let mut owned_direct = HashSet::new();
+        let mut lookup_reads = Vec::new();
+        let mut lookup_slots = parameters::SlotMemo::default();
         for &e in &owned {
             charge!(1);
-            owned_direct.extend(self.semantic_redefinition_targets(e, include_implied));
+            owned_direct.extend(if construction_lookup {
+                self.shadowing_redefinition_targets(e, &mut lookup_reads, &mut lookup_slots)
+            } else {
+                self.semantic_redefinition_targets(e, include_implied)
+            });
         }
         let mut shadow = HashSet::new();
         // Reuse traversal storage; closures are consumed immediately rather
@@ -9487,7 +9540,11 @@ impl Builder {
                     shadow.insert(t);
                 }
                 intersects_owned |= owned_direct.contains(&t);
-                stack.extend(self.semantic_redefinition_targets(t, include_implied));
+                stack.extend(if construction_lookup {
+                    self.shadowing_redefinition_targets(t, &mut lookup_reads, &mut lookup_slots)
+                } else {
+                    self.semantic_redefinition_targets(t, include_implied)
+                });
             }
             if intersects_owned {
                 shadow.insert(e);
@@ -9560,6 +9617,7 @@ impl Builder {
         }));
         implicit_redefinitions.sort_unstable();
         implicit_redefinitions.dedup();
+        self.note_spec_misses(lookup_reads);
         MembershipProjection {
             membership_order,
             truncated,
@@ -12942,8 +13000,9 @@ impl ResolvedModel {
     /// (they are the OCL recursion's cycle-guard plumbing; the guard here
     /// is internal — [`Self::inheritance_walk_truncated`] reports when it
     /// cut the walk). Supported literal, null and metadata-access leaves without a body scope
-    /// read their library heritage by element identity. Other elements without a
-    /// body scope answer empty.
+    /// read their library heritage by element identity. Materialized reference
+    /// results use their checked Subsetting and the same contextual inheritance
+    /// walk. Other elements without a body scope answer empty.
     pub fn inherited_memberships(
         &mut self,
         e: ElementRef,
@@ -12952,7 +13011,7 @@ impl ResolvedModel {
         let Some(&s) = self.b.elem_scope.get(&e.0) else {
             return self
                 .b
-                .literal_inherited_memberships(e.0, include_implied)
+                .scope_less_inherited_memberships(e.0, include_implied)
                 .membership_order
                 .into_iter()
                 .map(ElementRef)
@@ -12976,7 +13035,7 @@ impl ResolvedModel {
         let Some(&s) = self.b.elem_scope.get(&e.0) else {
             return self
                 .b
-                .literal_inherited_memberships(e.0, include_implied)
+                .scope_less_inherited_memberships(e.0, include_implied)
                 .truncated;
         };
         self.b.inherited_bindings(s, include_implied).truncated
@@ -12990,7 +13049,9 @@ impl ResolvedModel {
     /// exports permit unsupported semantics but refuse actual depth cuts.
     pub fn inheritance_incomplete(&mut self, e: ElementRef, include_implied: bool) -> bool {
         let Some(&s) = self.b.elem_scope.get(&e.0) else {
-            let result = self.b.literal_inherited_memberships(e.0, include_implied);
+            let result = self
+                .b
+                .scope_less_inherited_memberships(e.0, include_implied);
             return result.incomplete || result.truncated;
         };
         let result = self.b.inherited_bindings(s, include_implied);
@@ -13008,7 +13069,9 @@ impl ResolvedModel {
     /// keeps the wider view.
     pub fn inherited_features(&mut self, e: ElementRef, include_implied: bool) -> Vec<ElementRef> {
         let Some(&s) = self.b.elem_scope.get(&e.0) else {
-            let inherited = self.b.literal_inherited_memberships(e.0, include_implied);
+            let inherited = self
+                .b
+                .scope_less_inherited_memberships(e.0, include_implied);
             let mut seen = HashSet::new();
             return inherited
                 .membership_order

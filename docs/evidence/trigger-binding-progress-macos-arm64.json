@@ -1,0 +1,152 @@
+{
+  "generatedAt": "2026-10-18T05:32:24.407473+00:00",
+  "platform": "macOS-15.8-arm64-arm-64bit",
+  "status": "worktree dependency progress; not release qualification or trigger-rule closure",
+  "baselineCommit": "4ee0776",
+  "scope": "CanonicalV3 supplied-argument certificates for TriggerInvocationExpression using the existing complete callee input projection, checked argument ownership and shared positional fixed point. Designated selection requires a valid trigger kind, an unambiguous global Triggers package and a reciprocal public declared Function with the canonical loaded-library identity. This is a bounded dependency for trigger validation, not complete trigger-rule or modeling-tool conformance.",
+  "kernelInputSha256": "d17988cd460565556362d678171054f6f31fc41b8d4ac392378c575d4926549a",
+  "inputs": {
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/invocation_bindings.rs": "a102acb47cde8ea4520c25b2d0d05ac22fc7e6bef6d748f84b94480eb07d747c",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/constructor_bindings.rs": "71f9886de8684e310ddfa2e523fd38d67a001012e9937da255966509c2e724cb",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_invocations.rs": "611f58f37f0cd43abad7cedcd95bae03cdfc9cc29280183599678b803b693757",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/dynamic_graph.rs": "78e3d006356af5795fb96d9b0d0cd1db30242dd3f79b4a9b1b84a50dc66cdec6",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_inheritance.rs": "6fa0fb8af33417e56b0450e8240df57862373fa1e1050be84cd130adfde90ab6",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/result_redefinition.rs": "9b5d2d03574cbb4d961cbcab23af1c8fe6f5a3106238b0f35d9791819c7274ec",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_inputs.rs": "79c073af1b1b2105fea9d6f7ac6692894d809a93e749d56a2714c4ce1b5d6160",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_relations.rs": "20cb775f270dba9378d134db77aff23130aa1c14930fd14a7660dd0c18e57d1c",
+    "vendor/sysml-toolkit/crates/sysmlv2-model/src/json/type_features.rs": "ac8113fd37c3383af21ab4ae5e3d5c774984f283642922540c3851c15cd4dcd4",
+    "crates/sysml-kernel/tests/trigger_result_features.rs": "22e09ba9f6b9784f1dbce18ce79c9d1286e0176242119001c76f10091095cae2",
+    "crates/sysml-kernel/tests/duration_feature_certificates.rs": "f1b07fbc132136ca9f3d4c843a55e0aa7708305bc0c2f3cfa5ff506011e4ba12",
+    "tests/conformance/fixtures/trigger-arguments-positive.sysml": "c4cb205b98c6128e9fca1fead8c84c6edffc41bfba9e17d7a0f9727d37db1a1f",
+    "tools/test-vendor.mjs": "e4e8e7eb8ffbceceed15d80fad412371694af27a207a15bb83c7646119771096",
+    "patches/manifest.json": "ce8cb6ea4efcc83f05b55bb25741796befd095501f48d4ed13f5ae2dcbe2273d",
+    "patches/0002-package-attribute-featuring.patch": "0ca8ee6705f143ef4854a79d30d3c709ea3d8677ee2020b9f3ada3152a6416c7",
+    "patches/0003-checked-conditional-bindings.patch": "8d3ca1ea49c2f5bb6e962e599ff6a2ce4334e9600385aba4eb187e017b939ef5",
+    "patches/0004-designated-operator-cache.patch": "74933e6f3ea7da3ed508b40a51a4b8a3d93e0d724c6aeaba52f9d25666d9aed5",
+    "patches/0008-isolate-unresolved-specializations.patch": "42c4fe49b9d2a26be3c37250bf26853ac64ee7614451ed2a1ceffaae9912ae92",
+    "patches/0010-reuse-static-prefix.patch": "380179dc4b26aa80e92a591a85c8047f4e75d1e2e91a37dc7842ea1a6b15690a",
+    "patches/0019-preserve-distinct-view-renderings.patch": "860fd2ba217226a8b526c2238ff3819433774c748fe7ea10433610b6fc4919d4",
+    "patches/0027-generated-result-inheritance.patch": "b55675b3e6600f2df5adf33eff705fe93cdbab378a5c1f6f3960fa898a078be3",
+    "patches/0028-partial-result-heritage.patch": "bd0adec56613f6d52960f0623bc8d02a795b6b172f03b86894ff4e51d6fe1d43",
+    "patches/0029-assertion-member-evidence.patch": "726fdc05e1fcb5eaed0838ac0b4668b03b944a8888769de3b228dac0af4b8088",
+    "patches/0030-attribute-feature-domains.patch": "66b6ee18e511295d00bafd2894d09899b407c6b45b4dd5657865af2b7cc6f0ce",
+    "patches/0031-generated-result-domain-witnesses.patch": "080b3ce6a9710cd454f80da0e592c0302e2dc12eca7107516157403aecfb6fcc"
+  },
+  "nativeTestBinaries": {
+    "target/release/deps/trigger_result_features-193bdccb12600a29": "4d7eb31fb6264df3f92b44e5328a02be13889eea929d4ef37f7f33702eaa3a58",
+    "target/release/deps/duration_feature_certificates-6a9da535672be798": "84a6837325e43adbedfd2d1c194c7218fcd6633cfd64e98e40076b070293eb48"
+  },
+  "sources": [
+    {
+      "path": "target/standards/kerml.xmi",
+      "sha256": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
+      "anchors": [
+        {
+          "owner": "InvocationExpression",
+          "name": "checkInvocationExpressionSpecialization",
+          "expressions": [
+            {
+              "text": "specializes(instantiatedType)",
+              "sha256": "590e9ab6b0c19b9b8254adc7a7c8879642b9d4ab8b08572a0a583f1c4f575597"
+            }
+          ]
+        },
+        {
+          "owner": "InvocationExpression",
+          "name": "deriveInvocationExpressionArgument",
+          "expressions": [
+            {
+              "text": "instantiatedType.input->collect(inp |      ownedFeatures->select(redefines(inp)).valuation->     select(v | v <> null).value )",
+              "sha256": "2cd0ad21c21497a15e76909d6b0c2ed720232177af0eb93083f42d268afb31f6"
+            }
+          ]
+        },
+        {
+          "owner": "Feature",
+          "name": "checkFeatureParameterRedefinition",
+          "expressions": [
+            {
+              "text": "owningType <> null and not owningFeatureMembership.     oclIsKindOf(ReturnParameterMembership) and (owningType.oclIsKindOf(Behavior) or  owningType.oclIsKindOf(Step) and     (owningType.oclIsKindOf(InvocationExpression) implies       not ownedRedefinition->exists(not isImplied))  implies     let i : Integer =         owningType.ownedFeature->select(direction <> null)->             reject(owningFeatureMembership.                 oclIsKindOf(ReturnParameterMembership))->             indexOf(self) in     owningType.ownedSpecialization.general->         forAll(supertype |             let ownedParameters : Sequence(Feature) =                 supertype.ownedFeature->select(direction <> null)->                      reject(owningFeatureMembership.                          oclIsKindOf(ReturnParameterMembership)) in             ownedParameters->size() >= i implies                 redefines(ownedParameters->at(i))",
+              "sha256": "27a1dc1ab5e6f5b947606a322260646f24c2fc6b54b91a789c93c06a8c0e6ac5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "target/standards/sysml.xmi",
+      "sha256": "caa65d54f56798bf7582d173f7567e1eea37a49c45984f8bd7df145011cf8c6f",
+      "anchors": [
+        {
+          "owner": "TriggerInvocationExpression",
+          "name": "instantiatedType",
+          "expressions": [
+            {
+              "text": "resolveGlobal(     if kind = TriggerKind::when then         'Triggers::TriggerWhen'     else if kind = TriggerKind::at then         'Triggers::TriggerAt'     else         'Triggers::TriggerAfter'     endif endif ).memberElement.oclAsType(Type)",
+              "sha256": "c4520310c2ae9f50a9811dff6c048fc8b294c08c37e95e89bec4965696570f9e"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "observations": [
+    "The shared invocation report now admits canonical trigger expressions. An absent value on the generated receiver is excluded through complete valuation absence evidence rather than replaced with a positional/default argument.",
+    "The existing atomic dynamic plan publishes trigger callee specialization and supplied-argument redefinition mappings. No alternate inheritance or argument graph is introduced.",
+    "A trigger-only minimal model exposed an activation omission hidden by the full library. Activation and traversal now use the same candidate-kind predicate.",
+    "Four new private tests cover all three kinds, current public argument property results, stable identities, retry, absent/wrong/private/user-shadowed library targets, invalid enum values, local declarations preceding imports, alias qualification and six post-publication changes.",
+    "The full-library native test checks six after/at/when examples against exact callee/input identities and complete input counts, with one supplied value each. It retains the previously checked custom/inherited/standard duration result domains in both graph formats.",
+    "A generated-result review additionally corrected the source conjugation guard to include subclasses. A new direct-certificate regression covers Conjugation and PortConjugation.",
+    "The earlier generated-result checkpoint remains separately recorded with its original source hashes; this record describes the later worktree."
+  ],
+  "verification": [
+    {
+      "command": [
+        "node",
+        "tools/test-vendor.mjs"
+      ],
+      "exitCode": 0,
+      "passed": 385,
+      "log": "target/trigger-validation/trigger-bindings-final-vendor.log",
+      "logSha256": "f95587eedca98331e32982de06755694543370a20dc5c6aed0e972fe3e00f442"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "test",
+        "--locked",
+        "--release",
+        "--workspace"
+      ],
+      "exitCode": 0,
+      "passed": 94,
+      "log": "target/trigger-validation/trigger-bindings-final-workspace.log",
+      "logSha256": "f9ffd50ea02ee490b40dd8074573f8dd309645e17527ece81619a4a801490795"
+    },
+    {
+      "command": [
+        "node",
+        "tools/rust.mjs",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "log": "target/trigger-validation/trigger-bindings-clippy.log",
+      "logSha256": "cc238e296cdcd1837f625968776c13aebdad7eaf7638056362395e460cdc154b"
+    }
+  ],
+  "limitations": [
+    "The three trigger validators still use their old source-based predicates and noncanonical identifiers. Their replacement, expression-result selection, when-wrapper predicates and quantity-reference checks remain open.",
+    "Selection does not qualify aliases, filtered/global imported naming domains or arbitrary callee shapes. Inherited-only/interleaved-output signatures, transitive/multiple argument redefinitions, defaults and other invocation configurations retain explicit qualifications.",
+    "The certificate covers supplied argument values, not all trigger parameter construction or generated receiver redefinition/default obligations. It does not establish the full instantiatedType operation contract or all inherited Expression/Invocation constraints.",
+    "Other generated result families and source owning-Type contexts remain open. Conjugation subclasses are refused rather than semantically implemented by the result-domain adapter.",
+    "The installed application and qualified engine remain KERNEL-023. The current conformance matrix, native/WASM parity, benchmark corpus and desktop release have not been requalified for this worktree. Windows and Linux were not executed."
+  ]
+}

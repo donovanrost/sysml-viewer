@@ -31,6 +31,8 @@ pub enum PropertyError {
     IncompleteConstructorBindings(super::ConstructorBindingIssue),
     /// Complete ordinary Function result selection could not be established.
     IncompleteFunctionResult(super::TypeInputIssue),
+    /// Complete ordered Expression result selection could not be established.
+    IncompleteExpressionResult(super::TypeInputIssue),
     MissingRequiredValue,
     UnresolvedReference(String),
     InvalidValue(String),
@@ -60,6 +62,9 @@ impl std::fmt::Display for PropertyError {
             }
             Self::IncompleteFunctionResult(reason) => {
                 write!(f, "Function.result is incomplete: {reason:?}")
+            }
+            Self::IncompleteExpressionResult(reason) => {
+                write!(f, "Expression.result is incomplete: {reason:?}")
             }
             Self::MissingRequiredValue => f.write_str("required property has no value"),
             Self::UnresolvedReference(s) => write!(f, "unresolved reference: {s}"),
