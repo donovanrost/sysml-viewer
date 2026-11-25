@@ -14,6 +14,14 @@ import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
+// Verification reconstructs pinned bytes in a temporary tree, outside the
+// repository's .gitattributes. Ignore machine-specific newline conversion.
+const gitApply = (args, options) =>
+  execFileSync(
+    'git',
+    ['-c', 'core.autocrlf=false', '-c', 'core.eol=lf', 'apply', ...args],
+    options,
+  );
 const safe = (path) =>
   typeof path === 'string' &&
   path &&
@@ -51,7 +59,7 @@ export function verifyVendor(root, { apply = false } = {}) {
     }
     assert.equal(hash(read(entry.patch)), entry.sha256, 'Patch bytes changed');
     const patch = join(root, entry.patch);
-    const numstat = execFileSync('git', ['apply', '--numstat', patch], {
+    const numstat = gitApply(['--numstat', patch], {
       cwd: root,
       encoding: 'utf8',
     })
@@ -61,8 +69,8 @@ export function verifyVendor(root, { apply = false } = {}) {
     assert.equal(numstat[0].split('\t')[2], entry.file, 'Unexpected patch target');
     const present = existsSync(join(root, entry.file));
     if (apply && (addition ? !present : present && hash(read(entry.file)) === entry.baseSha256)) {
-      execFileSync('git', ['apply', '--check', patch], { cwd: root });
-      execFileSync('git', ['apply', patch], { cwd: root });
+      gitApply(['--check', patch], { cwd: root });
+      gitApply([patch], { cwd: root });
     }
     assert(existsSync(join(root, entry.file)), `Patch not applied: ${entry.file}`);
     assert.equal(
@@ -75,7 +83,7 @@ export function verifyVendor(root, { apply = false } = {}) {
       const target = join(temporary, entry.file);
       mkdirSync(dirname(target), { recursive: true });
       copyFileSync(join(root, entry.file), target);
-      execFileSync('git', ['apply', '--reverse', patch], { cwd: temporary, stdio: 'pipe' });
+      gitApply(['--reverse', patch], { cwd: temporary, stdio: 'pipe' });
       if (addition) {
         assert(!existsSync(target), 'Reversing an added-file patch must remove the file');
       } else {

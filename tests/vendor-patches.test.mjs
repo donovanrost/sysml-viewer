@@ -4,6 +4,7 @@ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'nod
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { verifyVendor } from '../tools/lib/vendor.mjs';
 const hash = (s) => createHash('sha256').update(s).digest('hex');
 function fixture(t) {
@@ -54,6 +55,33 @@ test('vendor patches apply reproducibly and preserve the original source manifes
     JSON.parse(readFileSync(join(f.root, 'vendor/SHA256SUMS.json')))[f.file],
     hash(f.before),
   );
+});
+test('vendor verification preserves exact bytes with Windows Git line-ending settings', (t) => {
+  const f = additionFixture(t);
+  const module = new URL('../tools/lib/vendor.mjs', import.meta.url).href;
+  execFileSync(
+    process.execPath,
+    [
+      '--input-type=module',
+      '-e',
+      `import { verifyVendor } from ${JSON.stringify(module)};
+       verifyVendor(${JSON.stringify(f.root)}, { apply: true });
+       verifyVendor(${JSON.stringify(f.root)});`,
+    ],
+    {
+      env: {
+        ...process.env,
+        GIT_CONFIG_COUNT: '2',
+        GIT_CONFIG_KEY_0: 'core.autocrlf',
+        GIT_CONFIG_VALUE_0: 'true',
+        GIT_CONFIG_KEY_1: 'core.eol',
+        GIT_CONFIG_VALUE_1: 'crlf',
+      },
+      stdio: 'pipe',
+    },
+  );
+  assert.equal(readFileSync(join(f.root, f.file), 'utf8'), f.after);
+  assert.equal(readFileSync(join(f.root, f.added.file), 'utf8'), f.added.after);
 });
 test('vendor checks reject patch edits, source edits and unrecorded files', (t) => {
   const f = fixture(t);
